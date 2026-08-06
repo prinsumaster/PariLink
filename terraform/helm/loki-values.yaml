@@ -1,0 +1,24 @@
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: s3
+    bucketNames:
+      chunks: parilink-logs-production
+      ruler: parilink-logs-production
+      admin: parilink-logs-production
+    s3:
+      endpoint: s3.ap-south-1.amazonaws.com
+      region: ap-south-1
+
+promtail:
+  enabled: true
+  
+# Only for staging/dev if single node
+singleBinary:
+  replicas: 1
+  nodeSelector:
+    role: system
+  persistence:
+    size: 20Gi

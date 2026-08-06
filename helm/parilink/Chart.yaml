@@ -1,0 +1,19 @@
+apiVersion: v2
+name: parilink
+description: PariLink Enterprise Logistics OS v3.0 Helm Chart
+type: application
+version: 3.0.0
+appVersion: "3.0.0"
+dependencies:
+  - name: postgresql-ha
+    version: "14.2.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql-ha.enabled
+  - name: redis
+    version: "18.8.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+  - name: kube-prometheus-stack
+    version: "56.0.0"
+    repository: "https://prometheus-community.github.io/helm-charts"
+    condition: observability.enabled

@@ -1,0 +1,26 @@
+name: Setup Helm & kubectl
+description: "Configures Helm, kubectl, and EKS access"
+inputs:
+  cluster_name:
+    description: "EKS Cluster Name"
+    required: true
+  aws_region:
+    description: "AWS Region"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: "v3.14.0"
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: "v1.31.0"
+
+    - name: Update Kubeconfig
+      shell: bash
+      run: aws eks update-kubeconfig --name ${{ inputs.cluster_name }} --region ${{ inputs.aws_region }}

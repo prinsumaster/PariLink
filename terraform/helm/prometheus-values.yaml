@@ -1,0 +1,42 @@
+coreDns:
+  enabled: true
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+
+prometheus:
+  prometheusSpec:
+    nodeSelector:
+      role: system
+    retention: 15d
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+
+grafana:
+  enabled: true
+  nodeSelector:
+    role: system
+  adminPassword: "prom-operator-temp-pass"
+  persistence:
+    enabled: true
+    size: 10Gi
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector:
+      role: system
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi

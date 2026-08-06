@@ -1,0 +1,143 @@
+# =============================================================================
+# PariLink Kubernetes — RBAC (Least-Privilege)
+# ServiceAccounts, Roles, RoleBindings, ClusterRoles
+# =============================================================================
+
+# ─── Service Accounts ────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: parilink-api-sa
+  namespace: parilink-prod
+  labels:
+    app: api
+  annotations:
+    # IRSA: bind to AWS IAM role for S3/Secrets Manager access
+    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/parilink-production-api-sa"
+automountServiceAccountToken: false
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: parilink-web-sa
+  namespace: parilink-prod
+  labels:
+    app: web
+automountServiceAccountToken: false
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: parilink-worker-sa
+  namespace: parilink-prod
+  labels:
+    app: worker
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/parilink-production-worker-sa"
+automountServiceAccountToken: false
+
+---
+# ─── Role: API ────────────────────────────────────────────────────────────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: parilink-api-role
+  namespace: parilink-prod
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs:     ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["parilink-app-secret", "parilink-db-secret", "parilink-redis-secret", "parilink-aws-secret"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs:     ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: parilink-api-role-binding
+  namespace: parilink-prod
+subjects:
+  - kind: ServiceAccount
+    name: parilink-api-sa
+    namespace: parilink-prod
+roleRef:
+  kind: Role
+  name: parilink-api-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ─── ClusterRole: Read-Only Observability (for Prometheus / metrics) ──────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: parilink-metrics-reader
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "services", "endpoints", "namespaces"]
+    verbs:     ["get", "list", "watch"]
+  - apiGroups: ["extensions", "apps"]
+    resources: ["deployments", "replicasets"]
+    verbs:     ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics", "/healthz"]
+    verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: parilink-metrics-reader-binding
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-sa
+    namespace: parilink-observability
+roleRef:
+  kind: ClusterRole
+  name: parilink-metrics-reader
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ─── Role: CI/CD Deployer (limited deploy access for GitHub Actions) ──────────
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: parilink-deployer-role
+  namespace: parilink-prod
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs:     ["get", "list", "watch", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs:     ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs:     ["get", "list", "watch", "update", "patch"]
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: parilink-ci-sa
+  namespace: parilink-prod
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: parilink-deployer-binding
+  namespace: parilink-prod
+subjects:
+  - kind: ServiceAccount
+    name: parilink-ci-sa
+    namespace: parilink-prod
+roleRef:
+  kind: Role
+  name: parilink-deployer-role
+  apiGroup: rbac.authorization.k8s.io

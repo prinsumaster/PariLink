@@ -1,0 +1,2666 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Company {
+  id                         String                       @id @default(uuid())
+  name                       String
+  taxId                      String?
+  address                    String?
+  city                       String?
+  state                      String?
+  country                    String?
+  postalCode                 String?
+  phone                      String?
+  email                      String?
+  website                    String?
+  status                     String                       @default("ACTIVE")
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  deletedAt                  DateTime?
+  subscriptionPlanId         String?
+  accounts                   Account[]
+  apiKeys                    ApiKey[]
+  auditLogs                  AuditLog[]
+  branches                   Branch[]
+  subscriptionPlan           SubscriptionPlan?            @relation(fields: [subscriptionPlanId], references: [id])
+  creditNotes                CreditNote[]
+  customers                  Customer[]
+  documents                  Document[]
+  drivers                    Driver[]
+  expenses                   Expense[]
+  integrationConfigs         IntegrationConfig[]
+  invoices                   Invoice[]
+  journalEntries             JournalEntry[]
+  journalLines               JournalLine[]
+  leaveRequests              LeaveRequest[]
+  loads                      Load[]
+  locationHistory            LocationHistory[]
+  inboxThreads               InboxThread[]
+  notificationPreferences    NotificationPreference[]
+  payments                   Payment[]
+  rateCards                  RateCard[]
+  roles                      Role[]
+  settlements                Settlement[]
+  supportTickets             SupportTicket[]
+  tenantConfiguration        TenantConfiguration?
+  trips                      Trip[]
+  users                      User[]
+  vehicles                   Vehicle[]
+  apiCredentials             ApiCredential[]
+  vendors                    Vendor[]
+  vendorBills                VendorBill[]
+  webhookEndpoints           WebhookEndpoint[]
+  workflowRules              WorkflowRule[]
+  Geofence                   Geofence[]
+  GeofenceEvent              GeofenceEvent[]
+  AlertRule                  AlertRule[]
+  Alert                      Alert[]
+  VehicleTelemetry           VehicleTelemetry[]
+  DomainEvent                DomainEvent[]
+  TwinSnapshot               TwinSnapshot[]
+  DispatchPlan               DispatchPlan[]
+  DispatchCandidate          DispatchCandidate[]
+  ConstraintViolation        ConstraintViolation[]
+  CustomerPromise            CustomerPromise[]
+  OptimizationScenario       OptimizationScenario[]
+  OptimizationRecommendation OptimizationRecommendation[]
+  Quotation                  Quotation[]
+  Contract                   Contract[]
+  Tender                     Tender[]
+  Warehouse                  Warehouse[]
+  InventoryItem              InventoryItem[]
+  InboundReceipt             InboundReceipt[]
+  OutboundWave               OutboundWave[]
+  YardGateLog                YardGateLog[]
+  MaterialEquipment          MaterialEquipment[]
+  workflowDefinitions        WorkflowDefinition[]
+  workflowExecutions         WorkflowExecution[]
+  approvalRequests           ApprovalRequest[]
+  integrationConnections     IntegrationConnection[]
+  webhookDeliveries          WebhookDelivery[]
+  dataMappingTemplates       DataMappingTemplate[]
+  syncJobs                   SyncJob[]
+  aiRecommendations          AiRecommendation[]
+  aiPredictions              AiPrediction[]
+  aiAnomalies                AiAnomaly[]
+  aiAgents                   AiAgent[]
+  aiInteractionLogs          AiInteractionLog[]
+  aiMetricsLogs              AiMetricsLog[]
+  featureFlags               FeatureFlag[]
+  tenantConfigs              TenantConfig[]
+  platformMetrics            PlatformMetric[]
+  VehicleLocation            VehicleLocation[]
+  GpsVehicleMapping          GpsVehicleMapping[]
+  AppInstallation            AppInstallation[]
+  documentFolders            DocumentFolder[]
+  comments                   Comment[]
+  fileExports                FileExport[]
+  webResources               WebResource[]
+  chatChannels               ChatChannel[]
+  starredItems               StarredItem[]
+  aiChatSessions             AiChatSession[]
+  announcements              Announcement[]
+  backgroundJobs             BackgroundJob[]
+  workspaceSnapshots         WorkspaceSnapshot[]
+  operationalAnomalies       OperationalAnomaly[]
+  eventTimelines             EventTimeline[]
+
+  @@index([status])
+}
+
+model Trip {
+  id                String            @id @default(uuid())
+  companyId         String
+  tripNumber        String            @unique
+  driverId          String?
+  vehicleId         String?
+  trailerId         String?
+  status            String            @default("PLANNED")
+  startDate         DateTime?
+  endDate           DateTime?
+  eta               DateTime?
+  startOdometer     Float?
+  endOdometer       Float?
+  estimatedDistance Float?
+  actualDistance    Float?
+  route             Json?
+  checklists        Json?
+  timeline          Json?
+  fuelExpenses      Float?
+  otherExpenses     Float?
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+  expenses          Expense[]
+  loads             Load[]
+  locationHistory   LocationHistory[]
+  company           Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver            Driver?           @relation(fields: [driverId], references: [id])
+  trailer           Vehicle?          @relation("TripTrailer", fields: [trailerId], references: [id])
+  vehicle           Vehicle?          @relation("TripVehicle", fields: [vehicleId], references: [id])
+
+  @@index([companyId, status])
+  @@index([driverId])
+  @@index([vehicleId])
+}
+
+model LocationHistory {
+  id        String   @id @default(uuid())
+  companyId String
+  tripId    String
+  driverId  String
+  latitude  Float
+  longitude Float
+  speed     Float?
+  heading   Float?
+  accuracy  Float?
+  timestamp DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, driverId, timestamp])
+  @@index([companyId, tripId, timestamp])
+}
+
+model Load {
+  id                 String           @id @default(uuid())
+  companyId          String
+  customerId         String
+  tripId             String?
+  referenceNumber    String
+  consignor          String?
+  consignee          String?
+  originAddress      String
+  originCity         String
+  originState        String
+  destinationAddress String
+  destinationCity    String
+  destinationState   String
+  pickupDate         DateTime
+  deliveryDate       DateTime
+  weight             Float?
+  volume             Float?
+  equipmentType      String           @default("DRY_VAN")
+  vehicleRequirement String?
+  trailerRequirement String?
+  status             String           @default("PENDING")
+  rate               Float
+  cost               Float?
+  boardPosition      Float?           // For Kanban ordering
+  notes              String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  deletedAt          DateTime?
+  documents          Document[]
+  invoices           Invoice[]
+  company            Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer           Customer         @relation(fields: [customerId], references: [id])
+  trip               Trip?            @relation(fields: [tripId], references: [id])
+  DispatchPlan       DispatchPlan[]
+  CustomerPromise    CustomerPromise?
+  InboundReceipt     InboundReceipt[]
+  OutboundWave       OutboundWave[]
+  OutboundOrder      OutboundOrder?
+  DockAppointment    DockAppointment?
+
+  @@index([companyId, status])
+  @@index([customerId])
+  @@index([companyId, tripId])
+}
+
+model Document {
+  id              String          @id @default(uuid())
+  companyId       String
+  loadId          String?
+  entityId        String? // Polymorphic entity ID (fallback)
+  entityType      String? // Polymorphic entity Type (fallback)
+  type            String
+  fileUrl         String
+  fileName        String
+  mimeType        String?
+  sizeBytes       Int?
+  uploadedById    String?
+  version         Int             @default(1)
+  category        String?
+  tags            Json            @default("[]")
+  folderId        String?
+  isLocked        Boolean         @default(false)
+  lockedById      String?
+  expiresAt       DateTime?
+  metadata        Json?           @default("{}")
+  status          String          @default("ACTIVE")
+  retentionPolicy String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  load            Load?           @relation(fields: [loadId], references: [id], onDelete: Cascade)
+  uploadedBy      User?           @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
+  lockedBy        User?           @relation("DocumentLockedBy", fields: [lockedById], references: [id])
+  folder          DocumentFolder? @relation(fields: [folderId], references: [id])
+
+  @@index([companyId, loadId])
+  @@index([companyId, uploadedById])
+  @@index([companyId, folderId])
+  @@index([entityType, entityId])
+}
+
+model Invoice {
+  id            String            @id @default(uuid())
+  companyId     String
+  customerId    String
+  loadId        String?
+  invoiceNumber String
+  amount        Float
+  status        String            @default("DRAFT")
+  dueDate       DateTime?
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  deletedAt     DateTime?
+  creditNotes   CreditNote[]
+  company       Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer      Customer          @relation(fields: [customerId], references: [id])
+  load          Load?             @relation(fields: [loadId], references: [id])
+  lineItems     InvoiceLineItem[]
+  payments      Payment[]
+
+  @@index([companyId, status])
+  @@index([customerId])
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  companyId       String
+  invoiceId       String
+  amount          Float
+  method          String
+  referenceNumber String?
+  paymentDate     DateTime
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, invoiceId])
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  description String
+  quantity    Float    @default(1)
+  unitPrice   Float
+  amount      Float
+  type        String   @default("LINE_HAUL")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id             String      @id @default(uuid())
+  companyId      String
+  name           String
+  code           String?
+  email          String?
+  phone          String?
+  billingAddress String?
+  taxId          String?
+  paymentTerms   String      @default("NET_30")
+  creditLimit    Float?      @default(0)
+  status         String      @default("ACTIVE")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  deletedAt      DateTime?
+  company        Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoices       Invoice[]
+  loads          Load[]
+  rateCards      RateCard[]
+  Quotation      Quotation[]
+  Contract       Contract[]
+
+  masterRecordId String?
+  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+
+  @@index([companyId, status])
+}
+
+model Vendor {
+  id             String       @id @default(uuid())
+  companyId      String
+  name           String
+  code           String?
+  email          String?
+  phone          String?
+  billingAddress String?
+  taxId          String?
+  type           String       @default("CARRIER")
+  paymentTerms   String       @default("NET_30")
+  status         String       @default("ACTIVE")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendorBills    VendorBill[]
+  Contract       Contract[]
+  TenderBid      TenderBid[]
+
+  masterRecordId String?
+  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+
+  @@index([companyId, status])
+}
+
+model Driver {
+  id              String            @id @default(uuid())
+  companyId       String
+  userId          String?           @unique
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String?
+  licenseNumber   String?
+  licenseState    String?
+  licenseExpiry   DateTime?
+  status          String            @default("AVAILABLE")
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  deletedAt       DateTime?
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user            User?             @relation(fields: [userId], references: [id])
+  expenses        Expense[]
+  leaveRequests   LeaveRequest[]
+  locationHistory LocationHistory[]
+  settlements     Settlement[]
+  trips           Trip[]
+  yardGateLogs    YardGateLog[]
+  Alert           Alert[]
+
+  masterRecordId String?
+  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+
+  @@index([companyId, status])
+}
+
+model Vehicle {
+  id                String             @id @default(uuid())
+  companyId         String
+  make              String?
+  model             String?
+  year              Int?
+  licensePlate      String?
+  vin               String?
+  type              String             @default("TRUCK")
+  status            String             @default("IN_SERVICE")
+  capacityWeight    Float?
+  capacityVolume    Float?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  tripsTrailer      Trip[]             @relation("TripTrailer")
+  tripsVehicle      Trip[]             @relation("TripVehicle")
+  yardGateVehicles  YardGateLog[]      @relation("GateLogVehicle")
+  yardGateTrailers  YardGateLog[]      @relation("GateLogTrailer")
+  company           Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  GeofenceEvent     GeofenceEvent[]
+  Alert             Alert[]
+  VehicleTelemetry  VehicleTelemetry[]
+  VehicleLocation   VehicleLocation[]
+  GpsVehicleMapping GpsVehicleMapping?
+
+  masterRecordId String?
+  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+
+  @@index([companyId, status])
+}
+
+model Role {
+  id          String    @id @default(uuid())
+  companyId   String
+  name        String
+  description String?
+  permissions Json      @default("[]")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  users       User[]
+}
+
+model Branch {
+  id         String    @id @default(uuid())
+  companyId  String
+  name       String
+  code       String?
+  address    String?
+  city       String?
+  state      String?
+  country    String?
+  postalCode String?
+  phone      String?
+  email      String?
+  status     String    @default("ACTIVE")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                     String                  @id @default(uuid())
+  email                  String                  @unique
+  password               String
+  firstName              String
+  lastName               String
+  phone                  String?
+  avatar                 String?
+  status                 String                  @default("ACTIVE")
+  roleId                 String?
+  companyId              String
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  deletedAt              DateTime?
+  auditLogs              AuditLog[]
+  uploadedDocuments      Document[]              @relation("DocumentUploadedBy")
+  lockedDocuments        Document[]              @relation("DocumentLockedBy")
+  driver                 Driver?
+  notificationPreference NotificationPreference?
+  refreshTokens          RefreshToken[]
+  supportTickets         SupportTicket[]
+  company                Company                 @relation(fields: [companyId], references: [id])
+  role                   Role?                   @relation(fields: [roleId], references: [id])
+  userWorkspaceState     UserWorkspaceState?
+  comments               Comment[]
+  fileExports            FileExport[]
+  chatChannelMemberships ChatChannelMember[]
+  sentMessages           ChatMessage[]           @relation("ChatMessageSender")
+  messageReactions       MessageReaction[]       @relation("MessageReactionUser")
+  aiChatSessions         AiChatSession[]         @relation("AiChatSessionUser")
+  starredItems           StarredItem[]           @relation("StarredItemUser")
+  inboxMessages          InboxMessage[]          @relation("InboxMessageSender")
+  inboxThreads           InboxThread[]           @relation("InboxThreadUser")
+  notifications          Notification[]          @relation("NotificationUser")
+  preferences            Json                    @default("{}")
+  backgroundJobs         BackgroundJob[]         @relation("BackgroundJobUser")
+  workspaceSnapshots     WorkspaceSnapshot[]     @relation("WorkspaceSnapshotUser")
+
+  @@index([companyId, status])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  companyId     String
+  userId        String?
+  entity        String // Keep existing
+  entityType    String? // e.g., 'Load', 'Invoice', 'FeatureFlag'
+  entityId      String
+  action        String // CREATE, UPDATE, DELETE
+  details       Json? // Keep existing
+  beforeValue   Json?
+  afterValue    Json?
+  reason        String?
+  correlationId String?
+  source        String? // e.g., 'API', 'WORKFLOW', 'AI_AGENT', 'INTEGRATION'
+  createdAt     DateTime @default(now())
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@index([companyId, entity, entityId])
+  @@index([companyId, createdAt])
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  companyId String
+  userId    String
+  type      String
+  status    String    @default("PENDING")
+  subject   String?
+  body      String
+  metadata  Json?
+  error     String?
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+  readAt    DateTime?
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model NotificationPreference {
+  id           String   @id @default(uuid())
+  companyId    String
+  userId       String   @unique
+  emailEnabled Boolean  @default(true)
+  smsEnabled   Boolean  @default(false)
+  pushEnabled  Boolean  @default(true)
+  inAppEnabled Boolean  @default(true)
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RateCard {
+  id              String    @id @default(uuid())
+  companyId       String
+  customerId      String
+  type            String
+  rate            Float
+  fuelSurcharge   Float?    @default(0)
+  tollSurcharge   Float?    @default(0)
+  waitingCharge   Float?    @default(0)
+  currency        String    @default("USD")
+  originCity      String?
+  destinationCity String?
+  validFrom       DateTime?
+  validTo         DateTime?
+  minimumCharge   Float?    @default(0)
+  equipmentType   String?
+  version         Int       @default(1)
+  status          String    @default("APPROVED") // DRAFT, APPROVED, EXPIRED
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer        Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+model CreditNote {
+  id        String   @id @default(uuid())
+  companyId String
+  invoiceId String
+  amount    Float
+  reason    String
+  status    String   @default("ISSUED")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Settlement {
+  id          String   @id @default(uuid())
+  companyId   String
+  driverId    String
+  amount      Float
+  type        String
+  status      String   @default("DRAFT")
+  periodStart DateTime
+  periodEnd   DateTime
+  advances    Float    @default(0)
+  deductions  Float    @default(0)
+  netPayable  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver      Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+}
+
+model VendorBill {
+  id         String    @id @default(uuid())
+  companyId  String
+  vendorId   String
+  billNumber String
+  amount     Float
+  dueDate    DateTime?
+  status     String    @default("DRAFT")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor     Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  companyId String
+  tripId    String?
+  driverId  String?
+  type      String
+  amount    Float
+  date      DateTime
+  status    String   @default("PENDING")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver    Driver?  @relation(fields: [driverId], references: [id])
+  trip      Trip?    @relation(fields: [tripId], references: [id])
+}
+
+model Account {
+  id           String        @id @default(uuid())
+  companyId    String
+  name         String
+  code         String
+  type         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  journalLines JournalLine[]
+
+  @@unique([companyId, code])
+}
+
+model JournalEntry {
+  id            String        @id @default(uuid())
+  companyId     String
+  referenceType String
+  referenceId   String?
+  date          DateTime      @default(now())
+  description   String
+  status        String        @default("DRAFT")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  lines         JournalLine[]
+
+  @@index([companyId, date])
+  @@index([companyId, referenceType, referenceId])
+}
+
+model JournalLine {
+  id          String       @id @default(uuid())
+  companyId   String
+  entryId     String
+  accountId   String
+  debit       Float        @default(0)
+  credit      Float        @default(0)
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  account     Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  entry       JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, accountId])
+  @@index([companyId, entryId])
+}
+
+model SubscriptionPlan {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  currency    String    @default("USD")
+  features    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  companies   Company[]
+}
+
+model TenantConfiguration {
+  id        String   @id @default(uuid())
+  companyId String   @unique
+  settings  Json     @default("{}")
+  theme     Json     @default("{}")
+  policies  Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  companyId   String
+  userId      String
+  subject     String
+  description String
+  status      String   @default("OPEN")
+  priority    String   @default("MEDIUM")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LeaveRequest {
+  id        String   @id @default(uuid())
+  companyId String
+  driverId  String
+  startDate DateTime
+  endDate   DateTime
+  reason    String
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+}
+
+model WorkflowRule {
+  id         String   @id @default(uuid())
+  companyId  String
+  name       String
+  entityType String
+  trigger    String
+  conditions Json     @default("[]")
+  actions    Json     @default("[]")
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id        String    @id @default(uuid())
+  companyId String
+  name      String
+  keyHash   String
+  scopes    Json      @default("[]")
+  expiresAt DateTime?
+  lastUsed  DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model WebhookEndpoint {
+  id         String   @id @default(uuid())
+  companyId  String
+  url        String
+  secret     String
+  events     Json     @default("[]")
+  isActive   Boolean  @default(true)
+  retryCount Int      @default(3)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model IntegrationConfig {
+  id          String   @id @default(uuid())
+  companyId   String
+  provider    String
+  credentials Json
+  settings    Json     @default("{}")
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// --- REAL-TIME FLEET INTELLIGENCE PLATFORM ---
+
+model Geofence {
+  id           String          @id @default(uuid())
+  companyId    String
+  name         String
+  description  String?
+  type         String          @default("CUSTOMER") // CUSTOMER, WAREHOUSE, DEPOT, TOLL, PORT, BORDER
+  latitude     Float
+  longitude    Float
+  radiusMeters Float           @default(100) // Circular geofence
+  polygon      Json? // Optional for complex polygons: [{lat, lng}]
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  company      Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  events       GeofenceEvent[]
+}
+
+model GeofenceEvent {
+  id         String   @id @default(uuid())
+  companyId  String
+  geofenceId String
+  vehicleId  String
+  eventType  String // ENTER, EXIT
+  timestamp  DateTime @default(now())
+  metadata   Json? // E.g. Dwell time on EXIT
+  geofence   Geofence @relation(fields: [geofenceId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId, timestamp])
+  @@index([geofenceId, eventType])
+}
+
+model AlertRule {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  type      String // SPEEDING, IDLING, DEVIATION, OFF_HOURS, BATTERY, MAINTENANCE
+  condition String // EXCEEDS, LESS_THAN, MATCHES
+  threshold Float
+  severity  String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  alerts    Alert[]
+}
+
+// ============================================================================
+// PARILINK V6.1 PLATFORM KERNEL (IDENTITY & ORGANIZATION)
+// ============================================================================
+
+model KernelUser {
+  id               String                @id @default(uuid())
+  email            String                @unique
+  passwordHash     String?
+  identityProvider String                @default("LOCAL") // LOCAL, GOOGLE, MICROSOFT, SAML
+  firstName        String
+  lastName         String
+  phone            String?
+  avatarUrl        String?
+  mfaEnabled       Boolean               @default(false)
+  status           String                @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING
+  lastLoginAt      DateTime?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  deletedAt        DateTime?
+  memberships      KernelMembership[]
+  preferences      KernelUserPreference?
+}
+
+model KernelOrganization {
+  id          String             @id @default(uuid())
+  globalName  String
+  rootTaxId   String?
+  domain      String?            @unique
+  status      String             @default("ACTIVE")
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  deletedAt   DateTime?
+  memberships KernelMembership[]
+  roles       KernelRole[]
+}
+
+model KernelRole {
+  id             String             @id @default(uuid())
+  organizationId String
+  name           String
+  description    String?
+  policyDocument Json               @default("[]") // ABAC/RBAC rules
+  isSystem       Boolean            @default(false)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  organization   KernelOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  memberships    KernelMembership[]
+
+  @@unique([organizationId, name])
+}
+
+model KernelMembership {
+  id             String   @id @default(uuid())
+  userId         String
+  organizationId String
+  roleId         String
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         KernelUser         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization KernelOrganization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role         KernelRole         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+}
+
+// ============================================================================
+// PARILINK V6.2 GLOBAL NOTIFICATION ENGINE
+// ============================================================================
+
+model NotificationTemplate {
+  id        String   @id @default(uuid())
+  eventType String   @unique // e.g., parilink.commercial.invoice.generated
+  channel   String // EMAIL, SMS, WHATSAPP, PUSH
+  subject   String? // Handlebars template for subject
+  body      String // Handlebars template for body
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventType, channel])
+}
+
+model NotificationLog {
+  id             String    @id @default(uuid())
+  eventId        String // Links to the DomainEvent id
+  userId         String? // Target user, if applicable
+  organizationId String? // Target organization
+  channel        String
+  recipient      String // Email address or phone number
+  status         String    @default("PENDING") // PENDING, SENT, FAILED, DELIVERED
+  providerId     String? // e.g., SendGrid message ID
+  error          String?
+  createdAt      DateTime  @default(now())
+  sentAt         DateTime?
+}
+
+model KernelUserPreference {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  emailEnabled    Boolean  @default(true)
+  smsEnabled      Boolean  @default(false)
+  whatsappEnabled Boolean  @default(false)
+  pushEnabled     Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+
+  user KernelUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Alert {
+  id         String    @id @default(uuid())
+  companyId  String
+  ruleId     String
+  vehicleId  String
+  driverId   String?
+  severity   String
+  message    String
+  status     String    @default("NEW") // NEW, ACKNOWLEDGED, RESOLVED
+  timestamp  DateTime  @default(now())
+  resolvedAt DateTime?
+  metadata   Json? // Actual value vs threshold
+  rule       AlertRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver     Driver?   @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status, timestamp])
+  @@index([vehicleId])
+}
+
+model VehicleTelemetry {
+  id           String   @id @default(uuid())
+  companyId    String
+  vehicleId    String
+  odometer     Float?
+  engineHours  Float?
+  fuelLevel    Float?
+  batteryVolts Float?
+  coolantTemp  Float?
+  engineLoad   Float?
+  rpm          Float?
+  dtcCodes     Json? // Diagnostic Trouble Codes (e.g., ["P0171", "P0300"])
+  ignition     Boolean?
+  timestamp    DateTime @default(now())
+  vehicle      Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId, timestamp])
+}
+
+// --- DIGITAL TWIN & EVENT SOURCING PLATFORM ---
+
+model DomainEvent {
+  id            String   @id @default(uuid())
+  companyId     String
+  streamId      String // ID of the Twin (e.g. Vehicle ID)
+  streamType    String // VEHICLE, DRIVER, TRIP
+  eventType     String // e.g. GpsUpdated, FuelAdded
+  version       Int // Optimistic concurrency
+  payload       Json
+  metadata      Json?
+  correlationId String?
+  userId        String? // SYSTEM or actual user id
+  timestamp     DateTime @default(now())
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([streamId, version])
+  @@index([companyId, streamId, timestamp])
+  @@index([eventType, timestamp])
+}
+
+model TwinSnapshot {
+  id        String   @id @default(uuid())
+  companyId String
+  twinId    String
+  twinType  String
+  version   Int
+  state     Json
+  timestamp DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([twinId, twinType])
+  @@index([companyId, twinType])
+}
+
+// ─────────────────────────────────────────────────────────────
+// INTELLIGENT DISPATCH & PLANNING ENGINE
+// ─────────────────────────────────────────────────────────────
+
+model DispatchPlan {
+  id                  String                @id @default(uuid())
+  companyId           String
+  loadId              String
+  status              String                @default("DRAFT")
+  // DRAFT → PLANNED → VALIDATED → ASSIGNED → ACCEPTED → REJECTED → IN_TRANSIT → PAUSED → COMPLETED → CANCELLED
+  assignedVehicleId   String?
+  assignedDriverId    String?
+  assignedTrailerId   String?
+  dispatchedAt        DateTime?
+  acceptedAt          DateTime?
+  rejectedAt          DateTime?
+  rejectionReason     String?
+  completedAt         DateTime?
+  dispatcherId        String? // user who dispatched
+  overrideReason      String? // manual override reason
+  scoringWeights      Json                  @default("{}")
+  selectedCandidateId String?
+  notes               String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  company             Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  load                Load                  @relation(fields: [loadId], references: [id])
+  candidates          DispatchCandidate[]
+  violations          ConstraintViolation[]
+
+  @@index([companyId, status])
+  @@index([loadId])
+}
+
+model DispatchCandidate {
+  id             String       @id @default(uuid())
+  planId         String
+  companyId      String
+  vehicleId      String
+  driverId       String
+  trailerId      String?
+  totalScore     Float        @default(0)
+  scoreBreakdown Json         @default("{}") // { distanceScore, hoursScore, utilizationScore, … }
+  isSelected     Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  plan           DispatchPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([companyId, vehicleId])
+}
+
+model ConstraintViolation {
+  id         String       @id @default(uuid())
+  planId     String
+  companyId  String
+  vehicleId  String?
+  driverId   String?
+  constraint String // e.g. WEIGHT_EXCEEDED, LICENSE_EXPIRED
+  message    String
+  isFatal    Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  plan       DispatchPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  company    Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+}
+
+model CustomerPromise {
+  id                  String    @id @default(uuid())
+  companyId           String
+  loadId              String    @unique
+  load                Load      @relation(fields: [loadId], references: [id], onDelete: Cascade)
+  committedPickupAt   DateTime?
+  committedDeliveryAt DateTime?
+  estimatedArrivalAt  DateTime?
+  delayRiskScore      Float     @default(0) // 0–1
+  confidenceScore     Float     @default(1) // 0–1
+  reasonCode          String?
+  lastUpdatedAt       DateTime  @default(now())
+  company             Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// OPTIMIZATION & ORCHESTRATION ENGINE
+// ─────────────────────────────────────────────────────────────
+
+model OptimizationScenario {
+  id              String                       @id @default(uuid())
+  companyId       String
+  objective       String // COST_MINIMIZATION, TIME_MINIMIZATION, UTILIZATION_MAXIMIZATION
+  status          String                       @default("GENERATED") // GENERATED, ACCEPTED, REJECTED, EXPIRED
+  totalCost       Float                        @default(0)
+  totalRevenue    Float                        @default(0)
+  margin          Float                        @default(0)
+  confidenceScore Float                        @default(1.0)
+  explanation     String?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+  company         Company                      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  recommendations OptimizationRecommendation[]
+
+  @@index([companyId, status])
+}
+
+model OptimizationRecommendation {
+  id              String               @id @default(uuid())
+  scenarioId      String
+  companyId       String
+  loadId          String
+  vehicleId       String?
+  driverId        String?
+  trailerId       String?
+  expectedCost    Float                @default(0)
+  expectedRevenue Float                @default(0)
+  confidenceScore Float                @default(1.0)
+  reasonCodes     Json                 @default("[]")
+  createdAt       DateTime             @default(now())
+  scenario        OptimizationScenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  company         Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([scenarioId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMMERCIAL INTELLIGENCE PLATFORM
+// ─────────────────────────────────────────────────────────────
+
+model Quotation {
+  id          String    @id @default(uuid())
+  companyId   String
+  customerId  String
+  status      String    @default("DRAFT") // DRAFT, SUBMITTED, APPROVED, REJECTED, EXPIRED, CONVERTED
+  totalAmount Float     @default(0)
+  taxAmount   Float     @default(0)
+  currency    String    @default("USD")
+  validUntil  DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+  @@index([customerId])
+}
+
+model Contract {
+  id                   String    @id @default(uuid())
+  companyId            String
+  customerId           String?
+  vendorId             String?
+  type                 String // MSA, CARRIER_AGREEMENT, SERVICE_LEVEL
+  status               String    @default("DRAFT") // DRAFT, ACTIVE, EXPIRED, TERMINATED
+  startDate            DateTime?
+  endDate              DateTime?
+  paymentTerms         String?
+  slaPickupOnTimePct   Float?
+  slaDeliveryOnTimePct Float?
+  penaltyPerLateDay    Float?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  company              Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customer             Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  vendor               Vendor?   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+}
+
+model Tender {
+  id                 String        @id @default(uuid())
+  companyId          String
+  title              String
+  status             String        @default("OPEN") // OPEN, CLOSED, AWARDED, CANCELLED
+  submissionDeadline DateTime?
+  origin             String?
+  destination        String?
+  expectedVolume     Int?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  company            Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bids               TenderBid[]
+  YardGateLog        YardGateLog[]
+
+  @@index([companyId, status])
+}
+
+model TenderBid {
+  id        String   @id @default(uuid())
+  tenderId  String
+  vendorId  String
+  bidAmount Float
+  currency  String   @default("USD")
+  status    String   @default("SUBMITTED") // SUBMITTED, ACCEPTED, REJECTED
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tender    Tender   @relation(fields: [tenderId], references: [id], onDelete: Cascade)
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([tenderId])
+  @@index([vendorId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// WAREHOUSE & YARD MANAGEMENT PLATFORM
+// ─────────────────────────────────────────────────────────────
+
+model Warehouse {
+  id              String          @id @default(uuid())
+  companyId       String
+  name            String
+  code            String
+  address         String
+  city            String
+  state           String
+  capacityPallets Int?
+  operatingHours  String?
+  active          Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  zones           WarehouseZone[]
+  docks           YardDock[]
+  inventory       InventoryItem[]
+
+  masterRecordId String?
+  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+
+  @@index([companyId])
+  @@index([code])
+}
+
+model WarehouseZone {
+  id          String         @id @default(uuid())
+  warehouseId String
+  name        String
+  code        String
+  type        String // AMBIENT, CHILLED, FROZEN, HAZMAT, STAGING
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  warehouse   Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  bins        WarehouseBin[]
+
+  @@index([warehouseId])
+}
+
+model WarehouseBin {
+  id        String          @id @default(uuid())
+  zoneId    String
+  code      String // e.g., A-01-01
+  aisle     String?
+  row       String?
+  level     String?
+  status    String          @default("AVAILABLE") // AVAILABLE, FULL, BLOCKED
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  zone      WarehouseZone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  inventory InventoryItem[]
+
+  @@index([zoneId, status])
+  @@index([code])
+}
+
+model InventoryItem {
+  id            String        @id @default(uuid())
+  companyId     String
+  warehouseId   String
+  binId         String?
+  sku           String
+  description   String?
+  lotNumber     String?
+  batchNumber   String?
+  serialNumber  String?
+  quantity      Float         @default(0)
+  unitOfMeasure String        @default("PALLET") // PALLET, CARTON, PIECE
+  status        String        @default("AVAILABLE") // AVAILABLE, RESERVED, DAMAGED, QUARANTINED, IN_TRANSIT
+  expiryDate    DateTime?
+  receivedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  warehouse     Warehouse     @relation(fields: [warehouseId], references: [id])
+  bin           WarehouseBin? @relation(fields: [binId], references: [id])
+
+  @@index([companyId, sku])
+  @@index([warehouseId, status])
+}
+
+model InboundReceipt {
+  id           String               @id @default(uuid())
+  companyId    String
+  warehouseId  String
+  loadId       String?              @unique
+  asnNumber    String               @unique
+  status       String               @default("EXPECTED") // EXPECTED, ARRIVED, RECEIVING, RECEIVED, PUT_AWAY
+  expectedDate DateTime?
+  actualDate   DateTime?
+  notes        String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  company      Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  items        InboundReceiptItem[]
+  load         Load?                @relation(fields: [loadId], references: [id])
+
+  @@index([companyId, status])
+  @@index([warehouseId])
+}
+
+model InboundReceiptItem {
+  id          String         @id @default(uuid())
+  receiptId   String
+  sku         String
+  expectedQty Float
+  receivedQty Float          @default(0)
+  damagedQty  Float          @default(0)
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  receipt     InboundReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([receiptId])
+}
+
+model OutboundWave {
+  id            String          @id @default(uuid())
+  companyId     String
+  warehouseId   String
+  code          String
+  status        String          @default("PLANNED") // PLANNED, RELEASED, PICKING, STAGED, COMPLETED
+  scheduledDate DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  company       Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  orders        OutboundOrder[]
+  Load          Load?           @relation(fields: [loadId], references: [id])
+  loadId        String?
+
+  @@index([companyId, status])
+  @@index([warehouseId])
+}
+
+model OutboundOrder {
+  id             String              @id @default(uuid())
+  waveId         String?
+  loadId         String?             @unique
+  orderNumber    String
+  status         String              @default("PENDING") // PENDING, PICKING, STAGED, LOADED, DISPATCHED
+  stagedAtDockId String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  wave           OutboundWave?       @relation(fields: [waveId], references: [id])
+  stagedAtDock   YardDock?           @relation(fields: [stagedAtDockId], references: [id])
+  load           Load?               @relation(fields: [loadId], references: [id])
+  items          OutboundOrderItem[]
+
+  @@index([waveId])
+}
+
+model OutboundOrderItem {
+  id           String        @id @default(uuid())
+  orderId      String
+  sku          String
+  requestedQty Float
+  pickedQty    Float         @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  order        OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+model YardDock {
+  id             String            @id @default(uuid())
+  warehouseId    String
+  name           String // e.g. Dock 1
+  type           String // INBOUND, OUTBOUND, MIXED
+  status         String            @default("AVAILABLE") // AVAILABLE, OCCUPIED, MAINTENANCE
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  warehouse      Warehouse         @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  appointments   DockAppointment[]
+  outboundOrders OutboundOrder[]
+
+  @@index([warehouseId, status])
+}
+
+model DockAppointment {
+  id             String    @id @default(uuid())
+  dockId         String
+  loadId         String?   @unique
+  type           String // INBOUND, OUTBOUND
+  scheduledStart DateTime
+  scheduledEnd   DateTime
+  actualStart    DateTime?
+  actualEnd      DateTime?
+  status         String    @default("SCHEDULED") // SCHEDULED, ARRIVED, AT_DOCK, COMPLETED, CANCELLED
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  dock           YardDock  @relation(fields: [dockId], references: [id], onDelete: Cascade)
+  load           Load?     @relation(fields: [loadId], references: [id])
+
+  @@index([dockId, scheduledStart])
+}
+
+model YardGateLog {
+  id          String   @id @default(uuid())
+  companyId   String
+  warehouseId String
+  vehicleId   String?
+  trailerId   String?
+  driverId    String?
+  type        String // ENTRY, EXIT
+  timestamp   DateTime @default(now())
+  purpose     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicle     Vehicle? @relation("GateLogVehicle", fields: [vehicleId], references: [id])
+  trailer     Vehicle? @relation("GateLogTrailer", fields: [trailerId], references: [id])
+  driver      Driver?  @relation(fields: [driverId], references: [id])
+  Tender      Tender?  @relation(fields: [tenderId], references: [id])
+  tenderId    String?
+
+  @@index([companyId, warehouseId])
+}
+
+model MaterialEquipment {
+  id              String    @id @default(uuid())
+  companyId       String
+  warehouseId     String
+  code            String
+  type            String // FORKLIFT, PALLET_JACK
+  status          String    @default("AVAILABLE") // AVAILABLE, IN_USE, MAINTENANCE
+  lastMaintenance DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, warehouseId, status])
+}
+
+// ─────────────────────────────────────────────────────────────
+// WORKFLOW AUTOMATION PLATFORM
+// ─────────────────────────────────────────────────────────────
+
+model WorkflowDefinition {
+  id           String              @id @default(uuid())
+  companyId    String
+  name         String
+  description  String?
+  version      Int                 @default(1)
+  status       String              @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED, DISABLED
+  triggerEvent String // e.g., 'TripStarted'
+  graphPayload Json // The visual directed graph representation
+  createdBy    String?
+  updatedBy    String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  company      Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  executions   WorkflowExecution[]
+
+  @@index([companyId, status])
+  @@index([triggerEvent])
+}
+
+model WorkflowExecution {
+  id             String                  @id @default(uuid())
+  companyId      String
+  workflowId     String
+  status         String                  @default("RUNNING") // RUNNING, COMPLETED, FAILED, WAITING_APPROVAL
+  triggerPayload Json // The event that triggered this execution
+  context        Json                    @default("{}") // State passing between nodes
+  retryCount     Int                     @default(0)
+  startedAt      DateTime                @default(now())
+  completedAt    DateTime?
+  error          String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  company        Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  workflow       WorkflowDefinition      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  steps          WorkflowExecutionStep[]
+  approvals      ApprovalRequest[]
+
+  @@index([companyId, status])
+  @@index([workflowId])
+}
+
+model WorkflowExecutionStep {
+  id          String            @id @default(uuid())
+  executionId String
+  nodeId      String // ID from the graphPayload
+  nodeType    String // TRIGGER, CONDITION, ACTION, DELAY, DECISION, APPROVAL
+  status      String            @default("SUCCESS") // SUCCESS, FAILED, PENDING
+  inputs      Json              @default("{}")
+  outputs     Json              @default("{}")
+  error       String?
+  executedAt  DateTime          @default(now())
+  execution   WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([executionId])
+}
+
+model ApprovalRequest {
+  id          String            @id @default(uuid())
+  companyId   String
+  executionId String
+  status      String            @default("PENDING") // PENDING, APPROVED, REJECTED, ESCALATED, TIMEOUT
+  entityType  String // e.g., 'Quotation', 'Tender'
+  entityId    String
+  requestedBy String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  execution   WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  steps       ApprovalStep[]
+
+  @@index([companyId, status])
+  @@index([executionId])
+}
+
+model ApprovalStep {
+  id             String          @id @default(uuid())
+  requestId      String
+  approverUserId String? // Null if assigned to a role
+  approverRoleId String?
+  status         String          @default("PENDING") // PENDING, APPROVED, REJECTED
+  comments       String?
+  decidedAt      DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  request        ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTERPRISE INTEGRATION PLATFORM (iPaaS)
+// ─────────────────────────────────────────────────────────────
+
+model IntegrationConnector {
+  id              String                  @id @default(uuid())
+  provider        String                  @unique // e.g., 'GOOGLE_MAPS', 'QUICKBOOKS'
+  version         String                  @default("1.0.0")
+  status          String                  @default("ACTIVE")
+  categoryId      String?
+  category        IntegrationCategory?    @relation(fields: [categoryId], references: [id])
+  capabilities    Json                    @default("[]")
+  supportedEvents Json                    @default("[]")
+  authType        String // OAUTH2, API_KEY, BASIC
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  connections     IntegrationConnection[]
+}
+
+model IntegrationConnection {
+  id                String               @id @default(uuid())
+  companyId         String
+  connectorId       String
+  status            String               @default("CONFIGURED") // INSTALLED, CONFIGURED, ENABLED, DISABLED, FAILED
+  credentials       Json // Encrypted at rest
+  settings          Json                 @default("{}")
+  lastSync          DateTime?
+  lastError         String?
+  retryCount        Int                  @default(0)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  company           Company              @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  connector         IntegrationConnector @relation(fields: [connectorId], references: [id], onDelete: Cascade)
+  syncJobs          SyncJob[]
+  scheduledSyncs    ScheduledSync[]
+  syncErrors        SyncError[]
+  GpsVehicleMapping GpsVehicleMapping[]
+
+  @@index([companyId, status])
+  @@index([connectorId])
+}
+
+model WebhookDelivery {
+  id           String   @id @default(uuid())
+  companyId    String
+  direction    String // INCOMING, OUTGOING
+  endpointUrl  String
+  eventTopic   String
+  payload      Json
+  status       String   @default("PENDING") // PENDING, SUCCESS, FAILED, RETRYING, DEAD_LETTER
+  httpStatus   Int?
+  responseBody String?
+  retryCount   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+  @@index([direction])
+}
+
+model DataMappingTemplate {
+  id           String   @id @default(uuid())
+  companyId    String
+  name         String
+  sourceEntity String // e.g., 'QuickBooks.Invoice'
+  targetEntity String // e.g., 'PariLink.Invoice'
+  mappingRules Json // Field mappings, default values, transformations
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model SyncJob {
+  id               String                @id @default(uuid())
+  companyId        String
+  connectionId     String
+  entityType       String // e.g., 'Invoice', 'Customer'
+  direction        String // INBOUND, OUTBOUND, BIDIRECTIONAL
+  status           String                @default("RUNNING") // RUNNING, COMPLETED, FAILED, PARTIAL
+  recordsProcessed Int                   @default(0)
+  recordsFailed    Int                   @default(0)
+  error            String?
+  startedAt        DateTime              @default(now())
+  completedAt      DateTime?
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  company          Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  connection       IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, connectionId])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTERPRISE AI DECISION INTELLIGENCE PLATFORM
+// ─────────────────────────────────────────────────────────────
+
+model AiRecommendation {
+  id             String    @id @default(uuid())
+  companyId      String
+  domainEntity   String // e.g., 'Dispatch', 'Commercial'
+  entityId       String?
+  recommendation String    @db.Text
+  reasoning      String    @db.Text
+  confidence     Float // 0.0 to 1.0
+  evidence       Json      @default("[]")
+  alternatives   Json      @default("[]")
+  status         String    @default("PENDING") // PENDING, ACCEPTED, REJECTED, EXPIRED
+  actionTakenAt  DateTime?
+  actionTakenBy  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+  @@index([domainEntity, entityId])
+}
+
+model AiPrediction {
+  id             String    @id @default(uuid())
+  companyId      String
+  targetEntity   String // e.g., 'TripETA', 'InventoryShortage'
+  entityId       String?
+  predictedValue Json
+  confidence     Float
+  factors        Json      @default("[]")
+  actualValue    Json? // Filled in later by Observability
+  accuracy       Float? // Calculated retroactively
+  expiresAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  company        Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, targetEntity])
+}
+
+model AiAnomaly {
+  id          String    @id @default(uuid())
+  companyId   String
+  category    String // e.g., 'RouteDeviation', 'BillingMismatch'
+  severity    String    @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  description String    @db.Text
+  evidence    Json
+  status      String    @default("UNRESOLVED") // UNRESOLVED, INVESTIGATING, FALSE_POSITIVE, RESOLVED
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+}
+
+model AiAgent {
+  id              String             @id @default(uuid())
+  companyId       String
+  name            String // e.g., 'DispatchAgent'
+  role            String             @db.Text
+  systemPrompt    String             @db.Text
+  tools           Json               @default("[]")
+  isActive        Boolean            @default(true)
+  version         String             @default("1.0.0")
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  company         Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  interactionLogs AiInteractionLog[]
+
+  @@index([companyId])
+}
+
+model AiInteractionLog {
+  id        String   @id @default(uuid())
+  companyId String
+  agentId   String
+  sessionId String
+  userId    String?
+  prompt    String   @db.Text
+  response  String   @db.Text
+  toolsUsed Json     @default("[]")
+  createdAt DateTime @default(now())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  agent     AiAgent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, sessionId])
+}
+
+model AiMetricsLog {
+  id               String   @id @default(uuid())
+  companyId        String
+  interactionId    String? // Links to AiRecommendation, Prediction, or InteractionLog
+  modelProvider    String // e.g., 'MockAI', 'OpenAI', 'Gemini'
+  modelVersion     String
+  latencyMs        Int
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  totalCost        Float    @default(0.0)
+  createdAt        DateTime @default(now())
+  company          Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTERPRISE PLATFORM FOUNDATION (NFRs)
+// ─────────────────────────────────────────────────────────────
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  companyId   String
+  key         String
+  name        String
+  description String?
+  isEnabled   Boolean  @default(false)
+  rules       Json     @default("[]") // e.g. [{ userType: 'ADMIN' }]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, key])
+}
+
+model TenantConfig {
+  id             String   @id @default(uuid())
+  companyId      String   @unique
+  tier           String   @default("STANDARD") // STANDARD, ENTERPRISE
+  apiRateLimit   Int      @default(1000) // reqs per minute
+  maxUsers       Int      @default(10)
+  storageQuotaMb Int      @default(5000)
+  brandingConfig Json     @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model PlatformMetric {
+  id          String   @id @default(uuid())
+  companyId   String
+  category    String // API_LATENCY, WORKFLOW_DURATION, QUEUE_DEPTH
+  metricName  String
+  metricValue Float
+  dimensions  Json     @default("{}")
+  recordedAt  DateTime @default(now())
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, category])
+  @@index([recordedAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTERPRISE APP MARKETPLACE (V4.2)
+// ─────────────────────────────────────────────────────────────
+
+model MarketplaceApp {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  provider        String   @unique
+  categoryId      String?
+  developerId     String?
+  description     String?
+  status          String   @default("ACTIVE") // ACTIVE, DEPRECATED, IN_REVIEW
+  websiteUrl      String?
+  logoUrl         String?
+  price           Float    @default(0.0)
+  licenseType     String   @default("FREE") // FREE, FREEMIUM, PAID, ENTERPRISE
+  supportedEvents Json     @default("[]") 
+  authType        String   // OAUTH2, API_KEY
+  isFirstParty    Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  category        MarketplaceCategory?  @relation(fields: [categoryId], references: [id])
+  developer       MarketplaceDeveloper? @relation(fields: [developerId], references: [id])
+  installations   AppInstallation[]
+  versions        MarketplaceVersion[]
+  screenshots     AppScreenshot[]
+  reviews         MarketplaceReview[]
+  tags            AppTag[]
+  permissions     AppPermission[]
+  webhooks        MarketplaceWebhook[]
+}
+
+model MarketplaceDeveloper {
+  id              String   @id @default(uuid())
+  name            String
+  email           String?
+  website         String?
+  supportEmail    String?
+  isVerified      Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  apps            MarketplaceApp[]
+}
+
+model MarketplaceCategory {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  description     String?
+  icon            String?
+  apps            MarketplaceApp[]
+}
+
+model MarketplaceVersion {
+  id              String   @id @default(uuid())
+  appId           String
+  version         String
+  releaseNotes    String?
+  isLatest        Boolean  @default(false)
+  compatibility   Json     @default("{}")
+  createdAt       DateTime @default(now())
+  app             MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model MarketplaceReview {
+  id              String   @id @default(uuid())
+  appId           String
+  userId          String?
+  rating          Int
+  comment         String?
+  createdAt       DateTime @default(now())
+  app             MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model AppScreenshot {
+  id              String   @id @default(uuid())
+  appId           String
+  url             String
+  alt             String?
+  order           Int      @default(0)
+  app             MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model AppTag {
+  id              String   @id @default(uuid())
+  appId           String
+  name            String
+  app             MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model AppPermission {
+  id              String   @id @default(uuid())
+  appId           String
+  scope           String   // e.g., READ:LOADS, WRITE:TRIPS
+  description     String?
+  isRequired      Boolean  @default(true)
+  app             MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+}
+
+model AppInstallation {
+  id             String   @id @default(uuid())
+  companyId      String
+  appId          String
+  version        String?
+  status         String   @default("ACTIVE") // PENDING, ACTIVE, SUSPENDED, UNINSTALLED
+  healthStatus   String   @default("HEALTHY") // HEALTHY, WARNING, ERROR, OFFLINE
+  credentials    Json     // Should be encrypted references in a real system (KMS)
+  settings       Json     @default("{}")
+  installedBy    String?  // UserId
+  installedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastSyncAt     DateTime?
+
+  company        Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  app            MarketplaceApp      @relation(fields: [appId], references: [id], onDelete: Cascade)
+  gpsMappings    GpsVehicleMapping[]
+  configurations AppConfiguration[]
+  webhooks       AppWebhook[]
+  oauthConns     AppOAuthConnection[]
+  healths        AppHealth[]
+  usageStats     AppUsageStatistic[]
+
+  @@unique([companyId, appId])
+}
+
+model AppConfiguration {
+  id                String   @id @default(uuid())
+  appInstallationId String
+  key               String
+  value             String
+  isSecret          Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+  installation      AppInstallation @relation(fields: [appInstallationId], references: [id], onDelete: Cascade)
+  
+  @@unique([appInstallationId, key])
+}
+
+model AppWebhook {
+  id                String   @id @default(uuid())
+  appInstallationId String
+  url               String
+  events            Json     @default("[]")
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  installation      AppInstallation @relation(fields: [appInstallationId], references: [id], onDelete: Cascade)
+}
+
+model AppOAuthConnection {
+  id                String   @id @default(uuid())
+  appInstallationId String
+  provider          String
+  accessToken       String
+  refreshToken      String?
+  expiresAt         DateTime?
+  scopes            Json     @default("[]")
+  installation      AppInstallation @relation(fields: [appInstallationId], references: [id], onDelete: Cascade)
+}
+
+model AppHealth {
+  id                String   @id @default(uuid())
+  appInstallationId String
+  timestamp         DateTime @default(now())
+  status            String
+  apiErrorCount     Int      @default(0)
+  memoryUsageMb     Float?
+  cpuUsagePct       Float?
+  details           Json     @default("{}")
+  installation      AppInstallation @relation(fields: [appInstallationId], references: [id], onDelete: Cascade)
+}
+
+model AppUsageStatistic {
+  id                String   @id @default(uuid())
+  appInstallationId String
+  date              DateTime @default(now())
+  apiCallsCount     Int      @default(0)
+  storageBytes      BigInt   @default(0)
+  activeUsers       Int      @default(0)
+  installation      AppInstallation @relation(fields: [appInstallationId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENTERPRISE GPS INTEGRATION CLOUD
+// ─────────────────────────────────────────────────────────────
+
+model VehicleLocation {
+  id                String   @id @default(uuid())
+  companyId         String
+  provider          String
+  providerVehicleId String
+  vehicleId         String?
+  latitude          Float
+  longitude         Float
+  speed             Float?
+  heading           Float?
+  altitude          Float?
+  accuracy          Float?
+  ignition          Boolean?
+  fuel              Float?
+  odometer          Float?
+  engineHours       Float?
+  signalStrength    Float?
+  gpsTimestamp      DateTime
+  receivedAt        DateTime @default(now())
+
+  company Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, vehicleId, gpsTimestamp])
+  @@index([provider, providerVehicleId])
+}
+
+model GpsVehicleMapping {
+  id                String    @id @default(uuid())
+  companyId         String
+  connectionId      String
+  providerVehicleId String
+  vehicleId         String?   @unique
+  status            String    @default("DISCOVERED") // DISCOVERED, MAPPED, IGNORED
+  metadata          Json?
+  lastSyncAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  company           Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  connection        IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  vehicle           Vehicle?              @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  AppInstallation   AppInstallation?      @relation(fields: [appInstallationId], references: [id])
+  appInstallationId String?
+
+  @@unique([connectionId, providerVehicleId])
+}
+
+// ============================================================================
+// ENTERPRISE MASTER DATA MANAGEMENT (MDM)
+// ============================================================================
+
+model MasterRecord {
+  id              String  @id @default(uuid())
+  companyId       String
+  entityType      String // "CUSTOMER", "VENDOR", "DRIVER", "VEHICLE", "WAREHOUSE", etc.
+  globalId        String  @unique
+  isGolden        Boolean @default(true)
+  confidenceScore Float   @default(1.0)
+  status          String  @default("ACTIVE") // ACTIVE, MERGED, ARCHIVED
+  mergedIntoId    String?
+  masterData      Json // The unified golden data payload
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  mergedInto MasterRecord?  @relation("MasterRecordMerge", fields: [mergedIntoId], references: [id])
+  mergedFrom MasterRecord[] @relation("MasterRecordMerge")
+
+  externalRefs  ExternalReference[]
+  dataQuality   DataQualityScore?
+  changeHistory MasterDataChangeLog[]
+
+  // Backlinks to concrete modules (optional)
+  customers  Customer[]
+  vendors    Vendor[]
+  drivers    Driver[]
+  vehicles   Vehicle[]
+  warehouses Warehouse[]
+
+  @@index([companyId, entityType])
+}
+
+model ExternalReference {
+  id             String   @id @default(uuid())
+  masterRecordId String
+  sourceSystem   String // "SAP", "LOCONAV", "SAMSARA", "LEGACY_ERP"
+  externalId     String
+  priority       Int      @default(0) // Higher priority systems override lower ones
+  lastSyncedAt   DateTime @default(now())
+  rawData        Json?
+
+  masterRecord MasterRecord @relation(fields: [masterRecordId], references: [id], onDelete: Cascade)
+
+  @@unique([masterRecordId, sourceSystem])
+  @@index([sourceSystem, externalId])
+}
+
+model DataQualityScore {
+  id              String   @id @default(uuid())
+  masterRecordId  String   @unique
+  overallScore    Float // 0.0 to 100.0
+  completeness    Float
+  accuracy        Float
+  uniqueness      Float
+  consistency     Float
+  lastEvaluatedAt DateTime @default(now())
+
+  masterRecord MasterRecord @relation(fields: [masterRecordId], references: [id], onDelete: Cascade)
+}
+
+model MasterDataChangeLog {
+  id             String   @id @default(uuid())
+  masterRecordId String
+  userId         String?
+  sourceSystem   String?
+  action         String // "CREATE", "UPDATE", "MERGE", "SPLIT"
+  changes        Json
+  createdAt      DateTime @default(now())
+
+  masterRecord MasterRecord @relation(fields: [masterRecordId], references: [id], onDelete: Cascade)
+}
+
+model ReferenceData {
+  id          String  @id @default(uuid())
+  domain      String // "COUNTRY", "STATE", "VEHICLE_TYPE", "UOM", "CURRENCY"
+  code        String
+  name        String
+  description String?
+  attributes  Json?
+  isActive    Boolean @default(true)
+  version     Int     @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([domain, code])
+}
+
+// ─────────────────────────────────────────────────────────────
+// V26.0 DIGITAL WORKSPACE PLATFORM
+// ─────────────────────────────────────────────────────────────
+
+model DocumentFolder {
+  id         String           @id @default(uuid())
+  companyId  String
+  name       String
+  parentId   String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  company    Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent     DocumentFolder?  @relation("FolderToFolder", fields: [parentId], references: [id])
+  subFolders DocumentFolder[] @relation("FolderToFolder")
+  documents  Document[]
+
+  @@index([companyId, parentId])
+}
+
+model UserWorkspaceState {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  pinnedRecords  Json     @default("[]")
+  recentRecords  Json     @default("[]")
+  favorites      Json     @default("[]")
+  clipboard      Json     @default("[]")
+  layoutSettings Json     @default("{}")
+  theme          String   @default("system")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  companyId   String
+  entityId    String
+  entityType  String
+  authorId    String
+  content     String    @db.Text
+  mentions    Json      @default("[]")
+  attachments Json      @default("[]")
+  parentId    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  author      User      @relation(fields: [authorId], references: [id])
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+
+  @@index([companyId, entityType, entityId])
+}
+
+model FileExport {
+  id          String    @id @default(uuid())
+  companyId   String
+  userId      String
+  type        String // CSV, EXCEL, PDF
+  entityType  String
+  status      String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  fileUrl     String?
+  fileName    String?
+  sizeBytes   Int?
+  error       String?
+  filters     Json?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([companyId, status])
+  @@index([userId])
+}
+
+model WebResource {
+  id          String   @id @default(uuid())
+  companyId   String
+  title       String
+  url         String
+  description String?
+  iconUrl     String?
+  entityId    String?
+  entityType  String?
+  category    String   @default("GENERAL") // TRACKING, PORTAL, REFERENCE
+  permissions Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, category])
+  @@index([entityType, entityId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// V27.0 LogOS — WORKSPACE COLLABORATION (CHAT)
+// ─────────────────────────────────────────────────────────────
+
+model ChatChannel {
+  id          String              @id @default(uuid())
+  companyId   String
+  name        String
+  description String?
+  type        String              @default("CHANNEL") // CHANNEL | DIRECT | ANNOUNCEMENT
+  isPrivate   Boolean             @default(false)
+  createdById String
+  archivedAt  DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  company     Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  members     ChatChannelMember[]
+  messages    ChatMessage[]
+
+  @@index([companyId, type])
+  @@index([companyId, createdAt])
+}
+
+model ChatChannelMember {
+  id          String      @id @default(uuid())
+  channelId   String
+  userId      String
+  role        String      @default("MEMBER") // MEMBER | ADMIN
+  lastReadAt  DateTime?
+  joinedAt    DateTime    @default(now())
+
+  channel     ChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
+  @@index([userId])
+}
+
+model ChatMessage {
+  id          String            @id @default(uuid())
+  channelId   String
+  senderId    String
+  content     String
+  attachments Json              @default("[]")
+  mentions    Json              @default("[]") // Array of userId strings
+  editedAt    DateTime?
+  deletedAt   DateTime?
+  createdAt   DateTime          @default(now())
+
+  channel     ChatChannel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  sender      User              @relation("ChatMessageSender", fields: [senderId], references: [id])
+  reactions   MessageReaction[]
+
+  @@index([channelId, createdAt])
+  @@index([senderId])
+}
+
+model MessageReaction {
+  id        String      @id @default(uuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime    @default(now())
+
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation("MessageReactionUser", fields: [userId], references: [id])
+
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// V27.0 LogOS — AI COPILOT SESSION HISTORY
+// ─────────────────────────────────────────────────────────────
+
+model AiChatSession {
+  id        String          @id @default(uuid())
+  companyId String
+  userId    String
+  title     String          @default("New Conversation")
+  context   Json?           // Injected entity context
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  company   Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User            @relation("AiChatSessionUser", fields: [userId], references: [id])
+  messages  AiChatMessage[]
+
+  @@index([companyId, userId])
+  @@index([userId, createdAt])
+}
+
+model AiChatMessage {
+  id        String        @id @default(uuid())
+  sessionId String
+  role      String        // USER | ASSISTANT | SYSTEM
+  content   String
+  citations Json          @default("[]") // References to source documents/records
+  metadata  Json?         // token usage, model, latency
+  createdAt DateTime      @default(now())
+
+  session   AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// V27.0 LogOS — STARRED ITEMS & BOOKMARKS
+// ─────────────────────────────────────────────────────────────
+
+model StarredItem {
+  id         String   @id @default(uuid())
+  companyId  String
+  userId     String
+  entityType String   // Load | Trip | Customer | Invoice | Driver | Vehicle
+  entityId   String
+  entityName String   // Cached display name
+  entityUrl  String   // Cache the nav URL
+  createdAt  DateTime @default(now())
+
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user       User     @relation("StarredItemUser", fields: [userId], references: [id])
+
+  @@unique([userId, entityType, entityId])
+  @@index([userId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// V27.0 LogOS — USER NOTIFICATION CENTER
+// ─────────────────────────────────────────────────────────────
+
+model UserNotification {
+  id         String   @id @default(uuid())
+  companyId  String
+  userId     String
+  type       String   // SYSTEM | OPERATIONS | FINANCE | FLEET | AI | CHAT
+  title      String
+  body       String
+  entityType String?
+  entityId   String?
+  actionUrl  String?
+  isRead     Boolean  @default(false)
+  readAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user       User     @relation("UserNotificationUser", fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([companyId, type])
+}
+
+model BackgroundJob {
+  id          String    @id @default(uuid())
+  companyId   String
+  userId      String?
+  type        String    // e.g., 'EXPORT', 'SYNC', 'IMPORT', 'REPORT'
+  status      String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED
+  progress    Int       @default(0)
+  result      Json?
+  error       String?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        User?     @relation("BackgroundJobUser", fields: [userId], references: [id])
+
+  @@index([companyId, status])
+  @@index([userId, status])
+}
+
+model WorkspaceSnapshot {
+  id          String   @id @default(uuid())
+  companyId   String
+  userId      String
+  name        String
+  description String?
+  state       Json     // Contains tabs, panels, layout splits
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user        User     @relation("WorkspaceSnapshotUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isDefault])
+}
+
+model OperationalAnomaly {
+  id          String   @id @default(uuid())
+  companyId   String
+  title       String
+  description String
+  severity    String   @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  type        String   // FUEL_SPIKE, ROUTE_DEVIATION, IDLING, DELAY_RISK
+  status      String   @default("OPEN") // OPEN, ACKNOWLEDGED, RESOLVED
+  entityType  String?  // Trip, Vehicle, Driver
+  entityId    String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  resolvedAt  DateTime?
+
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, status])
+  @@index([companyId, severity])
+}
+
+model EventTimeline {
+  id          String   @id @default(uuid())
+  companyId   String
+  eventName   String
+  entityType  String
+  entityId    String
+  payload     Json?
+  userId      String?
+  source      String?
+  timestamp   DateTime @default(now())
+
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, entityType, entityId])
+  @@index([companyId, timestamp])
+}
+
+// ─────────────────────────────────────────────────────────────
+// MARKETPLACE WEBHOOKS & TELEMETRY (V31.0)
+// ─────────────────────────────────────────────────────────────
+
+model MarketplaceWebhook {
+  id          String   @id @default(uuid())
+  appId       String
+  url         String
+  events      Json     // Array of event types like ['trip.created', 'load.assigned']
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  app         MarketplaceApp @relation(fields: [appId], references: [id], onDelete: Cascade)
+  deliveries  MarketplaceWebhookDelivery[]
+}
+
+model MarketplaceWebhookDelivery {
+  id          String   @id @default(uuid())
+  webhookId   String
+  eventId     String
+  status      Int
+  success     Boolean
+  duration    Int
+  error       String?
+  payload     Json?
+  createdAt   DateTime @default(now())
+
+  webhook     MarketplaceWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+}
+
+model MarketplaceUsageStats {
+  id             String   @id @default(uuid())
+  appId          String
+  companyId      String
+  periodStart    DateTime
+  apiCallsCount  Int      @default(0)
+  bandwidthBytes Int      @default(0)
+
+  @@unique([appId, companyId, periodStart])
+}
+
+
+// --- V33.0 ENTERPRISE BI & ANALYTICS ---
+
+model AnalyticsDashboard {
+  id          String   @id @default(uuid())
+  companyId   String
+  name        String
+  description String?
+  roleAccess  String[] // E.g., ["CEO", "CFO", "FLEET_MANAGER"]
+  isDefault   Boolean  @default(false)
+  layoutType  String   @default("GRID")
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  widgets     DashboardWidget[]
+}
+
+model DashboardWidget {
+  id          String   @id @default(uuid())
+  dashboardId String
+  dashboard   AnalyticsDashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  companyId   String
+  title       String
+  type        String   // LINE_CHART, BAR_CHART, KPI_CARD, HEATMAP, GAUGE
+  dataSource  String   // REVENUE, TRIPS, FLEET_UTILIZATION
+  config      Json     // JSON configuration for X/Y axis, colors, filters
+  position    Json     // { x, y, w, h } for grid layout
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AnalyticsSnapshot {
+  id          String   @id @default(uuid())
+  companyId   String
+  metricKey   String   // E.g., "TOTAL_REVENUE", "FLEET_IDLE_TIME"
+  metricValue Float
+  dimensions  Json?    // Optional JSON for drilling down (e.g. { region: "North" })
+  periodStart DateTime // Start of the aggregation period (e.g., start of day)
+  periodEnd   DateTime // End of the aggregation period
+  resolution  String   // HOURLY, DAILY, WEEKLY, MONTHLY
+  createdAt   DateTime @default(now())
+
+  @@index([companyId, metricKey, periodStart, periodEnd])
+}
+
+// ==========================================
+// V34.0 ENTERPRISE AI PLATFORM & KNOWLEDGE HUB
+// ==========================================
+
+model KnowledgeDocument {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  sourceType  String   @default("MANUAL") // MANUAL, UPLOAD, INTEGRATION, WIKI
+  metadata    Json     @default("{}") // Author, Department, tags, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chunks      KnowledgeChunk[]
+}
+
+model KnowledgeChunk {
+  id          String   @id @default(uuid())
+  documentId  String
+  document    KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  content     String
+  embedding   Float[]  // Simplified vector representation for compatibility
+  metadata    Json     @default("{}")
+  createdAt   DateTime @default(now())
+}
+
+model AiPromptTemplate {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  template    String   // The prompt with {{variables}}
+  version     Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AiModelConfig {
+  id          String   @id @default(uuid())
+  provider    String   // OPENAI, ANTHROPIC, GEMINI, MOCK
+  modelName   String   // gpt-4o, claude-3.5-sonnet
+  priority    Int      @default(0) // Higher is preferred
+  isActive    Boolean  @default(true)
+  config      Json     @default("{}") // api keys, maxTokens, temperature
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==========================================
+// V31.0 ENTERPRISE INTEGRATIONS HUB EXTENSIONS
+// ==========================================
+
+model IntegrationCategory {
+  id          String                 @id @default(uuid())
+  name        String                 @unique // e.g. ACCOUNTING, CRM, COMMUNICATION
+  description String?
+  connectors  IntegrationConnector[]
+}
+
+model ApiCredential {
+  id          String   @id @default(uuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  apiKeyHash  String   // Hashed API key
+  scopes      String[] // e.g., ["read:loads", "write:trips"]
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model ApiRequestLog {
+  id            String   @id @default(uuid())
+  companyId     String
+  endpoint      String
+  method        String
+  statusCode    Int
+  latencyMs     Int
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+}
+
+model ScheduledSync {
+  id            String                 @id @default(uuid())
+  connectionId  String
+  connection    IntegrationConnection  @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  cronExpression String
+  isActive      Boolean                @default(true)
+  lastRunAt     DateTime?
+  nextRunAt     DateTime?
+  createdAt     DateTime               @default(now())
+}
+
+model SyncError {
+  id            String                 @id @default(uuid())
+  connectionId  String
+  connection    IntegrationConnection  @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  errorMessage  String
+  errorStack    String?
+  resolved      Boolean                @default(false)
+  createdAt     DateTime               @default(now())
+}

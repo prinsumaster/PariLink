@@ -1,0 +1,60 @@
+# This is a meta-manifest for applying Prometheus, Grafana, Loki, and Tempo via Helm
+# To deploy this in staging, use Helm instead of pure kubectl:
+#
+# helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+# helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace parilink-observability --create-namespace
+#
+# helm repo add grafana https://grafana.github.io/helm-charts
+# helm install loki grafana/loki-stack --namespace parilink-observability
+# helm install tempo grafana/tempo --namespace parilink-observability
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: parilink-observability
+data:
+  parilink-dashboard.json: |
+    {
+      "title": "PariLink Service Metrics",
+      "panels": [
+        {
+          "title": "API Request Rate",
+          "type": "graph",
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{app=\"parilink-api\"}[5m]))" }
+          ]
+        },
+        {
+          "title": "HTTP 5xx Error Rate",
+          "type": "graph",
+          "targets": [
+            { "expr": "sum(rate(http_requests_total{app=\"parilink-api\", status=~\"5..\"}[5m]))" }
+          ]
+        }
+      ]
+    }
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: parilink-alerts
+  namespace: parilink-observability
+spec:
+  groups:
+    - name: PariLinkAlerts
+      rules:
+        - alert: APIHighErrorRate
+          expr: sum(rate(http_requests_total{app="parilink-api", status=~"5.."}[5m])) > 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High API Error Rate Detected"
+        - alert: HighLatency
+          expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{app="parilink-api"}[5m])) by (le)) > 2.0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "API Latency p95 > 2 seconds"

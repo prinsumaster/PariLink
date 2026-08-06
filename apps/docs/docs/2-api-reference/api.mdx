@@ -1,0 +1,25 @@
+---
+title: API Reference
+sidebar_position: 1
+---
+
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+# PariLink API Reference
+
+This is the interactive OpenAPI reference for the PariLink Backend Services.
+
+<BrowserOnly>
+  {() => {
+    const { RedocStandalone } = require('redoc');
+    return (
+      <RedocStandalone
+        specUrl="/openapi.json"
+        options={{
+          nativeScrollbars: true,
+          theme: { colors: { primary: { main: '#3b82f6' } } },
+        }}
+      />
+    );
+  }}
+</BrowserOnly>

@@ -1,0 +1,29 @@
+installCRDs: true
+
+replicaCount: 3
+
+nodeSelector:
+  role: system
+
+podAntiAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+  - labelSelector:
+      matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values:
+        - cert-manager
+    topologyKey: "topology.kubernetes.io/zone"
+
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi

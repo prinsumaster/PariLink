@@ -1,0 +1,136 @@
+# =============================================================================
+# PariLink Kubernetes — Production Ingress with TLS, Rate Limiting, Security Headers
+# =============================================================================
+
+# ─── TLS Certificate (cert-manager) ─────────────────────────────────────────
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: parilink-tls
+  namespace: parilink-prod
+spec:
+  secretName: parilink-tls-secret
+  issuerRef:
+    name: letsencrypt-production
+    kind: ClusterIssuer
+  dnsNames:
+    - api.parilink.app
+    - app.parilink.app
+    - mobile.parilink.app
+  renewBefore: 360h  # 15 days before expiry
+
+---
+# ─── ClusterIssuer (Let's Encrypt) ───────────────────────────────────────────
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: devops@parilink.app
+    privateKeySecretRef:
+      name: letsencrypt-production-key
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+
+---
+# ─── API Ingress ──────────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: parilink-api-ingress
+  namespace: parilink-prod
+  annotations:
+    # Ingress class
+    kubernetes.io/ingress.class: "nginx"
+
+    # TLS redirect
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps:        "100"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+
+    # Timeouts
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
+    nginx.ingress.kubernetes.io/proxy-read-timeout:    "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout:    "60"
+    nginx.ingress.kubernetes.io/proxy-body-size:       "50m"
+
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload";
+      more_set_headers "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;";
+      more_set_headers "Permissions-Policy: camera=(), microphone=(), geolocation=(self)";
+      more_set_headers "X-Request-ID: $request_id";
+
+    # CORS — Handled by NestJS application layer (main.ts) to support dynamic origins
+
+    # cert-manager
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+
+    # WAF integration annotation
+    alb.ingress.kubernetes.io/wafv2-acl-arn: "arn:aws:wafv2:ap-south-1:123456789012:regional/webacl/parilink-production-waf/abcdef01-2345-6789-abcd-ef0123456789"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - api.parilink.app
+      secretName: parilink-tls-secret
+  rules:
+    - host: api.parilink.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: parilink-api
+                port:
+                  number: 8080
+
+---
+# ─── Web App Ingress ──────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: parilink-web-ingress
+  namespace: parilink-prod
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "200"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: SAMEORIGIN";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload";
+      more_set_headers "X-Request-ID: $request_id";
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - app.parilink.app
+      secretName: parilink-web-tls-secret
+  rules:
+    - host: app.parilink.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: parilink-web
+                port:
+                  number: 3000

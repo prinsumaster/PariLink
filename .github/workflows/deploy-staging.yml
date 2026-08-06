@@ -1,0 +1,53 @@
+name: Deploy to Staging
+
+on:
+  workflow_run:
+    workflows: ["Docker Build & Push"]
+    types:
+      - completed
+    branches:
+      - main
+
+concurrency:
+  group: staging-deployment
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Staging EKS
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment:
+      name: staging
+      url: https://staging.parilink.app
+      
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
+          aws-region: ap-south-1
+
+      - uses: ./.github/actions/helm
+        with:
+          cluster_name: "parilink-staging"
+          aws_region: "ap-south-1"
+
+      - name: Run Deployment Script
+        run: ./scripts/deploy.sh staging ${{ github.sha }}
+
+      - name: Health Check
+        run: ./scripts/health-check.sh https://staging.parilink.app/health
+        
+      - name: Run Smoke Tests
+        run: ./scripts/smoke-tests.sh https://staging.parilink.app
+        
+      - name: Rollback on Failure
+        if: failure()
+        run: ./scripts/rollback.sh staging

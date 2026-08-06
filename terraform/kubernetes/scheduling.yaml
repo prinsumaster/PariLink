@@ -1,0 +1,37 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000000
+globalDefault: false
+description: "This priority class should be used for critical service pods only."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: background-worker
+value: 500000
+globalDefault: false
+description: "This priority class should be used for async background workers."
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: parilink-api-pdb
+  namespace: default
+spec:
+  minAvailable: 50%
+  selector:
+    matchLabels:
+      app: parilink-api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ingress-nginx-pdb
+  namespace: ingress-nginx
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx

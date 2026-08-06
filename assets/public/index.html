@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PariLink — Your Transport Link</title>
+  <meta name="description" content="Complete SaaS Transport Management System for truck transport companies. Manage fleets, drivers, loads, billing, fuel, and more." />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚛</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Firebase SDK (Modular CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+
+  <!-- Charts & Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <!-- App Scripts -->
+  <script src="core.js?v=6"></script>
+  <script src="firebase.js?v=6"></script>
+  <script src="ui.js?v=6"></script>
+  <script src="pages.js?v=6"></script>
+  <script src="pages2.js?v=6"></script>
+  <script src="driver.js?v=6"></script>
+
+  <!-- Offline/Online Status Banner -->
+  <div id="offline-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:10000; background: linear-gradient(135deg, #f59e0b, #ef4444); color:white; text-align:center; padding: 0.6rem; font-size: 0.85rem; font-weight: 600; font-family: Inter, sans-serif;">
+    ⚠️ You are offline. Data will sync automatically when internet returns.
+  </div>
+  <div id="online-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:10000; background: linear-gradient(135deg, #10b981, #059669); color:white; text-align:center; padding: 0.6rem; font-size: 0.85rem; font-weight: 600; font-family: Inter, sans-serif;">
+    ✅ Back online! Syncing your data...
+  </div>
+
+  <script>
+    // --- Service Worker Registration ---
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          navigator.serviceWorker.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'NETWORK_RESTORED') {
+              console.log('Network restored! Triggering data sync...');
+              if (window.saveState) window.saveState();
+            }
+          });
+        }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+
+    // --- Offline/Online Detection ---
+    window.addEventListener('offline', function() {
+      document.getElementById('offline-banner').style.display = 'block';
+      document.getElementById('online-banner').style.display = 'none';
+    });
+
+    window.addEventListener('online', function() {
+      document.getElementById('offline-banner').style.display = 'none';
+      document.getElementById('online-banner').style.display = 'block';
+      setTimeout(function() {
+        document.getElementById('online-banner').style.display = 'none';
+      }, 3000);
+      if (window.saveState) window.saveState();
+    });
+  </script>
+</body>
+</html>

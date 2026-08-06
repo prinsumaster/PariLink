@@ -1,0 +1,16 @@
+clusterName: "" # Injected by Terraform
+vpcId: ""       # Injected by Terraform
+region: ""      # Injected by Terraform
+
+replicaCount: 2
+
+nodeSelector:
+  role: system
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi

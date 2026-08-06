@@ -1,0 +1,18 @@
+provider: aws
+registry: "txt"
+txtOwnerId: "parilink-external-dns"
+
+policy: sync
+domainFilters:
+  - parilink.app
+
+nodeSelector:
+  role: system
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi

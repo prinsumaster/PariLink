@@ -1,0 +1,24 @@
+name: Setup Terraform
+description: "Configures Terraform CLI and AWS Credentials"
+inputs:
+  aws_role_arn:
+    description: "AWS IAM Role ARN to assume via OIDC"
+    required: true
+  aws_region:
+    description: "AWS Region"
+    required: true
+    default: "ap-south-1"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws_role_arn }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.8.0"

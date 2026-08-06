@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: parilink-postgres-backup
+  namespace: parilink-prod
+  labels:
+    app: postgres-backup
+spec:
+  schedule: "0 */6 * * *" # Run every 6 hours
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: pg-dump
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Starting database backup..."
+              TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+              FILENAME="parilink_prod_backup_$TIMESTAMP.sql.gz"
+              
+              apk add --no-cache aws-cli
+              
+              # Dump database and compress
+              PGPASSWORD=$POSTGRES_PASSWORD pg_dump -h $POSTGRES_HOST -U $POSTGRES_USER $POSTGRES_DB | gzip > /tmp/$FILENAME
+              
+              # Upload to AWS S3
+              aws s3 cp /tmp/$FILENAME s3://$BACKUP_BUCKET_NAME/postgres/$FILENAME
+              
+              echo "Backup $FILENAME generated successfully."
+              ls -lh /tmp/$FILENAME
+            env:
+            - name: POSTGRES_HOST
+              value: "parilink-postgres"
+            - name: POSTGRES_DB
+              value: "parilink_prod"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-db-credentials
+                  key: username
+            - name: BACKUP_BUCKET_NAME
+              value: "parilink-production-db-backups"
+            - name: AWS_DEFAULT_REGION
+              value: "ap-south-1"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-db-credentials
+                  key: password
+            - name: BACKUP_BUCKET_NAME
+              value: "parilink-enterprise-backups"
+          restartPolicy: OnFailure
