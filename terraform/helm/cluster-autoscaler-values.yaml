@@ -1,0 +1,23 @@
+autoDiscovery:
+  clusterName: "" # Injected by Terraform
+
+awsRegion: "" # Injected by Terraform
+
+nodeSelector:
+  role: system
+
+replicaCount: 2
+
+extraArgs:
+  scale-down-enabled: true
+  scale-down-unneeded-time: 10m
+  scale-down-delay-after-add: 10m
+  skip-nodes-with-system-pods: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 300Mi
+  limits:
+    cpu: 500m
+    memory: 1000Mi

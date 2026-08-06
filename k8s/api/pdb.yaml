@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: parilink-api-pdb
+  namespace: parilink-prod
+  labels:
+    app: api
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: api

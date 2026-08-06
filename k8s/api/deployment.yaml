@@ -1,0 +1,267 @@
+# =============================================================================
+# PariLink Kubernetes — Production API Deployment (Upgraded)
+# Features: Security context, resource limits, probes, topology spread,
+#           disruption budget, rolling update strategy, init containers
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parilink-api
+  namespace: parilink-prod
+  labels:
+    app: api
+    version: "2.0"
+    component: backend
+    managed-by: helm
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    prometheus.io/scrape: "true"
+    prometheus.io/port:   "9090"
+    prometheus.io/path:   "/metrics"
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+
+  selector:
+    matchLabels:
+      app: api
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge:       1
+      maxUnavailable: 0   # Zero-downtime rolling updates
+
+  template:
+    metadata:
+      labels:
+        app: api
+        version: "2.0"
+        component: backend
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/port:   "9090"
+        prometheus.io/path:   "/metrics"
+
+    spec:
+      # ── Service Account ─────────────────────────────────────────────────────
+      serviceAccountName: parilink-api-sa
+
+      # ── Termination Grace Period ─────────────────────────────────────────────
+      terminationGracePeriodSeconds: 60
+
+      # ── Topology Spread ──────────────────────────────────────────────────────
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: api
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: api
+
+      # ── Pod Anti-affinity ────────────────────────────────────────────────────
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: api
+                topologyKey: kubernetes.io/hostname
+
+      # ── Security Context (Pod level) ──────────────────────────────────────────
+      securityContext:
+        runAsNonRoot: true
+        runAsUser:    1001
+        runAsGroup:   1001
+        fsGroup:      1001
+        seccompProfile:
+          type: RuntimeDefault
+
+      # ── Init Container — Wait for DB ─────────────────────────────────────────
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36-musl
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z ${POSTGRES_HOST} 5432; do
+                echo "Waiting for PostgreSQL..."; sleep 3;
+              done
+              echo "PostgreSQL is ready."
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-db-secret
+                  key: host
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+
+        - name: run-migrations
+          image: parilink-api:latest
+          command: ["npx", "prisma", "migrate", "deploy"]
+          envFrom:
+            - secretRef:
+                name: parilink-db-secret
+            - configMapRef:
+                name: parilink-config
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: false
+
+      # ── Main Container ────────────────────────────────────────────────────────
+      containers:
+        - name: api
+          image: REGISTRY/parilink-api:IMAGE_TAG  # Replaced by CD pipeline
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+
+          # ── Environment ───────────────────────────────────────────────────────
+          envFrom:
+            - configMapRef:
+                name: parilink-config
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-db-secret
+                  key: url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-redis-secret
+                  key: url
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-app-secret
+                  key: jwt-secret
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-app-secret
+                  key: jwt-refresh-secret
+            - name: MASTER_ENCRYPTION_KEY_V1
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-app-secret
+                  key: master-encryption-key-v1
+            - name: CORS_ALLOWED_ORIGINS
+              value: "https://app.parilink.com,https://admin.parilink.com,https://api.parilink.com"
+            - name: STORAGE_S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: parilink-aws-secret
+                  key: s3-bucket
+
+          # ── Probes ────────────────────────────────────────────────────────────
+          startupProbe:
+            httpGet:
+              path: /health/liveness
+              port: http
+            failureThreshold: 30
+            periodSeconds:    5
+
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds:       10
+            failureThreshold:    3
+            successThreshold:    1
+            timeoutSeconds:      3
+
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds:       20
+            failureThreshold:    3
+            timeoutSeconds:      5
+
+          # ── Resources ─────────────────────────────────────────────────────────
+          resources:
+            requests:
+              cpu:    "500m"
+              memory: "1Gi"
+            limits:
+              cpu:    "2"
+              memory: "3Gi"
+
+          # ── Security Context (Container level) ────────────────────────────────
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem:   true
+            capabilities:
+              drop: ["ALL"]
+
+          # ── Volume Mounts ─────────────────────────────────────────────────────
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: uploads
+              mountPath: /app/uploads
+            - name: logs
+              mountPath: /app/logs
+
+          # ── Lifecycle ─────────────────────────────────────────────────────────
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]  # Drain in-flight requests
+
+      # ── Volumes ───────────────────────────────────────────────────────────────
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: uploads
+          emptyDir:
+            sizeLimit: "2Gi"
+        - name: logs
+          emptyDir: {}
+
+      # ── Image Pull Secrets ────────────────────────────────────────────────────
+      imagePullSecrets:
+        - name: registry-credentials
+
+      # ── Priority ─────────────────────────────────────────────────────────────
+      priorityClassName: high-priority

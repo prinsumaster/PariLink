@@ -1,0 +1,37 @@
+# PariLink Codeowners
+# ----------------------------------------------------
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+# The last matching pattern has the most precedence.
+# ----------------------------------------------------
+
+# Global Default Owner
+*                   @parilink/engineering-leadership
+
+# Infrastructure & CI/CD
+.github/            @parilink/platform-engineering
+k8s/                @parilink/platform-engineering
+helm/               @parilink/platform-engineering
+infra/              @parilink/platform-engineering
+terraform/          @parilink/platform-engineering
+docker/             @parilink/platform-engineering
+docker-compose*.yml @parilink/platform-engineering
+
+# Backend & Database
+apps/api/           @parilink/backend-engineers
+apps/api/prisma/    @parilink/database-administrators @parilink/backend-engineers
+
+# Frontend Web Application
+apps/web/           @parilink/frontend-engineers
+apps/web/e2e/       @parilink/qa-engineers
+apps/web/tests/     @parilink/qa-engineers
+
+# Security & Compliance
+SECURITY.md         @parilink/security-team
+.env.example        @parilink/security-team
+apps/web/next.config.ts @parilink/security-team @parilink/frontend-engineers
+
+# Documentation
+docs/               @parilink/technical-writers
+documentation/      @parilink/technical-writers
+README.md           @parilink/technical-writers

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parilink-config
+  namespace: parilink-prod
+data:
+  NODE_ENV: "production"
+  POSTGRES_USER: "parilink"
+  POSTGRES_DB: "parilink_db"
+  DATABASE_URL: "postgresql://parilink@parilink-postgres:5432/parilink_db?schema=public"
+  REDIS_URL: "redis://parilink-redis:6379"
+  PORT: "8080"
+  NEXT_PUBLIC_API_URL: "http://api.parilink.local/api/v1"

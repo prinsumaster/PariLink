@@ -1,0 +1,42 @@
+controller:
+  replicaCount: 3
+  
+  config:
+    use-proxy-protocol: "false"
+    use-forwarded-headers: "true"
+    compute-full-forwarded-for: "true"
+    client-body-buffer-size: "16M"
+    proxy-body-size: "50M"
+    ssl-redirect: "true"
+    hsts: "true"
+    enable-brotli: "true"
+
+  service:
+    type: NodePort # ALB will route to this NodePort
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - ingress-nginx
+        topologyKey: "topology.kubernetes.io/zone"
+  
+  nodeSelector:
+    role: system
+    
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true

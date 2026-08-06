@@ -1,0 +1,327 @@
+# =============================================================================
+# PariLink Observability — Complete Prometheus Alert Rules
+# Covers: API, Database, Redis, Kubernetes, Business KPIs
+# =============================================================================
+
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: parilink-alerts
+  namespace: parilink-observability
+  labels:
+    app: kube-prometheus-stack
+    role: alert-rules
+spec:
+  groups:
+    # ─── API SLO Alerts ──────────────────────────────────────────────────────
+    - name: parilink.api.slo
+      interval: 30s
+      rules:
+        - alert: APIErrorRateCritical
+          expr: |
+            (
+              sum(rate(http_requests_total{app="parilink-api",status=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{app="parilink-api"}[5m]))
+            ) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            team: platform
+            slo: error-rate
+          annotations:
+            summary: "API error rate exceeds 5% SLO"
+            description: "Error rate is {{ $value | humanizePercentage }}. SLO target is <1%."
+            runbook_url: "https://runbooks.parilink.app/api-high-error-rate"
+
+        - alert: APIErrorRateWarning
+          expr: |
+            (
+              sum(rate(http_requests_total{app="parilink-api",status=~"5.."}[5m]))
+              /
+              sum(rate(http_requests_total{app="parilink-api"}[5m]))
+            ) > 0.01
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "API error rate exceeds 1% warning threshold"
+            description: "Error rate {{ $value | humanizePercentage }}"
+
+        - alert: APILatencyP99Critical
+          expr: |
+            histogram_quantile(0.99,
+              sum(rate(http_request_duration_seconds_bucket{app="parilink-api"}[5m]))
+              by (le, route)
+            ) > 5.0
+          for: 3m
+          labels:
+            severity: critical
+            team: platform
+            slo: latency
+          annotations:
+            summary: "API p99 latency exceeds 5s on {{ $labels.route }}"
+            description: "p99 latency: {{ $value }}s. SLO target is <2s."
+
+        - alert: APILatencyP95Warning
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket{app="parilink-api"}[5m]))
+              by (le)
+            ) > 2.0
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "API p95 latency exceeds 2s"
+
+        - alert: APIThroughputDrop
+          expr: |
+            (
+              sum(rate(http_requests_total{app="parilink-api"}[5m]))
+              /
+              sum(rate(http_requests_total{app="parilink-api"}[5m] offset 1h))
+            ) < 0.5
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "API throughput dropped >50% vs 1 hour ago"
+            description: "Current vs 1h ago ratio: {{ $value }}"
+
+    # ─── Kubernetes Cluster Alerts ────────────────────────────────────────────
+    - name: parilink.kubernetes
+      rules:
+        - alert: PodCrashLooping
+          expr: |
+            rate(kube_pod_container_status_restarts_total{namespace="parilink-prod"}[15m]) > 0
+          for: 5m
+          labels:
+            severity: critical
+            team: platform
+          annotations:
+            summary: "Pod {{ $labels.pod }} is crash-looping"
+            description: "Container {{ $labels.container }} in pod {{ $labels.pod }} is restarting rapidly."
+            runbook_url: "https://runbooks.parilink.app/pod-crash-loop"
+
+        - alert: PodOOMKilled
+          expr: |
+            kube_pod_container_status_last_terminated_reason{reason="OOMKilled",namespace="parilink-prod"} == 1
+          for: 0m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Pod {{ $labels.pod }} was OOMKilled"
+            description: "Container {{ $labels.container }} exceeded memory limit."
+
+        - alert: DeploymentReplicasMismatch
+          expr: |
+            kube_deployment_spec_replicas{namespace="parilink-prod"}
+            != kube_deployment_status_replicas_available{namespace="parilink-prod"}
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} has unavailable replicas"
+
+        - alert: NodeMemoryPressure
+          expr: |
+            node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+          for: 2m
+          labels:
+            severity: critical
+            team: platform
+          annotations:
+            summary: "Node {{ $labels.node }} has <10% memory available"
+
+        - alert: NodeDiskPressure
+          expr: |
+            node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} < 0.15
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Node {{ $labels.instance }} disk <15% available"
+
+        - alert: PersistentVolumeClaimPending
+          expr: |
+            kube_persistentvolumeclaim_status_phase{phase="Pending",namespace="parilink-prod"} == 1
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "PVC {{ $labels.persistentvolumeclaim }} is stuck Pending"
+
+        - alert: HPAMaxReplicasReached
+          expr: |
+            kube_horizontalpodautoscaler_status_current_replicas
+            >= kube_horizontalpodautoscaler_spec_max_replicas
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "HPA {{ $labels.horizontalpodautoscaler }} at max replicas — may need scaling"
+
+    # ─── Database Alerts ──────────────────────────────────────────────────────
+    - name: parilink.database
+      rules:
+        - alert: DatabaseConnectionPoolSaturated
+          expr: |
+            pg_stat_database_numbackends{datname="parilink"}
+            / pg_settings_max_connections > 0.80
+          for: 2m
+          labels:
+            severity: critical
+            team: platform
+          annotations:
+            summary: "PostgreSQL connection pool >80% utilized"
+            description: "Active connections: {{ $value | humanizePercentage }} of max"
+            runbook_url: "https://runbooks.parilink.app/db-connection-exhaustion"
+
+        - alert: DatabaseReplicationLag
+          expr: |
+            pg_replication_lag > 30
+          for: 2m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "PostgreSQL replica lag exceeds 30 seconds"
+            description: "Replica lag: {{ $value }}s. Possible data loss risk."
+
+        - alert: DatabaseSlowQueries
+          expr: |
+            rate(pg_stat_statements_total_exec_time{quantile="0.95"}[5m]) > 5000
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Slow queries detected — p95 query time >5s"
+
+        - alert: DatabaseDeadlocks
+          expr: |
+            rate(pg_stat_database_deadlocks{datname="parilink"}[5m]) > 1
+          for: 2m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "PostgreSQL deadlocks detected"
+
+    # ─── Redis Alerts ─────────────────────────────────────────────────────────
+    - name: parilink.redis
+      rules:
+        - alert: RedisHighMemoryUsage
+          expr: |
+            redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+          for: 5m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Redis memory usage >85%"
+
+        - alert: RedisKeyEvictions
+          expr: |
+            rate(redis_evicted_keys_total[5m]) > 0
+          for: 2m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Redis is evicting keys — possible memory pressure"
+
+        - alert: RedisReplicationBroken
+          expr: |
+            redis_connected_slaves < 1
+          for: 1m
+          labels:
+            severity: critical
+            team: platform
+          annotations:
+            summary: "Redis has no connected replicas"
+
+    # ─── Business KPI Alerts ──────────────────────────────────────────────────
+    - name: parilink.business
+      rules:
+        - alert: ActiveTripUpdateFailures
+          expr: |
+            rate(parilink_trip_status_update_errors_total[5m]) > 0.1
+          for: 3m
+          labels:
+            severity: critical
+            team: product
+          annotations:
+            summary: "Trip status update failures exceeding threshold"
+
+        - alert: MobileUploadQueueBacklog
+          expr: |
+            parilink_mobile_offline_queue_depth > 1000
+          for: 5m
+          labels:
+            severity: warning
+            team: product
+          annotations:
+            summary: "Mobile offline queue backlog >1000 items"
+
+        - alert: BillingWebhookFailures
+          expr: |
+            rate(parilink_billing_webhook_errors_total[5m]) > 0
+          for: 2m
+          labels:
+            severity: critical
+            team: billing
+          annotations:
+            summary: "Billing webhook processing failures"
+            runbook_url: "https://runbooks.parilink.app/billing-webhook-failure"
+
+        - alert: TenantAPIThrottled
+          expr: |
+            sum by (tenant_id) (rate(parilink_api_rate_limited_total[5m])) > 10
+          for: 2m
+          labels:
+            severity: warning
+            team: platform
+          annotations:
+            summary: "Tenant {{ $labels.tenant_id }} is being heavily rate-limited"
+
+    # ─── SLO Burn Rate Alerts (Multi-Window) ──────────────────────────────────
+    - name: parilink.slo.burn-rate
+      rules:
+        # Error budget: 99.9% availability = 8.7h/month allowed downtime
+        - alert: ErrorBudgetBurnRateFast
+          expr: |
+            (
+              sum(rate(http_requests_total{app="parilink-api",status=~"5.."}[1h]))
+              /
+              sum(rate(http_requests_total{app="parilink-api"}[1h]))
+            ) > 14.4 * 0.001  # 14.4x burn rate (1h window)
+          for: 2m
+          labels:
+            severity: critical
+            slo: availability
+          annotations:
+            summary: "Error budget burning 14.4x — will exhaust in 1 hour"
+
+        - alert: ErrorBudgetBurnRateSlow
+          expr: |
+            (
+              sum(rate(http_requests_total{app="parilink-api",status=~"5.."}[6h]))
+              /
+              sum(rate(http_requests_total{app="parilink-api"}[6h]))
+            ) > 6 * 0.001  # 6x burn rate (6h window)
+          for: 15m
+          labels:
+            severity: warning
+            slo: availability
+          annotations:
+            summary: "Error budget burning 6x — will exhaust in 5 days"

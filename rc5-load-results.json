@@ -1,0 +1,38 @@
+[
+  {
+    "scenario": "50 Concurrent Users",
+    "connections": 50,
+    "avgLatency": 1.34,
+    "p99Latency": 5,
+    "rps": 27480,
+    "errors": 0,
+    "timeouts": 0
+  },
+  {
+    "scenario": "100 Concurrent Users",
+    "connections": 100,
+    "avgLatency": 2.92,
+    "p99Latency": 9,
+    "rps": 28590.4,
+    "errors": 0,
+    "timeouts": 0
+  },
+  {
+    "scenario": "250 Concurrent Users",
+    "connections": 250,
+    "avgLatency": 9.05,
+    "p99Latency": 23,
+    "rps": 26120,
+    "errors": 0,
+    "timeouts": 0
+  },
+  {
+    "scenario": "500 Concurrent Users (Spike)",
+    "connections": 500,
+    "avgLatency": 18.6,
+    "p99Latency": 31,
+    "rps": 26145.6,
+    "errors": 0,
+    "timeouts": 0
+  }
+]

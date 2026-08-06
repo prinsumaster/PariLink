@@ -1,0 +1,63 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Docker image tag/version to deploy'
+        required: true
+        type: string
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Production EKS
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://parilink.app
+      
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_PRODUCTION }}
+          aws-region: ap-south-1
+
+      - uses: ./.github/actions/helm
+        with:
+          cluster_name: "parilink-production"
+          aws_region: "ap-south-1"
+
+      - name: Determine Version
+        id: vars
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          fi
+
+      - name: Run Blue/Green Deployment Script
+        run: ./scripts/deploy.sh production ${{ env.VERSION }}
+
+      - name: Verify Canary Health
+        run: ./scripts/health-check.sh https://parilink.app/health
+
+      - name: Complete Rollout
+        run: kubectl rollout status deployment/parilink-api -n default --timeout=300s
+
+      - name: Automatic Rollback on Failure
+        if: failure()
+        run: ./scripts/rollback.sh production

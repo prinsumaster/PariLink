@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-web-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      component: web
