@@ -14,7 +14,7 @@ export class ConnectorFactoryService {
     scopes: ['api', 'refresh_token', 'offline_access'],
     redirectUri:
       process.env.OAUTH_REDIRECT_URI ||
-      'http://localhost:3000/api/integrations/callback',
+      `${process.env.APP_URL || 'http://localhost:3000'}/api/integrations/callback`,
   };
 
   private readonly qbConfig = {
@@ -23,7 +23,7 @@ export class ConnectorFactoryService {
     scopes: ['com.intuit.quickbooks.accounting'],
     redirectUri:
       process.env.OAUTH_REDIRECT_URI ||
-      'http://localhost:3000/api/integrations/callback',
+      `${process.env.APP_URL || 'http://localhost:3000'}/api/integrations/callback`,
   };
 
   getConnector(providerId: string): BaseConnector {
