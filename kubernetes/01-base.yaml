@@ -13,8 +13,9 @@ metadata:
   namespace: parilink-production
 data:
   NODE_ENV: "production"
-  API_URL: "https://api.parilink.com/api/v1"
-  WEB_URL: "https://app.parilink.com"
+  API_URL: "https://api.parilink.app/api/v1"
+  WEB_URL: "https://parilink.app"
+  CORS_ALLOWED_ORIGINS: "https://parilink.app,https://api.parilink.app"
   REDIS_HOST: "parilink-redis"
   REDIS_PORT: "6379"
 ---

@@ -12,11 +12,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - app.parilink.com
-        - api.parilink.com
+        - parilink.app
+        - api.parilink.app
       secretName: parilink-tls-secret
   rules:
-    - host: app.parilink.com
+    - host: parilink.app
       http:
         paths:
           - path: /
@@ -26,7 +26,7 @@ spec:
                 name: parilink-web
                 port:
                   number: 80
-    - host: api.parilink.com
+    - host: api.parilink.app
       http:
         paths:
           - path: /

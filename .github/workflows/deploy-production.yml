@@ -70,10 +70,16 @@ jobs:
       - name: Run Blue/Green Deployment Script
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: ./scripts/deploy.sh production ${{ env.VERSION }}
+        run: |
+          kubectl apply -f kubernetes/01-base.yaml
+          kubectl apply -f kubernetes/02-database.yaml
+          kubectl apply -f kubernetes/03-api.yaml
+          kubectl apply -f kubernetes/04-web.yaml
+          kubectl apply -f kubernetes/05-ingress.yaml
+          ./scripts/deploy.sh production ${{ env.VERSION }}
 
       - name: Verify Canary Health
-        run: ./scripts/health-check.sh https://parilink.app/api/v1/health/readiness
+        run: ./scripts/health-check.sh https://api.parilink.app/api/v1/health/readiness
 
       - name: Complete Rollout
         run: |

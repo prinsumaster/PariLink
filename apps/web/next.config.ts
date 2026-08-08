@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
+  output: "standalone",
   outputFileTracingRoot: process.env.NODE_ENV === 'production' ? undefined : undefined,
   turbopack: {},
   experimental: {
