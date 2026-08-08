@@ -315,13 +315,14 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
   describe('6. Idempotency and Rate Limiting', () => {
     it('Blocks requests that exceed rate limits', async () => {
       // Simulate 30 fast requests to an endpoint (reduce from 100 to avoid ECONNRESET)
-      const requests = Array.from({ length: 30 }).map(() =>
-        request(app.getHttpServer())
+      const responses = [];
+      for (let i = 0; i < 30; i++) {
+        const res = await request(app.getHttpServer())
           .get('/mdm/search?query=fast')
-          .set('Authorization', `Bearer ${adminAToken}`)
-      );
+          .set('Authorization', `Bearer ${adminAToken}`);
+        responses.push(res);
+      }
       
-      const responses = await Promise.all(requests);
       const tooManyRequests = responses.filter(r => r.status === 429);
       
       // Either rate limiting is disabled/not hit, or it returned 429
