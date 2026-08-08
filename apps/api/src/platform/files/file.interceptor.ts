@@ -1,6 +1,6 @@
 import { UseInterceptors, BadRequestException, Logger } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { extname } from 'path';
 import * as crypto from 'crypto';
 
@@ -114,15 +114,7 @@ export function PlatformFileInterceptor(
 ) {
   return UseInterceptors(
     FileInterceptor(fieldName, {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (_req, _file, cb) => {
-          // Cryptographic random filename — prevents path traversal and name collision
-          const randomName = crypto.randomBytes(16).toString('hex');
-          const safeExt = extname(_file.originalname).toLowerCase();
-          cb(null, `${randomName}${safeExt}`);
-        },
-      }),
+      storage: memoryStorage(),
       limits: {
         fileSize: maxSizeMb * 1024 * 1024,
         files: 1, // Only one file per request
@@ -193,47 +185,28 @@ export function PlatformFileInterceptor(
 }
 
 /**
- * Post-upload validation — call this AFTER the file has been saved to disk
- * to verify magic bytes match the claimed file type. This catches cases where
- * the Content-Type header was spoofed but the actual file content is different.
+ * Synchronous Buffer validation — call this to verify magic bytes match the claimed file type
+ * BEFORE persisting the buffer to storage.
  */
-export async function validateUploadedFile(
-  filePath: string,
+export function validateFileBuffer(
+  buffer: Buffer,
   claimedExt: string,
-): Promise<{ valid: boolean; reason?: string }> {
-  const fs = await import('fs');
-  const fd = fs.openSync(filePath, 'r');
-  const headerBuffer = Buffer.alloc(16);
-  fs.readSync(fd, headerBuffer, 0, 16, 0);
-  fs.closeSync(fd);
-
-  if (!validateMagicBytes(headerBuffer, claimedExt)) {
+): { valid: boolean; reason?: string } {
+  if (!validateMagicBytes(buffer, claimedExt)) {
     logger.error(
-      `[FileUpload] CRITICAL: Magic byte mismatch for ${filePath} (claimed ${claimedExt})`,
+      `[FileUpload] CRITICAL: Magic byte mismatch (claimed ${claimedExt})`,
     );
-    // Delete the malicious file immediately
-    try {
-      fs.unlinkSync(filePath);
-    } catch {
-      /* best effort */
-    }
     return {
       valid: false,
-      reason: `File content does not match claimed type "${claimedExt}". File has been quarantined.`,
+      reason: `File content does not match claimed type "${claimedExt}".`,
     };
   }
 
   // Zip bomb detection: if the file claims to be a PDF but is > 100MB, it's suspicious
-  const stats = fs.statSync(filePath);
-  if (claimedExt === '.pdf' && stats.size > 100 * 1024 * 1024) {
+  if (claimedExt === '.pdf' && buffer.length > 100 * 1024 * 1024) {
     logger.error(
-      `[FileUpload] CRITICAL: Suspicious PDF size (${stats.size} bytes) for ${filePath}`,
+      `[FileUpload] CRITICAL: Suspicious PDF size (${buffer.length} bytes)`,
     );
-    try {
-      fs.unlinkSync(filePath);
-    } catch {
-      /* best effort */
-    }
     return { valid: false, reason: 'File size exceeds maximum for this type.' };
   }
 

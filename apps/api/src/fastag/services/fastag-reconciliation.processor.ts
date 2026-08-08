@@ -14,6 +14,16 @@ export class FastagReconciliationProcessor {
     const { vehicleNumber, tollPlazaId, amount, timestamp, companyId } =
       job.data;
 
+    if (
+      typeof amount !== 'number' ||
+      isNaN(amount) ||
+      amount <= 0 ||
+      !isFinite(amount)
+    ) {
+      this.logger.error(`Invalid toll amount for ${vehicleNumber}: ${amount}`);
+      return;
+    }
+
     this.logger.log(
       `Reconciling FASTag deduction for ${vehicleNumber} at ${tollPlazaId}`,
     );

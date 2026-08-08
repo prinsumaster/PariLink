@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { Issuer, Client, TokenSet } from 'openid-client';
 import type { Request } from 'express';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class OidcService {
@@ -33,10 +34,19 @@ export class OidcService {
   async generateLoginUrl(idp: any, req: Request): Promise<string> {
     const client = await this.getClient(idp);
 
+    // Generate cryptographically secure nonce — stored in session for validation
+    const nonce = crypto.randomUUID();
+    const state = (req.query.state as string) || crypto.randomUUID();
+
+    // Store nonce and state in session for callback validation
+    (req as any).session = (req as any).session || {};
+    (req as any).session.oidcNonce = nonce;
+    (req as any).session.oidcState = state;
+
     const url = client.authorizationUrl({
       scope: 'openid email profile',
-      state: (req.query.state as string) || undefined,
-      nonce: 'static-nonce', // In production, generate securely and store in session
+      state,
+      nonce,
     });
 
     return url;
@@ -46,12 +56,23 @@ export class OidcService {
     const client = await this.getClient(idp);
     const params = client.callbackParams(req);
 
-    // In production, validate state and nonce against stored session values
+    // Retrieve nonce from session — prevents replay and CSRF
+    const sessionNonce = (req as any).session?.oidcNonce;
+    if (!sessionNonce) {
+      throw new BadRequestException(
+        'OIDC session state missing — possible CSRF',
+      );
+    }
+
     const tokenSet: TokenSet = await client.callback(
       `${process.env.APP_URL || 'http://localhost:3000'}/api/v1/auth/sso/callback/oidc/${idp.id}`,
       params,
-      { nonce: 'static-nonce' }, // Use dynamic nonce stored in session
+      { nonce: sessionNonce },
     );
+
+    // Clear session nonce after use (one-time use)
+    delete (req as any).session.oidcNonce;
+    delete (req as any).session.oidcState;
 
     const claims = tokenSet.claims();
 

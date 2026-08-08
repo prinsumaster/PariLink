@@ -54,72 +54,72 @@ export class PlanningEngineService {
     let needsApproval = 0;
     let requiresHuman = 0;
 
-    const planItems: any[] = [];
+    // Step 2 & 3: Segregate and Augment in Parallel
+    const planItems = await Promise.all(
+      scenario.recommendations.map(async (rec) => {
+        let status = 'AUTO_PLANNED';
+        let aiDecisionProposal = null;
 
-    // Step 2 & 3: Segregate and Augment
-    for (const rec of scenario.recommendations) {
-      let status = 'AUTO_PLANNED';
-      let aiDecisionProposal = null;
-
-      if (rec.confidenceScore < 0.7) {
-        status = 'REQUIRES_HUMAN';
-        requiresHuman++;
-      } else if (rec.confidenceScore < 0.9) {
-        status = 'NEEDS_APPROVAL';
-        needsApproval++;
-      } else {
-        autoPlanned++;
-      }
-
-      // Step 3: Augment exceptions using AI
-      if (status !== 'AUTO_PLANNED') {
-        try {
-          const aiResponse = await this.llmManager.generateResponse(
-            `You are an expert logistics dispatcher. A heuristic optimization engine has recommended assigning load ${rec.loadId} to vehicle ${rec.vehicleId} but the confidence is ${rec.confidenceScore}. Generate a structured decision proposal explaining why this might be risky, the financial impact, and a rollback strategy. Return ONLY valid JSON matching this schema: { "category": "ASSIGNMENT", "actionIntent": "string", "riskLevel": "MEDIUM" | "HIGH", "confidenceScore": number, "businessImpact": "string", "costImpact": "string", "reasoning": "string", "alternativeOptions": ["string"], "expectedOutcome": "string", "rollbackStrategy": "string" }`,
-            `Evaluate this dispatch recommendation.`,
-            { recommendation: rec },
-            'openai', // fallback/default
-          );
-
-          // Basic JSON extraction if LLM wrapped in markdown
-          const jsonStr = aiResponse
-            .replace(/```json/g, '')
-            .replace(/```/g, '')
-            .trim();
-          aiDecisionProposal = JSON.parse(jsonStr);
-          // ensure risk level maps to status
-          aiDecisionProposal.riskLevel =
-            status === 'REQUIRES_HUMAN' ? 'HIGH' : 'MEDIUM';
-        } catch (e) {
-          this.logger.error(
-            `Failed to generate AI decision for exception: ${e.message}`,
-          );
-          aiDecisionProposal = {
-            category: 'ASSIGNMENT',
-            actionIntent: `Assign Load ${rec.loadId}`,
-            riskLevel: status === 'REQUIRES_HUMAN' ? 'HIGH' : 'MEDIUM',
-            confidenceScore: rec.confidenceScore,
-            businessImpact: 'Manual review needed',
-            costImpact: 'Unknown',
-            reasoning: 'AI analysis failed. Please review manually.',
-            alternativeOptions: [],
-            expectedOutcome: 'Pending manual review',
-            rollbackStrategy: 'Cancel dispatch',
-          };
+        if (rec.confidenceScore < 0.7) {
+          status = 'REQUIRES_HUMAN';
+          requiresHuman++;
+        } else if (rec.confidenceScore < 0.9) {
+          status = 'NEEDS_APPROVAL';
+          needsApproval++;
+        } else {
+          autoPlanned++;
         }
-      }
 
-      planItems.push({
-        loadId: rec.loadId,
-        vehicleId: rec.vehicleId,
-        driverId: rec.driverId,
-        status,
-        confidenceScore: rec.confidenceScore,
-        expectedCost: rec.expectedCost,
-        expectedRevenue: rec.expectedRevenue,
-        aiDecisionProposal,
-      });
-    }
+        // Step 3: Augment exceptions using AI
+        if (status !== 'AUTO_PLANNED') {
+          try {
+            const aiResponse = await this.llmManager.generateResponse(
+              `You are an expert logistics dispatcher. A heuristic optimization engine has recommended assigning load ${rec.loadId} to vehicle ${rec.vehicleId} but the confidence is ${rec.confidenceScore}. Generate a structured decision proposal explaining why this might be risky, the financial impact, and a rollback strategy. Return ONLY valid JSON matching this schema: { "category": "ASSIGNMENT", "actionIntent": "string", "riskLevel": "MEDIUM" | "HIGH", "confidenceScore": number, "businessImpact": "string", "costImpact": "string", "reasoning": "string", "alternativeOptions": ["string"], "expectedOutcome": "string", "rollbackStrategy": "string" }`,
+              `Evaluate this dispatch recommendation.`,
+              { recommendation: rec },
+              'openai', // fallback/default
+            );
+
+            // Basic JSON extraction if LLM wrapped in markdown
+            const jsonStr = aiResponse
+              .replace(/```json/g, '')
+              .replace(/```/g, '')
+              .trim();
+            aiDecisionProposal = JSON.parse(jsonStr);
+            // ensure risk level maps to status
+            aiDecisionProposal.riskLevel =
+              status === 'REQUIRES_HUMAN' ? 'HIGH' : 'MEDIUM';
+          } catch (e: any) {
+            this.logger.error(
+              `Failed to generate AI decision for exception: ${e.message}`,
+            );
+            aiDecisionProposal = {
+              category: 'ASSIGNMENT',
+              actionIntent: `Assign Load ${rec.loadId}`,
+              riskLevel: status === 'REQUIRES_HUMAN' ? 'HIGH' : 'MEDIUM',
+              confidenceScore: rec.confidenceScore,
+              businessImpact: 'Manual review needed',
+              costImpact: 'Unknown',
+              reasoning: 'AI analysis failed. Please review manually.',
+              alternativeOptions: [],
+              expectedOutcome: 'Pending manual review',
+              rollbackStrategy: 'Cancel dispatch',
+            };
+          }
+        }
+
+        return {
+          loadId: rec.loadId,
+          vehicleId: rec.vehicleId,
+          driverId: rec.driverId,
+          status,
+          confidenceScore: rec.confidenceScore,
+          expectedCost: rec.expectedCost,
+          expectedRevenue: rec.expectedRevenue,
+          aiDecisionProposal,
+        };
+      }),
+    );
 
     // Create the Daily Plan
     const planDate = new Date();

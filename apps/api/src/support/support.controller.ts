@@ -1,8 +1,10 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Logger, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Support')
 @Controller('support')
+@UseGuards(JwtAuthGuard)
 export class SupportController {
   private readonly logger = new Logger(SupportController.name);
 

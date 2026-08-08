@@ -35,7 +35,7 @@ export class LoadsController {
     @GetUser() user: AuthenticatedUser,
     @Body() createLoadDto: CreateLoadDto,
   ) {
-    return this.loadsService.create(user.companyId, createLoadDto);
+    return this.loadsService.create(user.companyId, createLoadDto, user.id);
   }
 
   @Get()
@@ -60,13 +60,13 @@ export class LoadsController {
     @Param('id') id: string,
     @Body() updateLoadDto: UpdateLoadDto,
   ) {
-    return this.loadsService.update(user.companyId, id, updateLoadDto);
+    return this.loadsService.update(user.companyId, id, updateLoadDto, user.id);
   }
 
   @Delete(':id')
   @RequirePermissions('loads:delete')
   @ApiOperation({ summary: 'Soft delete a load' })
   remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
-    return this.loadsService.remove(user.companyId, id);
+    return this.loadsService.remove(user.companyId, id, user.id);
   }
 }

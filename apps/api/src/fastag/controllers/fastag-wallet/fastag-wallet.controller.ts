@@ -12,6 +12,11 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { FastagWalletService } from '../../services/fastag-wallet/fastag-wallet.service';
+import {
+  CreateTollAccountDto,
+  UpdateTollAccountDto,
+  QueryTollAccountDto,
+} from '../../dto/tollAccount.dto';
 
 @Controller('fastag/accounts')
 @UseGuards(JwtAuthGuard)
@@ -19,12 +24,12 @@ export class FastagWalletController {
   constructor(private readonly service: FastagWalletService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreateTollAccountDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
   @Get()
-  findAll(@Req() req: any, @Query() query: any) {
+  findAll(@Req() req: any, @Query() query: QueryTollAccountDto) {
     return this.service.findAll(req.user.companyId, query);
   }
 
@@ -37,7 +42,7 @@ export class FastagWalletController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: UpdateTollAccountDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

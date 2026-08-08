@@ -16,15 +16,16 @@ import { VehicleQueryDto } from './dto/vehicle-query.dto';
 
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class VehiclesService {
   constructor(
     private readonly auditService: AuditService,
-
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
+    private readonly eventStore: EventStoreService,
   ) {}
 
   async create(companyId: string, createVehicleDto: CreateVehicleDto) {
@@ -83,6 +84,14 @@ export class VehiclesService {
         null,
         tx,
       );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'VEHICLE',
+        streamId: newVehicle.id,
+        eventType: 'VehicleCreated',
+        payload: { ...newVehicle },
+      });
 
       return newVehicle;
     });
@@ -216,6 +225,14 @@ export class VehiclesService {
           tx,
         );
 
+        await this.eventStore.append({
+          tenantId: companyId,
+          streamType: 'VEHICLE',
+          streamId: updatedVehicle.id,
+          eventType: 'VehicleUpdated',
+          payload: updateVehicleDto,
+        });
+
         return updatedVehicle;
       },
     );
@@ -252,6 +269,14 @@ export class VehiclesService {
           null,
           tx,
         );
+
+        await this.eventStore.append({
+          tenantId: companyId,
+          streamType: 'VEHICLE',
+          streamId: deletedVehicle.id,
+          eventType: 'VehicleDeleted',
+          payload: {},
+        });
 
         return deletedVehicle;
       },

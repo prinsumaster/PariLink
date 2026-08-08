@@ -13,6 +13,15 @@ export class CsvImportProcessor {
   async handleDriverImport(job: Job) {
     const { companyId, rows, mapping } = job.data;
 
+    if (!Array.isArray(rows)) {
+      this.logger.error('Invalid payload: rows must be an array');
+      return { error: 'Invalid payload' };
+    }
+    if (rows.length > 5000) {
+      this.logger.error(`Import exceeded maximum limits: ${rows.length} rows`);
+      return { error: 'Limit exceeded' };
+    }
+
     // mapping = { "Driver Name": "name", "Phone": "phone", "License": "licenseNumber" }
 
     this.logger.log(

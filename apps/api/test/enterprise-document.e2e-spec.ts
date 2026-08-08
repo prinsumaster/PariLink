@@ -25,6 +25,7 @@ describe('Enterprise Document Management & Compliance (e2e)', () => {
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true }),
     );
+    app.enableShutdownHooks();
     await app.init();
 
     prisma = app.get(PrismaService);

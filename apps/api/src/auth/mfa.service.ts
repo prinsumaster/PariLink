@@ -67,16 +67,21 @@ export class MfaService {
 
     // Generate Backup Codes
     const backupCodes = this.generateBackupCodes();
-    const backupCodePromises = backupCodes.map(async (code) => {
-      const codeHash = await bcrypt.hash(code, 10);
-      return this.prisma.runAsSystem(async (tx) =>
-        tx.backupCode.create({
-          data: { userId, codeHash },
-        }),
-      );
-    });
 
-    await Promise.all(backupCodePromises);
+    // Hash backup codes in parallel
+    const backupCodeData = await Promise.all(
+      backupCodes.map(async (code) => ({
+        userId,
+        codeHash: await bcrypt.hash(code, 10),
+      })),
+    );
+
+    // Bulk insert to avoid N+1 insertions
+    await this.prisma.runAsSystem(async (tx) =>
+      tx.backupCode.createMany({
+        data: backupCodeData,
+      }),
+    );
 
     // Enable MFA
     await this.prisma.runAsSystem(async (tx) =>

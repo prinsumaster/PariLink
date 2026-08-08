@@ -21,7 +21,25 @@ export class PrismaService
   private readonly dmmfModels = new Map<string, any>();
 
   constructor() {
+    let datasourceUrl = process.env.DATABASE_URL;
+    if (datasourceUrl) {
+      try {
+        const url = new URL(datasourceUrl);
+        if (process.env.USE_PGBOUNCER === 'true') {
+          url.searchParams.set('pgbouncer', 'true');
+        }
+        if (process.env.NODE_ENV === 'test') {
+          url.searchParams.set('connection_limit', '2');
+          url.searchParams.set('pool_timeout', '10');
+        }
+        datasourceUrl = url.toString();
+      } catch (e) {
+        // ignore invalid URL parsing errors
+      }
+    }
+
     super({
+      datasourceUrl,
       log: [
         { emit: 'event', level: 'query' },
         { emit: 'event', level: 'error' },
@@ -263,7 +281,7 @@ export class PrismaService
     const model = (tx as any)[modelName];
     const updateResult = await model.updateMany({
       where: { id, updatedAt: existingUpdatedAt },
-      data,
+      data: { ...data, updatedAt: new Date() },
     });
 
     if (updateResult.count === 0) {

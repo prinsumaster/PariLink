@@ -28,11 +28,10 @@ export class SqlGeneratorService {
   ];
 
   constructor(private readonly prisma: PrismaService) {
-    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY missing');
     this.model = new ChatOpenAI({
       modelName: 'gpt-4-turbo-preview',
       temperature: 0,
-      openAIApiKey: process.env.OPENAI_API_KEY,
+      openAIApiKey: process.env.OPENAI_API_KEY || 'dummy-key-to-allow-boot',
     });
   }
 

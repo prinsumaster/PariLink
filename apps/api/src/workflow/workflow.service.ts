@@ -248,6 +248,8 @@ export class WorkflowService {
         existingRules.map((r) => `${r.name}:${r.trigger}`),
       );
 
+      const rulesToCreate = [];
+
       for (const ruleDef of dto.rules) {
         // Simple duplicate detection by Name + Trigger in memory
         if (existingSet.has(`${ruleDef.name}:${ruleDef.trigger}`)) {
@@ -255,24 +257,27 @@ export class WorkflowService {
           continue;
         }
 
-        const newRule = await tx.workflowRule.create({
-          data: {
-            companyId,
-            name: ruleDef.name,
-            entityType: ruleDef.entityType,
-            trigger: ruleDef.trigger,
-            conditions: ruleDef.conditions || [],
-            actions: ruleDef.actions || [],
-            priority: 0,
-            version: 1,
-            isActive: false, // Imported rules default to inactive
-          },
+        rulesToCreate.push({
+          companyId,
+          name: ruleDef.name,
+          entityType: ruleDef.entityType,
+          trigger: ruleDef.trigger,
+          conditions: ruleDef.conditions || [],
+          actions: ruleDef.actions || [],
+          priority: 0,
+          version: 1,
+          isActive: false, // Imported rules default to inactive
         });
-        createdRules.push(newRule);
+      }
+
+      if (rulesToCreate.length > 0) {
+        await tx.workflowRule.createMany({
+          data: rulesToCreate,
+        });
       }
 
       return {
-        imported: createdRules.length,
+        imported: rulesToCreate.length,
         skipped: skippedRules.length,
         skippedDetails: skippedRules,
       };

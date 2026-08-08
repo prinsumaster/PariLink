@@ -29,7 +29,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const exceptionResponse: any = exception.getResponse();
       message = exceptionResponse?.message || exception.message;
       errorCode = exceptionResponse?.error || 'HTTP_EXCEPTION';
+    } else if ((exception as any)?.code === 'P2002') {
+      status = HttpStatus.CONFLICT;
+      message = 'A resource with this unique identifier already exists.';
+      errorCode = 'DUPLICATE_RESOURCE';
     } else if (exception instanceof Error) {
+      status = (exception as any).status || (exception as any).statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
       message = exception.message;
     }
 

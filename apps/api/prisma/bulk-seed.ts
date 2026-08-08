@@ -3,22 +3,22 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const STATES = ['TX', 'CA', 'FL', 'NY', 'IL', 'GA', 'WA', 'CO', 'AZ', 'TN'];
-const CITIES = ['Dallas', 'Los Angeles', 'Miami', 'New York', 'Chicago', 'Atlanta', 'Seattle', 'Denver', 'Phoenix', 'Nashville'];
-const COMPANIES = ['Freight', 'Transport', 'Logistics', 'Express', 'Cargo', 'Shipping', 'Haul', 'Carrier', 'Transit', 'Fleet'];
-const SUFFIXES = ['Inc', 'LLC', 'Corp', 'Group', 'Co', 'Partners', 'Associates'];
-const FIRST_NAMES = ['James', 'Maria', 'John', 'Sarah', 'Michael', 'Jessica', 'Robert', 'Ashley', 'David', 'Jennifer', 'William', 'Elizabeth', 'Richard', 'Patricia', 'Joseph', 'Linda', 'Thomas', 'Barbara', 'Charles', 'Susan'];
-const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Wilson', 'Anderson', 'Taylor', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Young'];
-const TRUCK_MAKES = ['Volvo', 'Freightliner', 'Kenworth', 'Peterbilt', 'Mack', 'International', 'Western Star'];
-const TRUCK_MODELS = ['VNL 860', 'Cascadia', 'T680', '389', 'Anthem', 'LT', '5700 XE'];
-const EQUIPMENT = ['DRY_VAN', 'REEFER', 'FLATBED', 'STEP_DECK', 'TANKER'];
+const STATES = ['MH', 'GJ', 'DL', 'KA', 'TN', 'UP', 'HR', 'RJ', 'TS', 'WB'];
+const CITIES = ['Mumbai', 'Ahmedabad', 'New Delhi', 'Bengaluru', 'Chennai', 'Lucknow', 'Gurugram', 'Jaipur', 'Hyderabad', 'Kolkata'];
+const COMPANIES = ['Shree Ganesh', 'Mahadev', 'Kutch Freight', 'Om Sai', 'Bharat', 'National', 'TCI', 'VRL', 'Gati', 'SafeExpress'];
+const SUFFIXES = ['Roadlines', 'Logistics', 'Transport', 'Freight Movers', 'Cargo', 'Carriers', 'Supply Chain'];
+const FIRST_NAMES = ['Rahul', 'Amit', 'Vikram', 'Sanjay', 'Rajesh', 'Anil', 'Suresh', 'Prakash', 'Mahesh', 'Ramesh', 'Raju', 'Pappu'];
+const LAST_NAMES = ['Patel', 'Singh', 'Sharma', 'Yadav', 'Gupta', 'Kumar', 'Desai', 'Chauhan', 'Rajput', 'Jain'];
+const TRUCK_MAKES = ['Tata', 'Ashok Leyland', 'Mahindra', 'BharatBenz', 'Eicher', 'Volvo', 'Scania'];
+const TRUCK_MODELS = ['Signa 4923.S', 'Prima 4018.S', 'U-3518', 'Blazo X 49', 'Pro 8049', 'FH16', 'P410'];
+const EQUIPMENT = ['OPEN_BODY', 'CONTAINER', 'REEFER', 'FLATBED', 'TANKER'];
 const LOAD_STATUS = ['PENDING', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'];
-const INDUSTRIES = ['Retail', 'Manufacturing', 'Food & Beverage', 'Automotive', 'Healthcare', 'Technology', 'Construction', 'Agriculture'];
+const INDUSTRIES = ['FMCG', 'Pharmaceuticals', 'Automotive', 'Textiles', 'E-commerce', 'Agriculture', 'Steel', 'Cement'];
 
 const rand = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 const randInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 const randFloat = (min: number, max: number) => +(Math.random() * (max - min) + min).toFixed(2);
-const phone = () => `+1${randInt(200,999)}${randInt(200,999)}${randInt(1000,9999)}`;
+const phone = () => `+91${randInt(7000000000, 9999999999)}`;
 const email = (name: string) => `${name.toLowerCase().replace(/\s+/g,'')}${randInt(100,999)}@example.com`;
 
 async function main() {
@@ -89,7 +89,7 @@ async function main() {
         lastName: ln,
         email: email(`${fn}${ln}`),
         phone: phone(),
-        licenseNumber: `CDL-${randInt(100000, 999999)}`,
+        licenseNumber: `DL-${randInt(10, 99)}${randInt(1000000, 9999999)}`,
         licenseState: rand(STATES),
         status: rand(['AVAILABLE', 'AVAILABLE', 'AVAILABLE', 'ON_TRIP', 'OFF_DUTY']),
       };

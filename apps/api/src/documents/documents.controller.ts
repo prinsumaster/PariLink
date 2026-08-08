@@ -69,7 +69,7 @@ export class DocumentsController {
     }
     return this.documentsService.uploadDocument(
       user.companyId,
-      user.userId,
+      user.id,
       file,
       body,
     );

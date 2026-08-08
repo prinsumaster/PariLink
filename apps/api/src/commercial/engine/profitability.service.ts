@@ -109,21 +109,22 @@ export class ProfitabilityService {
 
     let totalRevenue = 0;
     let totalCost = 0;
+    const tripIds = new Set<string>();
 
     for (const inv of invoices) {
       totalRevenue += inv.amount;
-
-      // Extract trips associated with this invoice's load
-      const tripIds = inv.load?.tripId ? [inv.load.tripId] : [];
-
-      if (tripIds.length > 0) {
-        const expenses = await this.prisma.runAsTenant(companyId, async (tx) =>
-          tx.expense.findMany({
-            where: { companyId, tripId: { in: tripIds } },
-          }),
-        );
-        totalCost += expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      if (inv.load?.tripId) {
+        tripIds.add(inv.load.tripId);
       }
+    }
+
+    if (tripIds.size > 0) {
+      const expenses = await this.prisma.runAsTenant(companyId, async (tx) =>
+        tx.expense.findMany({
+          where: { companyId, tripId: { in: Array.from(tripIds) } },
+        }),
+      );
+      totalCost += expenses.reduce((sum, exp) => sum + exp.amount, 0);
     }
 
     const grossProfit = totalRevenue - totalCost;

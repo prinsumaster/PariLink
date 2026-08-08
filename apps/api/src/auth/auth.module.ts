@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { BruteForceProtectionService } from '../platform/security/brute-force/brute-force-protection.service';
 import { MfaService } from './mfa.service';
+import { IntegrationsModule } from '../integrations/integrations.module';
 
 const INSECURE_DEFAULTS = new Set([
   'super-secret-fallback',
@@ -27,6 +28,7 @@ function resolveJwtSecret(): string {
 @Module({
   imports: [
     PassportModule,
+    IntegrationsModule,
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: resolveJwtSecret(),

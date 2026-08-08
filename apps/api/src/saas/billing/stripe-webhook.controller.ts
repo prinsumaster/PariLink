@@ -5,6 +5,8 @@ import {
   Headers,
   BadRequestException,
 } from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { StripeIntegrationService } from './stripe-integration.service';
 import { BillingService } from './billing.service';
@@ -20,8 +22,9 @@ export class StripeWebhookController {
 
   @Post()
   @ApiOperation({ summary: 'Stripe webhook receiver' })
+  @Throttle({ default: { limit: 600, ttl: 60000 } })
   async handleWebhook(
-    @Req() req: Request,
+    @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
   ) {
     if (!signature) {
@@ -30,14 +33,14 @@ export class StripeWebhookController {
 
     let event;
     try {
-      // Need raw body for Stripe signature validation.
-      // Assuming a raw body parser is configured, or we're using a specific interceptor.
-      // For mock environments without raw body:
-      const payload = req.body;
-      event = this.stripeService.constructEvent(
-        Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body),
-        signature,
-      );
+      const payload = req.rawBody;
+      if (!payload) {
+        throw new BadRequestException(
+          'Raw body is missing. Ensure rawBody: true is configured in NestFactory.',
+        );
+      }
+
+      event = await this.stripeService.constructEvent(payload, signature);
     } catch (err: any) {
       throw new BadRequestException(`Webhook Error: ${err.message}`);
     }

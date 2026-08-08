@@ -63,14 +63,16 @@ export class DocumentComplianceService {
 
   async deleteRequirement(companyId: string, id: string, userId: string) {
     const req = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.complianceRequirement.findUnique({ where: { id } }),
+      tx.complianceRequirement.findFirst({ where: { id, companyId } }),
     );
     if (!req || req.companyId !== companyId) {
       throw new NotFoundException('Compliance requirement not found');
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.complianceRequirement.delete({ where: { id } }),
+      tx.complianceRequirement.deleteMany({
+        where: { id, companyId },
+      }),
     );
 
     await this.audit.logEvent({

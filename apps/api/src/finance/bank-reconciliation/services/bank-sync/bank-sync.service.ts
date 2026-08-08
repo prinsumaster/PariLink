@@ -7,7 +7,7 @@ export class BankSyncService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(companyId: string, userId: string, data: any) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.bankStatement.create({
         data: { ...data, companyId },
       });
@@ -23,7 +23,7 @@ export class BankSyncService {
       where.status = query.status;
     }
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const [items, total] = await Promise.all([
         tx.bankStatement.findMany({
           where,
@@ -38,8 +38,8 @@ export class BankSyncService {
   }
 
   async findOne(companyId: string, id: string) {
-    const item = await this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.bankStatement.findUnique({ where: { id } });
+    const item = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.bankStatement.findFirst({ where: { id, companyId } });
     });
     if (!item || item.companyId !== companyId) {
       throw new NotFoundException('BankStatement not found');
@@ -49,9 +49,9 @@ export class BankSyncService {
 
   async update(companyId: string, id: string, userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.bankStatement.update({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.bankStatement.updateMany({
+        where: { id, companyId },
         data,
       });
     });
@@ -59,9 +59,9 @@ export class BankSyncService {
 
   async remove(companyId: string, id: string, userId: string) {
     await this.findOne(companyId, id);
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.bankStatement.delete({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.bankStatement.deleteMany({
+        where: { id, companyId },
       });
     });
   }

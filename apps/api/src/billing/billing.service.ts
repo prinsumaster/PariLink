@@ -11,6 +11,7 @@ import * as crypto from 'crypto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class BillingService {
@@ -19,16 +20,46 @@ export class BillingService {
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
     private auditService: AuditService,
+    private readonly eventStore: EventStoreService,
   ) {}
 
-  async createRateCard(companyId: string, dto: CreateRateCardDto) {
+  async createRateCard(
+    companyId: string,
+    dto: CreateRateCardDto,
+    userId?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      return tx.rateCard.create({
+      const rateCard = await tx.rateCard.create({
         data: {
           companyId,
           ...dto,
         },
       });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Billing',
+          entityType: 'RateCard',
+          entityId: rateCard.id,
+          action: 'CREATE',
+          details: { customerId: dto.customerId, type: dto.type },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'RATE_CARD',
+        streamId: rateCard.id,
+        eventType: 'RateCardCreated',
+        payload: { customerId: dto.customerId, type: dto.type },
+        userId,
+      });
+
+      return rateCard;
     });
   }
 
@@ -40,7 +71,11 @@ export class BillingService {
     });
   }
 
-  async generateInvoice(companyId: string, dto: GenerateInvoiceDto) {
+  async generateInvoice(
+    companyId: string,
+    dto: GenerateInvoiceDto,
+    userId?: string,
+  ) {
     const invoice = await this.prisma.runAsTenant(companyId, async (tx) => {
       const load = await tx.load.findFirst({
         where: { id: dto.loadId },
@@ -81,7 +116,7 @@ export class BillingService {
 
       const invoiceNumber = `INV-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
-      const invoice = await tx.invoice.create({
+      const generatedInvoice = await tx.invoice.create({
         data: {
           companyId,
           customerId: load.customerId,
@@ -109,7 +144,7 @@ export class BillingService {
       const ruleResult = await this.workflow.evaluateRules(companyId, {
         entityType: 'INVOICE',
         trigger: 'INVOICE_GENERATED',
-        entityData: invoice,
+        entityData: generatedInvoice,
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
@@ -118,24 +153,38 @@ export class BillingService {
         );
       }
 
-      return invoice;
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Billing',
+          entityType: 'Invoice',
+          entityId: generatedInvoice.id,
+          action: 'INVOICE_GENERATED',
+          details: { amount: generatedInvoice.amount },
+          source: 'BILLING_SERVICE',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'INVOICE',
+        streamId: generatedInvoice.id,
+        eventType: 'InvoiceGenerated',
+        payload: { amount: generatedInvoice.amount, loadId: load.id },
+        userId,
+      });
+
+      return generatedInvoice;
     });
 
     this.eventEmitter.emit('invoice.created', invoice);
 
-    await this.auditService.logEvent({
-      action: 'INVOICE_GENERATED',
-      entity: 'Invoice',
-      entityId: invoice.id,
-      companyId: companyId,
-      source: 'BILLING_SERVICE',
-      details: { amount: invoice.amount },
-    });
-
     return invoice;
   }
 
-  async approveInvoice(companyId: string, invoiceId: string) {
+  async approveInvoice(companyId: string, invoiceId: string, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const invoice = await tx.invoice.findFirst({
         where: { id: invoiceId, companyId },
@@ -218,6 +267,29 @@ export class BillingService {
             ],
           },
         },
+      });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Billing',
+          entityType: 'Invoice',
+          entityId: invoice.id,
+          action: 'APPROVE',
+          details: { invoiceNumber: invoice.invoiceNumber },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'INVOICE',
+        streamId: invoice.id,
+        eventType: 'InvoiceApproved',
+        payload: { invoiceNumber: invoice.invoiceNumber },
+        userId,
       });
 
       return { ...invoice, status: 'SENT' };

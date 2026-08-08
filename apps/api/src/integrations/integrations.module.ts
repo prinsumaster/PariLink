@@ -6,6 +6,10 @@ import { ConnectorFactoryService } from './connectors/connector-factory.service'
 import { SyncEngineProcessor } from './sync/sync-engine.processor';
 import { WebhookController } from './webhooks/webhook.controller';
 import { GatewayController } from './gateway/gateway.controller';
+import { RazorpayService } from './razorpay.service';
+import { ResendService } from './resend.service';
+import { TwilioService } from './twilio.service';
+import { LocoNavService } from './loconav.service';
 import { BullModule } from '@nestjs/bullmq';
 
 @Module({
@@ -20,7 +24,19 @@ import { BullModule } from '@nestjs/bullmq';
     CryptoService,
     ConnectorFactoryService,
     SyncEngineProcessor,
+    RazorpayService,
+    ResendService,
+    TwilioService,
+    LocoNavService,
   ],
-  exports: [IntegrationsService, CryptoService, ConnectorFactoryService],
+  exports: [
+    IntegrationsService,
+    CryptoService,
+    ConnectorFactoryService,
+    RazorpayService,
+    ResendService,
+    TwilioService,
+    LocoNavService,
+  ],
 })
 export class IntegrationsModule {}

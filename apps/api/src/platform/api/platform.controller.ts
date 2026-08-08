@@ -19,6 +19,8 @@ import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import type { Response } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 // ---------------------------------------------------------------------------
 // Platform Controller — Enterprise Admin & Observability API
@@ -34,6 +36,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 //   GET  /api/v1/platform/roles/:id/cache/invalidate  — IAM cache invalidation
 // ---------------------------------------------------------------------------
 
+@ApiTags('Platform')
 @Controller('platform')
 export class PlatformController {
   constructor(
@@ -42,6 +45,7 @@ export class PlatformController {
     private readonly features: FeatureToggleService,
     private readonly iam: IamPolicyEngineService,
     private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
   ) {}
 
   // ── Health Probes ───────────────────────────────────────────────────────
@@ -171,5 +175,44 @@ export class PlatformController {
         ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
       }),
     );
+  }
+
+  // ── Audit Chain Verification ───────────────────────────────────────────
+
+  @Get('audit-log/verify/:auditLogId')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('platform:admin')
+  @ApiOperation({ summary: 'Verify integrity of a single audit log record' })
+  async verifyAuditRecord(@Param('auditLogId') auditLogId: string) {
+    const isValid = await this.audit.verifyIntegrity(auditLogId);
+    return { auditLogId, isValid };
+  }
+
+  @Get('audit-log/chain/:companyId')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('platform:admin')
+  @ApiOperation({ summary: 'Verify the hash chain for a tenant audit trail' })
+  async verifyAuditChain(
+    @Param('companyId') companyId: string,
+    @Query('limit') limit = '1000',
+  ) {
+    return this.audit.verifyChain(companyId, Math.min(Number(limit), 5000));
+  }
+
+  @Get('audit-log/export/:companyId')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('platform:admin')
+  @ApiOperation({ summary: 'Export audit logs for compliance' })
+  async exportAuditLogs(
+    @Param('companyId') companyId: string,
+    @Query('from') from: string,
+    @Query('to') to: string,
+    @Query('userId') userId?: string,
+  ) {
+    const fromDate = from
+      ? new Date(from)
+      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const toDate = to ? new Date(to) : new Date();
+    return this.audit.exportAuditLogs(companyId, fromDate, toDate, userId);
   }
 }

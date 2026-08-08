@@ -1,8 +1,10 @@
-import { Controller, Post, Body, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Logger, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('WMS')
 @Controller('wms/barcode')
+@UseGuards(JwtAuthGuard)
 export class BarcodeController {
   private readonly logger = new Logger(BarcodeController.name);
 

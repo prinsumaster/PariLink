@@ -12,11 +12,17 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly auditService: AuditService,
+    private readonly eventStore: EventStoreService,
+  ) {}
 
   async create(companyId: string, createUserDto: CreateUserDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
@@ -39,6 +45,24 @@ export class UsersService {
       });
 
       const { password, ...result } = user;
+
+      await this.auditService.logEvent({
+        action: 'USER_CREATED',
+        entity: 'User',
+        entityId: user.id,
+        companyId,
+        source: 'API',
+        details: { email: user.email },
+      });
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'USER',
+        streamId: user.id,
+        eventType: 'UserCreated',
+        payload: { email: user.email, roleId: user.roleId },
+      });
+
       return result;
     });
   }
@@ -115,6 +139,23 @@ export class UsersService {
       });
 
       const { password, ...result } = user;
+
+      await this.auditService.logEvent({
+        action: 'USER_UPDATED',
+        entity: 'User',
+        entityId: user.id,
+        companyId,
+        source: 'API',
+      });
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'USER',
+        streamId: user.id,
+        eventType: 'UserUpdated',
+        payload: updateUserDto,
+      });
+
       return result;
     });
   }
@@ -132,6 +173,23 @@ export class UsersService {
       });
 
       const { password, ...result } = user;
+
+      await this.auditService.logEvent({
+        action: 'USER_DELETED',
+        entity: 'User',
+        entityId: user.id,
+        companyId,
+        source: 'API',
+      });
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'USER',
+        streamId: user.id,
+        eventType: 'UserDeleted',
+        payload: {},
+      });
+
       return result;
     });
   }

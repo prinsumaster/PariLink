@@ -7,6 +7,7 @@ import { DocumentVersionService } from './services/document-version.service';
 import { DocumentSignatureService } from './services/document-signature.service';
 import { DocumentComplianceService } from './services/document-compliance.service';
 import { DocumentAiService } from './services/document-ai.service';
+import { StorageService } from './services/storage.service';
 
 @Module({
   controllers: [DocumentsController, EnterpriseDocumentController],
@@ -17,6 +18,7 @@ import { DocumentAiService } from './services/document-ai.service';
     DocumentSignatureService,
     DocumentComplianceService,
     DocumentAiService,
+    StorageService,
   ],
   exports: [
     DocumentsService,

@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -16,15 +17,16 @@ import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripQueryDto } from './dto/trip-query.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as crypto from 'crypto';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class TripsService {
   constructor(
     private readonly auditService: AuditService,
-
     private prisma: PrismaService,
     private eventEmitter: EventEmitter2,
     private workflow: WorkflowService,
+    private readonly eventStore: EventStoreService,
   ) {}
 
   async create(companyId: string, createTripDto: CreateTripDto) {
@@ -38,13 +40,68 @@ export class TripsService {
         data.tripNumber = `TRP-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
       } else {
         const existingTripNum = await tx.trip.findFirst({
-          where: { tripNumber: data.tripNumber },
+          where: { tripNumber: data.tripNumber, companyId },
         });
         if (existingTripNum) {
           throw new ConflictException(
             `Trip number ${data.tripNumber} already exists.`,
           );
         }
+      }
+
+      // 1. Lock and Verify Driver OCC
+      if (data.driverId) {
+        const driver = await tx.driver.findFirst({
+          where: { id: data.driverId, companyId },
+        });
+        if (!driver || driver.status !== 'AVAILABLE') {
+          throw new ConflictException(`Driver is not available for assignment`);
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'driver',
+          driver.id,
+          driver.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+      }
+
+      // 2. Lock and Verify Vehicle OCC
+      if (data.vehicleId) {
+        const vehicle = await tx.vehicle.findFirst({
+          where: { id: data.vehicleId, companyId },
+        });
+        if (!vehicle || vehicle.status !== 'IN_SERVICE') {
+          throw new ConflictException(
+            `Vehicle is not available for assignment`,
+          );
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'vehicle',
+          vehicle.id,
+          vehicle.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+      }
+
+      // 3. Lock and Verify Trailer OCC
+      if (data.trailerId) {
+        const trailer = await tx.vehicle.findFirst({
+          where: { id: data.trailerId, companyId, type: 'TRAILER' },
+        });
+        if (!trailer || trailer.status !== 'IN_SERVICE') {
+          throw new ConflictException(
+            `Trailer is not available for assignment`,
+          );
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'vehicle',
+          trailer.id,
+          trailer.updatedAt,
+          { status: 'DISPATCHED' },
+        );
       }
 
       const trip = await tx.trip.create({
@@ -76,6 +133,14 @@ export class TripsService {
         null,
         tx,
       );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'TRIP',
+        streamId: trip.id,
+        eventType: 'TripCreated',
+        payload: { ...trip },
+      });
 
       return trip;
     });
@@ -174,12 +239,134 @@ export class TripsService {
 
       if (data.tripNumber && data.tripNumber !== existingTrip.tripNumber) {
         const duplicate = await tx.trip.findFirst({
-          where: { tripNumber: data.tripNumber },
+          where: { tripNumber: data.tripNumber, companyId },
         });
         if (duplicate) {
           throw new ConflictException(
             `Trip number ${data.tripNumber} already exists.`,
           );
+        }
+      }
+
+      // 1. Resource Reassignment - Driver
+      if (data.driverId && data.driverId !== existingTrip.driverId) {
+        const newDriver = await tx.driver.findFirst({
+          where: { id: data.driverId, companyId },
+        });
+        if (!newDriver || newDriver.status !== 'AVAILABLE') {
+          throw new ConflictException(
+            'New driver is not available for assignment',
+          );
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'driver',
+          newDriver.id,
+          newDriver.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+        if (existingTrip.driverId) {
+          await tx.driver.updateMany({
+            where: { id: existingTrip.driverId, companyId },
+            data: { status: 'AVAILABLE' },
+          });
+        }
+      }
+
+      // 2. Resource Reassignment - Vehicle
+      if (data.vehicleId && data.vehicleId !== existingTrip.vehicleId) {
+        const newVehicle = await tx.vehicle.findFirst({
+          where: { id: data.vehicleId, companyId },
+        });
+        if (!newVehicle || newVehicle.status !== 'IN_SERVICE') {
+          throw new ConflictException(
+            'New vehicle is not available for assignment',
+          );
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'vehicle',
+          newVehicle.id,
+          newVehicle.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+        if (existingTrip.vehicleId) {
+          await tx.vehicle.updateMany({
+            where: { id: existingTrip.vehicleId, companyId },
+            data: { status: 'IN_SERVICE' },
+          });
+        }
+      }
+
+      // 3. Resource Reassignment - Trailer
+      if (data.trailerId && data.trailerId !== existingTrip.trailerId) {
+        const newTrailer = await tx.vehicle.findFirst({
+          where: { id: data.trailerId, companyId, type: 'TRAILER' },
+        });
+        if (!newTrailer || newTrailer.status !== 'IN_SERVICE') {
+          throw new ConflictException(
+            'New trailer is not available for assignment',
+          );
+        }
+        await this.prisma.updateWithOcc(
+          tx,
+          'vehicle',
+          newTrailer.id,
+          newTrailer.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+        if (existingTrip.trailerId) {
+          await tx.vehicle.updateMany({
+            where: { id: existingTrip.trailerId, companyId },
+            data: { status: 'IN_SERVICE' },
+          });
+        }
+      }
+
+      // Prevent backwards state transitions
+      if (
+        (existingTrip.status === 'COMPLETED' ||
+          existingTrip.status === 'CANCELLED') &&
+        data.status &&
+        data.status !== existingTrip.status
+      ) {
+        throw new BadRequestException(
+          `Cannot change status of a ${existingTrip.status} trip`,
+        );
+      }
+
+      // Free up resources when trip is COMPLETED or CANCELLED
+      if (
+        data.status &&
+        (data.status === 'COMPLETED' || data.status === 'CANCELLED') &&
+        existingTrip.status !== 'COMPLETED' &&
+        existingTrip.status !== 'CANCELLED'
+      ) {
+        if (existingTrip.driverId) {
+          await tx.driver.updateMany({
+            where: { id: existingTrip.driverId, companyId },
+            data: { status: 'AVAILABLE' },
+          });
+        }
+        if (existingTrip.vehicleId) {
+          await tx.vehicle.updateMany({
+            where: { id: existingTrip.vehicleId, companyId },
+            data: { status: 'IN_SERVICE' },
+          });
+        }
+        if (existingTrip.trailerId) {
+          await tx.vehicle.updateMany({
+            where: { id: existingTrip.trailerId, companyId },
+            data: { status: 'IN_SERVICE' },
+          });
+        }
+
+        if (data.status === 'CANCELLED') {
+          // Unassign loads when trip is cancelled
+          await tx.load.updateMany({
+            where: { tripId: id, companyId },
+            data: { tripId: null, status: 'PENDING' },
+          });
         }
       }
 
@@ -206,6 +393,14 @@ export class TripsService {
         null,
         tx,
       );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'TRIP',
+        streamId: updatedTrip.id,
+        eventType: 'TripUpdated',
+        payload: data,
+      });
 
       return { updatedTrip, existingStatus: existingTrip.status };
     });
@@ -286,6 +481,14 @@ export class TripsService {
         tx,
       );
 
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'TRIP',
+        streamId: id,
+        eventType: 'LoadsAssigned',
+        payload: { loadIds },
+      });
+
       return updatedTrip;
     });
   }
@@ -293,15 +496,44 @@ export class TripsService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingTrip = await tx.trip.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingTrip) throw new NotFoundException();
+
+      if (
+        existingTrip.status === 'COMPLETED' ||
+        existingTrip.status === 'CANCELLED'
+      ) {
+        throw new BadRequestException(
+          `Cannot delete a trip that is already ${existingTrip.status}`,
+        );
+      }
 
       // Unassign loads when trip is cancelled/removed
       await tx.load.updateMany({
         where: { tripId: id, companyId },
         data: { tripId: null, status: 'PENDING' },
       });
+
+      // Free up resources
+      if (existingTrip.driverId) {
+        await tx.driver.updateMany({
+          where: { id: existingTrip.driverId, companyId },
+          data: { status: 'AVAILABLE' },
+        });
+      }
+      if (existingTrip.vehicleId) {
+        await tx.vehicle.updateMany({
+          where: { id: existingTrip.vehicleId, companyId },
+          data: { status: 'IN_SERVICE' },
+        });
+      }
+      if (existingTrip.trailerId) {
+        await tx.vehicle.updateMany({
+          where: { id: existingTrip.trailerId, companyId },
+          data: { status: 'IN_SERVICE' },
+        });
+      }
 
       const deletedTrip = await tx.trip.update({
         where: { id },
@@ -321,6 +553,14 @@ export class TripsService {
         null,
         tx,
       );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'TRIP',
+        streamId: deletedTrip.id,
+        eventType: 'TripCancelled',
+        payload: {},
+      });
 
       return deletedTrip;
     });

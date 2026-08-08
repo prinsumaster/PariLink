@@ -12,6 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { BruteForceProtectionService } from '../platform/security/brute-force/brute-force-protection.service';
 import { AuditService } from '../platform/audit/audit.service';
 import { MfaService } from './mfa.service';
+import { ResendService } from '../integrations/resend.service';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 import {
@@ -55,6 +56,7 @@ export class AuthService {
     private readonly bruteForce: BruteForceProtectionService,
     private readonly auditService: AuditService,
     private readonly mfaService: MfaService,
+    private readonly resendService: ResendService,
   ) {}
 
   async register(
@@ -107,6 +109,13 @@ export class AuthService {
 
       return user;
     });
+
+    // Send Welcome Email
+    await this.resendService.sendTransactionalEmail(
+      email.toLowerCase(),
+      'Welcome to PariLink Enterprise',
+      `<p>Your account for ${companyName} has been created successfully.</p>`,
+    );
 
     // 4. Log the user in
     return this.login({ email, password }, ipAddress, deviceInfo);

@@ -355,39 +355,55 @@ export class LicenseAdminService {
       }),
     );
 
-    const summaries = await Promise.all(
-      companies.map(async (company) => {
-        const config = await this.prisma.runAsSystem(async (tx) =>
-          tx.tenantConfig.findUnique({ where: { companyId: company.id } }),
-        );
-        const [vehicleCount, driverCount] = await Promise.all([
-          this.prisma.runAsSystem(async (tx) =>
-            tx.vehicle.count({
-              where: { companyId: company.id },
-            }),
-          ),
-          this.prisma.runAsSystem(async (tx) =>
-            tx.driver.count({
-              where: { companyId: company.id },
-            }),
-          ),
-        ]);
-        return {
-          id: company.id,
-          name: company.name,
-          status: company.status,
-          plan: company.subscriptionPlan?.name || 'No Plan',
-          planCode: company.subscriptionPlan?.planCode || 'NONE',
-          maxVehicles: config?.maxVehicles ?? 20,
-          vehicleCount,
-          maxDrivers: config?.maxDrivers ?? 50,
-          driverCount,
-          unlimitedMode: config?.unlimitedMode ?? false,
-          boostExpiresAt: config?.boostExpiresAt ?? null,
-          createdAt: company.createdAt,
-        };
+    const companyIds = companies.map((c) => c.id);
+
+    const configs = await this.prisma.runAsSystem(async (tx) =>
+      tx.tenantConfig.findMany({ where: { companyId: { in: companyIds } } }),
+    );
+    const configMap = new Map(configs.map((c) => [c.companyId, c]));
+
+    const vehicleCounts = await this.prisma.runAsSystem(async (tx) =>
+      tx.vehicle.groupBy({
+        by: ['companyId'],
+        where: { companyId: { in: companyIds } },
+        _count: true,
       }),
     );
+    const vehicleCountMap = new Map(
+      vehicleCounts.map((v) => [v.companyId, v._count]),
+    );
+
+    const driverCounts = await this.prisma.runAsSystem(async (tx) =>
+      tx.driver.groupBy({
+        by: ['companyId'],
+        where: { companyId: { in: companyIds } },
+        _count: true,
+      }),
+    );
+    const driverCountMap = new Map(
+      driverCounts.map((d) => [d.companyId, d._count]),
+    );
+
+    const summaries = companies.map((company) => {
+      const config = configMap.get(company.id);
+      const vehicleCount = vehicleCountMap.get(company.id) ?? 0;
+      const driverCount = driverCountMap.get(company.id) ?? 0;
+
+      return {
+        id: company.id,
+        name: company.name,
+        status: company.status,
+        plan: company.subscriptionPlan?.name || 'No Plan',
+        planCode: company.subscriptionPlan?.planCode || 'NONE',
+        maxVehicles: config?.maxVehicles ?? 20,
+        vehicleCount,
+        maxDrivers: config?.maxDrivers ?? 50,
+        driverCount,
+        unlimitedMode: config?.unlimitedMode ?? false,
+        boostExpiresAt: config?.boostExpiresAt ?? null,
+        createdAt: company.createdAt,
+      };
+    });
 
     return summaries;
   }

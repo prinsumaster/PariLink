@@ -2,6 +2,9 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { TwilioService } from '../integrations/twilio.service';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class DispatchService {
@@ -9,6 +12,9 @@ export class DispatchService {
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
+    private twilioService: TwilioService,
+    private readonly auditService: AuditService,
+    private readonly eventStore: EventStoreService,
   ) {}
 
   async getBoardData(companyId: string) {
@@ -114,13 +120,41 @@ export class DispatchService {
         );
       }
 
-      return this.prisma.updateWithOcc<any>(
+      const load = await this.prisma.updateWithOcc<any>(
         tx,
         'load',
         loadId,
         existingLoad.updatedAt,
         { status: newStatus, boardPosition },
       );
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Dispatch',
+          entityType: 'Load',
+          entityId: load.id,
+          action: 'BOARD_CARD_MOVED',
+          beforeValue: {
+            status: existingLoad.status,
+            boardPosition: existingLoad.boardPosition,
+          },
+          afterValue: { status: newStatus, boardPosition },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'DISPATCH',
+        streamId: load.id,
+        eventType: 'BoardCardMoved',
+        payload: { status: newStatus, boardPosition },
+      });
+
+      return load;
     });
 
     this.eventEmitter.emit('dispatch.updated', {

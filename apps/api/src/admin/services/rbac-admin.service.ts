@@ -242,7 +242,10 @@ export class RbacAdminService {
     }
 
     await this.prisma.runAsSystem(async (tx) =>
-      tx.role.delete({ where: { id: roleId } }),
+      tx.role.update({
+        where: { id: roleId },
+        data: { deletedAt: new Date() },
+      }),
     );
 
     await this.audit.logEvent({

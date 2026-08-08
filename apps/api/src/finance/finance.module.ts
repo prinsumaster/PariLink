@@ -18,6 +18,8 @@ import { FastagController } from './fastag/fastag.controller';
 import { FastagService } from './fastag/fastag.service';
 import { GeneralLedgerController } from './ledger/general-ledger.controller';
 import { GeneralLedgerService } from './ledger/general-ledger.service';
+import { DriverWalletController } from './driver-wallet.controller';
+import { DriverWalletService } from './driver-wallet.service';
 
 @Module({
   imports: [InvoicesModule, BankReconciliationModule, PayrollModule],
@@ -27,6 +29,7 @@ import { GeneralLedgerService } from './ledger/general-ledger.service';
     AccountsPayableController,
     FastagController,
     GeneralLedgerController,
+    DriverWalletController,
   ],
   providers: [
     FinanceService,
@@ -39,7 +42,8 @@ import { GeneralLedgerService } from './ledger/general-ledger.service';
     AccountsPayableService,
     FastagService,
     GeneralLedgerService,
+    DriverWalletService,
   ],
-  exports: [PricingEngine, ProfitabilityEngine],
+  exports: [PricingEngine, ProfitabilityEngine, DriverWalletService],
 })
 export class FinanceModule {}

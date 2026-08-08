@@ -14,6 +14,7 @@ import type { Observable } from 'rxjs';
 import { interval, map, concatMap } from 'rxjs';
 import { MetricsEngineService } from './engine/metrics-engine.service';
 import { ForecastEngineService } from './engine/forecast-engine.service';
+import { KpiEngineService } from './engine/kpi-engine.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -30,6 +31,7 @@ export class AnalyticsController {
   constructor(
     private readonly metrics: MetricsEngineService,
     private readonly forecast: ForecastEngineService,
+    private readonly kpiEngine: KpiEngineService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -120,7 +122,7 @@ export class AnalyticsController {
           companyId: user.companyId,
           name: (data as any).name,
           description: (data as any).description,
-          createdBy: user.userId,
+          createdBy: user.id,
           layoutType: (data as any).layoutType || 'GRID',
           widgets: {
             create: (data as any).widgets || [],
@@ -148,5 +150,60 @@ export class AnalyticsController {
       message:
         'Report generation started. You will receive a notification when it is ready.',
     };
+  }
+
+  @Post('kpi')
+  @RequirePermissions('analytics:write')
+  @ApiOperation({ summary: 'Create custom KPI definition via Formula Engine' })
+  async createKpi(@GetUser() user: AuthenticatedUser, @Body() data: any) {
+    return this.kpiEngine.createKpi(user.companyId, user.id, data);
+  }
+
+  @Get('kpi')
+  @RequirePermissions('analytics:read')
+  @ApiOperation({ summary: 'List custom KPIs' })
+  async listKpis(@GetUser() user: AuthenticatedUser) {
+    return this.kpiEngine.listKpis(user.companyId);
+  }
+
+  @Post('custom-metrics')
+  @RequirePermissions('analytics:write')
+  @ApiOperation({ summary: 'Record custom metric' })
+  async recordMetric(@GetUser() user: AuthenticatedUser, @Body() data: any) {
+    return this.kpiEngine.recordCustomMetric(user.companyId, data);
+  }
+
+  @Post('trend-reports')
+  @RequirePermissions('analytics:write')
+  @ApiOperation({ summary: 'Generate Trend Report for a KPI' })
+  async generateTrend(
+    @GetUser() user: AuthenticatedUser,
+    @Body() data: { kpiId: string; period: string },
+  ) {
+    return this.kpiEngine.generateTrendReport(
+      user.companyId,
+      data.kpiId,
+      data.period,
+    );
+  }
+
+  @Get('performers/top')
+  @RequirePermissions('analytics:read')
+  @ApiOperation({ summary: 'Get top performers by metric' })
+  async getTopPerformers(
+    @GetUser() user: AuthenticatedUser,
+    @Query('metric') metric: string,
+  ) {
+    return this.kpiEngine.getTopPerformers(user.companyId, metric);
+  }
+
+  @Get('performers/bottom')
+  @RequirePermissions('analytics:read')
+  @ApiOperation({ summary: 'Get bottom performers by metric' })
+  async getBottomPerformers(
+    @GetUser() user: AuthenticatedUser,
+    @Query('metric') metric: string,
+  ) {
+    return this.kpiEngine.getBottomPerformers(user.companyId, metric);
   }
 }

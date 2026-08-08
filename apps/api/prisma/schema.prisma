@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters", "multiSchema", "postgresqlExtensions", "metrics"]
+  previewFeatures = ["driverAdapters", "postgresqlExtensions", "metrics"]
 }
 
 datasource db {
@@ -128,26 +128,49 @@ model Company {
   documentSignatures         DocumentSignature[]
   complianceRequirements     ComplianceRequirement[]
 
-  crmLeads          CrmLead[]
-  crmActivities     CrmActivity[]
-  salesTargets      SalesTarget[]
-  gstTaxRules       GstTaxRule[]
-  taxLedgers        TaxLedger[]
-  tollAccounts      TollAccount[]
-  tollTransactions  TollTransaction[]
-  bankAccounts      BankAccount[]
-  bankStatements    BankStatement[]
-  bankTransactions  BankTransaction[]
-  vehiclePermits    VehiclePermit[]
-  payrollStructures PayrollStructure[]
-  payrollRuns       PayrollRun[]
-  payslips          Payslip[]
-  driverAttendances DriverAttendance[]
-  DriverScore       DriverScore[]
-  FleetKpiSnapshot  FleetKpiSnapshot[]
-  Claim             Claim[]
-  WorkOrder         WorkOrder[]
-  EmergencyAlert    EmergencyAlert[]
+  crmLeads            CrmLead[]
+  crmActivities       CrmActivity[]
+  salesTargets        SalesTarget[]
+  gstTaxRules         GstTaxRule[]
+  taxLedgers          TaxLedger[]
+  tollAccounts        TollAccount[]
+  tollTransactions    TollTransaction[]
+  bankAccounts        BankAccount[]
+  bankStatements      BankStatement[]
+  bankTransactions    BankTransaction[]
+  vehiclePermits      VehiclePermit[]
+  payrollStructures   PayrollStructure[]
+  payrollRuns         PayrollRun[]
+  payslips            Payslip[]
+  driverAttendances   DriverAttendance[]
+  DriverScore         DriverScore[]
+  FleetKpiSnapshot    FleetKpiSnapshot[]
+  Claim               Claim[]
+  WorkOrder           WorkOrder[]
+  EmergencyAlert      EmergencyAlert[]
+  Workshop            Workshop[]
+  Mechanic            Mechanic[]
+  JobCard             JobCard[]
+  MaintenanceSchedule MaintenanceSchedule[]
+  FuelCard            FuelCard[]
+  FuelStation         FuelStation[]
+  FuelTransaction     FuelTransaction[]
+  Tyre                Tyre[]
+  TyreLog             TyreLog[]
+  HosViolation        HosViolation[]
+  DvirLog             DvirLog[]
+  InsuranceLog        InsuranceLog[]
+  LoadBoardItem       LoadBoardItem[]
+  ReportTemplate      ReportTemplate[]
+  ReportSchedule      ReportSchedule[]
+  ReportExecution     ReportExecution[]
+  VehicleRegistration VehicleRegistration[]
+  PurchaseOrder       PurchaseOrder[]
+  ExternalCarrier     ExternalCarrier[]
+  CarrierBid          CarrierBid[]
+  KpiDefinition       KpiDefinition[]
+  CustomMetric        CustomMetric[]
+  TrendReport         TrendReport[]
 
   @@index([status])
   @@index([subscriptionPlanId])
@@ -174,6 +197,8 @@ model Trip {
   fuelExpenses      Float?
   otherExpenses     Float?
   notes             String?
+  settlementId      String?
+  settlement        Settlement? @relation(fields: [settlementId], references: [id])
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   deletedAt         DateTime?
@@ -376,6 +401,7 @@ model Invoice {
   lineItems     InvoiceLineItem[]
   payments      Payment[]
 
+  @@unique([companyId, invoiceNumber])
   @@index([companyId, status])
   @@index([customerId])
   @@index([loadId])
@@ -468,7 +494,8 @@ model Vendor {
   users          User[]
 
   masterRecordId String?
-  masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
+  masterRecord   MasterRecord?   @relation(fields: [masterRecordId], references: [id])
+  PurchaseOrder  PurchaseOrder[]
 
   @@index([companyId, status])
   @@index([masterRecordId])
@@ -815,6 +842,7 @@ model Settlement {
   updatedAt   DateTime @updatedAt
   company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   driver      Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trips       Trip[]
 
   @@index([driverId])
   @@index([companyId])
@@ -838,20 +866,21 @@ model VendorBill {
 }
 
 model Expense {
-  id        String   @id @default(uuid())
-  companyId String
-  tripId    String?
-  driverId  String?
-  type      String
-  amount    Float
-  date      DateTime
-  status    String   @default("PENDING")
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  driver    Driver?  @relation(fields: [driverId], references: [id])
-  trip      Trip?    @relation(fields: [tripId], references: [id])
+  id          String   @id @default(uuid())
+  referenceId String?
+  companyId   String
+  tripId      String?
+  driverId    String?
+  type        String
+  amount      Float
+  date        DateTime
+  status      String   @default("PENDING")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver      Driver?  @relation(fields: [driverId], references: [id])
+  trip        Trip?    @relation(fields: [tripId], references: [id])
 
   @@index([tripId])
   @@index([driverId])
@@ -2111,21 +2140,21 @@ model FeatureFlag {
 }
 
 model TenantConfig {
-  id              String    @id @default(uuid())
-  companyId       String    @unique
-  tier            String    @default("STANDARD") // STANDARD, ENTERPRISE
-  apiRateLimit    Int       @default(1000) // reqs per minute
-  maxUsers        Int       @default(10)
-  maxVehicles     Int       @default(20)  // Truck/vehicle capacity limit
-  maxDrivers      Int       @default(50)  // Driver capacity limit
-  storageQuotaMb  Int       @default(5000)
-  unlimitedMode   Boolean   @default(false) // Admin override — bypasses all capacity checks
-  boostExpiresAt  DateTime? // Temporary capacity boost expiry timestamp
-  boostMaxVehicles Int?     // Override vehicle limit during boost period
-  brandingConfig  Json      @default("{}")
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  id               String    @id @default(uuid())
+  companyId        String    @unique
+  tier             String    @default("STANDARD") // STANDARD, ENTERPRISE
+  apiRateLimit     Int       @default(1000) // reqs per minute
+  maxUsers         Int       @default(10)
+  maxVehicles      Int       @default(20) // Truck/vehicle capacity limit
+  maxDrivers       Int       @default(50) // Driver capacity limit
+  storageQuotaMb   Int       @default(5000)
+  unlimitedMode    Boolean   @default(false) // Admin override — bypasses all capacity checks
+  boostExpiresAt   DateTime? // Temporary capacity boost expiry timestamp
+  boostMaxVehicles Int? // Override vehicle limit during boost period
+  brandingConfig   Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId])
 }
@@ -4053,4 +4082,419 @@ model EmergencyAlert {
 
   @@index([companyId, status])
   @@index([driverId])
+}
+
+// ----------------------------------------------------------------------
+// MAINTENANCE & FLEET MODELS
+// ----------------------------------------------------------------------
+
+model Workshop {
+  id        String    @id @default(uuid())
+  companyId String
+  name      String
+  location  String?
+  type      String?
+  vendorId  String?
+  contact   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobCards  JobCard[]
+
+  @@index([companyId])
+}
+
+model Mechanic {
+  id         String    @id @default(uuid())
+  companyId  String
+  workshopId String
+  name       String
+  phone      String?
+  skills     Json      @default("[]")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobCards   JobCard[]
+
+  @@index([companyId, workshopId])
+}
+
+model JobCard {
+  id            String        @id @default(uuid())
+  companyId     String
+  vehicleId     String
+  workshopId    String
+  mechanicId    String?
+  issueReported String
+  status        String        @default("OPEN")
+  totalCost     Float?
+  workDone      String?
+  closedAt      DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parts         JobCardPart[]
+  mechanic      Mechanic?     @relation(fields: [mechanicId], references: [id])
+  workshop      Workshop      @relation(fields: [workshopId], references: [id])
+
+  @@index([companyId, vehicleId])
+  @@index([companyId, status])
+}
+
+model JobCardPart {
+  id        String   @id @default(uuid())
+  jobCardId String
+  partId    String?
+  partName  String
+  quantity  Float
+  unitCost  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobCard   JobCard  @relation(fields: [jobCardId], references: [id], onDelete: Cascade)
+}
+
+model MaintenanceSchedule {
+  id           String   @id @default(uuid())
+  companyId    String
+  vehicleId    String
+  taskName     String
+  intervalDays Int?
+  intervalKm   Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+model FuelCard {
+  id         String   @id @default(uuid())
+  companyId  String
+  cardNumber String   @unique
+  provider   String
+  vehicleId  String?
+  driverId   String?
+  dailyLimit Float?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model FuelStation {
+  id          String   @id @default(uuid())
+  companyId   String
+  name        String
+  network     String?
+  address     String?
+  latitude    Float?
+  longitude   Float?
+  isPreferred Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model FuelTransaction {
+  id              String    @id @default(uuid())
+  companyId       String
+  vehicleId       String?
+  driverId        String?
+  fuelCardId      String?
+  stationName     String?
+  gallons         Float
+  totalCost       Float
+  pricePerGallon  Float?
+  odometer        Float?
+  transactionTime DateTime?
+  anomalyDetected Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+model Tyre {
+  id               String    @id @default(uuid())
+  companyId        String
+  brand            String
+  modelName        String?
+  serialNumber     String    @unique
+  size             String?
+  type             String?
+  status           String    @default("IN_STOCK")
+  purchaseDate     DateTime?
+  purchaseCost     Float?
+  currentVehicleId String?
+  currentPosition  String?
+  installedOdo     Float?
+  removedOdo       Float?
+  scrapValue       Float?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, currentVehicleId])
+}
+
+model TyreLog {
+  id           String   @id @default(uuid())
+  companyId    String
+  tyreId       String
+  vehicleId    String?
+  action       String
+  oldPosition  String?
+  newPosition  String?
+  odometer     Float?
+  treadDepthMm Float?
+  reason       String?
+  cost         Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, tyreId])
+}
+
+model HosViolation {
+  id              String   @id @default(uuid())
+  companyId       String
+  driverId        String
+  rule            String
+  violationTime   DateTime
+  durationMinutes Int
+  severity        String
+  status          String   @default("OPEN")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, driverId])
+}
+
+model DvirLog {
+  id            String   @id @default(uuid())
+  companyId     String
+  vehicleId     String
+  driverId      String
+  type          String
+  status        String
+  defects       Json     @default("[]")
+  inspectorName String?
+  signature     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+model InsuranceLog {
+  id            String   @id @default(uuid())
+  companyId     String
+  vehicleId     String
+  provider      String
+  policyNumber  String
+  coverageType  String
+  premiumAmount Float
+  issueDate     DateTime
+  expiryDate    DateTime
+  documentUrl   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+// ----------------------------------------------------------------------
+// MISC MODELS FOR TYPECHECK
+// ----------------------------------------------------------------------
+
+model LoadBoardItem {
+  id        String   @id @default(uuid())
+  companyId String
+  tripId    String?
+  status    String   @default("OPEN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model Locale {
+  id        String   @id @default(uuid())
+  companyId String
+  code      String   @unique
+  name      String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Translation {
+  id        String   @id @default(uuid())
+  companyId String
+  namespace String?
+  localeId  String
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([localeId, namespace, key])
+}
+
+model ReportTemplate {
+  id            String            @id @default(uuid())
+  companyId     String
+  name          String
+  description   String?
+  type          String?
+  format        String?
+  configuration Json              @default("{}")
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  company       Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  executions    ReportExecution[]
+
+  @@index([companyId])
+}
+
+model ReportSchedule {
+  id             String   @id @default(uuid())
+  companyId      String
+  templateId     String
+  cronExpression String
+  recipients     Json     @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  company        Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, templateId])
+}
+
+model ReportExecution {
+  id          String         @id @default(uuid())
+  companyId   String
+  templateId  String
+  status      String         @default("PENDING")
+  startedAt   DateTime?
+  completedAt DateTime?
+  errorMsg    String?
+  fileUrl     String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  company     Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  template    ReportTemplate @relation(fields: [templateId], references: [id])
+
+  @@index([companyId, templateId])
+}
+
+model VehicleRegistration {
+  id          String    @id @default(uuid())
+  companyId   String
+  vehicleId   String    @unique
+  state       String?
+  plateNumber String?
+  issueDate   DateTime?
+  expiryDate  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+model PurchaseOrder {
+  id           String              @id @default(uuid())
+  companyId    String
+  vendorId     String
+  poNumber     String?
+  date         DateTime?
+  expectedDate DateTime?
+  status       String              @default("DRAFT")
+  totalAmount  Float?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  company      Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor       Vendor              @relation(fields: [vendorId], references: [id])
+  items        PurchaseOrderItem[]
+
+  @@index([companyId, vendorId])
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(uuid())
+  purchaseOrderId String
+  description     String
+  quantity        Float
+  receivedQty     Float?
+  unitPrice       Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+}
+
+model ExternalCarrier {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model CarrierBid {
+  id              String   @id @default(uuid())
+  companyId       String
+  loadBoardItemId String
+  carrierId       String
+  amount          Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model KpiDefinition {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model CustomMetric {
+  id        String   @id @default(uuid())
+  companyId String
+  name      String
+  value     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}
+
+model TrendReport {
+  id        String   @id @default(uuid())
+  companyId String
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
 }

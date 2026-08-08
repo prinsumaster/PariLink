@@ -57,7 +57,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string; cid: string; rid: string }) {
-    // Zero Trust: verify user is still active in the database on every request
+    console.error('JwtStrategy validate called for sub:', payload.sub);
     const user = await this.prisma.runAsSystem(async (tx) =>
       tx.user.findUnique({
         where: { id: payload.sub },
@@ -73,11 +73,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     );
 
     if (!user || user.status !== 'ACTIVE' || user.deletedAt) {
+      console.error('JwtStrategy validation failed!', { user });
       this.logger.warn(
         `[ZeroTrust] Rejected token for deactivated/deleted user ${payload.sub}`,
       );
       throw new UnauthorizedException('User account is inactive or deleted');
     }
+    console.error('JwtStrategy validation succeeded for user:', user.id);
 
     // Return enriched user context — available as req.user in all downstream guards
     return {

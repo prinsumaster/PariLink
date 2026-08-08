@@ -47,22 +47,28 @@ export class OperationsScheduler {
         errorRatePct: number;
         details: Record<string, unknown>;
       }>;
-      for (const comp of componentsList) {
-        if (comp.status === 'DOWN' || comp.status === 'UNHEALTHY') {
-          const company = await this.prisma.runAsSystem(async (tx) =>
-            tx.company.findFirst({ where: { status: 'ACTIVE' } }),
+      const unhealthyComps = componentsList.filter(
+        (c) => c.status === 'DOWN' || c.status === 'UNHEALTHY',
+      );
+
+      if (unhealthyComps.length > 0) {
+        const company = await this.prisma.runAsSystem(async (tx) =>
+          tx.company.findFirst({ where: { status: 'ACTIVE' } }),
+        );
+        if (company) {
+          await Promise.all(
+            unhealthyComps.map((comp) =>
+              this.alertEngine
+                .triggerAlert({
+                  companyId: company.id,
+                  type: 'HEALTH',
+                  severity: comp.status === 'DOWN' ? 'CRITICAL' : 'HIGH',
+                  message: `Component ${comp.component} is ${comp.status}. Latency: ${comp.latencyMs}ms, Error Rate: ${comp.errorRatePct}%`,
+                  metadata: comp.details,
+                })
+                .catch(() => {}),
+            ),
           );
-          if (company) {
-            await this.alertEngine
-              .triggerAlert({
-                companyId: company.id,
-                type: 'HEALTH',
-                severity: comp.status === 'DOWN' ? 'CRITICAL' : 'HIGH',
-                message: `Component ${comp.component} is ${comp.status}. Latency: ${comp.latencyMs}ms, Error Rate: ${comp.errorRatePct}%`,
-                metadata: comp.details,
-              })
-              .catch(() => {});
-          }
         }
       }
 
@@ -168,19 +174,21 @@ export class OperationsScheduler {
         }),
       );
 
-      for (const log of slowLogs.slice(0, 5)) {
-        await this.perfService.recordProfile({
-          companyId: log.companyId || undefined,
-          profileType: 'HIGH_LATENCY',
-          targetResource: `${log.method} ${log.endpoint}`,
-          metricValue: log.latencyMs,
-          thresholdValue: 3000,
-          analysisDetails: {
-            statusCode: log.statusCode,
-            companyId: log.companyId,
-          },
-        });
-      }
+      await Promise.all(
+        slowLogs.slice(0, 5).map((log) =>
+          this.perfService.recordProfile({
+            companyId: log.companyId || undefined,
+            profileType: 'HIGH_LATENCY',
+            targetResource: `${log.method} ${log.endpoint}`,
+            metricValue: log.latencyMs,
+            thresholdValue: 3000,
+            analysisDetails: {
+              statusCode: log.statusCode,
+              companyId: log.companyId,
+            },
+          }),
+        ),
+      );
 
       if (slowLogs.length > 0) {
         this.logger.warn(
@@ -249,13 +257,15 @@ export class OperationsScheduler {
         tx.company.findMany({ where: { status: 'ACTIVE' }, take: 50 }),
       );
 
-      for (const company of companies) {
-        await this.backupService.startBackupJob({
-          companyId: company.id,
-          backupType: 'DATABASE',
-          retentionDays: 30,
-        });
-      }
+      await Promise.all(
+        companies.map((company) =>
+          this.backupService.startBackupJob({
+            companyId: company.id,
+            backupType: 'DATABASE',
+            retentionDays: 30,
+          }),
+        ),
+      );
 
       this.logger.log(
         `[Backup Scheduler] Initiated ${companies.length} automated database backups`,

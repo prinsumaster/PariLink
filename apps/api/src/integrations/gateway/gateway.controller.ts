@@ -22,10 +22,13 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 
 @Injectable()
 class ApiKeyAuthGuard implements CanActivate {
+  private readonly logger = new Logger(ApiKeyAuthGuard.name);
+
   constructor(
     private prisma: PrismaService,
     private crypto: CryptoService,
@@ -75,7 +78,7 @@ class ApiKeyAuthGuard implements CanActivate {
           },
         }),
       )
-      .catch((e: any) => console.error(e));
+      .catch((e: any) => this.logger.error('Failed to log API request', e));
 
     return true;
   }

@@ -7,7 +7,7 @@ export class GstEngineService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(companyId: string, userId: string, data: any) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.gstTaxRule.create({
         data: { ...data, companyId },
       });
@@ -23,7 +23,7 @@ export class GstEngineService {
       where.status = query.status;
     }
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const [items, total] = await Promise.all([
         tx.gstTaxRule.findMany({
           where,
@@ -38,8 +38,8 @@ export class GstEngineService {
   }
 
   async findOne(companyId: string, id: string) {
-    const item = await this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.gstTaxRule.findUnique({ where: { id } });
+    const item = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.gstTaxRule.findFirst({ where: { id, companyId } });
     });
     if (!item || item.companyId !== companyId) {
       throw new NotFoundException('GstTaxRule not found');
@@ -49,9 +49,9 @@ export class GstEngineService {
 
   async update(companyId: string, id: string, userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.gstTaxRule.update({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.gstTaxRule.updateMany({
+        where: { id, companyId },
         data,
       });
     });
@@ -59,9 +59,9 @@ export class GstEngineService {
 
   async remove(companyId: string, id: string, userId: string) {
     await this.findOne(companyId, id);
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.gstTaxRule.delete({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.gstTaxRule.deleteMany({
+        where: { id, companyId },
       });
     });
   }

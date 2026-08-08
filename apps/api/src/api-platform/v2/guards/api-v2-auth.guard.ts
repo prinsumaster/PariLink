@@ -38,6 +38,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
       if (token.startsWith('pk_')) {
         const key = await this.apiKeyService.validateApiKey(token);
         request.user = {
+          id: 'external-api-user',
           userId: key.userId || 'api-key-user',
           companyId: key.companyId,
           email: 'api-key@system.local',
@@ -52,6 +53,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
       if (token.startsWith('pat_')) {
         const pat = await this.patService.validatePat(token);
         request.user = {
+          id: pat.userId,
           userId: pat.userId,
           companyId: pat.companyId,
           email: pat.user?.email || 'pat@system.local',
@@ -67,6 +69,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
       try {
         const oauthToken = await this.oauth2Service.validateToken(token);
         request.user = {
+          id: oauthToken.client.clientId,
           userId: oauthToken.client.clientId,
           companyId: oauthToken.client.companyId,
           email: 'oauth2-client@system.local',

@@ -112,15 +112,29 @@ export class UserAdminService {
       errors: [] as { email: string; reason: string }[],
     };
 
-    for (const u of dto.users) {
+    const promises = dto.users.map(async (u) => {
       try {
         await this.inviteUser(companyId, u, adminUserId);
-        results.imported++;
+        return { success: true, email: u.email };
       } catch (e: any) {
-        results.failed++;
-        results.errors.push({
+        return {
+          success: false,
           email: u.email,
           reason: e.message || 'Import error',
+        };
+      }
+    });
+
+    const settled = await Promise.all(promises);
+
+    for (const res of settled) {
+      if (res.success) {
+        results.imported++;
+      } else {
+        results.failed++;
+        results.errors.push({
+          email: res.email,
+          reason: res.reason as string,
         });
       }
     }

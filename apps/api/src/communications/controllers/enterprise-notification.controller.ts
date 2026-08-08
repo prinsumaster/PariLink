@@ -40,7 +40,7 @@ export class EnterpriseNotificationController {
     @Body() dto: CreateNotificationTemplateDto,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.orchestrator.createTemplate(user.companyId, user.userId, dto);
+    return this.orchestrator.createTemplate(user.companyId, user.id, dto);
   }
 
   @Get('templates')
@@ -61,12 +61,7 @@ export class EnterpriseNotificationController {
     @Body() dto: UpdateNotificationTemplateDto,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.orchestrator.updateTemplate(
-      user.companyId,
-      id,
-      user.userId,
-      dto,
-    );
+    return this.orchestrator.updateTemplate(user.companyId, id, user.id, dto);
   }
 
   @Delete('templates/:id')
@@ -76,7 +71,7 @@ export class EnterpriseNotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.orchestrator.deleteTemplate(user.companyId, id, user.userId);
+    return this.orchestrator.deleteTemplate(user.companyId, id, user.id);
   }
 
   @Post('dispatch')
@@ -88,11 +83,7 @@ export class EnterpriseNotificationController {
     @Body() dto: DispatchNotificationDto,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.orchestrator.dispatchNotification(
-      user.companyId,
-      user.userId,
-      dto,
-    );
+    return this.orchestrator.dispatchNotification(user.companyId, user.id, dto);
   }
 
   @Get('metrics')
@@ -109,6 +100,6 @@ export class EnterpriseNotificationController {
   @RequirePermissions('notifications:update')
   @ApiOperation({ summary: 'Batch retry failed notification deliveries' })
   async retryFailed(@GetUser() user: AuthenticatedUser) {
-    return this.orchestrator.retryFailedDeliveries(user.companyId, user.userId);
+    return this.orchestrator.retryFailedDeliveries(user.companyId, user.id);
   }
 }

@@ -21,6 +21,7 @@ export class TallySyncProcessor {
           companyId,
           status: 'GENERATED',
         },
+        take: 5000, // Enforce bounded pagination to prevent OOM
         include: { customer: true },
       }),
     );

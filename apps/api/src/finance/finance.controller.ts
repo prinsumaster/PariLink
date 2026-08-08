@@ -48,7 +48,7 @@ export class FinanceController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: CreateExpenseDto,
   ) {
-    return this.financeService.createExpense(user.companyId, dto);
+    return this.financeService.createExpense(user.companyId, dto, user.id);
   }
 
   @Post('settlements')
@@ -58,7 +58,7 @@ export class FinanceController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: CreateSettlementDto,
   ) {
-    return this.financeService.createSettlement(user.companyId, dto);
+    return this.financeService.createSettlement(user.companyId, dto, user.id);
   }
 
   @Post('vendor-bills')
@@ -68,7 +68,7 @@ export class FinanceController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: CreateVendorBillDto,
   ) {
-    return this.financeService.createVendorBill(user.companyId, dto);
+    return this.financeService.createVendorBill(user.companyId, dto, user.id);
   }
 
   @Post('payments')
@@ -78,6 +78,6 @@ export class FinanceController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: CreatePaymentDto,
   ) {
-    return this.financeService.recordPayment(user.companyId, dto);
+    return this.financeService.recordPayment(user.companyId, dto, user.id);
   }
 }

@@ -17,7 +17,7 @@ export class PreferencesController {
   async getPreferences(@GetUser() user: AuthenticatedUser) {
     let prefs = await this.prisma.runAsSystem(async (tx) =>
       tx.notificationPreference.findUnique({
-        where: { userId: user.userId },
+        where: { userId: user.id },
       }),
     );
 
@@ -25,7 +25,7 @@ export class PreferencesController {
       prefs = await this.prisma.runAsSystem(async (tx) =>
         tx.notificationPreference.create({
           data: {
-            userId: user.userId,
+            userId: user.id,
             companyId: user.companyId,
             channels: { email: true, inApp: true, sms: false },
           },
@@ -44,7 +44,7 @@ export class PreferencesController {
   ) {
     const prefs = await this.prisma.runAsSystem(async (tx) =>
       tx.notificationPreference.update({
-        where: { userId: user.userId },
+        where: { userId: user.id },
         data: {
           channels: (dto as any).channels,
           quietHoursStart: (dto as any).quietHoursStart,

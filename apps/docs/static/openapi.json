@@ -1,6 +1,755 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/v1/reporting/templates": {
+      "post": {
+        "operationId": "ReportingController_createTemplate_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reporting"
+        ]
+      },
+      "get": {
+        "operationId": "ReportingController_listTemplates_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reporting"
+        ]
+      }
+    },
+    "/api/v1/reporting/templates/{id}/execute": {
+      "post": {
+        "operationId": "ReportingController_executeReport_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reporting"
+        ]
+      }
+    },
+    "/api/v1/reporting/schedules": {
+      "post": {
+        "operationId": "ReportingController_createSchedule_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reporting"
+        ]
+      }
+    },
+    "/api/v1/reporting/executions": {
+      "get": {
+        "operationId": "ReportingController_listExecutions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Reporting"
+        ]
+      }
+    },
+    "/api/v1/platform/health": {
+      "get": {
+        "operationId": "PlatformController_readiness_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/health/liveness": {
+      "get": {
+        "operationId": "PlatformController_liveness_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/health/deep": {
+      "get": {
+        "operationId": "PlatformController_deepHealth_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/license/{tenantId}": {
+      "get": {
+        "operationId": "PlatformController_getLicense_v1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/license/{tenantId}/invalidate": {
+      "post": {
+        "operationId": "PlatformController_invalidateLicense_v1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/features/{companyId}/{key}/enable": {
+      "post": {
+        "operationId": "PlatformController_enableFlag_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/features/{companyId}/{key}/kill": {
+      "post": {
+        "operationId": "PlatformController_killFlag_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "key",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/iam/roles/{roleId}/cache/invalidate": {
+      "post": {
+        "operationId": "PlatformController_invalidateRoleCache_v1",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/metrics": {
+      "get": {
+        "operationId": "PlatformController_getMetrics_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/audit-log": {
+      "get": {
+        "operationId": "PlatformController_getAuditLog_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/audit-log/verify/{auditLogId}": {
+      "get": {
+        "operationId": "PlatformController_verifyAuditRecord_v1",
+        "parameters": [
+          {
+            "name": "auditLogId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verify integrity of a single audit log record",
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/audit-log/chain/{companyId}": {
+      "get": {
+        "operationId": "PlatformController_verifyAuditChain_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Verify the hash chain for a tenant audit trail",
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/platform/audit-log/export/{companyId}": {
+      "get": {
+        "operationId": "PlatformController_exportAuditLogs_v1",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Export audit logs for compliance",
+        "tags": [
+          "Platform"
+        ]
+      }
+    },
+    "/api/v1/realtime/stream": {
+      "get": {
+        "operationId": "RealtimeController_stream_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Realtime"
+        ]
+      }
+    },
+    "/api/v1/mdm/records/{entityType}": {
+      "post": {
+        "operationId": "MdmController_createGoldenRecord_v1",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/mdm/records/merge": {
+      "post": {
+        "operationId": "MdmController_mergeRecords_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/mdm/quality/evaluate/{entityType}": {
+      "post": {
+        "operationId": "MdmController_evaluateQuality_v1",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/mdm/identities/{sourceSystem}/{externalId}": {
+      "get": {
+        "operationId": "MdmController_resolveIdentity_v1",
+        "parameters": [
+          {
+            "name": "sourceSystem",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "externalId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/mdm/reference/{domain}": {
+      "get": {
+        "operationId": "MdmController_getReferenceData_v1",
+        "parameters": [
+          {
+            "name": "domain",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      },
+      "post": {
+        "operationId": "MdmController_upsertReferenceData_v1",
+        "parameters": [
+          {
+            "name": "domain",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/mdm/search": {
+      "get": {
+        "operationId": "MdmController_searchMasterRecords_v1",
+        "parameters": [
+          {
+            "name": "query",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mdm"
+        ]
+      }
+    },
+    "/api/v1/invoices": {
+      "get": {
+        "operationId": "InvoicesController_getInvoices_v1",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all invoices",
+        "tags": [
+          "invoices"
+        ]
+      },
+      "post": {
+        "operationId": "InvoicesController_createInvoice_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new invoice",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}": {
+      "get": {
+        "operationId": "InvoicesController_getInvoiceById_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get an invoice by ID",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
+    "/api/v1/invoices/{id}/status": {
+      "patch": {
+        "operationId": "InvoicesController_updateStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update invoice status",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
     "/api/v1/intelligence/dispatch/{loadId}/recommend": {
       "post": {
         "operationId": "DispatchAiController_requestRecommendation_v1",
@@ -416,6 +1165,166 @@
         "summary": "Verify and enable MFA",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/integrations/configure": {
+      "post": {
+        "operationId": "IntegrationsController_configureIntegration_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigureIntegrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Configure a 3rd party integration",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/integrations/sync": {
+      "post": {
+        "operationId": "IntegrationsController_syncEntity_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncIntegrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sync an entity manually to connected ERPs",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/integrations": {
+      "get": {
+        "operationId": "IntegrationsController_getIntegrations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get connected integrations",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/webhooks/v1/incoming/{provider}/{connectionId}": {
+      "post": {
+        "operationId": "WebhookController_receiveWebhook_v1",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "connectionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-webhook-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Receive incoming webhooks from external providers",
+        "tags": [
+          "webhooks"
+        ]
+      }
+    },
+    "/api/v1/gateway/v1/health": {
+      "get": {
+        "operationId": "GatewayController_healthCheck_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "API Gateway Health Check",
+        "tags": [
+          "gateway"
+        ]
+      }
+    },
+    "/api/v1/gateway/v1/loads": {
+      "get": {
+        "operationId": "GatewayController_getLoads_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "Get loads via API Gateway",
+        "tags": [
+          "gateway"
         ]
       }
     },
@@ -1504,7 +2413,7 @@
             "bearer": []
           }
         ],
-        "summary": "Create a new vehicle",
+        "summary": "Create a new vehicle (License capacity enforced)",
         "tags": [
           "vehicles"
         ]
@@ -1704,483 +2613,68 @@
         ]
       }
     },
-    "/api/v1/platform/health": {
-      "get": {
-        "operationId": "PlatformController_readiness_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/health/liveness": {
-      "get": {
-        "operationId": "PlatformController_liveness_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/health/deep": {
-      "get": {
-        "operationId": "PlatformController_deepHealth_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/license/{tenantId}": {
-      "get": {
-        "operationId": "PlatformController_getLicense_v1",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/license/{tenantId}/invalidate": {
+    "/api/v1/vehicles/maintenance/workshops": {
       "post": {
-        "operationId": "PlatformController_invalidateLicense_v1",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/features/{companyId}/{key}/enable": {
-      "post": {
-        "operationId": "PlatformController_enableFlag_v1",
-        "parameters": [
-          {
-            "name": "companyId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "key",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/features/{companyId}/{key}/kill": {
-      "post": {
-        "operationId": "PlatformController_killFlag_v1",
-        "parameters": [
-          {
-            "name": "companyId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "key",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/iam/roles/{roleId}/cache/invalidate": {
-      "post": {
-        "operationId": "PlatformController_invalidateRoleCache_v1",
-        "parameters": [
-          {
-            "name": "roleId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/metrics": {
-      "get": {
-        "operationId": "PlatformController_getMetrics_v1",
-        "parameters": [
-          {
-            "name": "companyId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "category",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/platform/audit-log": {
-      "get": {
-        "operationId": "PlatformController_getAuditLog_v1",
-        "parameters": [
-          {
-            "name": "companyId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "action",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "entity",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "userId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "cursor",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Platform"
-        ]
-      }
-    },
-    "/api/v1/realtime/stream": {
-      "get": {
-        "operationId": "RealtimeController_stream_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Realtime"
-        ]
-      }
-    },
-    "/api/v1/mdm/records/{entityType}": {
-      "post": {
-        "operationId": "MdmController_createGoldenRecord_v1",
-        "parameters": [
-          {
-            "name": "entityType",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Mdm"
-        ]
-      }
-    },
-    "/api/v1/mdm/records/merge": {
-      "post": {
-        "operationId": "MdmController_mergeRecords_v1",
+        "operationId": "MaintenanceController_createWorkshop_v1",
         "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
-        "tags": [
-          "Mdm"
-        ]
-      }
-    },
-    "/api/v1/mdm/quality/evaluate/{entityType}": {
-      "post": {
-        "operationId": "MdmController_evaluateQuality_v1",
-        "parameters": [
+        "security": [
           {
-            "name": "entityType",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
+            "bearer": []
           }
         ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
+        "summary": "Create Workshop",
         "tags": [
-          "Mdm"
-        ]
-      }
-    },
-    "/api/v1/mdm/identities/{sourceSystem}/{externalId}": {
-      "get": {
-        "operationId": "MdmController_resolveIdentity_v1",
-        "parameters": [
-          {
-            "name": "sourceSystem",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "externalId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Mdm"
-        ]
-      }
-    },
-    "/api/v1/mdm/reference/{domain}": {
-      "get": {
-        "operationId": "MdmController_getReferenceData_v1",
-        "parameters": [
-          {
-            "name": "domain",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Mdm"
+          "maintenance"
         ]
       },
-      "post": {
-        "operationId": "MdmController_upsertReferenceData_v1",
-        "parameters": [
-          {
-            "name": "domain",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Mdm"
-        ]
-      }
-    },
-    "/api/v1/mdm/search": {
       "get": {
-        "operationId": "MdmController_searchMasterRecords_v1",
-        "parameters": [
-          {
-            "name": "query",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "entityType",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "MaintenanceController_getWorkshops_v1",
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Workshops",
         "tags": [
-          "Mdm"
+          "maintenance"
         ]
       }
     },
-    "/api/v1/invoices": {
+    "/api/v1/vehicles/maintenance/mechanics": {
+      "post": {
+        "operationId": "MaintenanceController_createMechanic_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Mechanic",
+        "tags": [
+          "maintenance"
+        ]
+      },
       "get": {
-        "operationId": "InvoicesController_getInvoices_v1",
+        "operationId": "MaintenanceController_getMechanics_v1",
         "parameters": [
           {
-            "name": "page",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sort",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "order",
+            "name": "workshopId",
             "required": true,
             "in": "query",
             "schema": {
@@ -2198,13 +2692,15 @@
             "bearer": []
           }
         ],
-        "summary": "Get all invoices",
+        "summary": "Get Mechanics",
         "tags": [
-          "invoices"
+          "maintenance"
         ]
-      },
+      }
+    },
+    "/api/v1/vehicles/maintenance/job-cards": {
       "post": {
-        "operationId": "InvoicesController_createInvoice_v1",
+        "operationId": "MaintenanceController_createJobCard_v1",
         "parameters": [],
         "responses": {
           "201": {
@@ -2216,15 +2712,42 @@
             "bearer": []
           }
         ],
-        "summary": "Create a new invoice",
+        "summary": "Create Job Card (Repair Order)",
         "tags": [
-          "invoices"
+          "maintenance"
+        ]
+      },
+      "get": {
+        "operationId": "MaintenanceController_getJobCards_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Job Cards",
+        "tags": [
+          "maintenance"
         ]
       }
     },
-    "/api/v1/invoices/{id}": {
-      "get": {
-        "operationId": "InvoicesController_getInvoiceById_v1",
+    "/api/v1/vehicles/maintenance/job-cards/{id}/close": {
+      "put": {
+        "operationId": "MaintenanceController_closeJobCard_v1",
         "parameters": [
           {
             "name": "id",
@@ -2245,15 +2768,232 @@
             "bearer": []
           }
         ],
-        "summary": "Get an invoice by ID",
+        "summary": "Close Job Card",
         "tags": [
-          "invoices"
+          "maintenance"
         ]
       }
     },
-    "/api/v1/invoices/{id}/status": {
-      "patch": {
-        "operationId": "InvoicesController_updateStatus_v1",
+    "/api/v1/vehicles/maintenance/schedules": {
+      "post": {
+        "operationId": "MaintenanceController_createSchedule_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Maintenance Schedule",
+        "tags": [
+          "maintenance"
+        ]
+      },
+      "get": {
+        "operationId": "MaintenanceController_getSchedules_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Maintenance Schedules",
+        "tags": [
+          "maintenance"
+        ]
+      }
+    },
+    "/api/v1/vehicles/fuel/cards": {
+      "post": {
+        "operationId": "FuelController_createFuelCard_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Fuel Card",
+        "tags": [
+          "fuel"
+        ]
+      },
+      "get": {
+        "operationId": "FuelController_getFuelCards_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Fuel Cards",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/vehicles/fuel/stations": {
+      "post": {
+        "operationId": "FuelController_createFuelStation_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Fuel Station",
+        "tags": [
+          "fuel"
+        ]
+      },
+      "get": {
+        "operationId": "FuelController_getFuelStations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Fuel Stations",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/vehicles/fuel/transactions": {
+      "post": {
+        "operationId": "FuelController_logFuelTransaction_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log Fuel Transaction",
+        "tags": [
+          "fuel"
+        ]
+      },
+      "get": {
+        "operationId": "FuelController_getFuelTransactions_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Fuel Transactions",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/vehicles/tyres": {
+      "post": {
+        "operationId": "TyreController_createTyre_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new tyre",
+        "tags": [
+          "tyres"
+        ]
+      },
+      "get": {
+        "operationId": "TyreController_getTyres_v1",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List tyres",
+        "tags": [
+          "tyres"
+        ]
+      }
+    },
+    "/api/v1/vehicles/tyres/{id}/install": {
+      "put": {
+        "operationId": "TyreController_installTyre_v1",
         "parameters": [
           {
             "name": "id",
@@ -2274,9 +3014,219 @@
             "bearer": []
           }
         ],
-        "summary": "Update invoice status",
+        "summary": "Install tyre on a vehicle",
         "tags": [
-          "invoices"
+          "tyres"
+        ]
+      }
+    },
+    "/api/v1/vehicles/tyres/{id}/rotate": {
+      "put": {
+        "operationId": "TyreController_rotateTyre_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Rotate tyre to a new position",
+        "tags": [
+          "tyres"
+        ]
+      }
+    },
+    "/api/v1/vehicles/tyres/{id}/scrap": {
+      "put": {
+        "operationId": "TyreController_scrapTyre_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Scrap a tyre",
+        "tags": [
+          "tyres"
+        ]
+      }
+    },
+    "/api/v1/vehicles/compliance/hos-violations": {
+      "post": {
+        "operationId": "ComplianceController_logHosViolation_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log HOS violation",
+        "tags": [
+          "compliance"
+        ]
+      },
+      "get": {
+        "operationId": "ComplianceController_getHosViolations_v1",
+        "parameters": [
+          {
+            "name": "driverId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get HOS violations",
+        "tags": [
+          "compliance"
+        ]
+      }
+    },
+    "/api/v1/vehicles/compliance/dvir": {
+      "post": {
+        "operationId": "ComplianceController_submitDvir_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit DVIR (Driver Vehicle Inspection Report)",
+        "tags": [
+          "compliance"
+        ]
+      },
+      "get": {
+        "operationId": "ComplianceController_getDvirLogs_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get DVIR logs",
+        "tags": [
+          "compliance"
+        ]
+      }
+    },
+    "/api/v1/vehicles/compliance/registration/{vehicleId}": {
+      "post": {
+        "operationId": "ComplianceController_registerVehicle_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register/Update vehicle registration",
+        "tags": [
+          "compliance"
+        ]
+      }
+    },
+    "/api/v1/vehicles/compliance/insurance/{vehicleId}": {
+      "post": {
+        "operationId": "ComplianceController_logInsurance_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log new insurance policy for a vehicle",
+        "tags": [
+          "compliance"
         ]
       }
     },
@@ -2671,6 +3621,1099 @@
         },
         "tags": [
           "Attendance"
+        ]
+      }
+    },
+    "/api/v1/warehouse": {
+      "get": {
+        "operationId": "WarehouseController_getWarehouses_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      },
+      "post": {
+        "operationId": "WarehouseController_createWarehouse_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/{id}/topology": {
+      "get": {
+        "operationId": "WarehouseController_getTopology_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/inbound/asn": {
+      "post": {
+        "operationId": "WarehouseController_createAsn_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/inbound/{id}/receive": {
+      "post": {
+        "operationId": "WarehouseController_receiveGoods_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/outbound/order": {
+      "post": {
+        "operationId": "WarehouseController_createOutbound_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/outbound/{id}/pick": {
+      "post": {
+        "operationId": "WarehouseController_pickOrder_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/docks/schedule": {
+      "post": {
+        "operationId": "WarehouseController_scheduleDock_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/{id}/inventory/abc": {
+      "get": {
+        "operationId": "WarehouseController_runAbcAnalysis_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/ai/workflow/generate": {
+      "post": {
+        "operationId": "AiController_generateWorkflow_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a workflow graph using AI",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/recommend/{domain}/{id}": {
+      "post": {
+        "operationId": "AiController_getRecommendation_v1",
+        "parameters": [
+          {
+            "name": "domain",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get AI recommendation for a domain entity",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/interact": {
+      "post": {
+        "operationId": "AiController_interactWithAgent_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Interact with AI agent",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/recommendation/{id}/accept": {
+      "post": {
+        "operationId": "AiController_acceptRecommendation_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Accept an AI recommendation",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/metrics": {
+      "get": {
+        "operationId": "AiController_getMetrics_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get AI platform metrics",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/sessions": {
+      "get": {
+        "operationId": "AiController_getSessions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all AI chat sessions for current user",
+        "tags": [
+          "AI"
+        ]
+      },
+      "post": {
+        "operationId": "AiController_createSession_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new AI chat session",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/sessions/{sessionId}/messages": {
+      "get": {
+        "operationId": "AiController_getMessages_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get messages in an AI chat session",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/sessions/{sessionId}/chat": {
+      "post": {
+        "operationId": "AiController_chat_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send a message and get AI response",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/sessions/{sessionId}/chat/stream": {
+      "get": {
+        "operationId": "AiController_chatStream_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "message",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send a message and get a streaming AI response via SSE",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/daily-brief": {
+      "get": {
+        "operationId": "AiController_getDailyBrief_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get today's AI-generated operational brief",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/copilot/summarize/{entityType}/{entityId}": {
+      "get": {
+        "operationId": "AiController_summarizeEntity_v1",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "AI summary of a specific entity",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/documents/extract": {
+      "post": {
+        "operationId": "AiController_extractDocument_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Extract structured data from uploaded document",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/dispatch/predict": {
+      "post": {
+        "operationId": "AiController_predictDispatch_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Predict ETA and optimal route for a dispatch load",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/workflow/execute": {
+      "post": {
+        "operationId": "AiController_executeWorkflow_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute a named AI workflow with human approval gates",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/workflow/execution/{executionId}/approve/{stepId}": {
+      "post": {
+        "operationId": "AiController_approveWorkflowStep_v1",
+        "parameters": [
+          {
+            "name": "executionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stepId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve a pending workflow step",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/workflow/execution/{executionId}/reject/{stepId}": {
+      "post": {
+        "operationId": "AiController_rejectWorkflowStep_v1",
+        "parameters": [
+          {
+            "name": "executionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stepId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reject a pending workflow step",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/workflow/executions": {
+      "get": {
+        "operationId": "AiController_listWorkflowExecutions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all active workflow executions",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/agents": {
+      "get": {
+        "operationId": "AiController_listAgents_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all registered AI agents and their capabilities",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/models": {
+      "get": {
+        "operationId": "AiController_listModels_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all configured AI models and their pricing",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/models/templates": {
+      "get": {
+        "operationId": "AiController_listPromptTemplates_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all AI prompt templates",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/memory/stats": {
+      "get": {
+        "operationId": "AiController_getMemoryStats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get enterprise memory usage statistics",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/memory/workspace": {
+      "post": {
+        "operationId": "AiController_setWorkspaceMemory_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set a workspace memory entry",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/governance/compliance-report": {
+      "get": {
+        "operationId": "AiController_getComplianceReport_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get AI governance compliance report",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/feedback": {
+      "post": {
+        "operationId": "AiController_submitFeedback_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit feedback on an AI interaction",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/report-hallucination": {
+      "post": {
+        "operationId": "AiController_reportHallucination_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report an AI hallucination or factual error",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/ai/agents/{agentName}/health": {
+      "get": {
+        "operationId": "AiController_getAgentHealth_v1",
+        "parameters": [
+          {
+            "name": "agentName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get health metrics for a specific AI agent",
+        "tags": [
+          "AI"
+        ]
+      }
+    },
+    "/api/v1/broker/carriers": {
+      "post": {
+        "operationId": "BrokerController_createCarrier_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register external carrier",
+        "tags": [
+          "broker"
+        ]
+      },
+      "get": {
+        "operationId": "BrokerController_getCarriers_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List external carriers",
+        "tags": [
+          "broker"
+        ]
+      }
+    },
+    "/api/v1/broker/load-board/{tripId}": {
+      "post": {
+        "operationId": "BrokerController_postToLoadBoard_v1",
+        "parameters": [
+          {
+            "name": "tripId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Post a trip to the load board",
+        "tags": [
+          "broker"
+        ]
+      }
+    },
+    "/api/v1/broker/load-board": {
+      "get": {
+        "operationId": "BrokerController_getLoadBoard_v1",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get load board items",
+        "tags": [
+          "broker"
+        ]
+      }
+    },
+    "/api/v1/broker/load-board/{loadId}/bids": {
+      "post": {
+        "operationId": "BrokerController_submitBid_v1",
+        "parameters": [
+          {
+            "name": "loadId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit a carrier bid for a load",
+        "tags": [
+          "broker"
+        ]
+      }
+    },
+    "/api/v1/broker/bids/{bidId}/accept": {
+      "put": {
+        "operationId": "BrokerController_acceptBid_v1",
+        "parameters": [
+          {
+            "name": "bidId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Accept a carrier bid",
+        "tags": [
+          "broker"
+        ]
+      }
+    },
+    "/api/v1/localization/locales": {
+      "post": {
+        "operationId": "LocalizationController_createLocale_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new locale",
+        "tags": [
+          "localization"
+        ]
+      },
+      "get": {
+        "operationId": "LocalizationController_getLocales_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all locales",
+        "tags": [
+          "localization"
+        ]
+      }
+    },
+    "/api/v1/localization/translations/{localeId}": {
+      "put": {
+        "operationId": "LocalizationController_upsertTranslation_v1",
+        "parameters": [
+          {
+            "name": "localeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add or update a translation",
+        "tags": [
+          "localization"
+        ]
+      }
+    },
+    "/api/v1/localization/translations/{localeCode}": {
+      "get": {
+        "operationId": "LocalizationController_getTranslations_v1",
+        "parameters": [
+          {
+            "name": "localeCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "namespace",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get translations for a locale",
+        "tags": [
+          "localization"
         ]
       }
     },
@@ -3803,665 +5846,6 @@
         ]
       }
     },
-    "/api/v1/ai/workflow/generate": {
-      "post": {
-        "operationId": "AiController_generateWorkflow_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Generate a workflow graph using AI",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/recommend/{domain}/{id}": {
-      "post": {
-        "operationId": "AiController_getRecommendation_v1",
-        "parameters": [
-          {
-            "name": "domain",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get AI recommendation for a domain entity",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/interact": {
-      "post": {
-        "operationId": "AiController_interactWithAgent_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Interact with AI agent",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/recommendation/{id}/accept": {
-      "post": {
-        "operationId": "AiController_acceptRecommendation_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Accept an AI recommendation",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/metrics": {
-      "get": {
-        "operationId": "AiController_getMetrics_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get AI platform metrics",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/sessions": {
-      "get": {
-        "operationId": "AiController_getSessions_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get all AI chat sessions for current user",
-        "tags": [
-          "AI"
-        ]
-      },
-      "post": {
-        "operationId": "AiController_createSession_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create a new AI chat session",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/sessions/{sessionId}/messages": {
-      "get": {
-        "operationId": "AiController_getMessages_v1",
-        "parameters": [
-          {
-            "name": "sessionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get messages in an AI chat session",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/sessions/{sessionId}/chat": {
-      "post": {
-        "operationId": "AiController_chat_v1",
-        "parameters": [
-          {
-            "name": "sessionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Send a message and get AI response",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/sessions/{sessionId}/chat/stream": {
-      "get": {
-        "operationId": "AiController_chatStream_v1",
-        "parameters": [
-          {
-            "name": "sessionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "message",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Send a message and get a streaming AI response via SSE",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/daily-brief": {
-      "get": {
-        "operationId": "AiController_getDailyBrief_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get today's AI-generated operational brief",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/copilot/summarize/{entityType}/{entityId}": {
-      "get": {
-        "operationId": "AiController_summarizeEntity_v1",
-        "parameters": [
-          {
-            "name": "entityType",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "entityId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "AI summary of a specific entity",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/documents/extract": {
-      "post": {
-        "operationId": "AiController_extractDocument_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Extract structured data from uploaded document",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/dispatch/predict": {
-      "post": {
-        "operationId": "AiController_predictDispatch_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Predict ETA and optimal route for a dispatch load",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/workflow/execute": {
-      "post": {
-        "operationId": "AiController_executeWorkflow_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Execute a named AI workflow with human approval gates",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/workflow/execution/{executionId}/approve/{stepId}": {
-      "post": {
-        "operationId": "AiController_approveWorkflowStep_v1",
-        "parameters": [
-          {
-            "name": "executionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "stepId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Approve a pending workflow step",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/workflow/execution/{executionId}/reject/{stepId}": {
-      "post": {
-        "operationId": "AiController_rejectWorkflowStep_v1",
-        "parameters": [
-          {
-            "name": "executionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "stepId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Reject a pending workflow step",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/workflow/executions": {
-      "get": {
-        "operationId": "AiController_listWorkflowExecutions_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List all active workflow executions",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/agents": {
-      "get": {
-        "operationId": "AiController_listAgents_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List all registered AI agents and their capabilities",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/models": {
-      "get": {
-        "operationId": "AiController_listModels_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List all configured AI models and their pricing",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/models/templates": {
-      "get": {
-        "operationId": "AiController_listPromptTemplates_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "List all AI prompt templates",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/memory/stats": {
-      "get": {
-        "operationId": "AiController_getMemoryStats_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get enterprise memory usage statistics",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/memory/workspace": {
-      "post": {
-        "operationId": "AiController_setWorkspaceMemory_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Set a workspace memory entry",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/governance/compliance-report": {
-      "get": {
-        "operationId": "AiController_getComplianceReport_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get AI governance compliance report",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/feedback": {
-      "post": {
-        "operationId": "AiController_submitFeedback_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Submit feedback on an AI interaction",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/report-hallucination": {
-      "post": {
-        "operationId": "AiController_reportHallucination_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Report an AI hallucination or factual error",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
-    "/api/v1/ai/agents/{agentName}/health": {
-      "get": {
-        "operationId": "AiController_getAgentHealth_v1",
-        "parameters": [
-          {
-            "name": "agentName",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get health metrics for a specific AI agent",
-        "tags": [
-          "AI"
-        ]
-      }
-    },
     "/api/v1/factoring/submit": {
       "post": {
         "operationId": "FactoringController_submit_v1",
@@ -4847,6 +6231,142 @@
         ]
       }
     },
+    "/api/v1/analytics/kpi": {
+      "post": {
+        "operationId": "AnalyticsController_createKpi_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create custom KPI definition via Formula Engine",
+        "tags": [
+          "analytics"
+        ]
+      },
+      "get": {
+        "operationId": "AnalyticsController_listKpis_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List custom KPIs",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/analytics/custom-metrics": {
+      "post": {
+        "operationId": "AnalyticsController_recordMetric_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Record custom metric",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/analytics/trend-reports": {
+      "post": {
+        "operationId": "AnalyticsController_generateTrend_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Trend Report for a KPI",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/analytics/performers/top": {
+      "get": {
+        "operationId": "AnalyticsController_getTopPerformers_v1",
+        "parameters": [
+          {
+            "name": "metric",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get top performers by metric",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
+    "/api/v1/analytics/performers/bottom": {
+      "get": {
+        "operationId": "AnalyticsController_getBottomPerformers_v1",
+        "parameters": [
+          {
+            "name": "metric",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get bottom performers by metric",
+        "tags": [
+          "analytics"
+        ]
+      }
+    },
     "/api/v1/lin/benchmarks": {
       "get": {
         "operationId": "LinController_getBenchmarks_v1",
@@ -4856,6 +6376,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Get aggregated industry benchmarks",
         "tags": [
           "Logistics Intelligence Network"
@@ -5624,6 +7149,122 @@
           }
         ],
         "summary": "Mark a notification as read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/unread": {
+      "post": {
+        "operationId": "NotificationController_markAsUnread_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a notification as unread",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/archive": {
+      "post": {
+        "operationId": "NotificationController_archive_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Archive a notification",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/pin": {
+      "post": {
+        "operationId": "NotificationController_pin_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pin a notification",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/unpin": {
+      "post": {
+        "operationId": "NotificationController_unpin_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unpin a notification",
         "tags": [
           "notifications"
         ]
@@ -6791,7 +8432,24 @@
     "/api/v1/payments": {
       "get": {
         "operationId": "PaymentsController_getAllPayments_v1",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""
@@ -7355,6 +9013,82 @@
         ]
       }
     },
+    "/api/v1/vendors/purchase-orders": {
+      "post": {
+        "operationId": "PurchaseOrderController_createPurchaseOrder_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Purchase Order",
+        "tags": [
+          "vendors"
+        ]
+      },
+      "get": {
+        "operationId": "PurchaseOrderController_getPurchaseOrders_v1",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Purchase Orders",
+        "tags": [
+          "vendors"
+        ]
+      }
+    },
+    "/api/v1/vendors/purchase-orders/{id}/receive": {
+      "put": {
+        "operationId": "PurchaseOrderController_receivePurchaseOrderItems_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Receive Items for Purchase Order",
+        "tags": [
+          "vendors"
+        ]
+      }
+    },
     "/api/v1/billing/stripe/webhook": {
       "post": {
         "operationId": "StripeController_handleWebhook_v1",
@@ -7573,7 +9307,7 @@
     },
     "/api/v1/finance/invoices": {
       "get": {
-        "operationId": "FinanceController_getInvoices_v1",
+        "operationId": "InvoicingController_getInvoices_v1",
         "parameters": [],
         "responses": {
           "200": {
@@ -7585,9 +9319,27 @@
             "bearer": []
           }
         ],
-        "summary": "Get invoices",
+        "summary": "Get all AR Invoices",
         "tags": [
-          "finance"
+          "finance/invoices"
+        ]
+      },
+      "post": {
+        "operationId": "InvoicingController_generateInvoice_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a new invoice",
+        "tags": [
+          "finance/invoices"
         ]
       }
     },
@@ -7724,6 +9476,284 @@
           }
         ],
         "summary": "Record customer payment and post to ledger",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/finance/payables": {
+      "get": {
+        "operationId": "AccountsPayableController_getPayments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all AP Payments",
+        "tags": [
+          "finance/payables"
+        ]
+      },
+      "post": {
+        "operationId": "AccountsPayableController_processPayment_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process a new payment settlement",
+        "tags": [
+          "finance/payables"
+        ]
+      }
+    },
+    "/api/v1/finance/fastag": {
+      "get": {
+        "operationId": "FastagController_getTransactions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get recent FASTag toll transactions",
+        "tags": [
+          "finance/fastag"
+        ]
+      }
+    },
+    "/api/v1/finance/fastag/sync": {
+      "post": {
+        "operationId": "FastagController_syncTollTransactions_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sync transactions from FASTag provider",
+        "tags": [
+          "finance/fastag"
+        ]
+      }
+    },
+    "/api/v1/finance/ledger/entries": {
+      "get": {
+        "operationId": "GeneralLedgerController_getJournalEntries_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get recent general ledger journal entries",
+        "tags": [
+          "finance/ledger"
+        ]
+      },
+      "post": {
+        "operationId": "GeneralLedgerController_createJournalEntry_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Post a new double-entry journal",
+        "tags": [
+          "finance/ledger"
+        ]
+      }
+    },
+    "/api/v1/finance/wallet/balance": {
+      "get": {
+        "operationId": "DriverWalletController_getWalletBalance_v1",
+        "parameters": [
+          {
+            "name": "driverId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Driver Wallet Balance",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/finance/wallet/expenses": {
+      "post": {
+        "operationId": "DriverWalletController_submitExpense_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit Driver Expense",
+        "tags": [
+          "finance"
+        ]
+      },
+      "get": {
+        "operationId": "DriverWalletController_getExpenses_v1",
+        "parameters": [
+          {
+            "name": "driverId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Driver Expenses",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/finance/wallet/expenses/{id}/approve": {
+      "put": {
+        "operationId": "DriverWalletController_approveExpense_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve Driver Expense",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/finance/wallet/settlements/generate": {
+      "post": {
+        "operationId": "DriverWalletController_generateSettlement_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Settlement",
+        "tags": [
+          "finance"
+        ]
+      }
+    },
+    "/api/v1/finance/wallet/settlements": {
+      "get": {
+        "operationId": "DriverWalletController_getSettlements_v1",
+        "parameters": [
+          {
+            "name": "driverId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Settlements",
         "tags": [
           "finance"
         ]
@@ -7911,166 +9941,6 @@
         ]
       }
     },
-    "/api/v1/integrations/configure": {
-      "post": {
-        "operationId": "IntegrationsController_configureIntegration_v1",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConfigureIntegrationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Configure a 3rd party integration",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/api/v1/integrations/sync": {
-      "post": {
-        "operationId": "IntegrationsController_syncEntity_v1",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SyncIntegrationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Sync an entity manually to connected ERPs",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/api/v1/integrations": {
-      "get": {
-        "operationId": "IntegrationsController_getIntegrations_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get connected integrations",
-        "tags": [
-          "integrations"
-        ]
-      }
-    },
-    "/api/v1/webhooks/v1/incoming/{provider}/{connectionId}": {
-      "post": {
-        "operationId": "WebhookController_receiveWebhook_v1",
-        "parameters": [
-          {
-            "name": "provider",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "connectionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-webhook-signature",
-            "required": true,
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Receive incoming webhooks from external providers",
-        "tags": [
-          "webhooks"
-        ]
-      }
-    },
-    "/api/v1/gateway/v1/health": {
-      "get": {
-        "operationId": "GatewayController_healthCheck_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "x-api-key": []
-          }
-        ],
-        "summary": "API Gateway Health Check",
-        "tags": [
-          "gateway"
-        ]
-      }
-    },
-    "/api/v1/gateway/v1/loads": {
-      "get": {
-        "operationId": "GatewayController_getLoads_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "x-api-key": []
-          }
-        ],
-        "summary": "Get loads via API Gateway",
-        "tags": [
-          "gateway"
-        ]
-      }
-    },
     "/api/v1/workspace/snapshots": {
       "get": {
         "operationId": "WorkspaceController_getSnapshots_v1",
@@ -8207,6 +10077,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Admin"
         ]
@@ -9568,7 +11443,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get license overview, seat usage, quotas, and grace periods",
+        "summary": "Get license overview, seat usage, quotas, capacity limits",
         "tags": [
           "Enterprise Admin - License Management"
         ]
@@ -9598,7 +11473,187 @@
             "bearer": []
           }
         ],
-        "summary": "Assign subscription plan and configure seat/storage limits",
+        "summary": "Assign subscription plan — automatically sets default capacity limits",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/trucks/limit": {
+      "put": {
+        "operationId": "LicenseAdminController_setTruckLimit_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTruckLimitDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Override truck/vehicle capacity limit instantly (no plan change required)",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/drivers/limit": {
+      "put": {
+        "operationId": "LicenseAdminController_setDriverLimit_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetDriverLimitDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Override driver capacity limit",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/trucks/boost": {
+      "put": {
+        "operationId": "LicenseAdminController_setBoost_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetBoostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set a temporary truck capacity boost with expiry date",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/unlimited": {
+      "put": {
+        "operationId": "LicenseAdminController_setUnlimitedMode_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetUnlimitedModeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Enable or disable Unlimited Mode (bypasses all capacity checks)",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/plans": {
+      "get": {
+        "operationId": "LicenseAdminController_listPlans_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all available subscription plans",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/usage": {
+      "get": {
+        "operationId": "LicenseAdminController_getUsage_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get real-time usage dashboard for the current tenant",
+        "tags": [
+          "Enterprise Admin - License Management"
+        ]
+      }
+    },
+    "/api/v1/admin/licenses/tenants": {
+      "get": {
+        "operationId": "LicenseAdminController_listAllTenants_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Super Admin] List all tenants with license summary",
         "tags": [
           "Enterprise Admin - License Management"
         ]
@@ -10227,6 +12282,132 @@
         },
         "tags": [
           "ExecutiveDashboard"
+        ]
+      }
+    },
+    "/api/v1/dashboard-builder": {
+      "post": {
+        "operationId": "DashboardBuilderController_createDashboard_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
+        ]
+      },
+      "get": {
+        "operationId": "DashboardBuilderController_listDashboards_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
+        ]
+      }
+    },
+    "/api/v1/dashboard-builder/{id}": {
+      "get": {
+        "operationId": "DashboardBuilderController_getDashboard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
+        ]
+      }
+    },
+    "/api/v1/dashboard-builder/{id}/widgets": {
+      "post": {
+        "operationId": "DashboardBuilderController_addWidget_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
+        ]
+      }
+    },
+    "/api/v1/dashboard-builder/{id}/widgets/layout": {
+      "put": {
+        "operationId": "DashboardBuilderController_updateWidgetLayout_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
+        ]
+      }
+    },
+    "/api/v1/dashboard-builder/{id}/widgets/{widgetId}": {
+      "delete": {
+        "operationId": "DashboardBuilderController_deleteWidget_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "widgetId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DashboardBuilder"
         ]
       }
     },
@@ -12498,166 +14679,6 @@
         "summary": "Evaluate customer SLA performance",
         "tags": [
           "commercial"
-        ]
-      }
-    },
-    "/api/v1/warehouse": {
-      "get": {
-        "operationId": "WarehouseController_getWarehouses_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      },
-      "post": {
-        "operationId": "WarehouseController_createWarehouse_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/{id}/topology": {
-      "get": {
-        "operationId": "WarehouseController_getTopology_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/inbound/asn": {
-      "post": {
-        "operationId": "WarehouseController_createAsn_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/inbound/{id}/receive": {
-      "post": {
-        "operationId": "WarehouseController_receiveGoods_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/outbound/order": {
-      "post": {
-        "operationId": "WarehouseController_createOutbound_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/outbound/{id}/pick": {
-      "post": {
-        "operationId": "WarehouseController_pickOrder_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/docks/schedule": {
-      "post": {
-        "operationId": "WarehouseController_scheduleDock_v1",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
-        ]
-      }
-    },
-    "/api/v1/warehouse/{id}/inventory/abc": {
-      "get": {
-        "operationId": "WarehouseController_runAbcAnalysis_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Warehouse"
         ]
       }
     },
@@ -14970,6 +16991,16 @@
       "post": {
         "operationId": "FastagWalletController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTollAccountDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -15026,6 +17057,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTollAccountDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -15325,6 +17366,420 @@
         ]
       }
     },
+    "/api/v1/customer-portal/loads/active": {
+      "get": {
+        "operationId": "CustomerLoadsController_getActiveLoads_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get active loads for the logged-in customer",
+        "tags": [
+          "customer-portal/loads"
+        ]
+      }
+    },
+    "/api/v1/customer-portal/loads/history": {
+      "get": {
+        "operationId": "CustomerLoadsController_getLoadHistory_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get load history for the logged-in customer",
+        "tags": [
+          "customer-portal/loads"
+        ]
+      }
+    },
+    "/api/v1/customer-portal/finance/invoices": {
+      "get": {
+        "operationId": "CustomerFinanceController_getInvoices_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all invoices for the logged-in customer",
+        "tags": [
+          "customer-portal/finance"
+        ]
+      }
+    },
+    "/api/v1/customer-portal/finance/summary": {
+      "get": {
+        "operationId": "CustomerFinanceController_getAccountSummary_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get account financial summary for the customer",
+        "tags": [
+          "customer-portal/finance"
+        ]
+      }
+    },
+    "/api/v1/customer-portal/analytics/kpis": {
+      "get": {
+        "operationId": "CustomerAnalyticsController_getDashboardKpis_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get high-level KPIs for the customer dashboard",
+        "tags": [
+          "customer-portal/analytics"
+        ]
+      }
+    },
+    "/api/v1/customer-portal/tracking/{loadId}": {
+      "get": {
+        "operationId": "CustomerTrackingController_getTrackingData_v1",
+        "parameters": [
+          {
+            "name": "loadId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get live tracking data and ETA for a specific load",
+        "tags": [
+          "customer-portal/tracking"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/marketplace/tenders": {
+      "get": {
+        "operationId": "VendorMarketplaceController_getOpenTenders_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get open load tenders for bidding",
+        "tags": [
+          "vendor-portal/marketplace"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/marketplace/tenders/{id}/bid": {
+      "post": {
+        "operationId": "VendorMarketplaceController_submitBid_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit a bid on a tender",
+        "tags": [
+          "vendor-portal/marketplace"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/operations/assigned": {
+      "get": {
+        "operationId": "VendorOperationsController_getAssignedTenders_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get assigned loads (accepted tenders) for the vendor",
+        "tags": [
+          "vendor-portal/operations"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/operations/assigned/{id}/pod": {
+      "post": {
+        "operationId": "VendorOperationsController_uploadPod_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upload POD for an assigned tender",
+        "tags": [
+          "vendor-portal/operations"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/settlements/bills": {
+      "get": {
+        "operationId": "VendorSettlementsController_getBills_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all vendor bills (invoices submitted by vendor)",
+        "tags": [
+          "vendor-portal/settlements"
+        ]
+      }
+    },
+    "/api/v1/vendor-portal/settlements/kpis": {
+      "get": {
+        "operationId": "VendorSettlementsController_getDashboardKpis_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get KPI summary for vendor settlements",
+        "tags": [
+          "vendor-portal/settlements"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/trips/active": {
+      "get": {
+        "operationId": "DriverTripsController_getActiveTrip_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current active trip for the driver",
+        "tags": [
+          "driver-portal/trips"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/trips/{id}/status": {
+      "patch": {
+        "operationId": "DriverTripsController_updateTripStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update status of the trip (e.g., START, ARRIVED)",
+        "tags": [
+          "driver-portal/trips"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/checklists/trips/{id}": {
+      "post": {
+        "operationId": "DriverChecklistsController_submitChecklist_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit pre-trip or post-trip vehicle inspection checklist",
+        "tags": [
+          "driver-portal/checklists"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/expenses": {
+      "get": {
+        "operationId": "DriverExpensesController_getExpenses_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get recent expenses submitted by the driver",
+        "tags": [
+          "driver-portal/expenses"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/expenses/trips/{id}": {
+      "post": {
+        "operationId": "DriverExpensesController_submitExpense_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit an expense for a specific trip",
+        "tags": [
+          "driver-portal/expenses"
+        ]
+      }
+    },
+    "/api/v1/driver-portal/telemetry/location": {
+      "post": {
+        "operationId": "DriverTelemetryController_logLocation_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Log a high-frequency GPS ping for the active trip",
+        "tags": [
+          "driver-portal/telemetry"
+        ]
+      }
+    },
     "/api/v1/saas/tenant/onboarding/complete": {
       "post": {
         "operationId": "TenantController_completeOnboarding_v1",
@@ -15468,6 +17923,142 @@
           "Stripe Webhooks"
         ]
       }
+    },
+    "/api/v1/webhooks/razorpay": {
+      "post": {
+        "operationId": "RazorpayWebhookController_handleWebhook_v1",
+        "parameters": [
+          {
+            "name": "x-razorpay-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Razorpay webhook receiver",
+        "tags": [
+          "Razorpay Webhooks"
+        ]
+      }
+    },
+    "/api/v1/fleet/lifecycle/status": {
+      "get": {
+        "operationId": "VehicleLifecycleController_getFleetStatus_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get overall fleet operational status",
+        "tags": [
+          "fleet/lifecycle"
+        ]
+      }
+    },
+    "/api/v1/fleet/lifecycle/onboard": {
+      "post": {
+        "operationId": "VehicleLifecycleController_onboardVehicle_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Onboard a new vehicle into the fleet",
+        "tags": [
+          "fleet/lifecycle"
+        ]
+      }
+    },
+    "/api/v1/fleet/maintenance/upcoming": {
+      "get": {
+        "operationId": "FleetMaintenanceController_getUpcomingMaintenance_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get upcoming scheduled maintenance for the fleet",
+        "tags": [
+          "fleet/maintenance"
+        ]
+      }
+    },
+    "/api/v1/fleet/maintenance/breakdown": {
+      "post": {
+        "operationId": "FleetMaintenanceController_reportBreakdown_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report a sudden vehicle breakdown",
+        "tags": [
+          "fleet/maintenance"
+        ]
+      }
+    },
+    "/api/v1/fleet/iot/webhook/{providerId}": {
+      "post": {
+        "operationId": "IoTController_handleWebhook_v1",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-provider-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Receive webhook payloads from IoT providers",
+        "tags": [
+          "fleet/iot"
+        ]
+      }
     }
   },
   "info": {
@@ -15600,6 +18191,43 @@
             "description": "Client hardware fingerprint for device binding"
           }
         }
+      },
+      "ConfigureIntegrationDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "credentials": {
+            "type": "object"
+          },
+          "settings": {
+            "type": "object"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "provider",
+          "credentials",
+          "isActive"
+        ]
+      },
+      "SyncIntegrationDto": {
+        "type": "object",
+        "properties": {
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "entityType",
+          "entityId"
+        ]
       },
       "CreateCompanyDto": {
         "type": "object",
@@ -17611,43 +20239,6 @@
           "paymentDate"
         ]
       },
-      "ConfigureIntegrationDto": {
-        "type": "object",
-        "properties": {
-          "provider": {
-            "type": "string"
-          },
-          "credentials": {
-            "type": "object"
-          },
-          "settings": {
-            "type": "object"
-          },
-          "isActive": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "provider",
-          "credentials",
-          "isActive"
-        ]
-      },
-      "SyncIntegrationDto": {
-        "type": "object",
-        "properties": {
-          "entityType": {
-            "type": "string"
-          },
-          "entityId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "entityType",
-          "entityId"
-        ]
-      },
       "UpdateTenantStatusDto": {
         "type": "object",
         "properties": {
@@ -18029,6 +20620,76 @@
           }
         }
       },
+      "SetTruckLimitDto": {
+        "type": "object",
+        "properties": {
+          "maxVehicles": {
+            "type": "number",
+            "description": "New maximum vehicle/truck limit for the tenant",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for the override (for audit log)"
+          }
+        },
+        "required": [
+          "maxVehicles"
+        ]
+      },
+      "SetDriverLimitDto": {
+        "type": "object",
+        "properties": {
+          "maxDrivers": {
+            "type": "number",
+            "description": "New maximum driver limit for the tenant",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "maxDrivers"
+        ]
+      },
+      "SetBoostDto": {
+        "type": "object",
+        "properties": {
+          "boostMaxVehicles": {
+            "type": "number",
+            "description": "Temporary maximum vehicle limit during boost period",
+            "minimum": 1
+          },
+          "boostExpiresAt": {
+            "type": "string",
+            "description": "ISO 8601 datetime when the boost expires",
+            "example": "2026-09-01T00:00:00Z"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "boostMaxVehicles",
+          "boostExpiresAt"
+        ]
+      },
+      "SetUnlimitedModeDto": {
+        "type": "object",
+        "properties": {
+          "unlimited": {
+            "type": "boolean",
+            "description": "Enable or disable unlimited mode (bypasses all capacity checks)"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "unlimited"
+        ]
+      },
       "CreateApiClientDto": {
         "type": "object",
         "properties": {
@@ -18375,6 +21036,14 @@
             "example": "https://myapp.com/webhook"
           }
         }
+      },
+      "CreateTollAccountDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateTollAccountDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateSupportTicketDto": {
         "type": "object",

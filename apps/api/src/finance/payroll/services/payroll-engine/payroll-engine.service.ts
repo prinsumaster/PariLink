@@ -7,7 +7,7 @@ export class PayrollEngineService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(companyId: string, userId: string, data: any) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.payrollRun.create({
         data: { ...data, companyId },
       });
@@ -23,7 +23,7 @@ export class PayrollEngineService {
       where.status = query.status;
     }
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const [items, total] = await Promise.all([
         tx.payrollRun.findMany({
           where,
@@ -38,8 +38,8 @@ export class PayrollEngineService {
   }
 
   async findOne(companyId: string, id: string) {
-    const item = await this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.payrollRun.findUnique({ where: { id } });
+    const item = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.payrollRun.findFirst({ where: { id, companyId } });
     });
     if (!item || item.companyId !== companyId) {
       throw new NotFoundException('PayrollRun not found');
@@ -49,9 +49,9 @@ export class PayrollEngineService {
 
   async update(companyId: string, id: string, userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.payrollRun.update({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.payrollRun.updateMany({
+        where: { id, companyId },
         data,
       });
     });
@@ -59,9 +59,9 @@ export class PayrollEngineService {
 
   async remove(companyId: string, id: string, userId: string) {
     await this.findOne(companyId, id);
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.payrollRun.delete({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.payrollRun.deleteMany({
+        where: { id, companyId },
       });
     });
   }

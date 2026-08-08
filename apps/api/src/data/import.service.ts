@@ -31,19 +31,20 @@ export class ImportService {
     try {
       return await this.prisma.$transaction(async (tx) => {
         let importedCount = 0;
-        for (const record of data) {
-          if (moduleType === 'Customers') {
-            await tx.customer.create({
-              data: {
-                companyId,
-                name: record.name,
-                email: record.email,
-                phone: record.phone,
-                status: 'ACTIVE',
-              },
-            });
-            importedCount++;
-          }
+        if (moduleType === 'Customers') {
+          const customersToCreate = data.map((record) => ({
+            companyId,
+            name: record.name,
+            email: record.email,
+            phone: record.phone,
+            status: 'ACTIVE',
+          }));
+
+          const result = await tx.customer.createMany({
+            data: customersToCreate,
+            skipDuplicates: true,
+          });
+          importedCount = result.count;
         }
 
         // Log Audit Event

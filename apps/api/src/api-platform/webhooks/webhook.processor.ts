@@ -4,6 +4,7 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 import { PrismaService } from '../../prisma/prisma.service';
 import axios from 'axios';
+import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util';
 import * as crypto from 'crypto';
 import { URL } from 'url';
 
@@ -49,7 +50,12 @@ export class WebhookProcessor extends WorkerHost {
       );
 
       try {
-        validateWebhookUrl(url);
+        if (!(await validateSsrfSafeUrl(url))) {
+          throw new Error(
+            'SSRF attempt blocked: Webhook URL is invalid or targets restricted internal IPs',
+          );
+        }
+
         const response = await axios.post(url, payload, {
           headers: {
             'Content-Type': 'application/json',
@@ -59,6 +65,7 @@ export class WebhookProcessor extends WorkerHost {
             'X-PariLink-Retry-Count': job.attemptsMade,
           },
           timeout: 10000, // 10s timeout
+          maxRedirects: 0, // Prevent SSRF bypass via HTTP redirects to internal IPs
         });
 
         // 2. Mark Delivery Success
@@ -123,7 +130,23 @@ export class WebhookProcessor extends WorkerHost {
     eventTopic: string,
     payload: any,
   ): Promise<string> {
+    const endpointId = job.data.endpointId;
+
     if (job.attemptsMade === 0) {
+      // 1. Verify tenant ownership (IDOR protection for background workers)
+      if (endpointId) {
+        const endpoint = await this.prisma.runAsSystem(async (tx) =>
+          tx.webhookEndpoint.findFirst({
+            where: { id: endpointId, companyId },
+          }),
+        );
+        if (!endpoint) {
+          throw new Error(
+            `Unauthorized: Endpoint ${endpointId} does not belong to company ${companyId}`,
+          );
+        }
+      }
+
       // First attempt
       const delivery = await this.prisma.runAsSystem(async (tx) =>
         tx.webhookDelivery.create({

@@ -30,7 +30,7 @@ export class NotificationController {
     @GetUser() user: AuthenticatedUser,
     @Query('status') status: string,
   ) {
-    const whereClause: any = { userId: user.userId };
+    const whereClause: any = { userId: user.id };
     if (status === 'unread') whereClause.isRead = false;
     if (status === 'archived') whereClause.isArchived = true;
 
@@ -42,7 +42,21 @@ export class NotificationController {
       }),
     );
 
-    return { data: notifications };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const grouped = {
+      today: notifications.filter((n) => new Date(n.createdAt) >= today),
+      yesterday: notifications.filter(
+        (n) =>
+          new Date(n.createdAt) >= yesterday && new Date(n.createdAt) < today,
+      ),
+      earlier: notifications.filter((n) => new Date(n.createdAt) < yesterday),
+    };
+
+    return { data: notifications, grouped };
   }
 
   @Post(':id/read')
@@ -58,7 +72,54 @@ export class NotificationController {
       }),
     );
 
-    this.sseService.emitToUser(user.userId, { type: 'NOTIFICATION_READ', id });
+    this.sseService.emitToUser(user.id, { type: 'NOTIFICATION_READ', id });
     return updated;
+  }
+
+  @Post(':id/unread')
+  @ApiOperation({ summary: 'Mark a notification as unread' })
+  async markAsUnread(
+    @Param('id') id: string,
+    @GetUser() user: AuthenticatedUser,
+  ) {
+    return this.prisma.runAsSystem(async (tx) =>
+      tx.notification.update({
+        where: { id },
+        data: { isRead: false, readAt: null },
+      }),
+    );
+  }
+
+  @Post(':id/archive')
+  @ApiOperation({ summary: 'Archive a notification' })
+  async archive(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
+    return this.prisma.runAsSystem(async (tx) =>
+      tx.notification.update({
+        where: { id },
+        data: { isArchived: true },
+      }),
+    );
+  }
+
+  @Post(':id/pin')
+  @ApiOperation({ summary: 'Pin a notification' })
+  async pin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
+    return this.prisma.runAsSystem(async (tx) =>
+      tx.notification.update({
+        where: { id },
+        data: { isPinned: true },
+      }),
+    );
+  }
+
+  @Post(':id/unpin')
+  @ApiOperation({ summary: 'Unpin a notification' })
+  async unpin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
+    return this.prisma.runAsSystem(async (tx) =>
+      tx.notification.update({
+        where: { id },
+        data: { isPinned: false },
+      }),
+    );
   }
 }

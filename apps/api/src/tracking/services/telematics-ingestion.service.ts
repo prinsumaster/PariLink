@@ -59,6 +59,14 @@ export class TelematicsIngestionService {
     );
 
     const triggeredAlerts: any[] = [];
+    const alertsToCreate: any[] = [];
+
+    // Find admin user once outside the loop for high/critical notifications
+    const adminUser = await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.user.findFirst({
+        where: { companyId, status: 'ACTIVE' },
+      }),
+    );
 
     for (const rule of rules) {
       let triggered = false;
@@ -99,63 +107,54 @@ export class TelematicsIngestionService {
       }
 
       if (triggered) {
-        const alert = await this.prisma.runAsTenant(companyId, async (tx) =>
-          tx.alert.create({
-            data: {
-              companyId,
-              ruleId: rule.id,
-              vehicleId: dto.vehicleId,
-              driverId: dto.driverId || null,
-              severity: rule.severity || 'MEDIUM',
-              message,
-              status: 'NEW',
-              timestamp,
-              metadata: {
-                actualValue,
-                threshold: rule.threshold,
-                telemetryId: telemetry.id,
-              },
-            },
-          }),
-        );
-
-        triggeredAlerts.push(alert);
+        alertsToCreate.push({
+          companyId,
+          ruleId: rule.id,
+          vehicleId: dto.vehicleId,
+          driverId: dto.driverId || null,
+          severity: rule.severity || 'MEDIUM',
+          message,
+          status: 'NEW',
+          timestamp,
+          metadata: {
+            actualValue,
+            threshold: rule.threshold,
+            telemetryId: telemetry.id,
+          },
+        });
 
         // Notify Admin / Dispatch via Orchestrator if HIGH or CRITICAL
-        if (rule.severity === 'HIGH' || rule.severity === 'CRITICAL') {
+        if (
+          (rule.severity === 'HIGH' || rule.severity === 'CRITICAL') &&
+          adminUser
+        ) {
           try {
-            // Find an admin user in the company to receive alert
-            const adminUser = await this.prisma.runAsTenant(
+            await this.notificationOrchestrator.dispatchNotification(
               companyId,
-              async (tx) =>
-                tx.user.findFirst({
-                  where: { companyId, status: 'ACTIVE' },
-                }),
+              adminUser.id,
+              {
+                targetUserId: adminUser.id,
+                eventType: `telematics.${rule.type.toLowerCase()}`,
+                priority: rule.severity === 'CRITICAL' ? 'URGENT' : 'HIGH',
+                title: `Fleet Alert: ${rule.name}`,
+                body: message,
+                entityType: 'Vehicle',
+                entityId: dto.vehicleId,
+                channels: ['IN_APP', 'EMAIL'],
+              },
             );
-            if (adminUser) {
-              await this.notificationOrchestrator.dispatchNotification(
-                companyId,
-                adminUser.id,
-                {
-                  targetUserId: adminUser.id,
-                  eventType: `telematics.${rule.type.toLowerCase()}`,
-                  priority:
-                    rule.severity === 'CRITICAL'
-                      ? NotificationPriority.URGENT
-                      : NotificationPriority.HIGH,
-                  title: `Fleet Alert: ${rule.name}`,
-                  body: message,
-                  entityType: 'Vehicle',
-                  entityId: vehicle.id,
-                  channels: ['IN_APP', 'EMAIL'],
-                },
-              );
-            }
           } catch (e) {
             this.logger.error(`Failed to dispatch alert notification: ${e}`);
           }
         }
       }
+    }
+
+    if (alertsToCreate.length > 0) {
+      const createdAlerts = await this.prisma.runAsTenant(companyId, async (tx) =>
+        Promise.all(alertsToCreate.map(alert => tx.alert.create({ data: alert })))
+      );
+      triggeredAlerts.push(...createdAlerts);
     }
 
     return {
@@ -210,14 +209,16 @@ export class TelematicsIngestionService {
 
   async deleteAlertRule(companyId: string, id: string, userId: string) {
     const rule = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alertRule.findUnique({ where: { id } }),
+      tx.alertRule.findFirst({ where: { id, companyId } }),
     );
     if (!rule || rule.companyId !== companyId) {
       throw new NotFoundException('Alert rule not found');
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alertRule.delete({ where: { id } }),
+      tx.alertRule.deleteMany({
+        where: { id, companyId },
+      }),
     );
     return { success: true, id };
   }
@@ -248,15 +249,15 @@ export class TelematicsIngestionService {
     dto: UpdateAlertStatusDto,
   ) {
     const alert = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alert.findUnique({ where: { id } }),
+      tx.alert.findFirst({ where: { id, companyId } }),
     );
     if (!alert || alert.companyId !== companyId) {
       throw new NotFoundException('Alert not found');
     }
 
-    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alert.update({
-        where: { id },
+    await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.alert.updateMany({
+        where: { id, companyId },
         data: {
           status: dto.status,
           resolvedAt: dto.status === 'RESOLVED' ? new Date() : undefined,
@@ -267,6 +268,10 @@ export class TelematicsIngestionService {
           },
         },
       }),
+    );
+
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.alert.findFirst({ where: { id, companyId } }),
     );
 
     await this.audit.logEvent({

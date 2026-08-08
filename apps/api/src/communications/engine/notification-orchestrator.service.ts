@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
+import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 import { TemplateService } from './template.service';
 import { SseService } from '../realtime/sse.service';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -24,6 +25,7 @@ export class NotificationOrchestratorService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly eventStore: EventStoreService,
     private readonly templateService: TemplateService,
     private readonly sseService: SseService,
     @InjectQueue('notification-delivery') private readonly deliveryQueue: Queue,
@@ -73,6 +75,19 @@ export class NotificationOrchestratorService {
       },
     });
 
+    await this.eventStore.append({
+      tenantId: companyId,
+      streamType: 'NOTIFICATION_TEMPLATE',
+      streamId: template.id,
+      eventType: 'TemplateCreated',
+      payload: {
+        name: template.name,
+        eventType: template.eventType,
+        channel: template.channel,
+      },
+      userId,
+    });
+
     return template;
   }
 
@@ -95,7 +110,7 @@ export class NotificationOrchestratorService {
     dto: UpdateNotificationTemplateDto,
   ) {
     const template = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.notificationTemplate.findUnique({ where: { id } }),
+      tx.notificationTemplate.findFirst({ where: { id, companyId } }),
     );
     if (
       !template ||
@@ -105,8 +120,8 @@ export class NotificationOrchestratorService {
     }
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.notificationTemplate.update({
-        where: { id },
+      tx.notificationTemplate.updateMany({
+        where: { id, companyId },
         data: {
           name: dto.name,
           subject: dto.subject,
@@ -125,12 +140,21 @@ export class NotificationOrchestratorService {
       details: { updates: dto },
     });
 
+    await this.eventStore.append({
+      tenantId: companyId,
+      streamType: 'NOTIFICATION_TEMPLATE',
+      streamId: id,
+      eventType: 'TemplateUpdated',
+      payload: { updates: dto },
+      userId,
+    });
+
     return updated;
   }
 
   async deleteTemplate(companyId: string, id: string, userId: string) {
     const template = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.notificationTemplate.findUnique({ where: { id } }),
+      tx.notificationTemplate.findFirst({ where: { id, companyId } }),
     );
     if (!template || template.companyId !== companyId) {
       throw new NotFoundException(
@@ -139,7 +163,9 @@ export class NotificationOrchestratorService {
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.notificationTemplate.delete({ where: { id } }),
+      tx.notificationTemplate.deleteMany({
+        where: { id, companyId },
+      }),
     );
 
     await this.audit.logEvent({
@@ -149,6 +175,15 @@ export class NotificationOrchestratorService {
       userId,
       companyId,
       details: { name: template.name },
+    });
+
+    await this.eventStore.append({
+      tenantId: companyId,
+      streamType: 'NOTIFICATION_TEMPLATE',
+      streamId: id,
+      eventType: 'TemplateDeleted',
+      payload: { name: template.name },
+      userId,
     });
 
     return { success: true, id };
@@ -399,6 +434,15 @@ export class NotificationOrchestratorService {
       },
     });
 
+    await this.eventStore.append({
+      tenantId: companyId,
+      streamType: 'NOTIFICATION_DISPATCH',
+      streamId: targetUser.id,
+      eventType: 'NotificationDispatched',
+      payload: { eventType: dto.eventType, results },
+      userId: senderId,
+    });
+
     return {
       success: true,
       targetUserId: targetUser.id,
@@ -463,24 +507,25 @@ export class NotificationOrchestratorService {
         }),
     );
 
-    let requeuedCount = 0;
-    for (const deliv of failedDeliveries) {
-      await this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.notificationDelivery.update({
-          where: { id: deliv.id },
-          data: { status: 'PENDING', retryCount: 0, errorMessage: null },
-        }),
-      );
+    if (failedDeliveries.length === 0)
+      return { message: 'No failed deliveries found', requeuedCount: 0 };
 
-      await this.deliveryQueue
-        .add(
-          'deliver-notification',
-          { deliveryId: deliv.id },
-          { attempts: 3, backoff: { type: 'exponential', delay: 2000 } },
-        )
-        .catch(() => {});
-      requeuedCount++;
-    }
+    await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.notificationDelivery.updateMany({
+        where: { id: { in: failedDeliveries.map((d) => d.id) }, companyId },
+        data: { status: 'PENDING', retryCount: 0, errorMessage: null },
+      }),
+    );
+
+    const jobs = failedDeliveries.map((deliv) => ({
+      name: 'deliver-notification',
+      data: { deliveryId: deliv.id },
+      opts: { attempts: 3, backoff: { type: 'exponential', delay: 2000 } },
+    }));
+
+    await this.deliveryQueue.addBulk(jobs);
+
+    const requeuedCount = failedDeliveries.length;
 
     await this.audit.logEvent({
       action: 'notification:retry_failed',

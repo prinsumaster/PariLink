@@ -36,7 +36,7 @@ export class GeneralLedgerService {
     }
 
     // Wrap in ACID transaction
-    return this.prisma.$transaction(async (tx: any) => {
+    return this.prisma.$transaction(async (tx) => {
       const entry = await tx.journalEntry.create({
         data: {
           companyId,

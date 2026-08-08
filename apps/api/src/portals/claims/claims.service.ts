@@ -16,7 +16,7 @@ export class ClaimsService {
       `Creating claim for customer ${customerId} (amount: ${data.amount})`,
     );
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.claim.create({
         data: {
           companyId,
@@ -31,7 +31,7 @@ export class ClaimsService {
   }
 
   async getClaimsByCustomer(companyId: string, customerId: string) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.claim.findMany({
         where: { companyId, customerId },
         orderBy: { createdAt: 'desc' },
@@ -40,7 +40,7 @@ export class ClaimsService {
   }
 
   async getClaimDetails(companyId: string, claimId: string) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const claim = await tx.claim.findUnique({
         where: { id: claimId, companyId },
       });
@@ -52,7 +52,7 @@ export class ClaimsService {
   }
 
   async updateClaimStatus(companyId: string, claimId: string, status: string) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.claim.update({
         where: { id: claimId, companyId },
         data: { status },

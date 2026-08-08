@@ -61,7 +61,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         if (statusCode === 400 && Array.isArray(body.message)) {
           this.logger.error(`Validation Error: ${body.message.join(', ')}`);
         } else if (statusCode === 400) {
-          this.logger.error(`Bad Request Error: ${JSON.stringify(body)}`);
+          this.logger.error(`Bad Request Error: ${errorCode} - ${message}`);
         }
       }
     }

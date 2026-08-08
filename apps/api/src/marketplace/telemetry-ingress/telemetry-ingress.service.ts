@@ -45,6 +45,11 @@ export class TelemetryIngressService {
       throw new UnauthorizedException('Invalid or inactive App Installation');
     }
 
+    const creds = installation.credentials as any;
+    if (creds?.secretKey && creds.secretKey !== payload.secretKey) {
+      throw new UnauthorizedException('Invalid telemetry secret key');
+    }
+
     // Process each record
     let successCount = 0;
     for (const record of payload.records) {

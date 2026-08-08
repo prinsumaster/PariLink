@@ -9,10 +9,17 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 @Injectable()
 export class EmbeddingPipelineService {
   private readonly logger = new Logger(EmbeddingPipelineService.name);
-  private embeddings = new OpenAIEmbeddings({
-    apiKey: process.env.OPENAI_API_KEY,
-    modelName: 'text-embedding-3-small',
-  });
+  private _embeddings: OpenAIEmbeddings;
+
+  private get embeddings(): OpenAIEmbeddings {
+    if (!this._embeddings) {
+      this._embeddings = new OpenAIEmbeddings({
+        apiKey: process.env.OPENAI_API_KEY || 'dummy-key-to-allow-boot',
+        modelName: 'text-embedding-3-small',
+      });
+    }
+    return this._embeddings;
+  }
 
   constructor(private readonly prisma: PrismaService) {}
 

@@ -127,35 +127,40 @@ export class IntegrationsService {
         );
       }
 
-      const results = [];
+      const results = await Promise.all(
+        activeIntegrations.map(async (config) => {
+          const adapter = this.adapters[config.provider.toUpperCase()];
+          if (!adapter) {
+            this.logger.warn(
+              `No adapter found for provider ${config.provider}`,
+            );
+            return {
+              provider: config.provider,
+              success: false,
+              error: 'Adapter missing',
+            };
+          }
 
-      for (const config of activeIntegrations) {
-        const adapter = this.adapters[config.provider.toUpperCase()];
-        if (!adapter) {
-          this.logger.warn(`No adapter found for provider ${config.provider}`);
-          results.push({
-            provider: config.provider,
-            success: false,
-            error: 'Adapter missing',
-          });
-          continue;
-        }
-
-        try {
-          const success = await adapter.syncEntity(
-            dto.entityType,
-            entityData,
-            config,
-          );
-          results.push({ provider: config.provider, success });
-        } catch (error: unknown) {
-          results.push({
-            provider: config.provider,
-            success: false,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }
+          try {
+            const success = await adapter.syncEntity(
+              dto.entityType,
+              entityData,
+              config,
+            );
+            return { provider: config.provider, success };
+          } catch (error: any) {
+            this.logger.error(
+              `Sync failed for provider ${config.provider}: ${error.message}`,
+              error.stack,
+            );
+            return {
+              provider: config.provider,
+              success: false,
+              error: error.message,
+            };
+          }
+        }),
+      );
 
       return { results };
     });
