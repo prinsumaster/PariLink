@@ -1,0 +1,3 @@
+RegistrationNumber,VehicleType,Capacity,Make,Model,Year,Status
+MH04AB1234,TRUCK_32FT,15000,Tata,Signa,2023,ACTIVE
+DL01XY9876,LCV_19FT,7000,Ashok Leyland,Ecomet,2022,ACTIVE
