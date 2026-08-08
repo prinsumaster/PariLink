@@ -16,6 +16,7 @@ data:
   API_URL: "https://api.parilink.app/api/v1"
   WEB_URL: "https://parilink.app"
   CORS_ALLOWED_ORIGINS: "https://parilink.app,https://api.parilink.app"
+  COOKIE_DOMAIN: ".parilink.app"
   REDIS_HOST: "parilink-redis"
   REDIS_PORT: "6379"
 ---

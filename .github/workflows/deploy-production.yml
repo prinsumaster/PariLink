@@ -68,6 +68,7 @@ jobs:
           tags: ${{ steps.login-ecr.outputs.registry }}/parilink-web:${{ env.VERSION }}
 
       - name: Run Blue/Green Deployment Script
+        id: deploy_step
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
@@ -87,5 +88,5 @@ jobs:
           kubectl rollout status deployment/parilink-web -n parilink-production --timeout=300s
 
       - name: Automatic Rollback on Failure
-        if: failure()
+        if: failure() && steps.deploy_step.outcome != 'skipped' && steps.deploy_step.outcome != ''
         run: ./scripts/rollback.sh production
