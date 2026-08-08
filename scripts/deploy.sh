@@ -9,15 +9,21 @@ if [ -z "$ENVIRONMENT" ] || [ -z "$VERSION" ]; then
   exit 1
 fi
 
-echo "Deploying version ${VERSION} to ${ENVIRONMENT}..."
+if [ -z "$REGISTRY" ]; then
+  echo "Error: REGISTRY environment variable is not set."
+  echo "Example: REGISTRY=123456789012.dkr.ecr.ap-south-1.amazonaws.com ./scripts/deploy.sh production v1.0.0"
+  exit 1
+fi
 
-# Helm upgrade command (assumes PariLink has a base helm chart in terraform/helm/parilink-api)
-# Using generic kubectl set image for simplicity in this script assuming a standard deployment
-kubectl set image deployment/parilink-api parilink-api=${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/parilink-api:${VERSION} -n default
-kubectl set image deployment/parilink-web parilink-web=${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/parilink-web:${VERSION} -n default
+NAMESPACE="parilink-${ENVIRONMENT}"
+
+echo "Deploying version ${VERSION} to ${NAMESPACE}..."
+
+kubectl set image deployment/parilink-api api=${REGISTRY}/parilink-api:${VERSION} -n ${NAMESPACE}
+kubectl set image deployment/parilink-web web=${REGISTRY}/parilink-web:${VERSION} -n ${NAMESPACE}
 
 echo "Waiting for rollout to complete..."
-kubectl rollout status deployment/parilink-api -n default --timeout=300s
-kubectl rollout status deployment/parilink-web -n default --timeout=300s
+kubectl rollout status deployment/parilink-api -n ${NAMESPACE} --timeout=300s
+kubectl rollout status deployment/parilink-web -n ${NAMESPACE} --timeout=300s
 
 echo "Deployment of ${VERSION} to ${ENVIRONMENT} completed successfully."

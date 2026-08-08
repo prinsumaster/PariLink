@@ -68,6 +68,8 @@ jobs:
           tags: ${{ steps.login-ecr.outputs.registry }}/parilink-web:${{ env.VERSION }}
 
       - name: Run Blue/Green Deployment Script
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: ./scripts/deploy.sh production ${{ env.VERSION }}
 
       - name: Verify Canary Health
@@ -75,8 +77,8 @@ jobs:
 
       - name: Complete Rollout
         run: |
-          kubectl rollout status deployment/parilink-api -n default --timeout=300s
-          kubectl rollout status deployment/parilink-web -n default --timeout=300s
+          kubectl rollout status deployment/parilink-api -n parilink-production --timeout=300s
+          kubectl rollout status deployment/parilink-web -n parilink-production --timeout=300s
 
       - name: Automatic Rollback on Failure
         if: failure()

@@ -15,18 +15,17 @@ const nextConfig: NextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
-  outputFileTracingRoot: "/Users/vishalvirda/Desktop/PariLink",
+  outputFileTracingRoot: process.env.NODE_ENV === 'production' ? undefined : undefined,
+  turbopack: {},
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns', 'recharts', 'framer-motion'],
   },
-  turbopack: {
-    root: "/Users/vishalvirda/Desktop/PariLink",
-  },
   async rewrites() {
+    const backendUrl = process.env.API_INTERNAL_URL || "http://localhost:8080";
     return [
       {
         source: "/backend/:path*",
-        destination: "http://localhost:8080/api/:path*", // Proxy to Backend
+        destination: `${backendUrl}/api/:path*`, // Proxy to Backend
       },
     ];
   },
@@ -57,7 +56,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https: http:; font-src 'self'; connect-src 'self' ws: wss: http: https: ws://127.0.0.1:8080 ws://localhost:8080 http://127.0.0.1:8080 http://localhost:8080;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https: http:; font-src 'self'; connect-src 'self' ws: wss: http: https:;",
           }
         ],
       },
