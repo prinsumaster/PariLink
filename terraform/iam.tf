@@ -165,7 +165,7 @@ resource "aws_iam_role" "github_actions_deploy" {
       }
       Condition = {
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:parilink/*:*"
+          "token.actions.githubusercontent.com:sub" = "repo:parilink/PariLink:*"
         }
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"

@@ -64,6 +64,7 @@ export class AuthController {
     }
 
     response.cookie('refresh_token', result.refresh_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -71,6 +72,7 @@ export class AuthController {
     });
 
     response.cookie('access_token', result.access_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -78,6 +80,7 @@ export class AuthController {
     });
 
     response.cookie('logged_in', 'true', {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -108,6 +111,7 @@ export class AuthController {
     }
 
     response.cookie('refresh_token', result.refresh_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -115,6 +119,7 @@ export class AuthController {
     });
 
     response.cookie('access_token', result.access_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -122,6 +127,7 @@ export class AuthController {
     });
 
     response.cookie('logged_in', 'true', {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -155,6 +161,7 @@ export class AuthController {
     );
 
     response.cookie('refresh_token', result.refresh_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -162,6 +169,7 @@ export class AuthController {
     });
 
     response.cookie('access_token', result.access_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -169,6 +177,7 @@ export class AuthController {
     });
 
     response.cookie('logged_in', 'true', {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -265,6 +274,7 @@ export class AuthController {
     );
 
     response.cookie('refresh_token', result.refresh_token, {
+      domain: process.env.COOKIE_DOMAIN || undefined,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
