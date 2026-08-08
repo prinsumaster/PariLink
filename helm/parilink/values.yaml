@@ -79,11 +79,11 @@ observability:
         enabled: true
         ingressClassName: nginx
         hosts:
-          - grafana.parilink.com
+          - grafana.parilink.app
         tls:
           - secretName: grafana-tls
             hosts:
-              - grafana.parilink.com
+              - grafana.parilink.app
     prometheus:
       prometheusSpec:
         storageSpec:
@@ -101,12 +101,12 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
   hosts:
-    - host: api.parilink.com
+    - host: api.parilink.app
       paths:
         - path: /
           pathType: Prefix
           service: api
-    - host: app.parilink.com
+    - host: app.parilink.app
       paths:
         - path: /
           pathType: Prefix
@@ -114,5 +114,5 @@ ingress:
   tls:
     - secretName: parilink-tls
       hosts:
-        - api.parilink.com
-        - app.parilink.com
+        - api.parilink.app
+        - app.parilink.app
