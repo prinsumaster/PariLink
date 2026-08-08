@@ -24,6 +24,8 @@ import { DataGovernanceService } from './data-governance/data-governance.service
 import { LifecycleEngineService } from './lifecycle/lifecycle-engine.service';
 import { ExceptionManagementService } from './resilience/exception-management.service';
 import { AnalyticsRegistryService } from './analytics/analytics-registry.service';
+import { PiiEncryptionService } from './encryption/pii-encryption.service';
+import { SecretsService } from './security/secrets/secrets.service';
 
 const PLATFORM_SERVICES = [
   EventService,
@@ -41,6 +43,8 @@ const PLATFORM_SERVICES = [
   LifecycleEngineService,
   ExceptionManagementService,
   AnalyticsRegistryService,
+  PiiEncryptionService,
+  SecretsService,
 ];
 
 @Global()

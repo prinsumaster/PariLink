@@ -2,12 +2,23 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { StorageService } from './services/storage.service';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class DocumentsService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(DocumentsService.name);
+
+  constructor(
+    private prisma: PrismaService,
+    private storage: StorageService,
+    private readonly auditService: AuditService,
+    private readonly eventStore: EventStoreService,
+  ) {}
 
   async uploadDocument(
     companyId: string,
@@ -23,16 +34,38 @@ export class DocumentsService {
     },
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const fileUrl = `/uploads/${file.filename}`;
+      const fileUrl = await this.storage.upload(
+        file.buffer,
+        file.originalname,
+        file.mimetype,
+        companyId,
+      );
       let parsedTags = [];
       try {
         if (body.tags) parsedTags = JSON.parse(body.tags);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : String(error);
-        console.error(`Failed to handle document processing: ${errorMessage}`);
+      } catch (err: any) {
+        const errorMessage = err?.message || 'Unknown error';
+        this.logger.error(
+          `Failed to handle document processing: ${errorMessage}`,
+        );
       }
-      return tx.document.create({
+
+      if (body.loadId) {
+        const load = await tx.load.findFirst({
+          where: { id: body.loadId, companyId },
+        });
+        if (!load)
+          throw new BadRequestException('Load not found or unauthorized');
+      }
+
+      if (body.folderId) {
+        const folder = await tx.documentFolder.findFirst({
+          where: { id: body.folderId, companyId },
+        });
+        if (!folder)
+          throw new BadRequestException('Folder not found or unauthorized');
+      }
+      const document = await tx.document.create({
         data: {
           companyId,
           loadId: body.loadId || null,
@@ -48,13 +81,38 @@ export class DocumentsService {
           tags: parsedTags,
         },
       });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Document',
+          entityType: 'Document',
+          entityId: document.id,
+          action: 'CREATE',
+          details: { fileName: file.originalname },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'DOCUMENT',
+        streamId: document.id,
+        eventType: 'DocumentUploaded',
+        payload: { fileName: file.originalname },
+        userId,
+      });
+
+      return document;
     });
   }
 
   async getLoadDocuments(companyId: string, loadId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.document.findMany({
-        where: { loadId },
+        where: { loadId, companyId },
         orderBy: { createdAt: 'desc' },
         include: {
           uploadedBy: {
@@ -72,7 +130,7 @@ export class DocumentsService {
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.document.findMany({
-        where: { entityType, entityId },
+        where: { entityType, entityId, companyId },
         orderBy: { createdAt: 'desc' },
         include: {
           uploadedBy: {
@@ -113,13 +171,37 @@ export class DocumentsService {
 
   async createFolder(companyId: string, name: string, parentId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      return tx.documentFolder.create({
+      const folder = await tx.documentFolder.create({
         data: {
           companyId,
           name,
           parentId: parentId || null,
         },
       });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'DocumentFolder',
+          entityType: 'DocumentFolder',
+          entityId: folder.id,
+          action: 'CREATE',
+          details: { name },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'DOCUMENT_FOLDER',
+        streamId: folder.id,
+        eventType: 'FolderCreated',
+        payload: { name },
+      });
+
+      return folder;
     });
   }
 }

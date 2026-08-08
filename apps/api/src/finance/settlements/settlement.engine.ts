@@ -32,6 +32,17 @@ export class SettlementEngine {
         include: { loads: true },
       });
 
+      if (trips.length === 0) {
+        throw new Error('No valid trips found for settlement');
+      }
+
+      // 2. Validate that NO trips are already settled
+      const alreadySettled = trips.filter((t) => t.settlementId !== null);
+      if (alreadySettled.length > 0) {
+        this.logger.error(`Attempt to double-settle trips: ${alreadySettled.map(t => t.id).join(', ')}`);
+        throw new Error('One or more trips are already settled');
+      }
+
       let grossPay = 0;
       for (const trip of trips) {
         // Dummy logic: flat rate or distance rate depending on employment type
@@ -45,9 +56,7 @@ export class SettlementEngine {
         (ctx.advances || 0) -
         (ctx.deductions || 0);
 
-      // 2. Create the Settlement Record
-      // The current schema uses standard finance.service.ts settlement schema (driverId, amount, etc)
-      // I'll assume we can push a settlement record directly here.
+      // 3. Create the Settlement Record and Link Trips Atomically
       if (ctx.driverId) {
         const settlement = await tx.settlement.create({
           data: {
@@ -61,7 +70,9 @@ export class SettlementEngine {
             periodStart: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Weekly
             periodEnd: new Date(),
             status: 'PENDING_APPROVAL',
-            // Track line items in JSON if supported, otherwise just net amount
+            trips: {
+              connect: trips.map(t => ({ id: t.id }))
+            }
           },
         });
         return settlement;

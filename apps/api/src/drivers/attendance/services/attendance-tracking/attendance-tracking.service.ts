@@ -7,7 +7,7 @@ export class AttendanceTrackingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(companyId: string, userId: string, data: any) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.driverAttendance.create({
         data: { ...data, companyId },
       });
@@ -23,7 +23,7 @@ export class AttendanceTrackingService {
       where.status = query.status;
     }
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const [items, total] = await Promise.all([
         tx.driverAttendance.findMany({
           where,
@@ -38,8 +38,8 @@ export class AttendanceTrackingService {
   }
 
   async findOne(companyId: string, id: string) {
-    const item = await this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.driverAttendance.findUnique({ where: { id } });
+    const item = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.driverAttendance.findFirst({ where: { id, companyId } });
     });
     if (!item || item.companyId !== companyId) {
       throw new NotFoundException('DriverAttendance not found');
@@ -49,9 +49,9 @@ export class AttendanceTrackingService {
 
   async update(companyId: string, id: string, userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.driverAttendance.update({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.driverAttendance.updateMany({
+        where: { id, companyId },
         data,
       });
     });
@@ -59,9 +59,9 @@ export class AttendanceTrackingService {
 
   async remove(companyId: string, id: string, userId: string) {
     await this.findOne(companyId, id);
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.driverAttendance.delete({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.driverAttendance.deleteMany({
+        where: { id, companyId },
       });
     });
   }

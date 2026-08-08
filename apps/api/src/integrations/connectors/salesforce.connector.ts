@@ -1,5 +1,6 @@
 import { BaseConnector, SyncResult } from './base.connector';
 import { Logger } from '@nestjs/common';
+import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util';
 
 export class SalesforceConnector extends BaseConnector {
   readonly providerId = 'SALESFORCE';
@@ -106,6 +107,10 @@ export class SalesforceConnector extends BaseConnector {
       return false;
     }
     try {
+      if (!(await validateSsrfSafeUrl(credentials.instanceUrl))) {
+        throw new Error('SSRF blocked: Invalid Salesforce instance URL');
+      }
+
       const response = await fetch(
         `${credentials.instanceUrl}/services/data/v60.0/sobjects/${eventType}`,
         {
@@ -115,6 +120,7 @@ export class SalesforceConnector extends BaseConnector {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(payload),
+          redirect: 'error',
         },
       );
       return response.ok;

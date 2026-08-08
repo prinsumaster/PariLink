@@ -11,6 +11,7 @@ import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { CircuitBreakerInterceptor } from './common/interceptors/circuit-breaker.interceptor';
 import { RedisIoAdapter } from './platform/websockets/redis-io.adapter';
+import { csrfMiddleware } from './common/middlewares/csrf.middleware';
 
 // ---------------------------------------------------------------------------
 // Bootstrap — Enterprise Security Hardening
@@ -33,6 +34,17 @@ async function bootstrap() {
     'REDIS_URL',
     'JWT_SECRET',
     'COOKIE_SECRET',
+    'RAZORPAY_KEY_ID',
+    'RAZORPAY_KEY_SECRET',
+    'RESEND_API_KEY',
+    'TWILIO_ACCOUNT_SID',
+    'TWILIO_AUTH_TOKEN',
+    'TWILIO_PHONE_NUMBER',
+    'MAPBOX_TOKEN',
+    'MINIO_ENDPOINT',
+    'MINIO_ACCESS_KEY',
+    'MINIO_SECRET_KEY',
+    'SMTP_FROM_EMAIL',
   ];
 
   const missingVars = requiredEnvVars.filter((v) => !process.env[v]);
@@ -78,6 +90,7 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
+    rawBody: true,
   });
 
   const appLogger = app.get(Logger);
@@ -99,6 +112,9 @@ async function bootstrap() {
 
   // ── Cookie parsing (HttpOnly refresh token support)
   app.use(cookieParser(process.env.COOKIE_SECRET));
+
+  // ── CSRF Protection (Double Submit Cookie for Browser Sessions)
+  app.use(csrfMiddleware);
 
   // ── Helmet: HTTP security headers
   // https://helmetjs.github.io/
@@ -126,10 +142,21 @@ async function bootstrap() {
         includeSubDomains: true,
         preload: true,
       },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
       crossOriginEmbedderPolicy: false, // Allow Swagger UI
       crossOriginResourcePolicy: false, // Allow cross-origin frontend fetch
+      permittedCrossDomainPolicies: { permittedPolicies: 'none' },
     }),
   );
+
+  // Permissions-Policy header (not covered by helmet)
+  app.use((_req: any, res: any, nextFn: any) => {
+    res.setHeader(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=(self), payment=(), usb=()',
+    );
+    nextFn();
+  });
 
   // ── Compression
   const compression = require('compression');
@@ -165,6 +192,9 @@ async function bootstrap() {
       'X-Request-Id',
       'X-Tenant-Id',
       'X-Idempotency-Key',
+      'X-Signature',
+      'X-Timestamp',
+      'X-Nonce',
     ],
     exposedHeaders: ['X-Request-Id', 'X-RateLimit-Remaining'],
     credentials: true,
@@ -258,6 +288,8 @@ async function bootstrap() {
     });
     appLogger.log('Swagger UI available at /api/docs (DEV only)');
   }
+
+  app.enableShutdownHooks(); // P1: Required for graceful BullMQ & Prisma termination
 
   const port = process.env.PORT ?? 8080;
   await app.listen(port);

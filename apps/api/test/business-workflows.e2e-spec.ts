@@ -88,6 +88,7 @@ describe('Phase 3: Business Workflows Validation (Mocked E2E)', () => {
     } as any);
 
     app = moduleFixture.createNestApplication();
+    app.enableShutdownHooks();
     await app.init();
 
     // Mock User for Authentication
@@ -136,6 +137,11 @@ describe('Phase 3: Business Workflows Validation (Mocked E2E)', () => {
       driverId: 'driver-1',
       vehicleId: 'veh-1',
     });
+
+    mockPrisma.driver.findUnique.mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE', companyId: 'tenant-1' });
+    mockPrisma.vehicle.findUnique.mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE', companyId: 'tenant-1' });
+    mockPrisma.driver.findFirst.mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE', companyId: 'tenant-1' });
+    mockPrisma.vehicle.findFirst.mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE', companyId: 'tenant-1' });
 
     const res = await request(app.getHttpServer())
       .post('/trips')

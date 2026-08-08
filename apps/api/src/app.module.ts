@@ -5,14 +5,15 @@ import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
 import { validate } from './config/env.config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard, seconds } from '@nestjs/throttler';
+import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { LoggerModule } from 'nestjs-pino';
 import { RedisManagerModule } from './common/redis/redis-manager.module';
 import { HealthModule } from './health/health.module';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
 import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
-import { ObservabilityInterceptor } from './platform/observability/logging.interceptor';
+// Removed duplicate ObservabilityInterceptor import
 import { GlobalExceptionFilter } from './platform/resilience/global-exception.filter';
 import { ApiRateLimiterMiddleware } from './platform/security/ratelimit/api-rate-limiter.middleware';
 import { PrismaModule } from './prisma/prisma.module';
@@ -48,7 +49,7 @@ import { DocumentsModule } from './documents/documents.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { PaymentsModule } from './payments/payments.module';
 import { ReportsModule } from './reports/reports.module';
-import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+// Removed duplicate AuditInterceptor import
 import { TrailersModule } from './trailers/trailers.module';
 import { VendorsModule } from './vendors/vendors.module';
 import { BillingModule } from './billing/billing.module';
@@ -86,6 +87,8 @@ import { SearchModule } from './search/search.module';
 import { ExportsModule } from './exports/exports.module';
 import { CommentsModule } from './comments/comments.module';
 import { ChatModule } from './chat/chat.module';
+import { BrokerModule } from './broker/broker.module';
+import { LocalizationModule } from './localization/localization.module';
 import { BackgroundJobsModule } from './background-jobs/background-jobs.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { ApiV2Module } from './api-platform/v2/api-v2.module';
@@ -98,7 +101,6 @@ import { SdkModule } from './sdk/sdk.module';
 import { SandboxModule } from './sandbox/sandbox.module';
 import { BullModule } from '@nestjs/bullmq';
 import Redis from 'ioredis';
-import RedisMock from 'ioredis-mock';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { OperationsModule } from './operations/operations.module';
 import { CrmModule } from './crm/crm.module';
@@ -119,10 +121,13 @@ import { RecommendationEngineModule } from './intelligence/recommendation/recomm
 import { MlFeatureStoreModule } from './intelligence/feature-store/feature-store.module';
 import { AiSchedulerModule } from './intelligence/scheduler/scheduler.module';
 import { TelemetryProcessorModule } from './intelligence/telemetry-processor/telemetry-processor.module';
+import { ReportingModule } from './reporting/reporting.module';
 
 @Module({
   imports: [
+    ReportingModule,
     DispatchAiModule,
+
     DriverIntelligenceModule,
     FleetIntelligenceModule,
     EtaIntelligenceModule,
@@ -146,12 +151,21 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
       validate,
       isGlobal: true,
     }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 600,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      imports: [RedisManagerModule],
+      inject: [require('./common/redis/redis-manager.service').RedisManagerService],
+      useFactory: (redisManager: any) => ({
+        storage: new ThrottlerStorageRedisService(redisManager.getClient()),
+        throttlers: [
+          // Default public API limits (100 reqs per minute)
+          {
+            name: 'default',
+            ttl: seconds(60),
+            limit: process.env.NODE_ENV === 'test' ? 1000 : 100,
+          },
+        ],
+      }),
+    }),
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
@@ -167,17 +181,21 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
       delimiter: '.',
     }),
     BullModule.forRoot({
-      connection:
-        process.env.NODE_ENV === 'test'
-          ? new RedisMock()
-          : new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-              maxRetriesPerRequest: null,
-            }),
+      connection: {
+        url: process.env.REDIS_URL || 'redis://localhost:6379',
+        maxRetriesPerRequest: null,
+      },
       defaultJobOptions: {
         attempts: 5,
         backoff: { type: 'exponential', delay: 1000 },
-        removeOnComplete: 1000,
-        removeOnFail: false,
+        removeOnComplete: {
+          age: 3600, // keep for 1 hour
+          count: 1000, // keep max 1000 completed jobs
+        },
+        removeOnFail: {
+          age: 7 * 24 * 3600, // DLQ: keep failed jobs for 7 days
+          count: 5000, // DLQ max size: keep max 5000 failed jobs
+        },
       },
     }),
 
@@ -196,7 +214,18 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
         };
       },
     }),
-    BullModule.registerQueue({ name: 'webhooks' }, { name: 'background_jobs' }),
+    BullModule.registerQueue(
+      {
+        name: 'webhooks',
+        defaultJobOptions: {
+          attempts: 10,
+          backoff: { type: 'exponential', delay: 5000 },
+        },
+      },
+      {
+        name: 'background_jobs',
+      },
+    ),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       exclude: ['/api/{*path}', '/health/{*path}', '/v1/health/{*path}'],
@@ -210,6 +239,9 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
     RolesModule,
     VehiclesModule,
     DriversModule,
+    WarehouseModule,
+    BrokerModule,
+    LocalizationModule,
     CustomersModule,
     LoadsModule,
     TripsModule,
@@ -282,20 +314,17 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
     SaasBillingModule,
     TelemetryModule,
     FleetModule,
+    AiModule,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     ApiRateLimiterMiddleware,
     {
       provide: APP_INTERCEPTOR,
-      useClass: ObservabilityInterceptor, // Distributed tracing + structured logging (runs first)
-    },
-    {
-      provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: AuditInterceptor, // Mutation audit logging (runs second)
     },
     {
       provide: APP_INTERCEPTOR,
@@ -304,10 +333,6 @@ import { TelemetryProcessorModule } from './intelligence/telemetry-processor/tel
     {
       provide: APP_FILTER,
       useClass: GlobalExceptionFilter, // Catch all unhandled exceptions
-    },
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
     },
   ],
 })

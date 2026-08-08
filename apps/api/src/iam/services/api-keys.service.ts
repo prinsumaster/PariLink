@@ -105,18 +105,18 @@ export class ApiKeyService {
 
   async revokeApiKey(id: string, companyId: string, userId?: string) {
     const apiKey = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.apiKey.findUnique({
-        where: { id },
+      tx.apiKey.findFirst({
+        where: { id, companyId },
       }),
     );
 
-    if (!apiKey || apiKey.companyId !== companyId) {
+    if (!apiKey) {
       throw new NotFoundException('API Key not found');
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.apiKey.update({
-        where: { id },
+      tx.apiKey.updateMany({
+        where: { id, companyId },
         data: { isActive: false },
       }),
     );

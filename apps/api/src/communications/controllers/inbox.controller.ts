@@ -21,7 +21,7 @@ export class InboxController {
   async getThreads(@GetUser() user: AuthenticatedUser) {
     const threads = await this.prisma.runAsSystem(async (tx) =>
       tx.inboxThread.findMany({
-        where: { participantIds: { has: user.userId } },
+        where: { participantIds: { has: user.id } },
         include: {
           messages: {
             orderBy: { createdAt: 'desc' },
@@ -61,9 +61,9 @@ export class InboxController {
       tx.inboxMessage.create({
         data: {
           threadId,
-          senderId: user.userId,
+          senderId: user.id,
           content: dto.content,
-          readBy: [user.userId],
+          readBy: [user.id],
         },
       }),
     );
@@ -83,7 +83,7 @@ export class InboxController {
     );
     if (thread) {
       thread.participantIds.forEach((participantId) => {
-        if (participantId !== user.userId) {
+        if (participantId !== user.id) {
           this.sseService.emitToUser(participantId, {
             type: 'NEW_MESSAGE',
             threadId,

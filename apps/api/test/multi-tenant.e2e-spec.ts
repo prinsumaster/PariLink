@@ -16,6 +16,7 @@ describe('Multi-Tenant Isolation (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.enableShutdownHooks();
     await app.init();
 
     const prisma = app.get(PrismaService);
@@ -120,7 +121,7 @@ describe('Multi-Tenant Isolation (e2e)', () => {
       .set('Authorization', `Bearer ${tenantAToken}`)
       .send({
         customerId: 'c123d2ca-1122-3344-5566-778899aabbcc',
-        referenceNumber: 'LD-A-001',
+        referenceNumber: `LD-A-001-${Date.now()}`,
         originAddress: '123 Main',
         originCity: 'LA',
         originState: 'CA',

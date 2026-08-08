@@ -82,14 +82,16 @@ export class GeofenceEngineService {
 
   async deleteGeofence(companyId: string, id: string, userId: string) {
     const geofence = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.geofence.findUnique({ where: { id } }),
+      tx.geofence.findFirst({ where: { id, companyId } }),
     );
     if (!geofence || geofence.companyId !== companyId) {
       throw new NotFoundException('Geofence not found');
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.geofence.delete({ where: { id } }),
+      tx.geofence.deleteMany({
+        where: { id, companyId },
+      }),
     );
 
     await this.audit.logEvent({

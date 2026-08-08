@@ -206,8 +206,18 @@ export class ExecutionEngineService {
   ) {
     this.logger.log(`Executing Node ${node.id} (${node.type})`);
 
-    const step = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.workflowExecutionStep.create({
+    const step = await this.prisma.runAsTenant(companyId, async (tx) => {
+      // 1. Verify tenant ownership (IDOR protection for background workers)
+      const exec = await tx.workflowExecution.findFirst({
+        where: { id: executionId, companyId },
+      });
+      if (!exec) {
+        throw new Error(
+          `Unauthorized: Execution ${executionId} does not belong to company ${companyId}`,
+        );
+      }
+
+      return tx.workflowExecutionStep.create({
         data: {
           executionId,
           nodeId: node.id as string,
@@ -215,8 +225,8 @@ export class ExecutionEngineService {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           inputs: context as any,
         },
-      }),
-    );
+      });
+    });
 
     try {
       let outputContext = {};

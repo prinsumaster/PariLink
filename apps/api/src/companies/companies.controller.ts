@@ -1,3 +1,5 @@
+import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
   Controller,
   Get,
@@ -28,8 +30,11 @@ export class CompaniesController {
   @Post()
   @RequirePermissions('companies:create')
   @ApiOperation({ summary: 'Create a new company' })
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companiesService.create(createCompanyDto);
+  create(
+    @GetUser() user: AuthenticatedUser,
+    @Body() createCompanyDto: CreateCompanyDto,
+  ) {
+    return this.companiesService.create(createCompanyDto, user.id);
   }
 
   @Get()
@@ -49,14 +54,18 @@ export class CompaniesController {
   @Patch(':id')
   @RequirePermissions('companies:update')
   @ApiOperation({ summary: 'Update a company' })
-  update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companiesService.update(id, updateCompanyDto);
+  update(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() updateCompanyDto: UpdateCompanyDto,
+  ) {
+    return this.companiesService.update(id, updateCompanyDto, user.id);
   }
 
   @Delete(':id')
   @RequirePermissions('companies:delete')
   @ApiOperation({ summary: 'Soft delete a company' })
-  remove(@Param('id') id: string) {
-    return this.companiesService.remove(id);
+  remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.companiesService.remove(id, user.id);
   }
 }

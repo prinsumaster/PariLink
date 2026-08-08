@@ -25,6 +25,7 @@ export class InvoicesController {
   constructor(private readonly invoicesService: InvoicesService) {}
 
   @Get()
+  @RequirePermissions('invoices:read')
   @ApiOperation({ summary: 'Get all invoices' })
   getInvoices(
     @GetUser() user: AuthenticatedUser,
@@ -43,21 +44,24 @@ export class InvoicesController {
   }
 
   @Get(':id')
+  @RequirePermissions('invoices:read')
   @ApiOperation({ summary: 'Get an invoice by ID' })
   getInvoiceById(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.invoicesService.getInvoiceById(user.companyId, id);
   }
 
   @Post()
+  @RequirePermissions('invoices:write')
   @ApiOperation({ summary: 'Create a new invoice' })
   createInvoice(
     @GetUser() user: AuthenticatedUser,
     @Body() payload: Record<string, unknown>,
   ) {
-    return this.invoicesService.createInvoice(user.companyId, payload);
+    return this.invoicesService.createInvoice(user.companyId, payload, user.id);
   }
 
   @Patch(':id/status')
+  @RequirePermissions('invoices:write')
   @ApiOperation({ summary: 'Update invoice status' })
   updateStatus(
     @GetUser() user: AuthenticatedUser,
@@ -68,6 +72,7 @@ export class InvoicesController {
       user.companyId,
       id,
       body.status,
+      user.id,
     );
   }
 }

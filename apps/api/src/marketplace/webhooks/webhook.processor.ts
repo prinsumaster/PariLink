@@ -3,6 +3,7 @@ import { Job, UnrecoverableError } from 'bullmq';
 import { Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
 import axios from 'axios';
+import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util';
 import { PrismaService } from '../../prisma/prisma.service';
 import { URL } from 'url';
 
@@ -51,7 +52,12 @@ export class WebhookProcessor extends WorkerHost {
     let errorMessage = '';
 
     try {
-      validateWebhookUrl(url);
+      if (!(await validateSsrfSafeUrl(url))) {
+        throw new Error(
+          'SSRF attempt blocked: Webhook URL is invalid or targets restricted internal IPs',
+        );
+      }
+
       const response = await axios.post(url, payloadString, {
         headers: {
           'Content-Type': 'application/json',
@@ -60,6 +66,7 @@ export class WebhookProcessor extends WorkerHost {
           'X-PariLink-Delivery': job.id,
         },
         timeout: 10000, // 10 second timeout for webhooks
+        maxRedirects: 0, // Prevent SSRF bypass via HTTP redirects
       });
       status = response.status;
       success = status >= 200 && status < 300;

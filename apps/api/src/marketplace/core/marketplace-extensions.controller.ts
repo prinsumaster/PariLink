@@ -1,7 +1,16 @@
-import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Request,
+  UseGuards,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { MarketplaceCoreService } from './marketplace-core.service';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @Controller('admin/marketplace/extensions')
+@UseGuards(JwtAuthGuard)
 export class MarketplaceExtensionsController {
   constructor(
     private readonly marketplaceCoreService: MarketplaceCoreService,
@@ -12,9 +21,10 @@ export class MarketplaceExtensionsController {
     @Request() req: any,
     @Param('slotId') slotId: string,
   ) {
-    // Note: User Auth Guard is assumed at the global or controller level based on architecture.
-    // For V31.0 demo purposes, we fallback to a hardcoded companyId if req.user is undefined
-    const companyId = req.user?.companyId || 'company-1';
+    if (!req.user || !req.user.companyId) {
+      throw new UnauthorizedException('Tenant context missing');
+    }
+    const companyId = req.user.companyId;
     return this.marketplaceCoreService.getExtensionsBySlot(companyId, slotId);
   }
 }

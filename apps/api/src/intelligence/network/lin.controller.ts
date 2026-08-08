@@ -1,9 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @ApiTags('Logistics Intelligence Network')
 @Controller('lin')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class LinController {
   constructor(private readonly prisma: PrismaService) {}
 

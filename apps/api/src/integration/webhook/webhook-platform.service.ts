@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import axios from 'axios';
+import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -107,16 +108,9 @@ export class WebhookPlatformService {
           .update(payloadStr)
           .digest('hex');
 
-        const parsedUrl = new URL(delivery.endpointUrl);
-        const hostname = parsedUrl.hostname;
-        const isPrivateIp =
-          /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|localhost|::1)/.test(
-            hostname,
-          );
-
-        if (isPrivateIp) {
+        if (!(await validateSsrfSafeUrl(delivery.endpointUrl))) {
           throw new Error(
-            'SSRF attempt blocked: Cannot dispatch webhooks to internal networks',
+            'Invalid or restricted webhook URL (SSRF prevention).',
           );
         }
 
@@ -129,6 +123,7 @@ export class WebhookPlatformService {
             'X-PariLink-Replay-Of': delivery.id,
           },
           timeout: 10000,
+          maxRedirects: 0, // Prevent SSRF bypass via HTTP redirects
         });
 
         await tx.webhookDelivery.update({

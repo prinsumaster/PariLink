@@ -33,7 +33,7 @@ export class BillingController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: CreateRateCardDto,
   ) {
-    return this.billingService.createRateCard(user.companyId, dto);
+    return this.billingService.createRateCard(user.companyId, dto, user.id);
   }
 
   @Get('rate-cards')
@@ -53,13 +53,13 @@ export class BillingController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: GenerateInvoiceDto,
   ) {
-    return this.billingService.generateInvoice(user.companyId, dto);
+    return this.billingService.generateInvoice(user.companyId, dto, user.id);
   }
 
   @Patch('invoices/:id/approve')
   @RequirePermissions('billing:write')
   @ApiOperation({ summary: 'Approve an invoice and post to ledger' })
   approveInvoice(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
-    return this.billingService.approveInvoice(user.companyId, id);
+    return this.billingService.approveInvoice(user.companyId, id, user.id);
   }
 }

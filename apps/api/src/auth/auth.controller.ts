@@ -44,7 +44,7 @@ export class AuthController {
   ) {}
 
   // Enterprise Security: Prevent Brute Force Attacks. Max 500 attempts per IP per minute.
-  @Throttle({ default: { limit: 500, ttl: 60000 } })
+  @Throttle({ default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 } })
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'User Login' })
@@ -88,7 +88,7 @@ export class AuthController {
   }
 
   // Enterprise Security: Rate limit registration endpoint
-  @Throttle({ default: { limit: 500, ttl: 60000 } })
+  @Throttle({ default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 } })
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   @ApiOperation({ summary: 'User Registration' })
@@ -219,12 +219,14 @@ export class AuthController {
   // WebAuthn / Passkeys
   // -------------------------------------------------------------------------
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('webauthn/register/generate-options')
   @ApiOperation({ summary: 'Generate WebAuthn Registration Options' })
   async generateRegistrationOptions(@Body('email') email: string) {
     return this.authService.generateWebAuthnRegistrationOptions(email);
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('webauthn/register/verify')
   @ApiOperation({ summary: 'Verify WebAuthn Registration Response' })
   async verifyRegistration(
@@ -234,12 +236,14 @@ export class AuthController {
     return this.authService.verifyWebAuthnRegistration(email, response);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('webauthn/authenticate/generate-options')
   @ApiOperation({ summary: 'Generate WebAuthn Authentication Options' })
   async generateAuthenticationOptions(@Body('email') email: string) {
     return this.authService.generateWebAuthnAuthenticationOptions(email);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('webauthn/authenticate/verify')
   @ApiOperation({ summary: 'Verify WebAuthn Authentication Response' })
   async verifyAuthentication(
@@ -306,6 +310,7 @@ export class AuthController {
   // Multi-Factor Authentication
   // -------------------------------------------------------------------------
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('mfa/setup')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -314,6 +319,7 @@ export class AuthController {
     return this.mfaService.generateTotpSecret(req.user.id, req.user.email);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('mfa/verify-setup')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

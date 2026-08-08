@@ -7,7 +7,7 @@ export class CrmLeadService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(companyId: string, userId: string, data: any) {
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.crmLead.create({
         data: { ...data, companyId },
       });
@@ -23,7 +23,7 @@ export class CrmLeadService {
       where.status = query.status;
     }
 
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const [items, total] = await Promise.all([
         tx.crmLead.findMany({
           where,
@@ -38,8 +38,8 @@ export class CrmLeadService {
   }
 
   async findOne(companyId: string, id: string) {
-    const item = await this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.crmLead.findUnique({ where: { id } });
+    const item = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.crmLead.findFirst({ where: { id, companyId } });
     });
     if (!item || item.companyId !== companyId) {
       throw new NotFoundException('CrmLead not found');
@@ -49,9 +49,9 @@ export class CrmLeadService {
 
   async update(companyId: string, id: string, userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.crmLead.update({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.crmLead.updateMany({
+        where: { id, companyId },
         data,
       });
     });
@@ -59,9 +59,9 @@ export class CrmLeadService {
 
   async remove(companyId: string, id: string, userId: string) {
     await this.findOne(companyId, id);
-    return this.prisma.runAsTenant(companyId, async (tx: any) => {
-      return tx.crmLead.delete({
-        where: { id },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.crmLead.deleteMany({
+        where: { id, companyId },
       });
     });
   }

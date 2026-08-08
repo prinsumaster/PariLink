@@ -86,34 +86,55 @@ export class OutboundService {
         }
       }
 
-      // Execute updates sequentially to safely reuse the single transaction connection and prevent deadlocks
-      for (const pick of picks) {
-        const invItem = inventoryItemMap.get(pick.inventoryItemId)!;
-        // Deduct inventory
-        await tx.inventoryItem.update({
-          where: { id: pick.inventoryItemId },
-          data: { quantity: invItem.quantity - pick.qty },
-        });
+      // Prevent deadlocks by enforcing deterministic lock acquisition order
+      const sortedPicks = [...picks].sort((a, b) =>
+        a.inventoryItemId.localeCompare(b.inventoryItemId),
+      );
 
-        // Update picked qty on order
-        const orderItem = order.items.find((i) => i.id === pick.orderItemId);
-        if (orderItem) {
-          await tx.outboundOrderItem.update({
-            where: { id: pick.orderItemId },
-            data: { pickedQty: orderItem.pickedQty + pick.qty },
+      // Execute batches using Promise.all to maximize transaction throughput
+      const updatedInvItems = await Promise.all(
+        sortedPicks.map((pick) => {
+          return tx.inventoryItem.update({
+            where: { id: pick.inventoryItemId },
+            data: { quantity: { decrement: pick.qty } },
           });
-        }
+        }),
+      );
 
-        // Emit picking event
-        await this.eventStore.append({
-          tenantId: companyId,
-          streamType: 'INVENTORY',
-          streamId: pick.inventoryItemId,
-          eventType: 'InventoryPicked',
-          payload: { orderId, qty: pick.qty },
-          userId,
-        });
+      // Verify no inventory item went negative after atomic decrement
+      for (const updatedItem of updatedInvItems) {
+        if (updatedItem.quantity < 0) {
+          throw new BadRequestException(
+            'Inventory race condition detected: insufficient stock',
+          );
+        }
       }
+
+      await Promise.all(
+        sortedPicks.map((pick) => {
+          const orderItem = order.items.find((i) => i.id === pick.orderItemId);
+          if (orderItem) {
+            return tx.outboundOrderItem.update({
+              where: { id: pick.orderItemId },
+              data: { pickedQty: { increment: pick.qty } },
+            });
+          }
+          return Promise.resolve();
+        }),
+      );
+
+      await Promise.all(
+        sortedPicks.map((pick) =>
+          this.eventStore.append({
+            tenantId: companyId,
+            streamType: 'INVENTORY',
+            streamId: pick.inventoryItemId,
+            eventType: 'InventoryPicked',
+            payload: { orderId, qty: pick.qty },
+            userId,
+          }),
+        ),
+      );
 
       const updatedOrder = await tx.outboundOrder.update({
         where: { id: orderId },

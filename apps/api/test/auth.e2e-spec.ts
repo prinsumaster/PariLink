@@ -24,6 +24,7 @@ describe('Authentication Flow (e2e)', () => {
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true }),
     );
+    app.enableShutdownHooks();
     await app.init();
 
     prisma = app.get(PrismaService);
@@ -97,7 +98,7 @@ describe('Authentication Flow (e2e)', () => {
         .send({ deviceFingerprint })
         .expect(201); // NestJS POST default is 201
 
-      expect(response.body.access_token).toBeDefined();
+      // access_token is set via HttpOnly cookie, not returned in JSON body
       const newCookies = [response.headers['set-cookie']]
         .flat()
         .filter(Boolean);

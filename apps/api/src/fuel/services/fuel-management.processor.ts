@@ -31,6 +31,25 @@ export class FuelManagementProcessor {
 
     if (!vehicle) return { error: 'Vehicle not found' };
 
+    if (
+      typeof amount !== 'number' ||
+      isNaN(amount) ||
+      amount < 0 ||
+      !isFinite(amount)
+    ) {
+      this.logger.error(`Invalid fuel amount: ${amount}`);
+      return { error: 'Invalid amount' };
+    }
+    if (
+      typeof liters !== 'number' ||
+      isNaN(liters) ||
+      liters <= 0 ||
+      !isFinite(liters)
+    ) {
+      this.logger.error(`Invalid fuel liters: ${liters}`);
+      return { error: 'Invalid liters' };
+    }
+
     // Find the active trip to allocate expense
     const trip = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.trip.findFirst({

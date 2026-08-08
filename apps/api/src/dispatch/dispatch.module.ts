@@ -15,9 +15,10 @@ import { AiModule } from '../ai/ai.module';
 import { PlatformModule } from '../platform/platform.module';
 import { DispatchOperationsController } from './dispatch-operations.controller';
 import { WorkflowModule } from '../workflow/workflow.module';
+import { IntegrationsModule } from '../integrations/integrations.module';
 
 @Module({
-  imports: [AiModule, PlatformModule, WorkflowModule],
+  imports: [AiModule, PlatformModule, WorkflowModule, IntegrationsModule],
   controllers: [
     DispatchController,
     PlanningController,

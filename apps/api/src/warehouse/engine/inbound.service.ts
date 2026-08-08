@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 
@@ -77,54 +82,73 @@ export class InboundService {
         throw new NotFoundException('Valid expected receipt not found');
       }
 
+      const inventoryToCreate: any[] = [];
+      const updatePromises: any[] = [];
+
       for (const rxItem of receivedItems) {
         const itemRec = receipt.items.find((i) => i.id === rxItem.itemId);
         if (itemRec) {
-          await tx.inboundReceiptItem.update({
-            where: { id: rxItem.itemId },
-            data: {
-              receivedQty: rxItem.qty,
-              damagedQty: rxItem.damagedQty,
-            },
-          });
-
-          // Create inventory items
-          if (rxItem.qty > 0) {
-            await tx.inventoryItem.create({
+          updatePromises.push(
+            tx.inboundReceiptItem.update({
+              where: { id: rxItem.itemId },
               data: {
-                companyId,
-                warehouseId: receipt.warehouseId,
-                binId: stagingBinId,
-                sku: itemRec.sku,
-                quantity: rxItem.qty - rxItem.damagedQty,
-                status: 'AVAILABLE',
-                receivedAt: new Date(),
+                receivedQty: rxItem.qty,
+                damagedQty: rxItem.damagedQty,
               },
+            }),
+          );
+
+          // Prepare bulk inventory items
+          if (rxItem.qty > rxItem.damagedQty) {
+            inventoryToCreate.push({
+              companyId,
+              warehouseId: receipt.warehouseId,
+              binId: stagingBinId,
+              sku: itemRec.sku,
+              quantity: rxItem.qty - rxItem.damagedQty,
+              status: 'AVAILABLE',
+              receivedAt: new Date(),
             });
           }
           if (rxItem.damagedQty > 0) {
-            await tx.inventoryItem.create({
-              data: {
-                companyId,
-                warehouseId: receipt.warehouseId,
-                binId: stagingBinId,
-                sku: itemRec.sku,
-                quantity: rxItem.damagedQty,
-                status: 'DAMAGED',
-                receivedAt: new Date(),
-              },
+            inventoryToCreate.push({
+              companyId,
+              warehouseId: receipt.warehouseId,
+              binId: stagingBinId,
+              sku: itemRec.sku,
+              quantity: rxItem.damagedQty,
+              status: 'DAMAGED',
+              receivedAt: new Date(),
             });
           }
         }
       }
 
-      const updatedReceipt = await tx.inboundReceipt.update({
-        where: { id: receiptId },
+      // Execute updates concurrently in transaction
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises);
+      }
+
+      // Execute bulk insert
+      if (inventoryToCreate.length > 0) {
+        await tx.inventoryItem.createMany({
+          data: inventoryToCreate,
+        });
+      }
+
+      const updateResult = await tx.inboundReceipt.updateMany({
+        where: { id: receiptId, status: 'EXPECTED' },
         data: {
           status: 'RECEIVED',
           actualDate: new Date(),
         },
       });
+
+      if (updateResult.count === 0) {
+        throw new BadRequestException(
+          'Receipt already received or not found in EXPECTED state',
+        );
+      }
 
       await this.eventStore.append({
         tenantId: companyId,
@@ -135,7 +159,7 @@ export class InboundService {
         userId,
       });
 
-      return updatedReceipt;
+      return { ...receipt, status: 'RECEIVED', actualDate: new Date() };
     });
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EnvelopeEncryptionService } from '../encryption/envelope/envelope-encryption.service';
+import * as crypto from 'crypto';
 
 // ---------------------------------------------------------------------------
 // Enterprise Audit Service — Immutable, Tamper-Evident
@@ -61,10 +62,31 @@ export class AuditService {
     // HMAC-SHA256 tamper-evidence anchor
     const eventHmac = this.encryption.hmacSign(integrityPayload);
 
+    // ── Hash Chain ──────────────────────────────────────────────────────
+    // Retrieve the previous audit log for this tenant to link the chain.
+    const previousRecord = await this.prisma.runAsSystem(async (tx) =>
+      tx.auditLog.findFirst({
+        where: { companyId: event.companyId },
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, details: true },
+      }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const prevDetails = previousRecord?.details as Record<string, any> | null;
+    const previousHash: string =
+      prevDetails?._integrity?.currentHash ?? '0'.repeat(64);
+
+    // currentHash = SHA-256(previousHash + integrityPayload)
+    const currentHash = crypto
+      .createHash('sha256')
+      .update(previousHash + integrityPayload)
+      .digest('hex');
+
     const sanitizedDetails = this.sanitizeForAudit({
       ...event.details,
       requestContext,
-      _integrity: { hmac: eventHmac, timestamp },
+      _integrity: { hmac: eventHmac, timestamp, previousHash, currentHash },
     });
 
     try {
@@ -98,7 +120,6 @@ export class AuditService {
         `[AuditFabric] FAILED to write audit log: ${errorMessage}`,
         errorStack,
       );
-      // In production: route to a DLQ / SIEM for guaranteed delivery
     }
   }
 
@@ -138,6 +159,126 @@ export class AuditService {
     return isValid;
   }
 
+  /**
+   * Verify the hash chain integrity for a tenant's audit log.
+   * Returns a summary of chain integrity: total records, verified count,
+   * and the first broken link (if any).
+   */
+  async verifyChain(
+    companyId: string,
+    limit = 1000,
+  ): Promise<{
+    totalChecked: number;
+    valid: number;
+    broken: number;
+    firstBrokenId: string | null;
+  }> {
+    const records = await this.prisma.runAsSystem(async (tx) =>
+      tx.auditLog.findMany({
+        where: { companyId },
+        orderBy: { createdAt: 'asc' },
+        take: limit,
+        select: {
+          id: true,
+          action: true,
+          entity: true,
+          entityId: true,
+          companyId: true,
+          userId: true,
+          details: true,
+        },
+      }),
+    );
+
+    let valid = 0;
+    let broken = 0;
+    let firstBrokenId: string | null = null;
+    let expectedPreviousHash = '0'.repeat(64);
+
+    for (const record of records) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const details = record.details as Record<string, any>;
+      const integrity = details?._integrity;
+
+      if (!integrity?.currentHash || !integrity?.previousHash) {
+        // Legacy record without chain — skip but count
+        valid++;
+        continue;
+      }
+
+      if (integrity.previousHash !== expectedPreviousHash) {
+        broken++;
+        if (!firstBrokenId) firstBrokenId = record.id;
+      } else {
+        // Verify hash computation
+        const integrityPayload = JSON.stringify({
+          action: record.action,
+          entity: record.entity,
+          entityId: record.entityId,
+          companyId: record.companyId,
+          userId: record.userId ?? 'SYSTEM',
+          timestamp: integrity.timestamp,
+        });
+        const computedHash = crypto
+          .createHash('sha256')
+          .update(integrity.previousHash + integrityPayload)
+          .digest('hex');
+
+        if (computedHash === integrity.currentHash) {
+          valid++;
+        } else {
+          broken++;
+          if (!firstBrokenId) firstBrokenId = record.id;
+        }
+      }
+      expectedPreviousHash = integrity.currentHash;
+    }
+
+    return {
+      totalChecked: records.length,
+      valid,
+      broken,
+      firstBrokenId,
+    };
+  }
+
+  /**
+   * Export audit logs for a tenant within a date range.
+   * Returns structured data suitable for compliance reporting.
+   */
+  async exportAuditLogs(
+    companyId: string,
+    fromDate: Date,
+    toDate: Date,
+    userId?: string,
+  ): Promise<{
+    exportedAt: string;
+    companyId: string;
+    totalRecords: number;
+    records: any[];
+  }> {
+    const where: any = {
+      companyId,
+      createdAt: { gte: fromDate, lte: toDate },
+    };
+    if (userId) where.userId = userId;
+
+    const records = await this.prisma.runAsSystem(async (tx) =>
+      tx.auditLog.findMany({
+        where,
+        orderBy: { createdAt: 'asc' },
+        take: 10000,
+      }),
+    );
+
+    return {
+      exportedAt: new Date().toISOString(),
+      companyId,
+      totalRecords: records.length,
+      records,
+    };
+  }
+
   // ─────────────────────────────────────────────────────────────────────────
   // Sanitization — prevent secrets / large blobs from leaking into audit logs
   // ─────────────────────────────────────────────────────────────────────────
@@ -163,6 +304,18 @@ export class AuditService {
       'credit_card',
       'cardNumber',
       'cvv',
+      'aadhaar',
+      'pan',
+      'bankAccount',
+      'ifsc',
+      'upi',
+      'drivingLicence',
+      'rcNumber',
+      'insuranceNumber',
+      'passport',
+      'nationalId',
+      'ssn',
+      'totpSecret',
     ]);
 
     const sanitize = (obj: unknown): unknown => {

@@ -6,9 +6,10 @@ import { FleetMaintenanceService } from './maintenance/fleet-maintenance.service
 import { IoTController } from './iot/iot.controller';
 import { IoTService } from './iot/iot.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { IamModule } from '../iam/iam.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, IamModule],
   controllers: [
     VehicleLifecycleController,
     FleetMaintenanceController,

@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
@@ -15,15 +16,16 @@ import { UpdateDriverDto } from './dto/update-driver.dto';
 import { DriverQueryDto } from './dto/driver-query.dto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class DriversService {
   constructor(
     private readonly auditService: AuditService,
-
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
+    private readonly eventStore: EventStoreService,
   ) {}
 
   async create(companyId: string, createDriverDto: CreateDriverDto) {
@@ -82,6 +84,14 @@ export class DriversService {
         tx,
       );
 
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'DRIVER',
+        streamId: newDriver.id,
+        eventType: 'DriverCreated',
+        payload: { ...newDriver },
+      });
+
       return newDriver;
     });
 
@@ -127,7 +137,7 @@ export class DriversService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const driver = await tx.driver.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!driver) {
@@ -146,9 +156,19 @@ export class DriversService {
       companyId,
       async (tx) => {
         const existingDriver = await tx.driver.findFirst({
-          where: { id },
+          where: { id, companyId },
         });
         if (!existingDriver) throw new NotFoundException();
+
+        if (
+          existingDriver.status === 'DISPATCHED' &&
+          updateDriverDto.status &&
+          updateDriverDto.status !== 'DISPATCHED'
+        ) {
+          throw new BadRequestException(
+            'Cannot change status of a dispatched driver directly.',
+          );
+        }
 
         // Duplicate Prevention
         if (updateDriverDto.email || updateDriverDto.licenseNumber) {
@@ -215,6 +235,14 @@ export class DriversService {
           tx,
         );
 
+        await this.eventStore.append({
+          tenantId: companyId,
+          streamType: 'DRIVER',
+          streamId: updatedDriver.id,
+          eventType: 'DriverUpdated',
+          payload: updateDriverDto,
+        });
+
         return updatedDriver;
       },
     );
@@ -229,9 +257,15 @@ export class DriversService {
       companyId,
       async (tx) => {
         const existingDriver = await tx.driver.findFirst({
-          where: { id },
+          where: { id, companyId },
         });
         if (!existingDriver) throw new NotFoundException();
+
+        if (existingDriver.status === 'DISPATCHED') {
+          throw new BadRequestException(
+            'Cannot terminate a driver who is currently dispatched on a trip.',
+          );
+        }
 
         const deletedDriver = await tx.driver.update({
           where: { id },
@@ -251,6 +285,14 @@ export class DriversService {
           null,
           tx,
         );
+
+        await this.eventStore.append({
+          tenantId: companyId,
+          streamType: 'DRIVER',
+          streamId: deletedDriver.id,
+          eventType: 'DriverDeleted',
+          payload: {},
+        });
 
         return deletedDriver;
       },

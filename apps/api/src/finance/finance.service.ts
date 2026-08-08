@@ -10,10 +10,16 @@ import {
   CreateVendorBillDto,
   CreatePaymentDto,
 } from './dto/finance.dto';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class FinanceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly auditService: AuditService,
+    private readonly eventStore: EventStoreService,
+  ) {}
 
   async getInvoices(companyId: string, query: any = {}) {
     const page = Number(query.page) || 1;
@@ -71,7 +77,11 @@ export class FinanceService {
     return { data: expenses, total, page, limit };
   }
 
-  async createExpense(companyId: string, dto: CreateExpenseDto) {
+  async createExpense(
+    companyId: string,
+    dto: CreateExpenseDto,
+    userId?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       // Validate driver and trip
       if (dto.driverId) {
@@ -85,7 +95,7 @@ export class FinanceService {
         if (!trip) throw new NotFoundException('Trip not found');
       }
 
-      return tx.expense.create({
+      const expense = await tx.expense.create({
         data: {
           companyId,
           type: dto.type,
@@ -96,10 +106,39 @@ export class FinanceService {
           driverId: dto.driverId,
         },
       });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Finance',
+          entityType: 'Expense',
+          entityId: expense.id,
+          action: 'CREATE',
+          details: { type: dto.type, amount: dto.amount },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'FINANCE_EXPENSE',
+        streamId: expense.id,
+        eventType: 'ExpenseCreated',
+        payload: { type: dto.type, amount: dto.amount },
+        userId,
+      });
+
+      return expense;
     });
   }
 
-  async createSettlement(companyId: string, dto: CreateSettlementDto) {
+  async createSettlement(
+    companyId: string,
+    dto: CreateSettlementDto,
+    userId?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const driver = await tx.driver.findFirst({ where: { id: dto.driverId } });
       if (!driver) throw new NotFoundException('Driver not found');
@@ -122,11 +161,38 @@ export class FinanceService {
         },
       });
 
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Finance',
+          entityType: 'Settlement',
+          entityId: settlement.id,
+          action: 'CREATE',
+          details: { driverId: dto.driverId, netPayable },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'FINANCE_SETTLEMENT',
+        streamId: settlement.id,
+        eventType: 'SettlementCreated',
+        payload: { driverId: dto.driverId, netPayable },
+        userId,
+      });
+
       return settlement;
     });
   }
 
-  async createVendorBill(companyId: string, dto: CreateVendorBillDto) {
+  async createVendorBill(
+    companyId: string,
+    dto: CreateVendorBillDto,
+    userId?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const vendor = await tx.vendor.findFirst({ where: { id: dto.vendorId } });
       if (!vendor) throw new NotFoundException('Vendor not found');
@@ -142,11 +208,38 @@ export class FinanceService {
         },
       });
 
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Finance',
+          entityType: 'VendorBill',
+          entityId: bill.id,
+          action: 'CREATE',
+          details: { vendorId: dto.vendorId, amount: dto.amount },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'FINANCE_VENDOR_BILL',
+        streamId: bill.id,
+        eventType: 'VendorBillCreated',
+        payload: { vendorId: dto.vendorId, amount: dto.amount },
+        userId,
+      });
+
       return bill;
     });
   }
 
-  async recordPayment(companyId: string, dto: CreatePaymentDto) {
+  async recordPayment(
+    companyId: string,
+    dto: CreatePaymentDto,
+    userId?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const invoice = await tx.invoice.findFirst({
         where: { id: dto.invoiceId },
@@ -235,6 +328,29 @@ export class FinanceService {
             ],
           },
         },
+      });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Finance',
+          entityType: 'Payment',
+          entityId: payment.id,
+          action: 'CREATE',
+          details: { invoiceId: dto.invoiceId, amount: dto.amount },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'FINANCE_PAYMENT',
+        streamId: payment.id,
+        eventType: 'PaymentRecorded',
+        payload: { invoiceId: dto.invoiceId, amount: dto.amount },
+        userId,
       });
 
       return payment;

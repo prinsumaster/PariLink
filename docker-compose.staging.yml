@@ -12,6 +12,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - PORT=3000
+      - JWT_SECRET=test-staging-secret-must-be-64-bytes-long-for-hmac-sha512-verification-to-pass-security-checks
+      - MASTER_ENCRYPTION_KEY_V1=staging-encryption-key-that-is-long-enough
     ports:
       - "3000:3000"
     depends_on:
@@ -26,7 +28,7 @@ services:
           memory: 1G
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health/readiness"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health/readiness"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -43,6 +45,8 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/parilink?schema=public
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - JWT_SECRET=test-staging-secret-must-be-64-bytes-long-for-hmac-sha512-verification-to-pass-security-checks
+      - MASTER_ENCRYPTION_KEY_V1=staging-encryption-key-that-is-long-enough
     depends_on:
       - redis
       - postgres

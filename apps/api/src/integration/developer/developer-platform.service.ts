@@ -9,6 +9,7 @@ import { AuditService } from '../../platform/audit/audit.service';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
+import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util';
 
 @Injectable()
 export class DeveloperPlatformService {
@@ -179,12 +180,14 @@ export class DeveloperPlatformService {
 
   async revokeOAuthClient(companyId: string, id: string, userId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const client = await tx.oAuthClient.findUnique({ where: { id } });
-      if (!client || client.companyId !== companyId) {
+      const client = await tx.oAuthClient.findFirst({
+        where: { id, companyId },
+      });
+      if (!client) {
         throw new NotFoundException('OAuth client not found');
       }
 
-      await tx.oAuthClient.delete({ where: { id } });
+      await tx.oAuthClient.deleteMany({ where: { id, companyId } });
 
       await this.audit.logEvent({
         companyId,
@@ -308,6 +311,12 @@ export class DeveloperPlatformService {
       .update(JSON.stringify(payload))
       .digest('hex');
 
+    if (!(await validateSsrfSafeUrl(dto.url))) {
+      throw new BadRequestException(
+        'Invalid or restricted webhook URL (SSRF prevention).',
+      );
+    }
+
     try {
       const res = await axios.post(dto.url, payload, {
         headers: {
@@ -317,6 +326,7 @@ export class DeveloperPlatformService {
           'X-PariLink-Sandbox': 'true',
         },
         timeout: 5000,
+        maxRedirects: 0, // Prevent SSRF bypass via HTTP redirects
       });
 
       return {

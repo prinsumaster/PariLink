@@ -6,6 +6,7 @@ import {
   Post,
   Param,
   Body,
+  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -24,8 +25,16 @@ export class PaymentsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all payments' })
-  getAllPayments(@GetUser() user: AuthenticatedUser) {
-    return this.paymentsService.getPayments(user.companyId);
+  getAllPayments(
+    @GetUser() user: AuthenticatedUser,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.paymentsService.getPayments(
+      user.companyId,
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 10,
+    );
   }
 
   @Get('invoices/:invoiceId')

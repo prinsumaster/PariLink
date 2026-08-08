@@ -96,7 +96,7 @@ export class DocumentFolderService {
     dto: UpdateFolderDto,
   ) {
     const folder = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.documentFolder.findUnique({ where: { id } }),
+      tx.documentFolder.findFirst({ where: { id, companyId } }),
     );
     if (!folder || folder.companyId !== companyId) {
       throw new NotFoundException('Folder not found');
@@ -107,8 +107,8 @@ export class DocumentFolderService {
     }
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.documentFolder.update({
-        where: { id },
+      tx.documentFolder.updateMany({
+        where: { id, companyId },
         data: {
           name: dto.name,
           parentId: dto.parentId !== undefined ? dto.parentId : folder.parentId,
@@ -149,7 +149,9 @@ export class DocumentFolderService {
     }
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.documentFolder.delete({ where: { id } }),
+      tx.documentFolder.deleteMany({
+        where: { id, companyId },
+      }),
     );
 
     await this.audit.logEvent({

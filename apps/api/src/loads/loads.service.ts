@@ -16,6 +16,8 @@ import { LoadQueryDto } from './dto/load-query.dto';
 import * as crypto from 'crypto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class LoadsService {
@@ -24,22 +26,46 @@ export class LoadsService {
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
+    private readonly auditService: AuditService,
+    private readonly eventStore: EventStoreService,
   ) {}
 
-  async create(companyId: string, createLoadDto: CreateLoadDto) {
+  async create(
+    companyId: string,
+    createLoadDto: CreateLoadDto,
+    userId?: string,
+  ) {
     const newLoad = await this.prisma.runAsTenant(companyId, async (tx) => {
       const { customerId, ...restDto } = createLoadDto;
+
+      const customer = await tx.customer.findFirst({
+        where: { id: customerId, companyId },
+      });
+      if (!customer)
+        throw new NotFoundException('Customer not found or unauthorized');
+
       const data: any = { ...restDto };
 
       if (data.pickupDate) data.pickupDate = new Date(data.pickupDate);
       if (data.deliveryDate) data.deliveryDate = new Date(data.deliveryDate);
+
+      // Validate unique referenceNumber per tenant if provided
+      if (data.referenceNumber) {
+        const duplicateRef = await tx.load.findFirst({
+          where: { referenceNumber: data.referenceNumber, companyId },
+        });
+        if (duplicateRef)
+          throw new ConflictException(
+            `Reference number ${data.referenceNumber} already exists`,
+          );
+      }
 
       // Auto-generate referenceNumber if not provided
       if (!data.referenceNumber) {
         data.referenceNumber = `LD-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
       }
 
-      const newLoad = await tx.load.create({
+      const createdLoad = await tx.load.create({
         data: {
           ...data,
           company: { connect: { id: companyId } },
@@ -52,14 +78,37 @@ export class LoadsService {
       const ruleResult = await this.workflow.evaluateRules(companyId, {
         entityType: 'LOAD',
         trigger: 'LOAD_CREATED',
-        entityData: newLoad,
+        entityData: createdLoad,
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
         throw new Error('Load creation rejected by business rules.');
       }
 
-      return newLoad;
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Load',
+          entityType: 'Load',
+          entityId: createdLoad.id,
+          action: 'CREATE',
+          details: { referenceNumber: createdLoad.referenceNumber },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'LOAD',
+        streamId: createdLoad.id,
+        eventType: 'LoadCreated',
+        payload: { referenceNumber: createdLoad.referenceNumber },
+        userId,
+      });
+
+      return createdLoad;
     });
 
     this.eventEmitter.emit('load.created', newLoad);
@@ -123,17 +172,45 @@ export class LoadsService {
     });
   }
 
-  async update(companyId: string, id: string, updateLoadDto: UpdateLoadDto) {
+  async update(
+    companyId: string,
+    id: string,
+    updateLoadDto: UpdateLoadDto,
+    userId?: string,
+  ) {
     const updatedLoad = await this.prisma.runAsTenant(companyId, async (tx) => {
       const existingLoad = await tx.load.findFirst({
         where: { id, companyId },
       });
       if (!existingLoad) throw new NotFoundException();
 
-      const { driverId, vehicleId, ...restData } = updateLoadDto;
+      const { driverId, vehicleId, customerId, ...restData } = updateLoadDto;
+
+      if (customerId && customerId !== existingLoad.customerId) {
+        const customer = await tx.customer.findFirst({
+          where: { id: customerId, companyId },
+        });
+        if (!customer)
+          throw new NotFoundException('Customer not found or unauthorized');
+      }
+
       const data: any = { ...restData };
+      if (customerId) data.customerId = customerId;
       if (data.pickupDate) data.pickupDate = new Date(data.pickupDate);
       if (data.deliveryDate) data.deliveryDate = new Date(data.deliveryDate);
+
+      // Prevent backwards state transitions
+      if (
+        (existingLoad.status === 'COMPLETED' ||
+          existingLoad.status === 'DELIVERED' ||
+          existingLoad.status === 'CANCELLED') &&
+        data.status &&
+        data.status !== existingLoad.status
+      ) {
+        throw new ConflictException(
+          `Cannot change status of a ${existingLoad.status} load directly.`,
+        );
+      }
 
       // Create a trip if driver and vehicle are assigned and we don't already have one
       if (
@@ -142,6 +219,18 @@ export class LoadsService {
         data.status === 'ASSIGNED' &&
         !existingLoad.tripId
       ) {
+        const driver = await tx.driver.findFirst({
+          where: { id: driverId, companyId },
+        });
+        if (!driver || driver.status !== 'AVAILABLE')
+          throw new ConflictException('Driver is not available');
+
+        const vehicle = await tx.vehicle.findFirst({
+          where: { id: vehicleId, companyId },
+        });
+        if (!vehicle || vehicle.status !== 'IN_SERVICE')
+          throw new ConflictException('Vehicle is not available');
+
         const trip = await tx.trip.create({
           data: {
             companyId,
@@ -151,6 +240,22 @@ export class LoadsService {
             status: 'DISPATCHED',
           },
         });
+
+        await this.prisma.updateWithOcc(
+          tx,
+          'driver',
+          driverId,
+          driver.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+        await this.prisma.updateWithOcc(
+          tx,
+          'vehicle',
+          vehicleId,
+          vehicle.updatedAt,
+          { status: 'DISPATCHED' },
+        );
+
         data.tripId = trip.id;
       }
 
@@ -158,7 +263,7 @@ export class LoadsService {
         `Updating load ${id} with status=${updateLoadDto.status ?? 'unchanged'}`,
       );
 
-      const updatedLoad = await this.prisma.updateWithOcc<any>(
+      const savedLoad = await this.prisma.updateWithOcc<any>(
         tx,
         'load',
         id,
@@ -175,24 +280,47 @@ export class LoadsService {
           where: { loadId: id },
         });
         if (!existingInvoice) {
-          const refPart = updatedLoad.referenceNumber
-            ? updatedLoad.referenceNumber.split('-').pop()
+          const refPart = savedLoad.referenceNumber
+            ? savedLoad.referenceNumber.split('-').pop()
             : crypto.randomBytes(4).toString('hex').toUpperCase();
           await tx.invoice.create({
             data: {
               companyId,
-              customerId: updatedLoad.customerId,
-              loadId: updatedLoad.id,
+              customerId: savedLoad.customerId,
+              loadId: savedLoad.id,
               invoiceNumber: `INV-${refPart}`,
               status: 'DRAFT',
-              amount: updatedLoad.rate || 1500,
+              amount: savedLoad.rate || 1500,
               dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
             },
           });
         }
       }
 
-      return updatedLoad;
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Load',
+          entityType: 'Load',
+          entityId: savedLoad.id,
+          action: 'UPDATE',
+          details: { status: savedLoad.status },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'LOAD',
+        streamId: savedLoad.id,
+        eventType: 'LoadUpdated',
+        payload: { status: savedLoad.status },
+        userId,
+      });
+
+      return savedLoad;
     });
 
     this.eventEmitter.emit('load.updated', updatedLoad);
@@ -200,17 +328,42 @@ export class LoadsService {
     return updatedLoad;
   }
 
-  async remove(companyId: string, id: string) {
+  async remove(companyId: string, id: string, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingLoad = await tx.load.findFirst({
         where: { id, companyId },
       });
       if (!existingLoad) throw new NotFoundException();
 
-      return tx.load.update({
+      const deletedLoad = await tx.load.update({
         where: { id },
         data: { deletedAt: new Date(), status: 'CANCELLED' },
       });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Load',
+          entityType: 'Load',
+          entityId: deletedLoad.id,
+          action: 'DELETE',
+          details: { status: deletedLoad.status },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'LOAD',
+        streamId: deletedLoad.id,
+        eventType: 'LoadDeleted',
+        payload: { status: deletedLoad.status },
+        userId,
+      });
+
+      return deletedLoad;
     });
   }
 }
