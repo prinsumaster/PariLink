@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@parilink/plugin-sdk": ["../../packages/plugin-sdk/src/index.ts"]
     }
   },
   "include": [
