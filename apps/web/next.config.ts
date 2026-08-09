@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns', 'recharts', 'framer-motion'],
   },
+  transpilePackages: ['@parilink/plugin-sdk'],
   images: {
     remotePatterns: [
       {
