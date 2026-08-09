@@ -87,7 +87,7 @@
     "nestjs-pino": "^4.6.1",
     "next": "16.3.0",
     "openid-client": "^5.7.0",
-    "otplib": "^11.0.1",
+    "otplib": "^13.4.1",
     "passport": "^0.7.0",
     "passport-headerapikey": "^1.2.2",
     "passport-jwt": "^4.0.1",
