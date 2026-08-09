@@ -31,7 +31,7 @@ export class RolesService {
       const { page = 1, limit = 10, search } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.RoleWhereInput = {};
+      const where: Prisma.RoleWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -62,7 +62,7 @@ export class RolesService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const role = await tx.role.findFirst({
-        where: { id },
+        where: { id, companyId },
         include: {
           _count: {
             select: { users: true },
@@ -80,14 +80,14 @@ export class RolesService {
   async update(companyId: string, id: string, updateRoleDto: UpdateRoleDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingRole = await tx.role.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingRole) throw new NotFoundException();
 
       const updateData: any = { ...updateRoleDto };
 
       return tx.role.update({
-        where: { id },
+        where: { id, companyId },
         data: updateData,
       });
     });
@@ -96,12 +96,12 @@ export class RolesService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingRole = await tx.role.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingRole) throw new NotFoundException();
 
       return tx.role.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date() },
       });
     });

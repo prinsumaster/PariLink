@@ -29,7 +29,7 @@ export class VendorsService {
       const { page = 1, limit = 10, search, status, type } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.VendorWhereInput = {};
+      const where: Prisma.VendorWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -64,7 +64,7 @@ export class VendorsService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const vendor = await tx.vendor.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!vendor) {
@@ -81,12 +81,12 @@ export class VendorsService {
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingVendor = await tx.vendor.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingVendor) throw new NotFoundException();
 
       return tx.vendor.update({
-        where: { id },
+        where: { id, companyId },
         data: updateVendorDto,
       });
     });
@@ -95,12 +95,12 @@ export class VendorsService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingVendor = await tx.vendor.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingVendor) throw new NotFoundException();
 
       return tx.vendor.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'INACTIVE' },
       });
     });

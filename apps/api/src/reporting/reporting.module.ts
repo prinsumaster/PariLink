@@ -21,7 +21,7 @@ import { PlatformModule } from '../platform/platform.module';
     }),
   ],
   controllers: [ReportingController],
-  providers: [ReportingService, ReportingProcessor],
+  providers: [ReportingService, ...(process.env.RUN_WORKERS === 'true' ? [ReportingProcessor] : [])],
   exports: [ReportingService],
 })
 export class ReportingModule {}

@@ -19,23 +19,23 @@ test.describe('Final Authentication Certification', () => {
     
     // 1. Without auth
     for (const ep of endpoints) {
-      const response = await request.get(`http://localhost:3000${ep}`, { maxRedirects: 0 });
+      const response = await request.get(`http://localhost:3001${ep}`, { maxRedirects: 0 });
       // Next.js middleware redirects to /login on 401
       expect(response.status()).toBe(307);
       expect(response.headers().location).toContain('/login');
     }
 
     // 2. With auth (Login first)
-    await sharedPage.goto('http://localhost:3000/login');
+    await sharedPage.goto('http://localhost:3001/login');
     await sharedPage.fill('input[type="email"]', 'admin@parilink.com');
     await sharedPage.fill('input[type="password"]', 'password123');
     await sharedPage.click('button[type="submit"]');
-    await sharedPage.waitForURL('http://localhost:3000/dashboard');
+    await sharedPage.waitForURL('http://localhost:3001/dashboard');
 
     const cookies = await sharedContext.cookies();
     
     for (const ep of endpoints) {
-      const response = await request.get(`http://localhost:3000${ep}`, { 
+      const response = await request.get(`http://localhost:3001${ep}`, { 
         headers: { Cookie: cookies.map(c => `${c.name}=${c.value}`).join('; ') }
       });
       // Should return 200 OK
@@ -47,8 +47,8 @@ test.describe('Final Authentication Certification', () => {
     // We are logged in from the previous test.
     // 1. Open second tab
     const tab2 = await sharedContext.newPage();
-    await tab2.goto('http://localhost:3000/dashboard');
-    await expect(tab2).toHaveURL('http://localhost:3000/dashboard');
+    await tab2.goto('http://localhost:3001/dashboard');
+    await expect(tab2).toHaveURL('http://localhost:3001/dashboard');
 
     // 2. Logout on tab 1
     // Assume there is a logout button in the UI, or we can clear localStorage to simulate it, or call the API
@@ -72,14 +72,14 @@ test.describe('Stress Tests', () => {
     test.setTimeout(120000); // 2 minutes
     let passed = 0;
     for (let i = 0; i < 100; i++) {
-      const loginRes = await request.post('http://localhost:3000/backend/v1/auth/login', {
+      const loginRes = await request.post('http://localhost:3001/backend/v1/auth/login', {
         data: { email: 'admin@parilink.com', password: 'password123' }
       });
       expect(loginRes.status()).toBe(200);
       const cookies = loginRes.headersArray().filter(h => h.name.toLowerCase() === 'set-cookie');
       expect(cookies.length).toBeGreaterThan(0);
       
-      const logoutRes = await request.post('http://localhost:3000/backend/v1/auth/logout', {
+      const logoutRes = await request.post('http://localhost:3001/backend/v1/auth/logout', {
         headers: { Cookie: cookies.map(c => c.value.split(';')[0]).join('; ') }
       });
       expect(logoutRes.status()).toBe(200);
@@ -92,7 +92,7 @@ test.describe('Stress Tests', () => {
     test.setTimeout(60000); // 1 minute
     
     // Initial login
-    const loginRes = await request.post('http://localhost:3000/backend/v1/auth/login', {
+    const loginRes = await request.post('http://localhost:3001/backend/v1/auth/login', {
       data: { email: 'admin@parilink.com', password: 'password123' }
     });
     expect(loginRes.status()).toBe(200);
@@ -101,7 +101,7 @@ test.describe('Stress Tests', () => {
     
     let passed = 0;
     for (let i = 0; i < 50; i++) {
-      const refreshRes = await request.post('http://localhost:3000/backend/v1/auth/refresh', {
+      const refreshRes = await request.post('http://localhost:3001/backend/v1/auth/refresh', {
         headers: { Cookie: currentCookies.join('; ') }
       });
       // NestJS might not actually rotate the refresh token on every request, but it should return 200

@@ -65,7 +65,7 @@ export class GeofenceEngineService {
   async getGeofenceById(companyId: string, id: string) {
     const geofence = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.geofence.findUnique({
-        where: { id },
+        where: { id, companyId },
         include: {
           events: {
             orderBy: { timestamp: 'desc' },

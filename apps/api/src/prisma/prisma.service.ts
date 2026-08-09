@@ -290,8 +290,16 @@ export class PrismaService
       );
     }
 
+    const configResult = await tx.$queryRaw<{ current_company_id: string | null }[]>`SELECT current_setting('app.current_company_id', true) as current_company_id`;
+    const companyId = configResult[0]?.current_company_id;
+
+    const finalWhere: any = { id };
+    if (companyId) {
+      finalWhere.companyId = companyId;
+    }
+
     const updatedEntity = await model.findFirst({
-      where: { id },
+      where: finalWhere,
       include,
     });
 

@@ -1,4 +1,4 @@
-import './tracer';
+// import './tracer';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -195,6 +195,8 @@ async function bootstrap() {
       'X-Signature',
       'X-Timestamp',
       'X-Nonce',
+      'Cache-Control',
+      'Pragma',
     ],
     exposedHeaders: ['X-Request-Id', 'X-RateLimit-Remaining'],
     credentials: true,

@@ -40,14 +40,18 @@ export class CompaniesController {
   @Get()
   @RequirePermissions('companies:read')
   @ApiOperation({ summary: 'List companies with pagination and search' })
-  findAll(@Query() query: CompanyQueryDto) {
-    return this.companiesService.findAll(query);
+  findAll(@GetUser() user: AuthenticatedUser, @Query() query: CompanyQueryDto) {
+    return this.companiesService.findAll(query, user.companyId);
   }
 
   @Get(':id')
   @RequirePermissions('companies:read')
   @ApiOperation({ summary: 'Get a company by ID' })
-  findOne(@Param('id') id: string) {
+  findOne(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    // In a multi-tenant system, users can only access their own company
+    if (id !== user.companyId) {
+      throw new Error('Unauthorized cross-tenant access');
+    }
     return this.companiesService.findOne(id);
   }
 
@@ -59,6 +63,9 @@ export class CompaniesController {
     @Param('id') id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
+    if (id !== user.companyId) {
+      throw new Error('Unauthorized cross-tenant access');
+    }
     return this.companiesService.update(id, updateCompanyDto, user.id);
   }
 
@@ -66,6 +73,9 @@ export class CompaniesController {
   @RequirePermissions('companies:delete')
   @ApiOperation({ summary: 'Soft delete a company' })
   remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    if (id !== user.companyId) {
+      throw new Error('Unauthorized cross-tenant access');
+    }
     return this.companiesService.remove(id, user.id);
   }
 }

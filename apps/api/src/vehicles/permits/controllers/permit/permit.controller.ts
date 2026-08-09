@@ -11,6 +11,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../../auth/guards/jwt-auth.guard';
+import { GetUser } from '../../../../auth/decorators/get-user.decorator';
+import type { AuthenticatedUser } from '../../../../auth/decorators/get-user.decorator';
 import { PermitComplianceService } from '../../services/permit-compliance/permit-compliance.service';
 
 @Controller('vehicles/permits')
@@ -19,31 +21,31 @@ export class PermitController {
   constructor(private readonly service: PermitComplianceService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
-    return this.service.create(req.user.companyId, req.user.id, data);
+  create(@GetUser() user: AuthenticatedUser, @Body() data: Record<string, unknown>) {
+    return this.service.create(user.companyId, user.id, data);
   }
 
   @Get()
-  findAll(@Req() req: any, @Query() query: any) {
-    return this.service.findAll(req.user.companyId, query);
+  findAll(@GetUser() user: AuthenticatedUser, @Query() query: any) {
+    return this.service.findAll(user.companyId, query);
   }
 
   @Get(':id')
-  findOne(@Req() req: any, @Param('id') id: string) {
-    return this.service.findOne(req.user.companyId, id);
+  findOne(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.service.findOne(user.companyId, id);
   }
 
   @Patch(':id')
   update(
-    @Req() req: any,
+    @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
     @Body() data: Record<string, unknown>,
   ) {
-    return this.service.update(req.user.companyId, id, req.user.id, data);
+    return this.service.update(user.companyId, id, user.id, data);
   }
 
   @Delete(':id')
-  remove(@Req() req: any, @Param('id') id: string) {
-    return this.service.remove(req.user.companyId, id, req.user.id);
+  remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.service.remove(user.companyId, id, user.id);
   }
 }

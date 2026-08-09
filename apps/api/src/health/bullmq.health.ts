@@ -27,7 +27,7 @@ export class BullMQHealthIndicator extends HealthIndicator {
     } catch (e) {
       throw new HealthCheckError(
         'BullMQHealthCheck failed',
-        this.getStatus(key, false, { message: e.message }),
+        this.getStatus(key, false, { message: (e as Error).message }),
       );
     }
   }

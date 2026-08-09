@@ -104,7 +104,7 @@ export class PatService {
   async revokePat(id: string, userId: string, companyId: string) {
     const pat = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.personalAccessToken.findUnique({
-        where: { id },
+        where: { id, companyId },
       }),
     );
 
@@ -114,7 +114,7 @@ export class PatService {
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.personalAccessToken.update({
-        where: { id },
+        where: { id, companyId },
         data: { revokedAt: new Date() },
       }),
     );

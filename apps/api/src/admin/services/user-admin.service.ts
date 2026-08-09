@@ -26,6 +26,7 @@ export class UserAdminService {
     return this.prisma.runAsSystem(async (tx) =>
       tx.user.findMany({
         where,
+        take: 1000,
         select: {
           id: true,
           email: true,

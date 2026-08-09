@@ -18,7 +18,7 @@ export const adminService = {
   },
 
   updateUser: async (id: string, userData: Partial<User>): Promise<User> => {
-    const { data } = await api.put(`/admin/users/${id}`, userData);
+    const { data } = await api.patch(`/admin/users/${id}`, userData);
     return data;
   },
 

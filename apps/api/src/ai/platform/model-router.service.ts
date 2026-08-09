@@ -77,8 +77,8 @@ export class ModelRouterService implements OnModuleInit {
 
   constructor(private prisma: PrismaService) {}
 
-  async onModuleInit() {
-    await this.refreshModels();
+  onModuleInit() {
+    this.refreshModels().catch(err => this.logger.error('Failed to init models', err));
   }
 
   async refreshModels() {

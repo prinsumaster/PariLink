@@ -425,7 +425,7 @@ export class TripsService {
   async assignLoads(companyId: string, id: string, loadIds: string[]) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingTrip = await tx.trip.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingTrip) throw new NotFoundException();
 
@@ -463,7 +463,7 @@ export class TripsService {
       });
 
       const updatedTrip = await tx.trip.findFirst({
-        where: { id },
+        where: { id, companyId },
         include: { loads: true },
       });
 
@@ -536,7 +536,7 @@ export class TripsService {
       }
 
       const deletedTrip = await tx.trip.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'CANCELLED' },
       });
 

@@ -32,7 +32,7 @@ export const driverService = {
       payload.lastName = nameParts.slice(1).join(' ') || ' ';
       delete payload.name;
     }
-    const { data } = await api.put(`/drivers/${id}`, payload);
+    const { data } = await api.patch(`/drivers/${id}`, payload);
     return data;
   },
 
@@ -47,7 +47,7 @@ export const driverService = {
   },
 
   updateStatus: async (driverId: string, status: string): Promise<Driver> => {
-    const { data } = await api.post(`/drivers/${driverId}/status`, { status });
+    const { data } = await api.patch(`/drivers/${driverId}`, { status });
     return data;
   }
 };

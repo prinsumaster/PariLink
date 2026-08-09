@@ -51,7 +51,7 @@ export const fleetService = {
     delete payload.capacity;
     delete payload.axles;
     delete payload.odometer;
-    const { data } = await api.put(`/vehicles/${id}`, payload);
+    const { data } = await api.patch(`/vehicles/${id}`, payload);
     return {
       ...data,
       registrationNumber: data.licensePlate || data.registrationNumber,

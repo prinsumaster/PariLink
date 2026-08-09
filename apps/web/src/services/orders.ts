@@ -18,12 +18,12 @@ export const orderService = {
   },
 
   updateOrder: async (id: string, orderData: Partial<Order>): Promise<Order> => {
-    const { data } = await api.put(`/orders/${id}`, orderData);
+    const { data } = await api.patch(`/orders/${id}`, orderData);
     return data;
   },
 
   updateOrderStatus: async (id: string, status: string): Promise<Order> => {
-    const { data } = await api.patch(`/orders/${id}/status`, { status });
+    const { data } = await api.patch(`/orders/${id}`, { status });
     return data;
   },
 

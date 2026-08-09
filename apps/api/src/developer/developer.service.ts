@@ -67,7 +67,7 @@ export class DeveloperService {
   async getApp(companyId: string, id: string) {
     const app = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.developerApp.findUnique({
-        where: { id },
+        where: { id, companyId },
       }),
     );
 
@@ -88,7 +88,7 @@ export class DeveloperService {
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.developerApp.update({
-        where: { id },
+        where: { id, companyId },
         data: {
           name: dto.name,
           description: dto.description,
@@ -118,7 +118,7 @@ export class DeveloperService {
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.developerApp.update({
-        where: { id },
+        where: { id, companyId },
         data: { clientSecret: newSecret },
       }),
     );
@@ -139,7 +139,7 @@ export class DeveloperService {
     const app = await this.getApp(companyId, id);
 
     await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.developerApp.delete({ where: { id } }),
+      tx.developerApp.delete({ where: { id, companyId } }),
     );
 
     await this.audit.logEvent({

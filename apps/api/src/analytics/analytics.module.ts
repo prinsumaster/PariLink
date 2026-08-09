@@ -25,7 +25,7 @@ import { PlatformModule } from '../platform/platform.module';
     MetricsEngineService,
     ForecastEngineService,
     AnalyticsCacheService,
-    AnalyticsETLProcessor,
+    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [AnalyticsETLProcessor] : [])] : []),
     AnalyticsETLService,
     KpiEngineService,
   ],

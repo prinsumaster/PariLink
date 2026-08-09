@@ -15,11 +15,9 @@ import { HelpCircle, BookOpen, MessageSquare, PlayCircle, GraduationCap } from '
 export function HelpMenu() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300">
-          <HelpCircle className="h-4 w-4" />
-          <span className="sr-only">Help & Support</span>
-        </Button>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800">
+        <HelpCircle className="h-4 w-4" />
+        <span className="sr-only">Help & Support</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel className="font-normal">

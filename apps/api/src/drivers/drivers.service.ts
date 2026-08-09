@@ -105,7 +105,7 @@ export class DriversService {
       const { page = 1, limit = 10, search, status } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.DriverWhereInput = {};
+      const where: Prisma.DriverWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -268,7 +268,7 @@ export class DriversService {
         }
 
         const deletedDriver = await tx.driver.update({
-          where: { id },
+          where: { id, companyId },
           data: { deletedAt: new Date(), status: 'TERMINATED' },
         });
 

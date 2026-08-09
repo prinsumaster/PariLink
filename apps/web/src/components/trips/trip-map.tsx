@@ -32,11 +32,16 @@ export function TripMap({ trip }: TripMapProps) {
     ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
     : 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
+  const originLng = trip?.origin?.lng ?? -96.7970;
+  const originLat = trip?.origin?.lat ?? 32.7767;
+  const destLng = trip?.destination?.lng ?? -97.7431;
+  const destLat = trip?.destination?.lat ?? 30.2672;
+
   // Calculate bounding box for origin and destination to fit map
-  const minLng = Math.min(trip.origin.lng, trip.destination.lng);
-  const maxLng = Math.max(trip.origin.lng, trip.destination.lng);
-  const minLat = Math.min(trip.origin.lat, trip.destination.lat);
-  const maxLat = Math.max(trip.origin.lat, trip.destination.lat);
+  const minLng = Math.min(originLng, destLng);
+  const maxLng = Math.max(originLng, destLng);
+  const minLat = Math.min(originLat, destLat);
+  const maxLat = Math.max(originLat, destLat);
 
   // Simplified route line logic (straight line) for the placeholder. Real implementation would use Mapbox Directions API GeoJSON.
   const routeGeoJSON: any = {
@@ -45,8 +50,8 @@ export function TripMap({ trip }: TripMapProps) {
     geometry: {
       type: 'LineString',
       coordinates: [
-        [trip.origin.lng, trip.origin.lat],
-        [trip.destination.lng, trip.destination.lat]
+        [originLng, originLat],
+        [destLng, destLat]
       ]
     }
   };
@@ -78,19 +83,19 @@ export function TripMap({ trip }: TripMapProps) {
               />
             </Source>
             
-            <Marker longitude={trip.origin.lng} latitude={trip.origin.lat} anchor="bottom">
+            <Marker longitude={originLng} latitude={originLat} anchor="bottom">
               <div className="flex flex-col items-center">
                 <div className="bg-white dark:bg-gray-800 text-xs px-2 py-1 rounded shadow-md whitespace-nowrap mb-1">
-                  Origin: {trip.origin.name}
+                  Origin: {trip?.origin?.name || 'Dallas (Mock)'}
                 </div>
                 <div className="w-4 h-4 bg-gray-800 border-2 border-white rounded-full shadow-lg"></div>
               </div>
             </Marker>
             
-            <Marker longitude={trip.destination.lng} latitude={trip.destination.lat} anchor="bottom">
+            <Marker longitude={destLng} latitude={destLat} anchor="bottom">
               <div className="flex flex-col items-center">
                 <div className="bg-white dark:bg-gray-800 text-xs px-2 py-1 rounded shadow-md whitespace-nowrap mb-1">
-                  Destination: {trip.destination.name}
+                  Destination: {trip?.destination?.name || 'Austin (Mock)'}
                 </div>
                 <div className="w-5 h-5 bg-blue-500 border-2 border-white rounded-full shadow-lg flex items-center justify-center">
                   <div className="w-2 h-2 bg-white rounded-full"></div>

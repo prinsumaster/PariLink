@@ -47,11 +47,15 @@ export class CompaniesService {
     });
   }
 
-  async findAll(query: CompanyQueryDto) {
+  async findAll(query: CompanyQueryDto, companyId?: string) {
     const { page = 1, limit = 10, search, status } = query;
     const { skip, take } = getPaginationParams(page, limit);
 
     const where: Prisma.CompanyWhereInput = {};
+
+    if (companyId) {
+      where.id = companyId;
+    }
 
     if (search) {
       where.OR = [

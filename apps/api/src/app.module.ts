@@ -27,6 +27,7 @@ import { BranchesModule } from './branches/branches.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { PermitsModule } from './vehicles/permits/permits.module';
 import { DriversModule } from './drivers/drivers.module';
 import { CustomersModule } from './customers/customers.module';
 import { LoadsModule } from './loads/loads.module';
@@ -157,7 +158,6 @@ import { ReportingModule } from './reporting/reporting.module';
       useFactory: (redisManager: any) => ({
         storage: new ThrottlerStorageRedisService(redisManager.getClient()),
         throttlers: [
-          // Default public API limits (100 reqs per minute)
           {
             name: 'default',
             ttl: seconds(60),
@@ -226,10 +226,7 @@ import { ReportingModule } from './reporting/reporting.module';
         name: 'background_jobs',
       },
     ),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/api/{*path}', '/health/{*path}', '/v1/health/{*path}'],
-    }),
+
     PrismaModule,
     AuthModule,
     SsoModule,
@@ -237,6 +234,7 @@ import { ReportingModule } from './reporting/reporting.module';
     BranchesModule,
     UsersModule,
     RolesModule,
+    PermitsModule,
     VehiclesModule,
     DriversModule,
     WarehouseModule,
@@ -285,7 +283,6 @@ import { ReportingModule } from './reporting/reporting.module';
     PlanningModule,
     ApiV2Module,
     CommercialModule,
-    WarehouseModule,
     YardModule,
     MarketplaceCoreModule,
     MarketplaceWebhooksModule,
@@ -314,13 +311,8 @@ import { ReportingModule } from './reporting/reporting.module';
     SaasBillingModule,
     TelemetryModule,
     FleetModule,
-    AiModule,
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
     ApiRateLimiterMiddleware,
     {
       provide: APP_INTERCEPTOR,

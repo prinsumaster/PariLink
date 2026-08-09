@@ -18,12 +18,12 @@ export const wmsService = {
   },
 
   updateWarehouse: async (id: string, warehouseData: Partial<Warehouse>): Promise<Warehouse> => {
-    const { data } = await api.put(`/warehouse/${id}`, warehouseData);
+    const { data } = await api.patch(`/warehouse/${id}`, warehouseData);
     return data;
   },
 
   updateWarehouseStatus: async (id: string, status: string): Promise<Warehouse> => {
-    const { data } = await api.patch(`/warehouse/${id}/status`, { status });
+    const { data } = await api.patch(`/warehouse/${id}`, { status });
     return data;
   },
 

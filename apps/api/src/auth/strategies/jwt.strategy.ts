@@ -49,6 +49,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           return token;
         },
         ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ExtractJwt.fromUrlQueryParameter('token'),
       ]),
       ignoreExpiration: false,
       secretOrKey: resolveJwtSecret(),

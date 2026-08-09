@@ -18,22 +18,22 @@ export const tripService = {
   },
 
   updateTrip: async (id: string, tripData: Partial<Trip>): Promise<Trip> => {
-    const { data } = await api.put(`/trips/${id}`, tripData);
+    const { data } = await api.patch(`/trips/${id}`, tripData);
     return data;
   },
 
   updateStatus: async (id: string, status: string, notes?: string): Promise<Trip> => {
-    const { data } = await api.post(`/trips/${id}/status`, { status, notes });
+    const { data } = await api.patch(`/trips/${id}`, { status, notes });
     return data;
   },
 
   cancelTrip: async (id: string, reason: string): Promise<Trip> => {
-    const { data } = await api.post(`/trips/${id}/cancel`, { reason });
+    const { data } = await api.patch(`/trips/${id}`, { status: 'CANCELLED', notes: reason });
     return data;
   },
   
   assignDriver: async (id: string, driverId: string): Promise<Trip> => {
-    const { data } = await api.post(`/trips/${id}/assign-driver`, { driverId });
+    const { data } = await api.patch(`/trips/${id}`, { driverId });
     return data;
   }
 };

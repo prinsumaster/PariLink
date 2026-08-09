@@ -21,8 +21,8 @@ export function csrfMiddleware(
   res: Response,
   next: NextFunction,
 ) {
-  // 1. Skip CSRF for Webhooks (they don't use session cookies)
-  if (req.path.includes('/webhooks')) {
+  // 1. Skip CSRF for Webhooks and Auth Login (Stateless/Server-to-Server)
+  if (req.path.includes('/webhooks') || req.path.includes('/auth/login') || req.path.includes('/auth/register')) {
     return next();
   }
 

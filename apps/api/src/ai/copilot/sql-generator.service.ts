@@ -51,9 +51,9 @@ export class SqlGeneratorService {
 
     // 3. Execute
     try {
-      const sanitizedQuery = this.injectCompanyId(sqlQuery, companyId);
+      const sanitizedQuery = this.injectCompanyId(sqlQuery);
       const result = await this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.$queryRaw(Prisma.raw(sanitizedQuery)),
+        tx.$queryRawUnsafe(sanitizedQuery, companyId),
       );
       return result;
     } catch (error) {
@@ -120,10 +120,9 @@ export class SqlGeneratorService {
     // Note: We use string replacement here, but ideally we extract the query structure and pass companyId as a param to prisma.$queryRaw.
   }
 
-  // Helper method to sanitize and inject companyId to prevent SQL injection in the replacement phase
-  public injectCompanyId(query: string, companyId: string): string {
-    // Very basic sanitization for the demo
-    const sanitizedCompanyId = companyId.replace(/'/g, "''");
-    return query.replace(/\{\{COMPANY_ID_PLACEHOLDER\}\}/g, sanitizedCompanyId);
+  // Helper method to prepare parameterized query
+  public injectCompanyId(query: string): string {
+    // Replace the placeholder with the parameter marker $1
+    return query.replace(/'\{\{COMPANY_ID_PLACEHOLDER\}\}'|\{\{COMPANY_ID_PLACEHOLDER\}\}/g, '$1');
   }
 }
