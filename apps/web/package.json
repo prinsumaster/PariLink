@@ -20,7 +20,7 @@
     "@parilink/plugin-sdk": "*",
     "@serwist/next": "^9.5.12",
     "@serwist/sw": "^9.5.12",
-    "@tanstack/react-query": "^5.101.2",
+    "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",
     "@xyflow/react": "^12.11.2",
