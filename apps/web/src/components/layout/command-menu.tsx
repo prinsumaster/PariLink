@@ -74,7 +74,7 @@ export function GlobalCommandMenu() {
               <Truck className="mr-2 h-4 w-4" />
               <span>Open Fleet</span>
             </CommandItem>
-            <CommandItem onSelect={() => runCommand(() => router.push('/analytics'))}>
+            <CommandItem onSelect={() => runCommand(() => router.push('/analytics/command-center'))}>
               <BarChart3 className="mr-2 h-4 w-4" />
               <span>Open Analytics</span>
             </CommandItem>

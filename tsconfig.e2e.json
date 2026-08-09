@@ -1,0 +1,13 @@
+{
+  "extends": "./apps/api/tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+    "useUnknownInCatchVariables": false
+  },
+  "include": ["verify-e2e.ts", "apps/api/src/**/*.ts"]
+}

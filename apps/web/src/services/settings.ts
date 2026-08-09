@@ -8,7 +8,7 @@ export const settingsService = {
   },
 
   updateOrganizationSettings: async (settings: OrganizationSettings): Promise<OrganizationSettings> => {
-    const { data } = await api.put('/settings/organization', settings);
+    const { data } = await api.patch('/settings/organization', settings);
     return data;
   },
 
@@ -18,7 +18,7 @@ export const settingsService = {
   },
 
   updateSecuritySettings: async (settings: SecuritySettings): Promise<SecuritySettings> => {
-    const { data } = await api.put('/settings/security', settings);
+    const { data } = await api.patch('/settings/security', settings);
     return data;
   },
 
@@ -33,7 +33,7 @@ export const settingsService = {
   },
 
   updateLogo: async (logoUrl: string) => {
-    const { data } = await api.put('/saas/tenant/branding/logo', { logoUrl });
+    const { data } = await api.patch('/saas/tenant/branding/logo', { logoUrl });
     return data;
   },
 

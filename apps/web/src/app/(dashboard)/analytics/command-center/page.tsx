@@ -33,8 +33,7 @@ export default function CommandCenterPage() {
 
   const setupSSE = () => {
     // Basic SSE setup for Phase 5
-    const token = localStorage.getItem('token');
-    const eventSource = new EventSource(`${API_URL}/analytics/metrics/live?token=${token}`);
+    const eventSource = new EventSource(`${API_URL}/analytics/metrics/live`, { withCredentials: true });
     
     eventSource.onmessage = (event) => {
       try {

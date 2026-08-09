@@ -164,7 +164,7 @@ export const COMMAND_REGISTRY: PariCommand[] = [
     description: 'Business intelligence and performance metrics',
     category: 'navigate',
     keywords: ['analytics', 'reports', 'metrics', 'kpi', 'performance', 'data'],
-    href: '/analytics',
+    href: '/analytics/command-center',
     icon: 'BarChart3',
   },
 

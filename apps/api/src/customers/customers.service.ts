@@ -33,7 +33,7 @@ export class CustomersService {
       const { page = 1, limit = 10, search, status } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.CustomerWhereInput = {};
+      const where: Prisma.CustomerWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -64,7 +64,7 @@ export class CustomersService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const customer = await tx.customer.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!customer) {
@@ -81,12 +81,12 @@ export class CustomersService {
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingCustomer = await tx.customer.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingCustomer) throw new NotFoundException();
 
       const updateResult = await tx.customer.updateMany({
-        where: { id, updatedAt: existingCustomer.updatedAt },
+        where: { id, companyId, updatedAt: existingCustomer.updatedAt },
         data: updateCustomerDto,
       });
 
@@ -97,7 +97,7 @@ export class CustomersService {
       }
 
       const updatedCustomer = await tx.customer.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!updatedCustomer) throw new NotFoundException();
@@ -108,12 +108,12 @@ export class CustomersService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingCustomer = await tx.customer.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingCustomer) throw new NotFoundException();
 
-      return tx.customer.update({
-        where: { id },
+      return tx.customer.updateMany({
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'INACTIVE' },
       });
     });

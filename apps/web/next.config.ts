@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'date-fns', 'recharts', 'framer-motion'],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   async rewrites() {
     const backendUrl = process.env.API_INTERNAL_URL || "http://localhost:8080";
     return [

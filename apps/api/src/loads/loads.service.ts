@@ -336,7 +336,7 @@ export class LoadsService {
       if (!existingLoad) throw new NotFoundException();
 
       const deletedLoad = await tx.load.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'CANCELLED' },
       });
 

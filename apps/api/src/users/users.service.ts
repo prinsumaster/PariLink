@@ -72,7 +72,7 @@ export class UsersService {
       const { page = 1, limit = 10, search, status } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.UserWhereInput = {};
+      const where: Prisma.UserWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -113,7 +113,7 @@ export class UsersService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const user = await tx.user.findFirst({
-        where: { id },
+        where: { id, companyId },
         include: { role: true },
       });
 
@@ -129,12 +129,12 @@ export class UsersService {
   async update(companyId: string, id: string, updateUserDto: UpdateUserDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingUser = await tx.user.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingUser) throw new NotFoundException();
 
       const user = await tx.user.update({
-        where: { id },
+        where: { id, companyId },
         data: updateUserDto,
       });
 
@@ -163,12 +163,12 @@ export class UsersService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingUser = await tx.user.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!existingUser) throw new NotFoundException();
 
       const user = await tx.user.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'INACTIVE' },
       });
 

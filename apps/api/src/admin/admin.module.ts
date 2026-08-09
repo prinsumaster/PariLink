@@ -32,7 +32,6 @@ import { DashboardAdminService } from './services/dashboard-admin.service';
 @Module({
   imports: [AuthModule],
   controllers: [
-    AdminController,
     TenantAdminController,
     OrgAdminController,
     UserAdminController,
@@ -44,6 +43,7 @@ import { DashboardAdminService } from './services/dashboard-admin.service';
     AuditAdminController,
     SystemSettingsAdminController,
     DashboardAdminController,
+    AdminController,
   ],
   providers: [
     AdminService,

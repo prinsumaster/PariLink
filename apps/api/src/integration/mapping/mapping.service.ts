@@ -242,7 +242,7 @@ export class DataMappingService {
     return path
       .split('.')
       .reduce(
-        (acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined),
+        (acc: any, part) => (acc && acc[part] !== undefined ? acc[part] : undefined),
         obj,
       );
   }

@@ -3,5 +3,5 @@ import { CreateUserDto } from './create-user.dto';
 
 // Usually, passwords are not updated via the standard update endpoint
 export class UpdateUserDto extends PartialType(
-  OmitType(CreateUserDto, ['password'] as const),
+  OmitType(CreateUserDto, ['password', 'companyId'] as const),
 ) {}

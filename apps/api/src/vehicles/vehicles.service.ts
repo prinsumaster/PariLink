@@ -106,7 +106,7 @@ export class VehiclesService {
       const { page = 1, limit = 10, search, type, status } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.VehicleWhereInput = {};
+      const where: Prisma.VehicleWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -142,7 +142,7 @@ export class VehiclesService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const vehicle = await tx.vehicle.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!vehicle) {
@@ -161,7 +161,7 @@ export class VehiclesService {
       companyId,
       async (tx) => {
         const existingVehicle = await tx.vehicle.findFirst({
-          where: { id },
+          where: { id, companyId },
         });
         if (!existingVehicle) throw new NotFoundException();
 
@@ -247,12 +247,12 @@ export class VehiclesService {
       companyId,
       async (tx) => {
         const existingVehicle = await tx.vehicle.findFirst({
-          where: { id },
+          where: { id, companyId },
         });
         if (!existingVehicle) throw new NotFoundException();
 
         const deletedVehicle = await tx.vehicle.update({
-          where: { id },
+          where: { id, companyId },
           data: { deletedAt: new Date(), status: 'OUT_OF_SERVICE' },
         });
 

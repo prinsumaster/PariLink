@@ -1,15 +1,13 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('search')
-@UseGuards(JwtAuthGuard, ThrottlerGuard)
+@UseGuards(JwtAuthGuard)
 export class UniversalSearchController {
   constructor(private prisma: PrismaService) {}
 
   @Get()
-  @Throttle({ default: { limit: 500, ttl: 60000 } }) // 500 requests per minute to prevent DB spam
   async globalSearch(@Query('q') query: string, @Req() req: any) {
     if (!query || query.length < 2) return [];
 

@@ -10,7 +10,7 @@ import { WorkflowService } from './workflow.service';
       name: 'background_jobs',
     }),
   ],
-  providers: [WorkflowExecutorService, WorkflowService, ConditionEngineService],
-  exports: [WorkflowExecutorService, WorkflowService, ConditionEngineService],
+  providers: [...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : [])] : []), WorkflowService, ConditionEngineService],
+  exports: [...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : [])] : []), WorkflowService, ConditionEngineService],
 })
 export class WorkflowModule {}

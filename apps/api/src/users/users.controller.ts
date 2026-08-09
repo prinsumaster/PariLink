@@ -21,10 +21,10 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
-@ApiTags('users')
+@ApiTags('admin/users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Controller('users')
+@Controller('admin/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

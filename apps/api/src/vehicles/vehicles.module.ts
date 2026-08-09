@@ -20,13 +20,13 @@ import { PermitsModule } from './permits/permits.module';
 import { WorkflowModule } from '../workflow/workflow.module';
 
 @Module({
-  imports: [PlatformModule, PermitsModule, WorkflowModule],
+  imports: [PlatformModule, WorkflowModule],
   controllers: [
-    VehiclesController,
     MaintenanceController,
     FuelController,
     TyreController,
     ComplianceController,
+    VehiclesController,
   ],
   providers: [
     VehiclesService,

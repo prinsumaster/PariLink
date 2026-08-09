@@ -20,7 +20,7 @@ export class RedisHealthIndicator extends HealthIndicator {
     } catch (e) {
       throw new HealthCheckError(
         'RedisHealthCheck failed',
-        this.getStatus(key, false, { message: e.message }),
+        this.getStatus(key, false, { message: (e as Error).message }),
       );
     }
   }

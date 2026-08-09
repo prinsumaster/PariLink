@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Customer CRUD Workflow', async ({ page }) => {
   // 1. Log in
-  await page.goto('http://localhost:3000/login');
+  await page.goto('http://localhost:3001/login');
   await page.fill('input[type="email"]', 'admin@parilink.com');
   await page.fill('input[type="password"]', 'password123');
   await page.click('button[type="submit"]');
@@ -11,7 +11,7 @@ test('Customer CRUD Workflow', async ({ page }) => {
   await page.waitForURL('**/dashboard');
   
   // 2. Navigate to Customers
-  const res = await page.goto('http://localhost:3000/customers');
+  const res = await page.goto('http://localhost:3001/customers');
   await page.waitForLoadState('networkidle');
 
   console.log('Status code for /customers:', res?.status());

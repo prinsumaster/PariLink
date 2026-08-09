@@ -65,12 +65,16 @@ export class NotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    const updated = await this.prisma.runAsSystem(async (tx) =>
-      tx.notification.update({
+    const updated = await this.prisma.runAsSystem(async (tx) => {
+      const existing = await tx.notification.findUnique({
+        where: { id },
+      });
+      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      return tx.notification.update({
         where: { id },
         data: { isRead: true, readAt: new Date() },
-      }),
-    );
+      });
+    });
 
     this.sseService.emitToUser(user.id, { type: 'NOTIFICATION_READ', id });
     return updated;
@@ -82,44 +86,60 @@ export class NotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.prisma.runAsSystem(async (tx) =>
-      tx.notification.update({
+    return this.prisma.runAsSystem(async (tx) => {
+      const existing = await tx.notification.findUnique({
+        where: { id },
+      });
+      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      return tx.notification.update({
         where: { id },
         data: { isRead: false, readAt: null },
-      }),
-    );
+      });
+    });
   }
 
   @Post(':id/archive')
   @ApiOperation({ summary: 'Archive a notification' })
   async archive(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
-      tx.notification.update({
+    return this.prisma.runAsSystem(async (tx) => {
+      const existing = await tx.notification.findUnique({
+        where: { id },
+      });
+      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      return tx.notification.update({
         where: { id },
         data: { isArchived: true },
-      }),
-    );
+      });
+    });
   }
 
   @Post(':id/pin')
   @ApiOperation({ summary: 'Pin a notification' })
   async pin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
-      tx.notification.update({
+    return this.prisma.runAsSystem(async (tx) => {
+      const existing = await tx.notification.findUnique({
+        where: { id },
+      });
+      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      return tx.notification.update({
         where: { id },
         data: { isPinned: true },
-      }),
-    );
+      });
+    });
   }
 
   @Post(':id/unpin')
   @ApiOperation({ summary: 'Unpin a notification' })
   async unpin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
-      tx.notification.update({
+    return this.prisma.runAsSystem(async (tx) => {
+      const existing = await tx.notification.findUnique({
+        where: { id },
+      });
+      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      return tx.notification.update({
         where: { id },
         data: { isPinned: false },
-      }),
-    );
+      });
+    });
   }
 }

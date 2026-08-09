@@ -87,7 +87,7 @@ export class TrailersService {
       if (!existingTrailer) throw new NotFoundException();
 
       return tx.vehicle.update({
-        where: { id },
+        where: { id, companyId },
         data: updateTrailerDto,
       });
     });
@@ -102,7 +102,7 @@ export class TrailersService {
       if (!existingTrailer) throw new NotFoundException();
 
       return tx.vehicle.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'OUT_OF_SERVICE' },
       });
     });

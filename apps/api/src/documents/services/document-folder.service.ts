@@ -131,7 +131,7 @@ export class DocumentFolderService {
   async deleteFolder(companyId: string, id: string, userId: string) {
     const folder = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.documentFolder.findUnique({
-        where: { id },
+        where: { id, companyId },
         include: {
           subFolders: true,
           documents: {},

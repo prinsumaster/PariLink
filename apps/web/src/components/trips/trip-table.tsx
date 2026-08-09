@@ -64,11 +64,11 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
           <div className="flex flex-col text-sm">
             <div className="flex items-center gap-1">
               <MapPin className="h-3 w-3 text-gray-400" />
-              <span className="truncate max-w-[150px]" title={row.original.origin.name}>{row.original.origin.name}</span>
+              <span className="truncate max-w-[150px]" title={row.original.origin?.name || 'Unknown'}>{row.original.origin?.name || 'Unknown Origin'}</span>
             </div>
             <div className="flex items-center gap-1 mt-1">
               <MapPin className="h-3 w-3 text-blue-500" />
-              <span className="truncate max-w-[150px]" title={row.original.destination.name}>{row.original.destination.name}</span>
+              <span className="truncate max-w-[150px]" title={row.original.destination?.name || 'Unknown'}>{row.original.destination?.name || 'Unknown Destination'}</span>
             </div>
           </div>
         ),

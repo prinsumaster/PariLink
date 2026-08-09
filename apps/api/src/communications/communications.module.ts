@@ -35,7 +35,7 @@ import { SlackProvider } from './channels/slack.provider';
     SseController,
   ],
   providers: [
-    DeliveryProcessor,
+    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [DeliveryProcessor] : [])] : []),
     TemplateService,
     NotificationOrchestratorService,
     SseService,
@@ -45,7 +45,7 @@ import { SlackProvider } from './channels/slack.provider';
     CommunicationsService,
   ],
   exports: [
-    DeliveryProcessor,
+    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [DeliveryProcessor] : [])] : []),
     TemplateService,
     NotificationOrchestratorService,
     SseService,

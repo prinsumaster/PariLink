@@ -17,11 +17,11 @@ export class ConnectorRegistryService implements OnModuleInit {
   /**
    * Registers a connector into the memory map and DB
    */
-  async registerConnector(connector: BaseConnector) {
+  registerConnector(connector: BaseConnector) {
     this.connectors.set(connector.providerName, connector);
 
-    // Upsert into DB to keep the Marketplace catalogue updated
-    await this.prisma.runAsSystem(async (tx) =>
+    // Upsert into DB to keep the Marketplace catalogue updated (Fire and forget to not block startup)
+    this.prisma.runAsSystem(async (tx) =>
       tx.integrationConnector.upsert({
         where: { provider: connector.providerName },
         update: {
@@ -36,7 +36,7 @@ export class ConnectorRegistryService implements OnModuleInit {
           status: 'ACTIVE',
         },
       }),
-    );
+    ).catch(err => this.logger.error(`Failed to register connector ${connector.providerName}`, err));
 
     this.logger.log(
       `Registered Connector: ${connector.providerName} v${connector.version}`,

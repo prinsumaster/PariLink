@@ -16,7 +16,9 @@ export function WorkspaceTabBar() {
       <div className="flex-1 flex items-center min-w-max h-full">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTabId;
-          const Icon = tab.icon || FileCode;
+          // Handle cases where `tab.icon` was serialized into a plain object `{}` by Zustand persist
+          const isValidIcon = tab.icon && (typeof tab.icon === 'function' || tab.icon.$$typeof);
+          const Icon = isValidIcon ? tab.icon : FileCode;
           return (
             <div
               key={tab.id}

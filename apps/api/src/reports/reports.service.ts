@@ -71,6 +71,7 @@ export class ReportsService {
   async getCustomerReport(companyId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const customers = await tx.customer.findMany({
+        take: 1000,
         select: {
           id: true,
           name: true,
@@ -101,6 +102,7 @@ export class ReportsService {
   async getDriverReport(companyId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const drivers = await tx.driver.findMany({
+        take: 1000,
         select: {
           id: true,
           firstName: true,
@@ -139,6 +141,7 @@ export class ReportsService {
   async getVehicleReport(companyId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const vehicles = await tx.vehicle.findMany({
+        take: 1000,
         select: {
           id: true,
           licensePlate: true,

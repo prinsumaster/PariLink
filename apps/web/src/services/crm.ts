@@ -39,12 +39,12 @@ export const crmService = {
     // Clean up undefined properties
     Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
     
-    const { data } = await api.put(`/customers/${id}`, payload);
+    const { data } = await api.patch(`/customers/${id}`, payload);
     return data;
   },
 
   updateCustomerStatus: async (id: string, status: string): Promise<Customer> => {
-    const { data } = await api.patch(`/customers/${id}/status`, { status });
+    const { data } = await api.patch(`/customers/${id}`, { status });
     return data;
   },
 

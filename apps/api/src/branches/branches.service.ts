@@ -30,7 +30,7 @@ export class BranchesService {
       const { page = 1, limit = 10, search, status } = query;
       const { skip, take } = getPaginationParams(page, limit);
 
-      const where: Prisma.BranchWhereInput = {};
+      const where: Prisma.BranchWhereInput = { companyId };
 
       if (search) {
         where.OR = [
@@ -61,7 +61,7 @@ export class BranchesService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const branch = await tx.branch.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
 
       if (!branch) {
@@ -78,12 +78,12 @@ export class BranchesService {
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const branch = await tx.branch.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!branch) throw new NotFoundException();
 
       return tx.branch.update({
-        where: { id },
+        where: { id, companyId },
         data: updateBranchDto,
       });
     });
@@ -92,12 +92,12 @@ export class BranchesService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const branch = await tx.branch.findFirst({
-        where: { id },
+        where: { id, companyId },
       });
       if (!branch) throw new NotFoundException();
 
       return tx.branch.update({
-        where: { id },
+        where: { id, companyId },
         data: { deletedAt: new Date(), status: 'INACTIVE' },
       });
     });

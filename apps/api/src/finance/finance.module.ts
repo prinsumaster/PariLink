@@ -24,12 +24,12 @@ import { DriverWalletService } from './driver-wallet.service';
 @Module({
   imports: [InvoicesModule, BankReconciliationModule, PayrollModule],
   controllers: [
-    FinanceController,
     InvoicingController,
     AccountsPayableController,
     FastagController,
     GeneralLedgerController,
     DriverWalletController,
+    FinanceController,
   ],
   providers: [
     FinanceService,

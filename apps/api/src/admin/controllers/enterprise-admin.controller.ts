@@ -318,7 +318,7 @@ export class UserAdminController {
     return this.service.exportUsers(user.companyId);
   }
 
-  @Put(':id/suspend')
+  @Post(':id/suspend')
   @RequirePermissions('users:suspend', 'admin:manage')
   @ApiOperation({ summary: 'Suspend a user account and revoke sessions' })
   async suspendUser(
@@ -329,7 +329,7 @@ export class UserAdminController {
     return this.service.suspendUser(user.companyId, id, dto, user.userId);
   }
 
-  @Put(':id/activate')
+  @Post(':id/activate')
   @RequirePermissions('users:update', 'admin:manage')
   @ApiOperation({ summary: 'Activate or restore a suspended/locked user' })
   async activateUser(
@@ -339,7 +339,7 @@ export class UserAdminController {
     return this.service.activateUser(user.companyId, id, user.userId);
   }
 
-  @Put(':id/lock')
+  @Post(':id/lock')
   @RequirePermissions('users:lock', 'admin:manage')
   @ApiOperation({ summary: 'Manually lock user account' })
   async lockUser(
@@ -350,7 +350,7 @@ export class UserAdminController {
     return this.service.lockUser(user.companyId, id, dto, user.userId);
   }
 
-  @Put(':id/unlock')
+  @Post(':id/unlock')
   @RequirePermissions('users:update', 'admin:manage')
   @ApiOperation({ summary: 'Unlock user account' })
   async unlockUser(
