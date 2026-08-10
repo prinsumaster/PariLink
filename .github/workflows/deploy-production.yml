@@ -63,7 +63,8 @@ jobs:
       - name: Build and Push Web Image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/web
+          context: .
+          file: ./apps/web/Dockerfile
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/parilink-web:${{ env.VERSION }}
 
