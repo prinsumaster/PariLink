@@ -159,6 +159,53 @@ module "s3" {
   account_id  = data.aws_caller_identity.current.account_id
 }
 
+# ─── 5b. ECR Repositories ────────────────────────────────────────────────────
+resource "aws_ecr_repository" "api" {
+  name                 = "parilink-api"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = { Name = "parilink-api" }
+}
+
+resource "aws_ecr_repository" "web" {
+  name                 = "parilink-web"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = { Name = "parilink-web" }
+}
+
+resource "aws_ecr_lifecycle_policy" "api" {
+  repository = aws_ecr_repository.api.name
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "Keep last 30 images"
+      selection    = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 30 }
+      action       = { type = "expire" }
+    }]
+  })
+}
+
+resource "aws_ecr_lifecycle_policy" "web" {
+  repository = aws_ecr_repository.web.name
+  policy = jsonencode({
+    rules = [{
+      rulePriority = 1
+      description  = "Keep last 30 images"
+      selection    = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 30 }
+      action       = { type = "expire" }
+    }]
+  })
+}
+
 # ─── 6. CloudFront CDN ────────────────────────────────────────────────────────
 module "cdn" {
   source      = "./modules/cdn"
