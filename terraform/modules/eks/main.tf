@@ -16,6 +16,8 @@ variable "node_max_size"               { type = number }
 variable "node_desired_size"           { type = number }
 variable "enable_gpu_node_group"       { type = bool; default = false }
 
+data "aws_caller_identity" "current" {}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "~> 20.0"
@@ -151,7 +153,13 @@ module "eks" {
   fargate_profiles = {}
 
   manage_aws_auth_configmap = true
-  aws_auth_roles = []
+  aws_auth_roles = [
+    {
+      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/parilink-github-actions-deploy-${var.environment}"
+      username = "github-actions-deploy"
+      groups   = ["system:masters"]
+    }
+  ]
 
   tags = {
     Environment = var.environment
