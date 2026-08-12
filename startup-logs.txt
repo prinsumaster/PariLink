@@ -1,0 +1,39 @@
+
+> api@0.0.1 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m12:20:21 PM[0m] Starting compilation in watch mode...
+
+[[90m12:20:28 PM[0m] Found 0 errors. Watching for file changes.
+
+CRITICAL: Missing required environment variables: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RESEND_API_KEY, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER, MAPBOX_TOKEN, MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, SMTP_FROM_EMAIL
+[12:20:30.958] INFO (7676): Swagger UI available at /api/docs (DEV only)
+node:net:2167
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use :::8080
+    at Server.setupListenHandle [as _listen2] (node:net:2167:16)
+    at listenInCluster (node:net:2224:12)
+    at Server.listen (node:net:2344:7)
+    at ExpressAdapter.listen (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/platform-express/adapters/express-adapter.js:115:32)
+    at /Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/core/nest-application.js:190:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/core/nest-application.js:180:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async bootstrap (/Users/vishalvirda/Desktop/PariLink/apps/api/src/main.ts:297:3) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 8080
+}
+
+Node.js v26.4.0
+npm error Lifecycle script `start:dev` failed with error:
+npm error code 1
+npm error path /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error workspace api@0.0.1
+npm error location /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error command failed
+npm error command sh -c nest start --watch

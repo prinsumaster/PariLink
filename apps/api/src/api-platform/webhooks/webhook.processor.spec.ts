@@ -24,6 +24,9 @@ describe('WebhookProcessor', () => {
               create: jest.fn().mockResolvedValue({ id: 'delivery-123' }),
               update: jest.fn().mockResolvedValue({ id: 'delivery-123' }),
             },
+            webhookEndpoint: {
+              findFirst: jest.fn().mockResolvedValue({ id: 'ep-123' }),
+            },
             runAsSystem: jest.fn().mockImplementation(async function (cb) {
               return await cb(this);
             }),

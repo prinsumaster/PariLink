@@ -7,6 +7,7 @@ import { BruteForceProtectionService } from '../platform/security/brute-force/br
 import { AuditService } from '../platform/audit/audit.service';
 import { MfaService } from './mfa.service';
 import * as bcrypt from 'bcryptjs';
+import { ResendService } from '../integrations/resend.service';
 
 jest.mock('bcryptjs', () => ({
   compare: jest.fn(),
@@ -67,6 +68,10 @@ describe('AuthService', () => {
             verifyBackupCode: jest.fn(),
             verifyTotp: jest.fn(),
           },
+        },
+        {
+          provide: ResendService,
+          useValue: { sendEmail: jest.fn() },
         },
       ],
     }).compile();

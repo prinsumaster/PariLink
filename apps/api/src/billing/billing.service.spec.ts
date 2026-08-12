@@ -1,3 +1,4 @@
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BillingService } from './billing.service';
@@ -34,6 +35,7 @@ describe('BillingService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: EventStoreService, useValue: { append: jest.fn() } },
         BillingService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: WorkflowService, useValue: mockWorkflowService },

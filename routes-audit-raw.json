@@ -1,0 +1,4337 @@
+{
+  "nextRoutes": [
+    "/",
+    "/about",
+    "/admin",
+    "/admin/audit",
+    "/admin/demo",
+    "/admin/developer",
+    "/admin/enterprise",
+    "/admin/marketplace",
+    "/admin/marketplace/[appId]",
+    "/admin/marketplace/[appId]/install",
+    "/admin/marketplace/installed",
+    "/admin/marketplace/installed/[appId]",
+    "/admin/roles",
+    "/admin/subscriptions",
+    "/admin/users",
+    "/admin/users/[id]/edit",
+    "/admin/users/new",
+    "/ai",
+    "/ai/agents",
+    "/ai/analytics",
+    "/ai/command-center",
+    "/ai/copilot",
+    "/ai/cost",
+    "/ai/evaluations",
+    "/ai/knowledge",
+    "/ai/models",
+    "/ai/prompt-studio",
+    "/alip",
+    "/analytics/builder",
+    "/analytics/command-center",
+    "/announcements",
+    "/automation",
+    "/automation/builder/[id]",
+    "/automation/history",
+    "/billing",
+    "/billing/[id]",
+    "/blog",
+    "/book-demo",
+    "/branches",
+    "/branches/new",
+    "/chat",
+    "/command-center",
+    "/contact",
+    "/control-tower",
+    "/control-tower/risk",
+    "/crm/leads",
+    "/customer/dashboard",
+    "/customer/documents",
+    "/customer/finance",
+    "/customer/tracking",
+    "/customers",
+    "/customers/[id]",
+    "/customers/[id]/edit",
+    "/customers/new",
+    "/dashboard",
+    "/dashboard/admin/audit",
+    "/dispatch",
+    "/dispatch-workspace",
+    "/documents",
+    "/downloads",
+    "/driver-intelligence",
+    "/driver/expenses",
+    "/driver/pod",
+    "/driver/workspace",
+    "/drivers",
+    "/drivers/[id]",
+    "/drivers/[id]/edit",
+    "/drivers/attendance",
+    "/drivers/new",
+    "/executive-ai",
+    "/fastag/accounts",
+    "/features",
+    "/finance",
+    "/finance/[id]",
+    "/finance/[id]/edit",
+    "/finance/bank-statements",
+    "/finance/fastag",
+    "/finance/invoices",
+    "/finance/new",
+    "/finance/payroll",
+    "/finance/settlements",
+    "/fleet",
+    "/fleet-health",
+    "/fleet/[id]",
+    "/fleet/[id]/edit",
+    "/fleet/dashboard",
+    "/fleet/maintenance",
+    "/fleet/new",
+    "/fleet/sensors",
+    "/forgot-password",
+    "/gst/rules",
+    "/inbox",
+    "/industries",
+    "/integrations",
+    "/integrations/[connectionId]/settings",
+    "/integrations/wizard/[provider]",
+    "/ledger",
+    "/loads",
+    "/loads/[id]",
+    "/login",
+    "/notifications",
+    "/notifications/preferences",
+    "/onboarding",
+    "/operations",
+    "/operations/backup",
+    "/operations/incidents",
+    "/operations/logs",
+    "/operations/traces",
+    "/orders",
+    "/orders/[id]",
+    "/orders/[id]/edit",
+    "/orders/new",
+    "/payments",
+    "/predictions",
+    "/pricing",
+    "/register",
+    "/reports",
+    "/reset-password",
+    "/security",
+    "/settings",
+    "/settings/billing",
+    "/settings/notifications",
+    "/settings/onboarding",
+    "/settings/organization",
+    "/settings/security",
+    "/stories",
+    "/track/[id]",
+    "/tracking",
+    "/trailers",
+    "/trailers/new",
+    "/trips",
+    "/trips/[id]",
+    "/trips/[id]/edit",
+    "/trips/new",
+    "/vehicles/permits",
+    "/vendor/bids",
+    "/vendor/bills",
+    "/vendor/dashboard",
+    "/vendor/performance",
+    "/vendors",
+    "/vendors/new",
+    "/warehouse",
+    "/warehouse/scan",
+    "/wms",
+    "/wms/[id]",
+    "/wms/[id]/edit",
+    "/wms/new",
+    "/workflows"
+  ],
+  "apiRequests": [
+    "/admin/audit-logs",
+    "/admin/audit/timeline?limit=100",
+    "/admin/feature-flags",
+    "/admin/licenses/tenants",
+    "/admin/licenses/trucks/boost",
+    "/admin/licenses/trucks/limit",
+    "/admin/licenses/unlimited",
+    "/admin/licenses/usage",
+    "/admin/marketplace/apps",
+    "/admin/marketplace/installed",
+    "/admin/roles",
+    "/admin/users",
+    "/ai/agents",
+    "/ai/copilot/daily-brief",
+    "/ai/copilot/sessions",
+    "/ai/feedback",
+    "/ai/governance/compliance-report",
+    "/ai/interact",
+    "/ai/memory/stats",
+    "/ai/memory/workspace",
+    "/ai/metrics",
+    "/ai/models",
+    "/ai/models/templates",
+    "/ai/report-hallucination",
+    "/ai/workflow/execute",
+    "/ai/workflow/executions",
+    "/ai/workflow/generate",
+    "/alip/dashboard",
+    "/analytics/dashboards",
+    "/analytics/metrics/command-center",
+    "/analytics/reports/export",
+    "/announcements",
+    "/api/health",
+    "/api/v1/operations/dashboard/snapshot",
+    "/api/v1/operations/executions",
+    "/api/v1/telemetry/errors",
+    "/auth/forgot-password",
+    "/auth/login",
+    "/auth/logout",
+    "/auth/mfa/verify",
+    "/auth/register",
+    "/auth/reset-password",
+    "/branches",
+    "/chat/channels",
+    "/crm/leads",
+    "/customers",
+    "/dashboard/ai/recommendations",
+    "/dashboard/alerts",
+    "/dashboard/kpis",
+    "/dashboard/shipments",
+    "/dashboard/vehicles",
+    "/dispatch/board",
+    "/dispatch/board/move",
+    "/documents",
+    "/documents/upload",
+    "/drivers",
+    "/exports",
+    "/fastag/accounts",
+    "/finance/bank-statements",
+    "/finance/invoices",
+    "/finance/payroll",
+    "/gst/rules",
+    "/inbox/threads",
+    "/integrations",
+    "/integrations/configure",
+    "/integrations/sync",
+    "/intelligence/occ/fleet-map",
+    "/intelligence/occ/fleet-tree",
+    "/notifications",
+    "/notifications/mark-all-read",
+    "/notifications/preferences",
+    "/notifications?status=unread",
+    "/operations/alerts/trigger",
+    "/operations/backup/start",
+    "/operations/dashboard/snapshot",
+    "/operations/dr/drills",
+    "/operations/dr/plans",
+    "/operations/dr/readiness",
+    "/operations/health/api",
+    "/operations/health/database",
+    "/operations/health/global",
+    "/operations/health/queues",
+    "/operations/incidents",
+    "/operations/incidents/metrics",
+    "/operations/logs/error-groups",
+    "/operations/logs/export",
+    "/operations/logs/search",
+    "/operations/metrics/dashboard",
+    "/operations/metrics/query",
+    "/operations/metrics/system",
+    "/operations/metrics/tenant",
+    "/operations/performance/cache",
+    "/operations/performance/resource-utilization",
+    "/operations/performance/workflows",
+    "/operations/tracing/search",
+    "/orders",
+    "/preferences/notifications",
+    "/reports/dashboard",
+    "/saas/billing/checkout",
+    "/saas/billing/info",
+    "/saas/tenant/branding/logo",
+    "/saas/tenant/onboarding/complete",
+    "/saas/tenant/provisioning/defaults",
+    "/settings/organization",
+    "/settings/security",
+    "/trailers",
+    "/trips",
+    "/vehicles",
+    "/vehicles/permits",
+    "/warehouse",
+    "/workflow/rules",
+    "/workflow/v2/definitions",
+    "/workflow/v2/metrics"
+  ],
+  "nestRoutes": [
+    {
+      "controller": "admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/dashboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/health",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/marketplace/apps",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/marketplace/apps/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/marketplace/apps/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/admin/marketplace/apps/:id/disable",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/admin/marketplace/apps/:id/enable",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/marketplace/apps/:id/install",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-extensions.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/marketplace/extensions/:slotId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/marketplace/installed",
+      "auth": "JWT"
+    },
+    {
+      "controller": "marketplace-core.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/marketplace/installed/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/activate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/branding",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/business-hours",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/:id/force-logout",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/:id/force-password-reset",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/:id/kill-switch",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/lock",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/regional",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/:id/reset-mfa",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/suspend",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/:id/unlock",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/assign-plan",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/cdn",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/compliance-report",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/cost-centers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/cost-centers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/cost-centers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/tenants/cost-centers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/delegated-scope/:userId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/departments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/departments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/departments/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/tenants/departments/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/drivers/limit",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/export",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/from-template",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/groups",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/import",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/invite",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/keys",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/keys",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/tenants/keys/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/maintenance",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/oauth-clients",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/overview",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/plans",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/purge",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/queue",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/redis",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/retention",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/retention",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/roles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/tenants/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/scopes",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/security-events",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/simulate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/smtp",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/storage",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/teams",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/teams",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/teams/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/admin/tenants/teams/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/temporary-permission/:userId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/tenants",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/timeline",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/trucks/boost",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/trucks/limit",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/admin/tenants/unlimited",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/usage",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/user-timeline/:userId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/admin/tenants/webhooks",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-admin.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/admin/tenants/webhooks",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/agents",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/agents/:agentName/health",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/copilot/daily-brief",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/copilot/sessions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/copilot/sessions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/copilot/sessions/:sessionId/chat",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/copilot/sessions/:sessionId/messages",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/copilot/summarize/:entityType/:entityId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/dispatch/predict",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/documents/extract",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/feedback",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/governance/compliance-report",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/interact",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/memory/stats",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/memory/workspace",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/models",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/models/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/recommend/:domain/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/recommendation/:id/accept",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/report-hallucination",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/workflow/execute",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/workflow/execution/:executionId/approve/:stepId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/workflow/execution/:executionId/reject/:stepId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ai/workflow/executions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ai/workflow/generate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/analytics/custom-metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/dashboards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/analytics/dashboards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/forecast/revenue",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/analytics/kpi",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/kpi",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/metrics/command-center",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/performers/bottom",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/analytics/performers/top",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/analytics/reports/export",
+      "auth": "JWT"
+    },
+    {
+      "controller": "analytics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/analytics/trend-reports",
+      "auth": "JWT"
+    },
+    {
+      "controller": "announcement.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/announcements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "announcement.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/announcements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "api-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/api-platform/keys",
+      "auth": "JWT"
+    },
+    {
+      "controller": "api-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/api-platform/keys",
+      "auth": "JWT"
+    },
+    {
+      "controller": "api-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/api-platform/webhooks",
+      "auth": "JWT"
+    },
+    {
+      "controller": "api-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/api-platform/webhooks",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/login",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/logout",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/logout-all",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/auth/me",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/mfa/setup",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/mfa/verify-setup",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/refresh",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/register",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/auth/sessions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/sessions/:id/revoke",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sso.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/auth/sso/callback/oidc/:idpId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "sso.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/sso/callback/oidc/:idpId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "sso.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/sso/callback/saml/:idpId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "sso.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/auth/sso/login/:idpId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/webauthn/authenticate/generate-options",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/webauthn/authenticate/verify",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/webauthn/register/generate-options",
+      "auth": "JWT"
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/auth/webauthn/register/verify",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/billing/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/billing/invoices/:id/approve",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/billing/rate-cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/billing/rate-cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "stripe.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/billing/stripe/webhook",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "branches.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/branches",
+      "auth": "JWT"
+    },
+    {
+      "controller": "branches.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/branches",
+      "auth": "JWT"
+    },
+    {
+      "controller": "branches.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/branches/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "branches.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/branches/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "branches.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/branches/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/broker/bids/:bidId/accept",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/broker/carriers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/broker/carriers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/broker/load-board",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/broker/load-board/:loadId/bids",
+      "auth": "JWT"
+    },
+    {
+      "controller": "broker.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/broker/load-board/:tripId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/chat/channels",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/chat/channels",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/chat/channels/:channelId/join",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/chat/channels/:channelId/messages",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/chat/channels/:channelId/messages",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/chat/dm/:otherUserId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/chat/messages/:messageId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/chat/messages/:messageId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/chat/messages/:messageId/reactions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "chat.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/chat/messages/:messageId/reactions/:emoji",
+      "auth": "JWT"
+    },
+    {
+      "controller": "comments.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/comments/:entityType/:entityId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "comments.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/comments/:entityType/:entityId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "comments.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/comments/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/commercial/analytics/customer/:customerId/profitability",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/commercial/analytics/customer/:customerId/sla",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/commercial/analytics/trip/:tripId/profitability",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/contracts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/contracts/:id/activate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/quotes/:customerId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/quotes/:id/convert",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/quotes/:id/submit",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/rate-cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/tenders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/tenders/:tenderId/award/:bidId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "commercial.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/commercial/tenders/:tenderId/bids",
+      "auth": "JWT"
+    },
+    {
+      "controller": "companies.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/companies",
+      "auth": "JWT"
+    },
+    {
+      "controller": "companies.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/companies",
+      "auth": "JWT"
+    },
+    {
+      "controller": "admin-sso.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/companies/:companyId/idps",
+      "auth": "JWT"
+    },
+    {
+      "controller": "admin-sso.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/companies/:companyId/idps",
+      "auth": "JWT"
+    },
+    {
+      "controller": "admin-sso.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/companies/:companyId/idps/:idpId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "admin-sso.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/companies/:companyId/idps/:idpId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "companies.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/companies/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "companies.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/companies/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "companies.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/companies/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "crm-lead.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/crm/leads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "crm-lead.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/crm/leads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "crm-lead.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/crm/leads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "crm-lead.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/crm/leads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "crm-lead.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/crm/leads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-analytics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/analytics/kpis",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-finance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/finance/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-finance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/finance/summary",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-loads.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/loads/active",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-loads.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/loads/history",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customer-tracking.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customer-portal/tracking/:loadId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customers.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/customers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/customers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customers.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/customers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "customers.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/customers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dashboard-builder",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard-builder",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard-builder/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dashboard-builder/:id/widgets",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/dashboard-builder/:id/widgets/:widgetId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard-builder.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/dashboard-builder/:id/widgets/layout",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/ai/recommendations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/alerts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/ceo",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/kpis",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/shipments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dashboard/vehicles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/data/export",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/data/import",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/board",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/dispatch/board/move",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/ai/load/:loadId/recommend-driver",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/ai/trip/:tripId/predict-eta",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/ai/trip/:tripId/risk",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/control-tower/active-trips",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/control-tower/dashboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/operations/live-fleet/map",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dispatch/plans",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/plans",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/plans/:planId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dispatch/plans/:planId/assign",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dispatch/plans/:planId/cancel",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dispatch/plans/:planId/candidates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/dispatch/plans/:planId/exceptions/driver-rejection",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/dispatch/plans/kpi",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/ai-classify",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/checkin",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/checkout",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/revert/:version",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/signatures",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/:documentId/signatures",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/:documentId/unlock",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/:documentId/versions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/compliance/evaluate/:entityType/:entityId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/compliance/requirements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/compliance/requirements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/documents/enterprise/compliance/requirements/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/compliance/scan-expiring",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/folders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/documents/enterprise/folders/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/documents/enterprise/folders/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/folders/tree",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/documents/enterprise/move/:documentId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/enterprise/signatures/:signatureId/certificate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/signatures/:signatureId/reject",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-document.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/enterprise/signatures/:signatureId/sign",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/entity/:entityType/:entityId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/folders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/folders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/documents/loads/:loadId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "documents.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/documents/upload",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-checklists.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/driver-portal/checklists/trips/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-expenses.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/driver-portal/expenses",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-expenses.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/driver-portal/expenses/trips/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-telemetry.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/driver-portal/telemetry/location",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-trips.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/driver-portal/trips/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-trips.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/driver-portal/trips/active",
+      "auth": "JWT"
+    },
+    {
+      "controller": "drivers.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/drivers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "drivers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/drivers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "drivers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/drivers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "drivers.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/drivers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "drivers.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/drivers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "attendance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/drivers/attendance",
+      "auth": "JWT"
+    },
+    {
+      "controller": "attendance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/drivers/attendance",
+      "auth": "JWT"
+    },
+    {
+      "controller": "attendance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/drivers/attendance/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "attendance.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/drivers/attendance/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "attendance.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/drivers/attendance/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "exports.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/exports",
+      "auth": "JWT"
+    },
+    {
+      "controller": "exports.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/exports",
+      "auth": "JWT"
+    },
+    {
+      "controller": "factoring.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/factoring/dashboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "factoring.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/factoring/stripe/connect",
+      "auth": "JWT"
+    },
+    {
+      "controller": "factoring.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/factoring/submit",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag-wallet.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/fastag/accounts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag-wallet.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/fastag/accounts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag-wallet.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/fastag/accounts/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag-wallet.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/fastag/accounts/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag-wallet.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/fastag/accounts/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "bank-statement.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/bank-statements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "bank-statement.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/bank-statements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "bank-statement.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/bank-statements/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "bank-statement.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/finance/bank-statements/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "bank-statement.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/finance/bank-statements/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/expenses",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/expenses",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/fastag",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fastag.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/fastag/sync",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoicing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoicing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "general-ledger.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/ledger/entries",
+      "auth": "JWT"
+    },
+    {
+      "controller": "general-ledger.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/ledger/entries",
+      "auth": "JWT"
+    },
+    {
+      "controller": "accounts-payable.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/payables",
+      "auth": "JWT"
+    },
+    {
+      "controller": "accounts-payable.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/payables",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/payments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payroll.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/payroll",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payroll.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/payroll",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payroll.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/payroll/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payroll.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/finance/payroll/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payroll.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/finance/payroll/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/settlements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "finance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/vendor-bills",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/wallet/balance",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/wallet/expenses",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/wallet/expenses",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/finance/wallet/expenses/:id/approve",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/finance/wallet/settlements",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-wallet.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/finance/wallet/settlements/generate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iot.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/fleet/iot/webhook/:providerId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "vehicle-lifecycle.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/fleet/lifecycle/onboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicle-lifecycle.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/fleet/lifecycle/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fleet-maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/fleet/maintenance/breakdown",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fleet-maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/fleet/maintenance/upcoming",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gateway.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/gateway/v1/health",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "gateway.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/gateway/v1/loads",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "gst-rule.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/gst/rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gst-rule.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/gst/rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gst-rule.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/gst/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gst-rule.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/gst/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gst-rule.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/gst/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/health/liveness",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/health/readiness",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/iam/api-keys",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/iam/api-keys/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/iam/oauth-clients",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/iam/oauth/token",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/iam/pats",
+      "auth": "JWT"
+    },
+    {
+      "controller": "iam.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/iam/pats/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "inbox.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/inbox/threads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "inbox.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/inbox/threads/:threadId/messages",
+      "auth": "JWT"
+    },
+    {
+      "controller": "inbox.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/inbox/threads/:threadId/messages",
+      "auth": "JWT"
+    },
+    {
+      "controller": "telemetry-ingress.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/ingress/telemetry",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/analytics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/developer/keys/:id/rotate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/developer/oauth/clients",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/oauth/clients",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/integration/developer/oauth/clients/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/openapi.json",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/sample",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/sdk/:language",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/developer/versions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "developer-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/developer/webhook/test",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-event-bus.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/events/history",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-event-bus.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/events/publish",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-event-bus.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/events/replay",
+      "auth": "JWT"
+    },
+    {
+      "controller": "import-export.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/export/execute",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gateway.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/gateway/:provider/webhook/:companyId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/hub/catalog",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/hub/configure",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/hub/connections/:id/disable",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/hub/connections/:id/enable",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/hub/connections/:id/health",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/integration/hub/connections/:id/version",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-integration-hub.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/hub/installed",
+      "auth": "JWT"
+    },
+    {
+      "controller": "import-export.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/import/execute",
+      "auth": "JWT"
+    },
+    {
+      "controller": "import-export.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/import/preview",
+      "auth": "JWT"
+    },
+    {
+      "controller": "import-export.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/jobs",
+      "auth": "JWT"
+    },
+    {
+      "controller": "import-export.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/jobs/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data-mapping.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/mapping/preview",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data-mapping.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/mapping/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data-mapping.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/mapping/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "data-mapping.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/mapping/templates/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/sync/errors",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/sync/errors/:id/resolve",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/sync/history",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/sync/schedules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/sync/schedules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "sync-scheduler.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/sync/trigger",
+      "auth": "JWT"
+    },
+    {
+      "controller": "webhook-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/webhook/deliveries",
+      "auth": "JWT"
+    },
+    {
+      "controller": "webhook-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/webhook/deliveries/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "webhook-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integration/webhook/deliveries/:id/replay",
+      "auth": "JWT"
+    },
+    {
+      "controller": "webhook-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integration/webhook/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "integrations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/integrations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "integrations.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integrations/configure",
+      "auth": "JWT"
+    },
+    {
+      "controller": "integrations.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/integrations/sync",
+      "auth": "JWT"
+    },
+    {
+      "controller": "dispatch-ai.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/intelligence/dispatch/:loadId/recommend",
+      "auth": "JWT"
+    },
+    {
+      "controller": "driver-intelligence.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/drivers/:id/score",
+      "auth": "JWT"
+    },
+    {
+      "controller": "eta-intelligence.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/eta/predict",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fleet-intelligence.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/fleet/kpis",
+      "auth": "JWT"
+    },
+    {
+      "controller": "gps.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/intelligence/gps/ingest",
+      "auth": "JWT"
+    },
+    {
+      "controller": "occ.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/occ/anomalies",
+      "auth": "JWT"
+    },
+    {
+      "controller": "occ.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/occ/fleet-map",
+      "auth": "JWT"
+    },
+    {
+      "controller": "occ.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/occ/fleet-tree",
+      "auth": "JWT"
+    },
+    {
+      "controller": "occ.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/occ/timeline",
+      "auth": "JWT"
+    },
+    {
+      "controller": "occ.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/intelligence/occ/timeline/:twinId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoices.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoices.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/invoices",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoices.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/invoices/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "invoices.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/invoices/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "background-jobs.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/jobs",
+      "auth": "JWT"
+    },
+    {
+      "controller": "background-jobs.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/jobs/:id/cancel",
+      "auth": "JWT"
+    },
+    {
+      "controller": "background-jobs.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/jobs/active",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ledger.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ledger/chart-of-accounts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ledger.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ledger/profit-and-loss",
+      "auth": "JWT"
+    },
+    {
+      "controller": "ledger.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/ledger/trial-balance",
+      "auth": "JWT"
+    },
+    {
+      "controller": "lin.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/lin/benchmarks",
+      "auth": "JWT"
+    },
+    {
+      "controller": "loads.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/loads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "loads.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/loads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "loads.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/loads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "loads.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/loads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "loads.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/loads/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "localization.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/localization/locales",
+      "auth": "JWT"
+    },
+    {
+      "controller": "localization.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/localization/locales",
+      "auth": "JWT"
+    },
+    {
+      "controller": "localization.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/localization/translations/:localeCode",
+      "auth": "JWT"
+    },
+    {
+      "controller": "localization.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/localization/translations/:localeId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/maintenance/work-orders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/maintenance/work-orders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/maintenance/work-orders/:id/complete",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/mdm/identities/:sourceSystem/:externalId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mdm/quality/evaluate/:entityType",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mdm/records/:entityType",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mdm/records/merge",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/mdm/reference/:domain",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mdm/reference/:domain",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mdm.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/mdm/search",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/mobile/loads/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mobile/location",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mobile/sync",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/mobile/trips/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/mobile/trips/active",
+      "auth": "JWT"
+    },
+    {
+      "controller": "mobile.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/mobile/upload/:type",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/notifications",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/:id/archive",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/:id/pin",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/:id/read",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/:id/unpin",
+      "auth": "JWT"
+    },
+    {
+      "controller": "notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/:id/unread",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/enterprise/dispatch",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/notifications/enterprise/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/enterprise/retry-failed",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/notifications/enterprise/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/notifications/enterprise/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/notifications/enterprise/templates/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-notification.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/notifications/enterprise/templates/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "alert-engine.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/alerts/:id/ack",
+      "auth": "JWT"
+    },
+    {
+      "controller": "alert-engine.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/alerts/:id/resolve",
+      "auth": "JWT"
+    },
+    {
+      "controller": "alert-engine.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/alerts/escalation-policy",
+      "auth": "JWT"
+    },
+    {
+      "controller": "alert-engine.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/alerts/maintenance-window",
+      "auth": "JWT"
+    },
+    {
+      "controller": "alert-engine.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/alerts/trigger",
+      "auth": "JWT"
+    },
+    {
+      "controller": "backup-recovery.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/backup/:id/restore",
+      "auth": "JWT"
+    },
+    {
+      "controller": "backup-recovery.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/backup/:id/verify",
+      "auth": "JWT"
+    },
+    {
+      "controller": "backup-recovery.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/backup/purge",
+      "auth": "JWT"
+    },
+    {
+      "controller": "backup-recovery.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/backup/start",
+      "auth": "JWT"
+    },
+    {
+      "controller": "operations-dashboard.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/dashboard/snapshot",
+      "auth": "JWT"
+    },
+    {
+      "controller": "disaster-recovery.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/dr/drills",
+      "auth": "JWT"
+    },
+    {
+      "controller": "disaster-recovery.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/dr/plans",
+      "auth": "JWT"
+    },
+    {
+      "controller": "disaster-recovery.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/dr/readiness",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/health/api",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/health/database",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/health/global",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-health.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/health/queues",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/incidents",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/incidents/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/incidents/:id/postmortem",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/incidents/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/incidents/:id/timeline",
+      "auth": "JWT"
+    },
+    {
+      "controller": "incident-management.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/incidents/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "logging-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/logs",
+      "auth": "JWT"
+    },
+    {
+      "controller": "logging-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/logs/error-groups",
+      "auth": "JWT"
+    },
+    {
+      "controller": "logging-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/logs/export",
+      "auth": "JWT"
+    },
+    {
+      "controller": "logging-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/logs/search",
+      "auth": "JWT"
+    },
+    {
+      "controller": "metrics-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "metrics-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/metrics/dashboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "metrics-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/metrics/query",
+      "auth": "JWT"
+    },
+    {
+      "controller": "metrics-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/metrics/system",
+      "auth": "JWT"
+    },
+    {
+      "controller": "metrics-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/metrics/tenant",
+      "auth": "JWT"
+    },
+    {
+      "controller": "performance-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/performance/cache",
+      "auth": "JWT"
+    },
+    {
+      "controller": "performance-platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/performance/profile",
+      "auth": "JWT"
+    },
+    {
+      "controller": "performance-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/performance/resource-utilization",
+      "auth": "JWT"
+    },
+    {
+      "controller": "performance-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/performance/slow-queries",
+      "auth": "JWT"
+    },
+    {
+      "controller": "performance-platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/performance/workflows",
+      "auth": "JWT"
+    },
+    {
+      "controller": "distributed-tracing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/tracing/search",
+      "auth": "JWT"
+    },
+    {
+      "controller": "distributed-tracing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/tracing/slowest",
+      "auth": "JWT"
+    },
+    {
+      "controller": "distributed-tracing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/operations/tracing/span",
+      "auth": "JWT"
+    },
+    {
+      "controller": "distributed-tracing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/operations/tracing/trace/:traceId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/optimization/analytics/executive",
+      "auth": "JWT"
+    },
+    {
+      "controller": "feedback.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/optimization/recommendations/:id/feedback",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/optimization/scenarios",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/optimization/scenarios/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/optimization/scenarios/:id/accept",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/optimization/scenarios/generate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "optimization.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/optimization/scenarios/simulate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "orders.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/orders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payments.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/payments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payments.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/payments",
+      "auth": "JWT"
+    },
+    {
+      "controller": "payments.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/payments/invoices/:invoiceId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/planning/items/:id/approve",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/planning/items/:id/reject",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/planning/run",
+      "auth": "JWT"
+    },
+    {
+      "controller": "planning.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/planning/today",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/audit-log",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/audit-log/chain/:companyId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/audit-log/export/:companyId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/audit-log/verify/:auditLogId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/platform/features/:companyId/:key/enable",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/platform/features/:companyId/:key/kill",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/health",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/health/deep",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/health/liveness",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/platform/iam/roles/:roleId/cache/invalidate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/license/:tenantId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/platform/license/:tenantId/invalidate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "platform.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/platform/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "claims.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/portals/customer/claims",
+      "auth": "JWT"
+    },
+    {
+      "controller": "claims.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/portals/customer/claims",
+      "auth": "JWT"
+    },
+    {
+      "controller": "claims.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/portals/customer/claims/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "claims.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/portals/customer/claims/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "portals.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/portals/leave-requests",
+      "auth": "JWT"
+    },
+    {
+      "controller": "portals.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/portals/leave-requests",
+      "auth": "JWT"
+    },
+    {
+      "controller": "portals.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/portals/support-tickets",
+      "auth": "JWT"
+    },
+    {
+      "controller": "portals.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/portals/support-tickets",
+      "auth": "JWT"
+    },
+    {
+      "controller": "preferences.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/preferences/notifications",
+      "auth": "JWT"
+    },
+    {
+      "controller": "preferences.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/preferences/notifications",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reporting.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reporting/executions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reporting.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/reporting/schedules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reporting.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/reporting/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reporting.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reporting/templates",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reporting.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/reporting/templates/:id/execute",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reports.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reports/customers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reports.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reports/dashboard",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reports.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reports/drivers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "reports.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/reports/vehicles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "roles.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/roles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "roles.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/roles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "roles.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "roles.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "roles.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/roles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/saas/billing/checkout",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/saas/billing/info",
+      "auth": "JWT"
+    },
+    {
+      "controller": "billing.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/saas/billing/plans",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tenant.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/saas/tenant/branding/logo",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tenant.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/saas/tenant/onboarding/complete",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tenant.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/saas/tenant/provisioning/defaults",
+      "auth": "JWT"
+    },
+    {
+      "controller": "search.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/search",
+      "auth": "JWT"
+    },
+    {
+      "controller": "settings.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/settings/organization",
+      "auth": "JWT"
+    },
+    {
+      "controller": "simulator.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/simulator/start",
+      "auth": "JWT"
+    },
+    {
+      "controller": "support.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/support/ticket",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/tracking/enterprise/alert-rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/alert-rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/tracking/enterprise/alert-rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/alerts",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/tracking/enterprise/alerts/:id/status",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/analytics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/geofence-events",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/tracking/enterprise/geofences",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/geofences",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/enterprise/geofences/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/tracking/enterprise/geofences/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/tracking/enterprise/geofences/evaluate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "enterprise-telematics.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/tracking/enterprise/telemetry",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tracking.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/tracking/live",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tracking.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/tracking/location",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trailers.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/trailers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trailers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/trailers",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trailers.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/trailers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trailers.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/trailers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trailers.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/trailers/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/trips",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/trips",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/trips/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/trips/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/trips/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "trips.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/trips/:id/loads",
+      "auth": "JWT"
+    },
+    {
+      "controller": "users.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/users",
+      "auth": "JWT"
+    },
+    {
+      "controller": "users.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/users",
+      "auth": "JWT"
+    },
+    {
+      "controller": "users.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/users/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "users.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/users/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "users.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/users/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicles.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicles.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicles.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicles.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/vehicles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vehicles.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/vehicles/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/compliance/dvir",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/compliance/dvir",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/compliance/hos-violations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/compliance/hos-violations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/compliance/insurance/:vehicleId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "compliance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/compliance/registration/:vehicleId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/fuel/cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/fuel/cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/fuel/stations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/fuel/stations",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/fuel/transactions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "fuel.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/fuel/transactions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/maintenance/job-cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/maintenance/job-cards",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/vehicles/maintenance/job-cards/:id/close",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/maintenance/mechanics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/maintenance/mechanics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/maintenance/schedules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/maintenance/schedules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/maintenance/workshops",
+      "auth": "JWT"
+    },
+    {
+      "controller": "maintenance.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/maintenance/workshops",
+      "auth": "JWT"
+    },
+    {
+      "controller": "permit.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/permits",
+      "auth": "JWT"
+    },
+    {
+      "controller": "permit.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/permits",
+      "auth": "JWT"
+    },
+    {
+      "controller": "permit.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/permits/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "permit.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/vehicles/permits/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "permit.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/vehicles/permits/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tyre.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vehicles/tyres",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tyre.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vehicles/tyres",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tyre.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/vehicles/tyres/:id/install",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tyre.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/vehicles/tyres/:id/rotate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "tyre.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/vehicles/tyres/:id/scrap",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-marketplace.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendor-portal/marketplace/tenders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-marketplace.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vendor-portal/marketplace/tenders/:id/bid",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-operations.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendor-portal/operations/assigned",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-operations.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vendor-portal/operations/assigned/:id/pod",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-settlements.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendor-portal/settlements/bills",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendor-settlements.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendor-portal/settlements/kpis",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendors.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vendors",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendors.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendors",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendors.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendors/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendors.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/vendors/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "vendors.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/vendors/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "purchase-order.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/vendors/purchase-orders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "purchase-order.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/vendors/purchase-orders",
+      "auth": "JWT"
+    },
+    {
+      "controller": "purchase-order.controller.ts",
+      "method": "PUT",
+      "route": "/api/v1/vendors/purchase-orders/:id/receive",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/warehouse",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/warehouse/:id/inventory/abc",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/warehouse/:id/topology",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse/docks/schedule",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse/inbound/:id/receive",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse/inbound/asn",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse/outbound/:id/pick",
+      "auth": "JWT"
+    },
+    {
+      "controller": "warehouse.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/warehouse/outbound/order",
+      "auth": "JWT"
+    },
+    {
+      "controller": "razorpay-webhook.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/webhooks/razorpay",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "stripe-webhook.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/webhooks/stripe",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "webhook.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/webhooks/v1/incoming/:provider/:connectionId",
+      "auth": "Unknown"
+    },
+    {
+      "controller": "barcode.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/wms/barcode/scan",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/evaluate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/rules",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "PATCH",
+      "route": "/api/v1/workflow/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/workflow/rules/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/:id/activate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/:id/clone",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/:id/deactivate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/rules/:id/history",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/:id/version",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/rules/export",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/import",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/rules/simulate",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/v2/approvals/requests/:requestId/steps/:stepId",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/v2/definitions",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/v2/definitions/:id/archive",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/v2/definitions/:id/history",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workflow/v2/definitions/:id/publish",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workflow.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workflow/v2/metrics",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workspace.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workspace/preferences",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workspace.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workspace/snapshots",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workspace.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/workspace/snapshots",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workspace.controller.ts",
+      "method": "DELETE",
+      "route": "/api/v1/workspace/snapshots/:id",
+      "auth": "JWT"
+    },
+    {
+      "controller": "workspace.controller.ts",
+      "method": "GET",
+      "route": "/api/v1/workspace/snapshots/default",
+      "auth": "JWT"
+    },
+    {
+      "controller": "yard.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/yard/gate/entry",
+      "auth": "JWT"
+    },
+    {
+      "controller": "yard.controller.ts",
+      "method": "POST",
+      "route": "/api/v1/yard/gate/exit",
+      "auth": "JWT"
+    }
+  ]
+}

@@ -19,8 +19,7 @@ NAMESPACE="parilink-${ENVIRONMENT}"
 
 echo "Deploying version ${VERSION} to ${NAMESPACE}..."
 
-kubectl set image deployment/parilink-api api=${REGISTRY}/parilink-api:${VERSION} -n ${NAMESPACE}
-kubectl set image deployment/parilink-web web=${REGISTRY}/parilink-web:${VERSION} -n ${NAMESPACE}
+
 
 echo "Waiting for rollout to complete..."
 kubectl rollout status deployment/parilink-api -n ${NAMESPACE} --timeout=300s
