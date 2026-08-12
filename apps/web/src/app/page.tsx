@@ -69,19 +69,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Trust Banner */}
-      <div className="border-y border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 py-10">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-8">Trusted by logistics leaders worldwide</p>
-          <div className="flex justify-center gap-12 flex-wrap opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <span className="text-2xl font-bold font-serif">MAERSK</span>
-            <span className="text-2xl font-bold tracking-tighter">XPO</span>
-            <span className="text-2xl font-bold font-mono">C.H. ROBINSON</span>
-            <span className="text-2xl font-bold tracking-widest">DSV</span>
-          </div>
-        </div>
-      </div>
-
       {/* Features Grid */}
       <section id="features" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
