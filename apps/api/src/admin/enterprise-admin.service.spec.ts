@@ -34,6 +34,7 @@ describe('Enterprise Administration Platform Services', () => {
       .fn()
       .mockImplementation(async (cb) => await cb(mockPrisma)),
     company: {
+      count: jest.fn().mockResolvedValue(10),
       findMany: jest
         .fn()
         .mockResolvedValue([
@@ -48,7 +49,6 @@ describe('Enterprise Administration Platform Services', () => {
       update: jest
         .fn()
         .mockResolvedValue({ id: 'comp-1', status: 'SUSPENDED' }),
-      count: jest.fn().mockResolvedValue(5),
     },
     tenantConfiguration: {
       findUnique: jest.fn().mockResolvedValue({
@@ -119,7 +119,13 @@ describe('Enterprise Administration Platform Services', () => {
         .fn()
         .mockResolvedValue({ id: 'cc-1', code: 'CC-101', name: 'R&D' }),
     },
+    vehicle: { count: jest.fn().mockResolvedValue(10) },
+    driver: { count: jest.fn().mockResolvedValue(10) },
+    trip: { count: jest.fn().mockResolvedValue(10) },
+    load: { count: jest.fn().mockResolvedValue(10) },
+
     user: {
+      count: jest.fn().mockResolvedValue(25),
       findMany: jest.fn().mockResolvedValue([
         {
           id: 'usr-1',
@@ -141,7 +147,6 @@ describe('Enterprise Administration Platform Services', () => {
         status: 'INVITED',
       }),
       update: jest.fn().mockResolvedValue({ id: 'usr-1', status: 'SUSPENDED' }),
-      count: jest.fn().mockResolvedValue(25),
     },
     role: {
       findMany: jest
@@ -221,12 +226,12 @@ describe('Enterprise Administration Platform Services', () => {
       }),
     },
     auditLog: {
+      count: jest.fn().mockResolvedValue(10),
       findMany: jest
         .fn()
         .mockResolvedValue([
           { id: 'audit-1', action: 'admin:test', createdAt: new Date() },
         ]),
-      count: jest.fn().mockResolvedValue(10),
       deleteMany: jest.fn().mockResolvedValue({ count: 5 }),
     },
     refreshToken: { deleteMany: jest.fn().mockResolvedValue({ count: 2 }) },

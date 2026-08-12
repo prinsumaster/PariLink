@@ -1,9 +1,12 @@
+import { TwilioService } from '../integrations/twilio.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DispatchService } from './dispatch.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowService } from '../workflow/workflow.service';
 import { BadRequestException } from '@nestjs/common';
+import { AuditService } from '../platform/audit/audit.service';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 describe('DispatchService', () => {
   let service: DispatchService;
@@ -54,10 +57,13 @@ describe('DispatchService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: TwilioService, useValue: {} },
         DispatchService,
         { provide: PrismaService, useValue: mockPrisma },
         { provide: WorkflowService, useValue: mockWorkflowService },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: AuditService, useValue: { logEvent: jest.fn() } },
+        { provide: EventStoreService, useValue: { append: jest.fn() } },
       ],
     }).compile();
     service = module.get<DispatchService>(DispatchService);
