@@ -42,7 +42,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24 text-center">
           <div className="inline-flex items-center space-x-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-8 border border-blue-200 dark:border-blue-800/50">
             <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span>PariLink Enterprise 7.0 is now live</span>
+            <span>Turn Operational Chaos into Profitable Control</span>
           </div>
           
           <h1 className="text-6xl md:text-8xl font-extrabold tracking-tighter text-slate-900 dark:text-white mb-8">
@@ -50,18 +50,18 @@ export default function Home() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Modern Fleet.</span>
           </h1>
           <p className="max-w-2xl mx-auto text-xl text-slate-600 dark:text-slate-400 mb-10 leading-relaxed">
-            Unify dispatch, telematics, billing, and AI analytics in a single, high-performance platform. Reduce empty miles by 30% and eliminate invoicing leakage.
+            PariLink is the Enterprise Logistics Control Tower that unifies your fleet, freight, warehouse, and finances into a single intelligent platform.
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link href="/login" passHref>
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl">
-                Start Free Trial <ArrowRight className="ml-2 w-5 h-5" />
+                Book a Demo <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
             <Link href="#features" passHref>
               <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl border-slate-300 dark:border-slate-800">
-                Explore Platform
+                See the Platform
               </Button>
             </Link>
           </div>
@@ -133,13 +133,12 @@ export default function Home() {
             {/* Starter Plan */}
             <div className="p-8 rounded-3xl bg-slate-800 border border-slate-700">
               <h3 className="text-2xl font-semibold mb-2">Growth</h3>
-              <p className="text-slate-400 mb-6">For fleets up to 50 vehicles.</p>
+              <p className="text-slate-400 mb-6">For fleets up to 150 vehicles.</p>
               <div className="mb-6">
-                <span className="text-5xl font-bold">$499</span>
-                <span className="text-slate-400">/mo</span>
+                <span className="text-5xl font-bold">Custom</span>
               </div>
               <ul className="space-y-4 mb-8">
-                {['Up to 50 active vehicles', 'Basic dispatch & routing', 'Standard reporting', 'Email support'].map((item, i) => (
+                {['Command Center Dashboard', 'Fleet & Load Management', 'Standard Invoicing', '30-Day Paid Pilot Available'].map((item, i) => (
                   <li key={i} className="flex items-center text-slate-300">
                     <CheckCircle2 className="w-5 h-5 text-blue-400 mr-3 shrink-0" />
                     {item}
@@ -147,7 +146,7 @@ export default function Home() {
                 ))}
               </ul>
               <Link href="/login" passHref>
-                <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white" variant="secondary">Start Trial</Button>
+                <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white" variant="secondary">Start a Pilot</Button>
               </Link>
             </div>
 
@@ -155,13 +154,12 @@ export default function Home() {
             <div className="p-8 rounded-3xl bg-gradient-to-b from-blue-600 to-indigo-700 border border-blue-500 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 bg-blue-400 text-blue-950 text-xs font-bold px-3 py-1 rounded-bl-lg">POPULAR</div>
               <h3 className="text-2xl font-semibold mb-2">Enterprise</h3>
-              <p className="text-blue-200 mb-6">For high-volume logistics operations.</p>
+              <p className="text-blue-200 mb-6">For complex operations needing WMS and AI.</p>
               <div className="mb-6">
-                <span className="text-5xl font-bold">$2,499</span>
-                <span className="text-blue-200">/mo</span>
+                <span className="text-5xl font-bold">Custom</span>
               </div>
               <ul className="space-y-4 mb-8">
-                {['Unlimited vehicles & users', 'AI Copilot & Predictive Routing', 'Advanced RBAC & Audit Logs', '24/7 Dedicated Support'].map((item, i) => (
+                {['Unlimited vehicles & users', 'Native WMS Integration', 'AI Copilot & Predictive Routing', '24/7 Dedicated Support'].map((item, i) => (
                   <li key={i} className="flex items-center text-white">
                     <CheckCircle2 className="w-5 h-5 text-blue-300 mr-3 shrink-0" />
                     {item}
@@ -169,7 +167,7 @@ export default function Home() {
                 ))}
               </ul>
               <Link href="/login" passHref>
-                <Button className="w-full bg-white text-blue-700 hover:bg-blue-50">Contact Sales</Button>
+                <Button className="w-full bg-white text-blue-700 hover:bg-blue-50">Book a Demo</Button>
               </Link>
             </div>
           </div>
