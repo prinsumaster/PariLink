@@ -1,3 +1,4 @@
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TripsService } from './trips.service';
 import { AuditService } from '../platform/audit/audit.service';
@@ -17,6 +18,12 @@ describe('TripsService', () => {
       findFirst: jest.fn(),
       count: jest.fn(),
       update: jest.fn(),
+    },
+    driver: {
+      findFirst: jest.fn().mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE' }),
+    },
+    vehicle: {
+      findFirst: jest.fn().mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE' }),
     },
     load: { updateMany: jest.fn(), findMany: jest.fn().mockResolvedValue([]) },
     auditLog: { create: jest.fn() },
@@ -41,6 +48,7 @@ describe('TripsService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: EventStoreService, useValue: { append: jest.fn() } },
         TripsService,
         { provide: AuditService, useValue: { logEvent: jest.fn() } },
         { provide: PrismaService, useValue: mockPrisma },

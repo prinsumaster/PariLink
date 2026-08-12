@@ -1,3 +1,4 @@
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../platform/audit/audit.service';
@@ -12,6 +13,7 @@ describe('Enterprise Notification Orchestrator Service', () => {
 
   const mockQueue: any = {
     add: jest.fn().mockResolvedValue({ id: 'job-1' }),
+    addBulk: jest.fn().mockResolvedValue([{ id: 'job-1' }]),
   };
 
   const mockPrisma: any = {
@@ -77,6 +79,7 @@ describe('Enterprise Notification Orchestrator Service', () => {
         .mockResolvedValue({ id: 'notif-1', title: 'Test', body: 'Body' }),
     },
     notificationDelivery: {
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
       count: jest.fn().mockResolvedValue(2), // Below rate limit
       findMany: jest
         .fn()
@@ -106,6 +109,7 @@ describe('Enterprise Notification Orchestrator Service', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: EventStoreService, useValue: { append: jest.fn() } },
         NotificationOrchestratorService,
         TemplateService,
         { provide: PrismaService, useValue: mockPrisma },
