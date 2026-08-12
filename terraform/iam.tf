@@ -164,12 +164,8 @@ resource "aws_iam_role" "github_actions_deploy" {
         Federated = aws_iam_openid_connect_provider.github_actions.arn
       }
       Condition = {
-        StringLike = {
-          # Actual sub claim from GitHub OIDC includes internal numeric IDs:
-          # repo:prinsumaster@244661261/PariLink@1328853957:<ref or environment>
-          "token.actions.githubusercontent.com:sub" = "repo:prinsumaster*PariLink*:*"
-        }
         StringEquals = {
+          "token.actions.githubusercontent.com:sub" = "repo:prinsumaster@244661261/PariLink@1328853957:environment:production"
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
       }
