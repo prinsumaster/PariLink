@@ -156,8 +156,8 @@ module "eks" {
   aws_auth_roles = [
     {
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/parilink-github-actions-deploy-${var.environment}"
-      username = "github-actions-deploy"
-      groups   = ["system:masters"]
+      username = "github-actions-deployer"
+      groups   = []
     }
   ]
 

@@ -73,6 +73,10 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          sed -i "s|123456789012.dkr.ecr.ap-south-1.amazonaws.com|${REGISTRY}|g" kubernetes/03-api.yaml
+          sed -i "s|123456789012.dkr.ecr.ap-south-1.amazonaws.com|${REGISTRY}|g" kubernetes/04-web.yaml
+          sed -i "s|:latest|:${{ env.VERSION }}|g" kubernetes/03-api.yaml
+          sed -i "s|:latest|:${{ env.VERSION }}|g" kubernetes/04-web.yaml
           kubectl apply -f kubernetes/01-base.yaml
           kubectl apply -f kubernetes/02-database.yaml
           kubectl apply -f kubernetes/03-api.yaml
