@@ -11,6 +11,8 @@ jobs:
   diagnose-oidc:
     name: Diagnose OIDC Claims
     runs-on: ubuntu-latest
+    environment:
+      name: production
 
     steps:
       - name: Request OIDC Token and Decode Claims (Safe)
