@@ -3,6 +3,7 @@ import { ArrowRight, Truck, Shield, Zap, Activity, CheckCircle2, Globe2 } from '
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
+  const demoUrl = process.env.NEXT_PUBLIC_DEMO_URL || 'mailto:sales@parilink.com?subject=PariLink Demo Request';
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-blue-200 dark:selection:bg-blue-900">
       {/* Navigation */}
@@ -25,7 +26,7 @@ export default function Home() {
         </div>
         <div className="flex items-center space-x-4">
           <Link href="/login" className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">Sign in</Link>
-          <Link href="/login" passHref>
+          <Link href={demoUrl} passHref>
             <Button>Book Demo</Button>
           </Link>
         </div>
@@ -54,7 +55,7 @@ export default function Home() {
           </p>
           
           <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link href="/login" passHref>
+            <Link href={demoUrl} passHref>
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg rounded-xl">
                 Book a Demo <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
@@ -145,7 +146,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <Link href="/login" passHref>
+              <Link href={demoUrl} passHref>
                 <Button className="w-full bg-slate-700 hover:bg-slate-600 text-white" variant="secondary">Start a Pilot</Button>
               </Link>
             </div>
@@ -166,7 +167,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <Link href="/login" passHref>
+              <Link href={demoUrl} passHref>
                 <Button className="w-full bg-white text-blue-700 hover:bg-blue-50">Book a Demo</Button>
               </Link>
             </div>
