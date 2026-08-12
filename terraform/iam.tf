@@ -165,7 +165,9 @@ resource "aws_iam_role" "github_actions_deploy" {
       }
       Condition = {
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:prinsumaster/PariLink:*"
+          # Actual sub claim from GitHub OIDC includes internal numeric IDs:
+          # repo:prinsumaster@244661261/PariLink@1328853957:<ref or environment>
+          "token.actions.githubusercontent.com:sub" = "repo:prinsumaster*PariLink*:*"
         }
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
