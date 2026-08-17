@@ -1,0 +1,1242 @@
+Controller,Route,AuthType,Permissions
+customers.controller.ts,,AUTH,  @Post()
+customers.controller.ts,,AUTH,  @Post()
+customers.controller.ts,,AUTH,  @Post()
+customers.controller.ts,,AUTH,  @Post()
+customers.controller.ts,':id',AUTH,  @Post()
+customers.controller.ts,'id',AUTH,  @Post()
+customers.controller.ts,':id',AUTH,  @Post()
+customers.controller.ts,,AUTH,  @Post()
+customers.controller.ts,':id',AUTH,  @Post()
+customers.controller.ts,'id',AUTH,  @Post()
+loads.controller.ts,,AUTH,  @Post()
+loads.controller.ts,,AUTH,  @Post()
+loads.controller.ts,,AUTH,  @Post()
+loads.controller.ts,,AUTH,  @Post()
+loads.controller.ts,':id',AUTH,  @Post()
+loads.controller.ts,'id',AUTH,  @Post()
+loads.controller.ts,':id',AUTH,  @Post()
+loads.controller.ts,,AUTH,  @Post()
+loads.controller.ts,':id',AUTH,  @Post()
+loads.controller.ts,'id',AUTH,  @Post()
+comments.controller.ts,':entityType/:entityId',AUTH,
+comments.controller.ts,,AUTH,
+comments.controller.ts,':entityType/:entityId',AUTH,
+comments.controller.ts,,AUTH,
+comments.controller.ts,':id',AUTH,
+comments.controller.ts,,AUTH,
+reporting.controller.ts,'templates',AUTH,
+reporting.controller.ts,'templates',AUTH,
+reporting.controller.ts,'templates/:id/execute',AUTH,
+reporting.controller.ts,'schedules',AUTH,
+reporting.controller.ts,'executions',AUTH,
+developer.controller.ts,,AUTH,
+developer.controller.ts,,AUTH,
+developer.controller.ts,':id',AUTH,
+developer.controller.ts,':id',AUTH,
+developer.controller.ts,':id/rotate-secret',AUTH,
+developer.controller.ts,':id',AUTH,
+vendors.controller.ts,,AUTH,  @Post()
+vendors.controller.ts,,AUTH,  @Post()
+vendors.controller.ts,,AUTH,  @Post()
+vendors.controller.ts,,AUTH,  @Post()
+vendors.controller.ts,':id',AUTH,  @Post()
+vendors.controller.ts,'id',AUTH,  @Post()
+vendors.controller.ts,':id',AUTH,  @Post()
+vendors.controller.ts,,AUTH,  @Post()
+vendors.controller.ts,':id',AUTH,  @Post()
+vendors.controller.ts,'id',AUTH,  @Post()
+purchase-order.controller.ts,,AUTH,  @Post()
+purchase-order.controller.ts,,AUTH,  @Post()
+purchase-order.controller.ts,,AUTH,  @Post()
+purchase-order.controller.ts,,AUTH,  @Post()
+purchase-order.controller.ts,':id/receive',AUTH,  @Post()
+purchase-order.controller.ts,,AUTH,  @Post()
+payments.controller.ts,,AUTH,
+payments.controller.ts,,AUTH,
+payments.controller.ts,'invoices/:invoiceId',AUTH,
+payments.controller.ts,,AUTH,
+payments.controller.ts,,AUTH,
+payments.controller.ts,,AUTH,
+ledger.controller.ts,'chart-of-accounts',AUTH,  @Get('chart-of-accounts')
+ledger.controller.ts,,AUTH,  @Get('chart-of-accounts')
+ledger.controller.ts,'trial-balance',AUTH,  @Get('chart-of-accounts')
+ledger.controller.ts,,AUTH,  @Get('chart-of-accounts')
+ledger.controller.ts,'profit-and-loss',AUTH,  @Get('chart-of-accounts')
+ledger.controller.ts,,AUTH,  @Get('chart-of-accounts')
+barcode.controller.ts,'scan',AUTH,
+gst-rule.controller.ts,,AUTH,
+gst-rule.controller.ts,,AUTH,
+gst-rule.controller.ts,':id',AUTH,
+gst-rule.controller.ts,':id',AUTH,
+gst-rule.controller.ts,':id',AUTH,
+attendance.controller.ts,,AUTH,
+attendance.controller.ts,,AUTH,
+attendance.controller.ts,':id',AUTH,
+attendance.controller.ts,':id',AUTH,
+attendance.controller.ts,':id',AUTH,
+drivers.controller.ts,,AUTH,  @Post()
+drivers.controller.ts,,AUTH,  @Post()
+drivers.controller.ts,,AUTH,  @Post()
+drivers.controller.ts,,AUTH,  @Post()
+drivers.controller.ts,':id',AUTH,  @Post()
+drivers.controller.ts,'id',AUTH,  @Post()
+drivers.controller.ts,':id',AUTH,  @Post()
+drivers.controller.ts,,AUTH,  @Post()
+drivers.controller.ts,':id',AUTH,  @Post()
+drivers.controller.ts,'id',AUTH,  @Post()
+broker.controller.ts,'carriers',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+broker.controller.ts,'carriers',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+broker.controller.ts,'load-board/:tripId',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+broker.controller.ts,'load-board',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+broker.controller.ts,'load-board/:loadId/bids',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+broker.controller.ts,'bids/:bidId/accept',AUTH,  @Post('carriers')
+broker.controller.ts,,AUTH,  @Post('carriers')
+chat.controller.ts,'channels',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'channels',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'channels/:channelId/messages',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'channels/:channelId/messages',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'messages/:messageId',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'messages/:messageId',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'messages/:messageId/reactions',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'messages/:messageId/reactions/:emoji',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'channels/:channelId/join',AUTH,
+chat.controller.ts,,AUTH,
+chat.controller.ts,'dm/:otherUserId',AUTH,
+chat.controller.ts,,AUTH,
+invoices.controller.ts,,AUTH,  @Get()
+invoices.controller.ts,,AUTH,  @Get()
+invoices.controller.ts,':id',AUTH,  @Get()
+invoices.controller.ts,'id',AUTH,  @Get()
+invoices.controller.ts,,AUTH,  @Get()
+invoices.controller.ts,,AUTH,  @Get()
+invoices.controller.ts,':id/status',AUTH,  @Get()
+invoices.controller.ts,,AUTH,  @Get()
+driver-intelligence.controller.ts,':id/score',AUTH,  @Get(':id/score')
+gps.controller.ts,'ingest',AUTH,  @Post('ingest')
+gps.controller.ts,,AUTH,  @Post('ingest')
+dispatch-ai.controller.ts,':loadId/recommend',AUTH,  @Post(':loadId/recommend')
+lin.controller.ts,'benchmarks',AUTH,
+eta-intelligence.controller.ts,'predict',AUTH,  @Get('predict')
+fleet-intelligence.controller.ts,'kpis',AUTH,  @Get('kpis')
+occ.controller.ts,'fleet-map',AUTH,  @Get('fleet-map')
+occ.controller.ts,,AUTH,  @Get('fleet-map')
+occ.controller.ts,'timeline/:twinId',AUTH,  @Get('fleet-map')
+occ.controller.ts,,AUTH,  @Get('fleet-map')
+occ.controller.ts,'fleet-tree',AUTH,  @Get('fleet-map')
+occ.controller.ts,,AUTH,  @Get('fleet-map')
+occ.controller.ts,'anomalies',AUTH,  @Get('fleet-map')
+occ.controller.ts,,AUTH,  @Get('fleet-map')
+occ.controller.ts,'timeline',AUTH,  @Get('fleet-map')
+occ.controller.ts,,AUTH,  @Get('fleet-map')
+auth.controller.ts,'login',AUTH,
+auth.controller.ts,'register',AUTH,
+auth.controller.ts,'refresh',AUTH,
+auth.controller.ts,'logout',AUTH,
+auth.controller.ts,'logout-all',AUTH,
+auth.controller.ts,'webauthn/register/generate-options',AUTH,
+auth.controller.ts,'webauthn/register/verify',AUTH,
+auth.controller.ts,'webauthn/authenticate/generate-options',AUTH,
+auth.controller.ts,'webauthn/authenticate/verify',AUTH,
+auth.controller.ts,'me',AUTH,
+auth.controller.ts,'sessions',AUTH,
+auth.controller.ts,'sessions/:id/revoke',AUTH,
+auth.controller.ts,'mfa/setup',AUTH,
+auth.controller.ts,'mfa/verify-setup',AUTH,
+admin-sso.controller.ts,,AUTH,
+admin-sso.controller.ts,,AUTH,
+admin-sso.controller.ts,':idpId',AUTH,
+admin-sso.controller.ts,':idpId',AUTH,
+sso.controller.ts,'login/:idpId',AUTH,
+sso.controller.ts,'callback/saml/:idpId',AUTH,
+sso.controller.ts,'callback/oidc/:idpId',AUTH,
+sso.controller.ts,'callback/oidc/:idpId',AUTH,
+webhook-platform.controller.ts,'deliveries',AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,,AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,'deliveries/:id',AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,,AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,'deliveries/:id/replay',AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,,AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,'metrics',AUTH,  @Get('deliveries')
+webhook-platform.controller.ts,,AUTH,  @Get('deliveries')
+data-mapping.controller.ts,'templates',AUTH,  @Post('templates')
+data-mapping.controller.ts,,AUTH,  @Post('templates')
+data-mapping.controller.ts,'templates',AUTH,  @Post('templates')
+data-mapping.controller.ts,,AUTH,  @Post('templates')
+data-mapping.controller.ts,'templates/:id',AUTH,  @Post('templates')
+data-mapping.controller.ts,,AUTH,  @Post('templates')
+data-mapping.controller.ts,'preview',AUTH,  @Post('templates')
+data-mapping.controller.ts,,AUTH,  @Post('templates')
+developer-platform.controller.ts,'openapi.json',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'versions',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'sdk/:language',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'sample',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'oauth/clients',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'oauth/clients',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'oauth/clients/:id',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'analytics',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'keys/:id/rotate',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,'webhook/test',AUTH,  @Post('oauth/clients')
+developer-platform.controller.ts,,AUTH,  @Post('oauth/clients')
+import-export.controller.ts,'import/preview',AUTH,  @Post('import/preview')
+import-export.controller.ts,,AUTH,  @Post('import/preview')
+import-export.controller.ts,'import/execute',AUTH,  @Post('import/preview')
+import-export.controller.ts,,AUTH,  @Post('import/preview')
+import-export.controller.ts,'export/execute',AUTH,  @Post('import/preview')
+import-export.controller.ts,,AUTH,  @Post('import/preview')
+import-export.controller.ts,'jobs',AUTH,  @Post('import/preview')
+import-export.controller.ts,,AUTH,  @Post('import/preview')
+import-export.controller.ts,'jobs/:id',AUTH,  @Post('import/preview')
+import-export.controller.ts,,AUTH,  @Post('import/preview')
+sync-scheduler.controller.ts,'schedules',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,'schedules',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,'trigger',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,'history',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,'errors',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,'errors/:id/resolve',AUTH,  @Post('schedules')
+sync-scheduler.controller.ts,,AUTH,  @Post('schedules')
+enterprise-event-bus.controller.ts,'publish',AUTH,  @Post('publish')
+enterprise-event-bus.controller.ts,,AUTH,  @Post('publish')
+enterprise-event-bus.controller.ts,'history',AUTH,  @Post('publish')
+enterprise-event-bus.controller.ts,,AUTH,  @Post('publish')
+enterprise-event-bus.controller.ts,'replay',AUTH,  @Post('publish')
+enterprise-event-bus.controller.ts,,AUTH,  @Post('publish')
+enterprise-integration-hub.controller.ts,'catalog',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'installed',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'configure',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'connections/:id/enable',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'connections/:id/disable',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'connections/:id/version',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,'connections/:id/health',AUTH,  @Get('catalog')
+enterprise-integration-hub.controller.ts,,AUTH,  @Get('catalog')
+gateway.controller.ts,':provider/webhook/:companyId',AUTH,
+factoring.controller.ts,'submit',AUTH,  @Post('submit')
+factoring.controller.ts,,AUTH,  @Post('submit')
+factoring.controller.ts,'dashboard',AUTH,  @Post('submit')
+factoring.controller.ts,,AUTH,  @Post('submit')
+factoring.controller.ts,'stripe/connect',AUTH,  @Post('submit')
+factoring.controller.ts,,AUTH,  @Post('submit')
+feedback.controller.ts,':id/feedback',AUTH,  @Post(':id/feedback')
+feedback.controller.ts,,AUTH,  @Post(':id/feedback')
+optimization.controller.ts,'scenarios/generate',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,'scenarios',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,'scenarios/:id',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,'scenarios/:id/accept',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,'scenarios/simulate',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,'analytics/executive',AUTH,  @Post('scenarios/generate')
+optimization.controller.ts,,AUTH,  @Post('scenarios/generate')
+dispatch-operations.controller.ts,'control-tower/dashboard',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,'control-tower/active-trips',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,'live-fleet/map',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,'ai/trip/:tripId/predict-eta',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,'ai/trip/:tripId/risk',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,'ai/load/:loadId/recommend-driver',AUTH,  @Get('control-tower/dashboard')
+dispatch-operations.controller.ts,,AUTH,  @Get('control-tower/dashboard')
+dispatch.controller.ts,'board',AUTH,  @Get('board')
+dispatch.controller.ts,,AUTH,  @Get('board')
+dispatch.controller.ts,'board/move',AUTH,  @Get('board')
+dispatch.controller.ts,,AUTH,  @Get('board')
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,':planId/candidates',AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,':planId/assign',AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,':planId/cancel',AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,'kpi',AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+planning.controller.ts,':planId',AUTH,  @Post()
+planning.controller.ts,'planId',AUTH,  @Post()
+planning.controller.ts,':planId/exceptions/driver-rejection',AUTH,  @Post()
+planning.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,':id',AUTH,  @Post()
+trailers.controller.ts,'id',AUTH,  @Post()
+trailers.controller.ts,':id',AUTH,  @Post()
+trailers.controller.ts,,AUTH,  @Post()
+trailers.controller.ts,':id',AUTH,  @Post()
+trailers.controller.ts,'id',AUTH,  @Post()
+health.controller.ts,'liveness',AUTH,
+health.controller.ts,'readiness',AUTH,
+mdm.controller.ts,'records/:entityType',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,,AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'records/merge',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,,AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'quality/evaluate/:entityType',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,,AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'identities/:sourceSystem/:externalId',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'reference/:domain',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'reference/:domain',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,'search',AUTH,  @Post('records/:entityType')
+mdm.controller.ts,,AUTH,  @Post('records/:entityType')
+platform.controller.ts,'health',AUTH,  @Get('health/deep')
+platform.controller.ts,'health/liveness',AUTH,  @Get('health/deep')
+platform.controller.ts,'health/deep',AUTH,  @Get('health/deep')
+platform.controller.ts,'license/:tenantId',AUTH,  @Get('health/deep')
+platform.controller.ts,'license/:tenantId/invalidate',AUTH,  @Get('health/deep')
+platform.controller.ts,'features/:companyId/:key/enable',AUTH,  @Get('health/deep')
+platform.controller.ts,'features/:companyId/:key/kill',AUTH,  @Get('health/deep')
+platform.controller.ts,'iam/roles/:roleId/cache/invalidate',AUTH,  @Get('health/deep')
+platform.controller.ts,'metrics',AUTH,  @Get('health/deep')
+platform.controller.ts,'audit-log',AUTH,  @Get('health/deep')
+platform.controller.ts,'audit-log/verify/:auditLogId',AUTH,  @Get('health/deep')
+platform.controller.ts,'audit-log/chain/:companyId',AUTH,  @Get('health/deep')
+platform.controller.ts,'audit-log/export/:companyId',AUTH,  @Get('health/deep')
+workspace.controller.ts,'snapshots',AUTH,
+workspace.controller.ts,,AUTH,
+workspace.controller.ts,'snapshots',AUTH,
+workspace.controller.ts,,AUTH,
+workspace.controller.ts,'snapshots/default',AUTH,
+workspace.controller.ts,,AUTH,
+workspace.controller.ts,'snapshots/:id',AUTH,
+workspace.controller.ts,'id',AUTH,
+workspace.controller.ts,'preferences',AUTH,
+workspace.controller.ts,,AUTH,
+telemetry-ingress.controller.ts,,AUTH,
+marketplace-core.controller.ts,'apps',AUTH,
+marketplace-core.controller.ts,'installed',AUTH,
+marketplace-core.controller.ts,'apps/:id',AUTH,
+marketplace-core.controller.ts,'installed/:id',AUTH,
+marketplace-core.controller.ts,'apps/:id/install',AUTH,
+marketplace-core.controller.ts,'apps/:id',AUTH,
+marketplace-core.controller.ts,'apps/:id/disable',AUTH,
+marketplace-core.controller.ts,'apps/:id/enable',AUTH,
+marketplace-extensions.controller.ts,':slotId',AUTH,
+crm-lead.controller.ts,,AUTH,
+crm-lead.controller.ts,,AUTH,
+crm-lead.controller.ts,':id',AUTH,
+crm-lead.controller.ts,':id',AUTH,
+crm-lead.controller.ts,':id',AUTH,
+admin.controller.ts,'dashboard',AUTH,  @Get('dashboard')
+admin.controller.ts,'health',AUTH,  @Get('dashboard')
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id',AUTH,  @Get()
+enterprise-admin.controller.ts,':id/status',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/branding',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/regional',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/business-hours',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'overview',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'departments',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'departments',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'departments/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'departments/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'teams',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'teams',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'teams/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'teams/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'cost-centers',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'cost-centers',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'cost-centers/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'cost-centers/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'invite',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'import',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'export',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/suspend',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/activate',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/lock',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/unlock',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/force-logout',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/force-password-reset',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/reset-mfa',AUTH,  @Get()
+enterprise-admin.controller.ts,'id',AUTH,  @Get()
+enterprise-admin.controller.ts,'groups',AUTH,  @Get()
+enterprise-admin.controller.ts,'templates',AUTH,  @Get()
+enterprise-admin.controller.ts,'from-template',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'roles',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'roles/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'roles/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'roles/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'delegated-scope/:userId',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'temporary-permission/:userId',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'simulate',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,':id/kill-switch',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'assign-plan',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'trucks/limit',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'drivers/limit',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'trucks/boost',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'unlimited',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'plans',AUTH,  @Get()
+enterprise-admin.controller.ts,'usage',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'tenants',AUTH,  @Get()
+enterprise-admin.controller.ts,'keys',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'keys',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'keys/:id',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'oauth-clients',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'scopes',AUTH,  @Get()
+enterprise-admin.controller.ts,'webhooks',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'webhooks',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'timeline',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'user-timeline/:userId',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'security-events',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'compliance-report',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'retention',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'retention',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'purge',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'smtp',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'storage',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'queue',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'redis',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'cdn',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,'maintenance',AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+enterprise-admin.controller.ts,,AUTH,  @Get()
+planning.controller.ts,'run',AUTH,  @Post('run')
+planning.controller.ts,,AUTH,  @Post('run')
+planning.controller.ts,'today',AUTH,  @Post('run')
+planning.controller.ts,,AUTH,  @Post('run')
+planning.controller.ts,'items/:id/approve',AUTH,  @Post('run')
+planning.controller.ts,,AUTH,  @Post('run')
+planning.controller.ts,'items/:id/reject',AUTH,  @Post('run')
+planning.controller.ts,,AUTH,  @Post('run')
+background-jobs.controller.ts,,AUTH,
+background-jobs.controller.ts,'limit',AUTH,
+background-jobs.controller.ts,'active',AUTH,
+background-jobs.controller.ts,,AUTH,
+background-jobs.controller.ts,':id/cancel',AUTH,
+roles.controller.ts,,AUTH,  @Post()
+roles.controller.ts,,AUTH,  @Post()
+roles.controller.ts,,AUTH,  @Post()
+roles.controller.ts,,AUTH,  @Post()
+roles.controller.ts,':id',AUTH,  @Post()
+roles.controller.ts,'id',AUTH,  @Post()
+roles.controller.ts,':id',AUTH,  @Post()
+roles.controller.ts,,AUTH,  @Post()
+roles.controller.ts,':id',AUTH,  @Post()
+roles.controller.ts,'id',AUTH,  @Post()
+metrics-platform.controller.ts,,AUTH,  @Post()
+metrics-platform.controller.ts,,AUTH,  @Post()
+metrics-platform.controller.ts,'query',AUTH,  @Post()
+metrics-platform.controller.ts,,AUTH,  @Post()
+metrics-platform.controller.ts,'dashboard',AUTH,  @Post()
+metrics-platform.controller.ts,,AUTH,  @Post()
+metrics-platform.controller.ts,'system',AUTH,  @Post()
+metrics-platform.controller.ts,'tenant',AUTH,  @Post()
+metrics-platform.controller.ts,,AUTH,  @Post()
+distributed-tracing.controller.ts,'span',AUTH,  @Post('span')
+distributed-tracing.controller.ts,,AUTH,  @Post('span')
+distributed-tracing.controller.ts,'trace/:traceId',AUTH,  @Post('span')
+distributed-tracing.controller.ts,,AUTH,  @Post('span')
+distributed-tracing.controller.ts,'search',AUTH,  @Post('span')
+distributed-tracing.controller.ts,,AUTH,  @Post('span')
+distributed-tracing.controller.ts,'slowest',AUTH,  @Post('span')
+distributed-tracing.controller.ts,,AUTH,  @Post('span')
+disaster-recovery.controller.ts,'plans',AUTH,  @Post('plans')
+disaster-recovery.controller.ts,,AUTH,  @Post('plans')
+disaster-recovery.controller.ts,'drills',AUTH,  @Post('plans')
+disaster-recovery.controller.ts,,AUTH,  @Post('plans')
+disaster-recovery.controller.ts,'readiness',AUTH,  @Post('plans')
+disaster-recovery.controller.ts,,AUTH,  @Post('plans')
+enterprise-health.controller.ts,'global',AUTH,  @Get('global')
+enterprise-health.controller.ts,,AUTH,  @Get('global')
+enterprise-health.controller.ts,'api',AUTH,  @Get('global')
+enterprise-health.controller.ts,,AUTH,  @Get('global')
+enterprise-health.controller.ts,'database',AUTH,  @Get('global')
+enterprise-health.controller.ts,'queues',AUTH,  @Get('global')
+enterprise-health.controller.ts,,AUTH,  @Get('global')
+alert-engine.controller.ts,'trigger',AUTH,  @Post('trigger')
+alert-engine.controller.ts,,AUTH,  @Post('trigger')
+alert-engine.controller.ts,':id/ack',AUTH,  @Post('trigger')
+alert-engine.controller.ts,,AUTH,  @Post('trigger')
+alert-engine.controller.ts,':id/resolve',AUTH,  @Post('trigger')
+alert-engine.controller.ts,,AUTH,  @Post('trigger')
+alert-engine.controller.ts,'maintenance-window',AUTH,  @Post('trigger')
+alert-engine.controller.ts,,AUTH,  @Post('trigger')
+alert-engine.controller.ts,'escalation-policy',AUTH,  @Post('trigger')
+alert-engine.controller.ts,,AUTH,  @Post('trigger')
+operations-dashboard.controller.ts,'snapshot',AUTH,  @Get('snapshot')
+operations-dashboard.controller.ts,,AUTH,  @Get('snapshot')
+performance-platform.controller.ts,'profile',AUTH,  @Post('profile')
+performance-platform.controller.ts,,AUTH,  @Post('profile')
+performance-platform.controller.ts,'slow-queries',AUTH,  @Post('profile')
+performance-platform.controller.ts,,AUTH,  @Post('profile')
+performance-platform.controller.ts,'resource-utilization',AUTH,  @Post('profile')
+performance-platform.controller.ts,'cache',AUTH,  @Post('profile')
+performance-platform.controller.ts,'workflows',AUTH,  @Post('profile')
+performance-platform.controller.ts,,AUTH,  @Post('profile')
+backup-recovery.controller.ts,'start',AUTH,  @Post('start')
+backup-recovery.controller.ts,,AUTH,  @Post('start')
+backup-recovery.controller.ts,':id/verify',AUTH,  @Post('start')
+backup-recovery.controller.ts,,AUTH,  @Post('start')
+backup-recovery.controller.ts,':id/restore',AUTH,  @Post('start')
+backup-recovery.controller.ts,,AUTH,  @Post('start')
+backup-recovery.controller.ts,'purge',AUTH,  @Post('start')
+logging-platform.controller.ts,,AUTH,  @Post()
+logging-platform.controller.ts,,AUTH,  @Post()
+logging-platform.controller.ts,'search',AUTH,  @Post()
+logging-platform.controller.ts,,AUTH,  @Post()
+logging-platform.controller.ts,'error-groups',AUTH,  @Post()
+logging-platform.controller.ts,,AUTH,  @Post()
+logging-platform.controller.ts,'export',AUTH,  @Post()
+logging-platform.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,':id/status',AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,':id/timeline',AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,'metrics',AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,':id',AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+incident-management.controller.ts,':id/postmortem',AUTH,  @Post()
+incident-management.controller.ts,,AUTH,  @Post()
+commercial.controller.ts,'rate-cards',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'quotes/:customerId',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'quotes/:id/submit',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'quotes/:id/convert',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'contracts',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'contracts/:id/activate',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'tenders',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'tenders/:tenderId/bids',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'tenders/:tenderId/award/:bidId',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'analytics/trip/:tripId/profitability',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'analytics/customer/:customerId/profitability',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+commercial.controller.ts,'analytics/customer/:customerId/sla',AUTH,  @Post('rate-cards')
+commercial.controller.ts,,AUTH,  @Post('rate-cards')
+search.controller.ts,,AUTH,
+exports.controller.ts,,AUTH,
+exports.controller.ts,,AUTH,
+exports.controller.ts,,AUTH,
+exports.controller.ts,,AUTH,
+dashboard.controller.ts,'ceo',AUTH,
+dashboard.controller.ts,'kpis',AUTH,
+dashboard.controller.ts,'vehicles',AUTH,
+dashboard.controller.ts,'alerts',AUTH,
+dashboard.controller.ts,'ai/recommendations',AUTH,
+dashboard.controller.ts,'shipments',AUTH,
+orders.controller.ts,,AUTH,
+dashboard-builder.controller.ts,,AUTH,
+dashboard-builder.controller.ts,,AUTH,
+dashboard-builder.controller.ts,':id',AUTH,
+dashboard-builder.controller.ts,':id/widgets',AUTH,
+dashboard-builder.controller.ts,':id/widgets/layout',AUTH,
+dashboard-builder.controller.ts,':id/widgets/:widgetId',AUTH,
+settings.controller.ts,'organization',AUTH,
+integrations.controller.ts,'configure',AUTH,  @Post('configure')
+integrations.controller.ts,,AUTH,  @Post('configure')
+integrations.controller.ts,'sync',AUTH,  @Post('configure')
+integrations.controller.ts,,AUTH,  @Post('configure')
+integrations.controller.ts,,AUTH,  @Post('configure')
+integrations.controller.ts,,AUTH,  @Post('configure')
+webhook.controller.ts,'incoming/:provider/:connectionId',AUTH,
+gateway.controller.ts,'health',AUTH,
+gateway.controller.ts,'loads',AUTH,
+driver-expenses.controller.ts,,AUTH,
+driver-expenses.controller.ts,,AUTH,
+driver-expenses.controller.ts,'trips/:id',AUTH,
+driver-expenses.controller.ts,,AUTH,
+driver-telemetry.controller.ts,'location',AUTH,
+driver-telemetry.controller.ts,,AUTH,
+driver-trips.controller.ts,'active',AUTH,
+driver-trips.controller.ts,,AUTH,
+driver-trips.controller.ts,':id/status',AUTH,
+driver-trips.controller.ts,,AUTH,
+driver-checklists.controller.ts,'trips/:id',AUTH,
+driver-checklists.controller.ts,,AUTH,
+portals.controller.ts,'support-tickets',AUTH,  @Post('support-tickets')
+portals.controller.ts,,AUTH,  @Post('support-tickets')
+portals.controller.ts,'support-tickets',AUTH,  @Post('support-tickets')
+portals.controller.ts,,AUTH,  @Post('support-tickets')
+portals.controller.ts,'leave-requests',AUTH,  @Post('support-tickets')
+portals.controller.ts,,AUTH,  @Post('support-tickets')
+portals.controller.ts,'leave-requests',AUTH,  @Post('support-tickets')
+portals.controller.ts,,AUTH,  @Post('support-tickets')
+customer-loads.controller.ts,'active',AUTH,
+customer-loads.controller.ts,,AUTH,
+customer-loads.controller.ts,'history',AUTH,
+customer-loads.controller.ts,,AUTH,
+customer-tracking.controller.ts,':loadId',AUTH,
+customer-tracking.controller.ts,,AUTH,
+customer-finance.controller.ts,'invoices',AUTH,
+customer-finance.controller.ts,,AUTH,
+customer-finance.controller.ts,'summary',AUTH,
+customer-finance.controller.ts,,AUTH,
+customer-analytics.controller.ts,'kpis',AUTH,
+customer-analytics.controller.ts,,AUTH,
+vendor-settlements.controller.ts,'bills',AUTH,
+vendor-settlements.controller.ts,,AUTH,
+vendor-settlements.controller.ts,'kpis',AUTH,
+vendor-settlements.controller.ts,,AUTH,
+vendor-marketplace.controller.ts,'tenders',AUTH,
+vendor-marketplace.controller.ts,,AUTH,
+vendor-marketplace.controller.ts,'tenders/:id/bid',AUTH,
+vendor-marketplace.controller.ts,,AUTH,
+vendor-operations.controller.ts,'assigned',AUTH,
+vendor-operations.controller.ts,,AUTH,
+vendor-operations.controller.ts,'assigned/:id/pod',AUTH,
+vendor-operations.controller.ts,,AUTH,
+claims.controller.ts,,AUTH,  @Post()
+claims.controller.ts,,AUTH,  @Post()
+claims.controller.ts,,AUTH,  @Post()
+claims.controller.ts,,AUTH,  @Post()
+claims.controller.ts,':id',AUTH,  @Post()
+claims.controller.ts,,AUTH,  @Post()
+claims.controller.ts,':id/status',AUTH,  @Post()
+claims.controller.ts,,AUTH,  @Post()
+iam.controller.ts,'api-keys',AUTH,
+iam.controller.ts,'api-keys/:id',AUTH,
+iam.controller.ts,'oauth-clients',AUTH,
+iam.controller.ts,'pats',AUTH,
+iam.controller.ts,'pats/:id',AUTH,
+iam.controller.ts,'oauth/token',AUTH,
+fastag-wallet.controller.ts,,AUTH,
+fastag-wallet.controller.ts,,AUTH,
+fastag-wallet.controller.ts,':id',AUTH,
+fastag-wallet.controller.ts,':id',AUTH,
+fastag-wallet.controller.ts,':id',AUTH,
+support.controller.ts,'ticket',AUTH,
+simulator.controller.ts,'start',AUTH,
+simulator.controller.ts,,AUTH,
+sandbox.controller.ts,'generate-mock-data',AUTH,
+mobile.controller.ts,'trips/active',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+mobile.controller.ts,'trips/:id/status',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+mobile.controller.ts,'loads/:id/status',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+mobile.controller.ts,'location',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+mobile.controller.ts,'sync',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+mobile.controller.ts,'upload/:type',AUTH,  @Get('trips/active')
+mobile.controller.ts,,AUTH,  @Get('trips/active')
+sdk.controller.ts,'generate/:language',AUTH,
+sdk.controller.ts,'download/:filename',AUTH,
+ai.controller.ts,'workflow/generate',AUTH,  @Post('workflow/generate')
+ai.controller.ts,'recommend/:domain/:id',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'interact',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'recommendation/:id/accept',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'metrics',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/sessions',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/sessions',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/sessions/:sessionId/messages',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/sessions/:sessionId/chat',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/daily-brief',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'copilot/summarize/:entityType/:entityId',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'documents/extract',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'dispatch/predict',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'workflow/execute',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'workflow/execution/:executionId/approve/:stepId',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'workflow/execution/:executionId/reject/:stepId',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'workflow/executions',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'agents',AUTH,  @Post('workflow/generate')
+ai.controller.ts,'models',AUTH,  @Post('workflow/generate')
+ai.controller.ts,'models/templates',AUTH,  @Post('workflow/generate')
+ai.controller.ts,'memory/stats',AUTH,  @Post('workflow/generate')
+ai.controller.ts,'memory/workspace',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'governance/compliance-report',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'feedback',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'report-hallucination',AUTH,  @Post('workflow/generate')
+ai.controller.ts,,AUTH,  @Post('workflow/generate')
+ai.controller.ts,'agents/:agentName/health',AUTH,  @Post('workflow/generate')
+workflow.controller.ts,'rules/simulate',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/import',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/export',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id/activate',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id/deactivate',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id/clone',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id/version',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'rules/:id/history',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'evaluate',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/definitions',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/definitions/:id/publish',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/definitions/:id/archive',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'id',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/metrics',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/definitions/:id/history',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+workflow.controller.ts,'v2/approvals/requests/:requestId/steps/:stepId',AUTH,  @Post('rules/simulate')
+workflow.controller.ts,,AUTH,  @Post('rules/simulate')
+users.controller.ts,,AUTH,  @Post()
+users.controller.ts,,AUTH,  @Post()
+users.controller.ts,,AUTH,  @Post()
+users.controller.ts,,AUTH,  @Post()
+users.controller.ts,':id',AUTH,  @Post()
+users.controller.ts,'id',AUTH,  @Post()
+users.controller.ts,':id',AUTH,  @Post()
+users.controller.ts,,AUTH,  @Post()
+users.controller.ts,':id',AUTH,  @Post()
+users.controller.ts,'id',AUTH,  @Post()
+api-platform.controller.ts,'keys',AUTH,  @Post('keys')
+api-platform.controller.ts,,AUTH,  @Post('keys')
+api-platform.controller.ts,'keys',AUTH,  @Post('keys')
+api-platform.controller.ts,,AUTH,  @Post('keys')
+api-platform.controller.ts,'webhooks',AUTH,  @Post('keys')
+api-platform.controller.ts,,AUTH,  @Post('keys')
+api-platform.controller.ts,'webhooks',AUTH,  @Post('keys')
+api-platform.controller.ts,,AUTH,  @Post('keys')
+lifecycle.controller.ts,'health',AUTH,
+lifecycle.controller.ts,'versions',AUTH,
+lifecycle.controller.ts,'changelog',AUTH,
+webhooks-v2.controller.ts,,AUTH,
+webhooks-v2.controller.ts,,AUTH,
+webhooks-v2.controller.ts,,AUTH,
+webhooks-v2.controller.ts,,AUTH,
+webhooks-v2.controller.ts,':id',AUTH,
+webhooks-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,':id',AUTH,
+loads-v2.controller.ts,'id',AUTH,
+loads-v2.controller.ts,':id',AUTH,
+loads-v2.controller.ts,,AUTH,
+loads-v2.controller.ts,':id',AUTH,
+loads-v2.controller.ts,'id',AUTH,
+tracking.controller.ts,'live',AUTH,  @Get('live')
+tracking.controller.ts,,AUTH,  @Get('live')
+tracking.controller.ts,'location',AUTH,  @Get('live')
+tracking.controller.ts,,AUTH,  @Get('live')
+enterprise-telematics.controller.ts,'telemetry',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofences',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofences',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofences/:id',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofences/:id',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofences/evaluate',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'geofence-events',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'alert-rules',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'alert-rules',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'alert-rules/:id',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'alerts',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'alerts/:id/status',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,'analytics',AUTH,  @Post('telemetry')
+enterprise-telematics.controller.ts,,AUTH,  @Post('telemetry')
+fuel.controller.ts,'cards',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+fuel.controller.ts,'cards',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+fuel.controller.ts,'stations',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+fuel.controller.ts,'stations',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+fuel.controller.ts,'transactions',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+fuel.controller.ts,'transactions',AUTH,  @Post('cards')
+fuel.controller.ts,,AUTH,  @Post('cards')
+vehicles.controller.ts,,AUTH,  @Post()
+vehicles.controller.ts,,AUTH,  @Post()
+vehicles.controller.ts,,AUTH,  @Post()
+vehicles.controller.ts,,AUTH,  @Post()
+vehicles.controller.ts,':id',AUTH,  @Post()
+vehicles.controller.ts,'id',AUTH,  @Post()
+vehicles.controller.ts,':id',AUTH,  @Post()
+vehicles.controller.ts,,AUTH,  @Post()
+vehicles.controller.ts,':id',AUTH,  @Post()
+vehicles.controller.ts,'id',AUTH,  @Post()
+permit.controller.ts,,AUTH,
+permit.controller.ts,,AUTH,
+permit.controller.ts,,AUTH,
+permit.controller.ts,,AUTH,
+permit.controller.ts,':id',AUTH,
+permit.controller.ts,'id',AUTH,
+permit.controller.ts,':id',AUTH,
+permit.controller.ts,,AUTH,
+permit.controller.ts,':id',AUTH,
+permit.controller.ts,'id',AUTH,
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,':id/install',AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,':id/rotate',AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+tyre.controller.ts,':id/scrap',AUTH,  @Post()
+tyre.controller.ts,,AUTH,  @Post()
+compliance.controller.ts,'hos-violations',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+compliance.controller.ts,'hos-violations',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+compliance.controller.ts,'dvir',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+compliance.controller.ts,'dvir',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+compliance.controller.ts,'registration/:vehicleId',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+compliance.controller.ts,'insurance/:vehicleId',AUTH,  @Post('hos-violations')
+compliance.controller.ts,,AUTH,  @Post('hos-violations')
+maintenance.controller.ts,'workshops',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'workshops',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'mechanics',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'mechanics',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'job-cards',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'job-cards',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'job-cards/:id/close',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'schedules',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+maintenance.controller.ts,'schedules',AUTH,  @Post('workshops')
+maintenance.controller.ts,,AUTH,  @Post('workshops')
+finance.controller.ts,'invoices',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+finance.controller.ts,'expenses',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+finance.controller.ts,'expenses',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+finance.controller.ts,'settlements',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+finance.controller.ts,'vendor-bills',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+finance.controller.ts,'payments',AUTH,  @Get('invoices')
+finance.controller.ts,,AUTH,  @Get('invoices')
+general-ledger.controller.ts,'entries',AUTH,
+general-ledger.controller.ts,,AUTH,
+general-ledger.controller.ts,'entries',AUTH,
+general-ledger.controller.ts,,AUTH,
+fastag.controller.ts,,AUTH,
+fastag.controller.ts,,AUTH,
+fastag.controller.ts,'sync',AUTH,
+fastag.controller.ts,,AUTH,
+bank-statement.controller.ts,,AUTH,
+bank-statement.controller.ts,,AUTH,
+bank-statement.controller.ts,':id',AUTH,
+bank-statement.controller.ts,':id',AUTH,
+bank-statement.controller.ts,':id',AUTH,
+accounts-payable.controller.ts,,AUTH,
+accounts-payable.controller.ts,,AUTH,
+accounts-payable.controller.ts,,AUTH,
+accounts-payable.controller.ts,,AUTH,
+payroll.controller.ts,,AUTH,
+payroll.controller.ts,,AUTH,
+payroll.controller.ts,':id',AUTH,
+payroll.controller.ts,':id',AUTH,
+payroll.controller.ts,':id',AUTH,
+driver-wallet.controller.ts,'balance',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+driver-wallet.controller.ts,'expenses',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+driver-wallet.controller.ts,'expenses',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+driver-wallet.controller.ts,'expenses/:id/approve',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+driver-wallet.controller.ts,'settlements/generate',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+driver-wallet.controller.ts,'settlements',AUTH,  @Get('balance')
+driver-wallet.controller.ts,,AUTH,  @Get('balance')
+invoicing.controller.ts,,AUTH,
+invoicing.controller.ts,,AUTH,
+invoicing.controller.ts,,AUTH,
+invoicing.controller.ts,,AUTH,
+maintenance.controller.ts,,AUTH,  @Post()
+maintenance.controller.ts,,AUTH,  @Post()
+maintenance.controller.ts,,AUTH,  @Post()
+maintenance.controller.ts,,AUTH,  @Post()
+maintenance.controller.ts,':id/complete',AUTH,  @Post()
+maintenance.controller.ts,,AUTH,  @Post()
+branches.controller.ts,,AUTH,  @Post()
+branches.controller.ts,,AUTH,  @Post()
+branches.controller.ts,,AUTH,  @Post()
+branches.controller.ts,,AUTH,  @Post()
+branches.controller.ts,':id',AUTH,  @Post()
+branches.controller.ts,'id',AUTH,  @Post()
+branches.controller.ts,':id',AUTH,  @Post()
+branches.controller.ts,,AUTH,  @Post()
+branches.controller.ts,':id',AUTH,  @Post()
+branches.controller.ts,'id',AUTH,  @Post()
+enterprise-document.controller.ts,'folders/tree',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'folders',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'folders/:id',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'folders/:id',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'move/:documentId',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/checkout',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/checkin',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/unlock',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/versions',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/revert/:version',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/signatures',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/signatures',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'signatures/:signatureId/sign',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'signatures/:signatureId/reject',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'signatures/:signatureId/certificate',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'compliance/requirements',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'compliance/requirements',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'compliance/requirements/:id',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'compliance/evaluate/:entityType/:entityId',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,'compliance/scan-expiring',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,':documentId/ai-classify',AUTH,  @Get('folders/tree')
+enterprise-document.controller.ts,,AUTH,  @Get('folders/tree')
+documents.controller.ts,'upload',AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,'folders',AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,'folders',AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,'loads/:loadId',AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+documents.controller.ts,'entity/:entityType/:entityId',AUTH,  @Post('upload')
+documents.controller.ts,,AUTH,  @Post('upload')
+app.controller.ts,,AUTH,
+vehicle-lifecycle.controller.ts,'status',AUTH,
+vehicle-lifecycle.controller.ts,,AUTH,
+vehicle-lifecycle.controller.ts,'onboard',AUTH,
+vehicle-lifecycle.controller.ts,,AUTH,
+iot.controller.ts,'webhook/:providerId',AUTH,
+fleet-maintenance.controller.ts,'upcoming',AUTH,
+fleet-maintenance.controller.ts,,AUTH,
+fleet-maintenance.controller.ts,'breakdown',AUTH,
+fleet-maintenance.controller.ts,,AUTH,
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,':id/topology',AUTH,  @Get()
+warehouse.controller.ts,'id',AUTH,  @Get()
+warehouse.controller.ts,'inbound/asn',AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,'inbound/:id/receive',AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,'outbound/order',AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,'outbound/:id/pick',AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,'docks/schedule',AUTH,  @Get()
+warehouse.controller.ts,,AUTH,  @Get()
+warehouse.controller.ts,':id/inventory/abc',AUTH,  @Get()
+warehouse.controller.ts,'id',AUTH,  @Get()
+data.controller.ts,'export',AUTH,  @Post('export')
+data.controller.ts,,AUTH,  @Post('export')
+data.controller.ts,'import',AUTH,  @Post('export')
+data.controller.ts,,AUTH,  @Post('export')
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,':id',AUTH,  @Post()
+trips.controller.ts,'id',AUTH,  @Post()
+trips.controller.ts,':id',AUTH,  @Post()
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,':id/loads',AUTH,  @Post()
+trips.controller.ts,,AUTH,  @Post()
+trips.controller.ts,':id',AUTH,  @Post()
+trips.controller.ts,'id',AUTH,  @Post()
+tenant.controller.ts,'onboarding/complete',AUTH,  @Post('onboarding/complete')
+tenant.controller.ts,,AUTH,  @Post('onboarding/complete')
+tenant.controller.ts,'branding/logo',AUTH,  @Post('onboarding/complete')
+tenant.controller.ts,,AUTH,  @Post('onboarding/complete')
+tenant.controller.ts,'provisioning/defaults',AUTH,  @Post('onboarding/complete')
+tenant.controller.ts,,AUTH,  @Post('onboarding/complete')
+billing.controller.ts,'plans',AUTH,  @Get('info')
+billing.controller.ts,'info',AUTH,  @Get('info')
+billing.controller.ts,,AUTH,  @Get('info')
+billing.controller.ts,'checkout',AUTH,  @Get('info')
+billing.controller.ts,,AUTH,  @Get('info')
+stripe-webhook.controller.ts,,AUTH,
+razorpay-webhook.controller.ts,,AUTH,
+companies.controller.ts,,AUTH,  @Post()
+companies.controller.ts,,AUTH,  @Post()
+companies.controller.ts,,AUTH,  @Post()
+companies.controller.ts,,AUTH,  @Post()
+companies.controller.ts,':id',AUTH,  @Post()
+companies.controller.ts,'id',AUTH,  @Post()
+companies.controller.ts,':id',AUTH,  @Post()
+companies.controller.ts,,AUTH,  @Post()
+companies.controller.ts,':id',AUTH,  @Post()
+companies.controller.ts,'id',AUTH,  @Post()
+billing.controller.ts,'rate-cards',AUTH,  @Post('rate-cards')
+billing.controller.ts,,AUTH,  @Post('rate-cards')
+billing.controller.ts,'rate-cards',AUTH,  @Post('rate-cards')
+billing.controller.ts,,AUTH,  @Post('rate-cards')
+billing.controller.ts,'invoices',AUTH,  @Post('rate-cards')
+billing.controller.ts,,AUTH,  @Post('rate-cards')
+billing.controller.ts,'invoices/:id/approve',AUTH,  @Post('rate-cards')
+billing.controller.ts,'id',AUTH,  @Post('rate-cards')
+stripe.controller.ts,'webhook',AUTH,
+localization.controller.ts,'locales',AUTH,  @Post('locales')
+localization.controller.ts,,AUTH,  @Post('locales')
+localization.controller.ts,'locales',AUTH,  @Post('locales')
+localization.controller.ts,,AUTH,  @Post('locales')
+localization.controller.ts,'translations/:localeId',AUTH,  @Post('locales')
+localization.controller.ts,,AUTH,  @Post('locales')
+localization.controller.ts,'translations/:localeCode',AUTH,  @Post('locales')
+localization.controller.ts,,AUTH,  @Post('locales')
+sse.controller.ts,,AUTH,
+notification.controller.ts,,AUTH,
+notification.controller.ts,,AUTH,
+notification.controller.ts,':id/read',AUTH,
+notification.controller.ts,,AUTH,
+notification.controller.ts,':id/unread',AUTH,
+notification.controller.ts,,AUTH,
+notification.controller.ts,':id/archive',AUTH,
+notification.controller.ts,'id',AUTH,
+notification.controller.ts,':id/pin',AUTH,
+notification.controller.ts,'id',AUTH,
+notification.controller.ts,':id/unpin',AUTH,
+notification.controller.ts,'id',AUTH,
+enterprise-notification.controller.ts,'templates',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'templates',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'templates/:id',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'templates/:id',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'dispatch',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'metrics',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+enterprise-notification.controller.ts,'retry-failed',AUTH,  @Post('templates')
+enterprise-notification.controller.ts,,AUTH,  @Post('templates')
+preferences.controller.ts,,AUTH,
+preferences.controller.ts,,AUTH,
+preferences.controller.ts,,AUTH,
+preferences.controller.ts,,AUTH,
+announcement.controller.ts,,AUTH,
+announcement.controller.ts,,AUTH,
+announcement.controller.ts,,AUTH,
+announcement.controller.ts,,AUTH,
+inbox.controller.ts,'threads',AUTH,
+inbox.controller.ts,,AUTH,
+inbox.controller.ts,'threads/:threadId/messages',AUTH,
+inbox.controller.ts,,AUTH,
+inbox.controller.ts,'threads/:threadId/messages',AUTH,
+inbox.controller.ts,,AUTH,
+analytics.controller.ts,'metrics/command-center',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'forecast/revenue',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'dashboards',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'dashboards',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'reports/export',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'kpi',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'kpi',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'custom-metrics',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'trend-reports',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'performers/top',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,'performers/bottom',AUTH,  @Get('metrics/command-center')
+analytics.controller.ts,,AUTH,  @Get('metrics/command-center')
+reports.controller.ts,'dashboard',AUTH,  @Get('dashboard')
+reports.controller.ts,,AUTH,  @Get('dashboard')
+reports.controller.ts,'customers',AUTH,  @Get('dashboard')
+reports.controller.ts,,AUTH,  @Get('dashboard')
+reports.controller.ts,'drivers',AUTH,  @Get('dashboard')
+reports.controller.ts,,AUTH,  @Get('dashboard')
+reports.controller.ts,'vehicles',AUTH,  @Get('dashboard')
+reports.controller.ts,,AUTH,  @Get('dashboard')
+yard.controller.ts,'gate/entry',AUTH,  @Post('gate/entry')
+yard.controller.ts,,AUTH,  @Post('gate/entry')
+yard.controller.ts,'gate/exit',AUTH,  @Post('gate/entry')
+yard.controller.ts,,AUTH,  @Post('gate/entry')
