@@ -456,11 +456,22 @@ export class TripsService {
         );
       }
 
-      // Assign tripId to each load
-      await tx.load.updateMany({
-        where: { id: { in: loadIds }, companyId },
+      // Assign tripId to each load atomically
+      const { count } = await tx.load.updateMany({
+        where: { 
+          id: { in: loadIds }, 
+          companyId,
+          tripId: null,
+          status: 'PENDING'
+        },
         data: { tripId: id, status: 'ASSIGNED' },
       });
+
+      if (count !== loadIds.length) {
+        throw new ConflictException(
+          'One or more loads were already assigned by a concurrent request.',
+        );
+      }
 
       const updatedTrip = await tx.trip.findFirst({
         where: { id, companyId },
