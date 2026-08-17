@@ -63,7 +63,7 @@ export class StripeController {
     }
 
     try {
-      await this.prisma.runAsSystem(async (tx) => {
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
         // Enforce Idempotency Lock
         await tx.webhookDelivery.create({
           data: {

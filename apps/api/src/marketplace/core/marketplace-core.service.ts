@@ -39,7 +39,7 @@ export class MarketplaceCoreService {
       ];
     }
 
-    const apps = await this.prisma.runAsSystem(async (tx) =>
+    const apps = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.marketplaceApp.findMany({
         where: whereClause,
         include: {
@@ -62,7 +62,7 @@ export class MarketplaceCoreService {
    * Retrieves a single app's details
    */
   async getAppDetails(appId: string) {
-    const app = await this.prisma.runAsSystem(async (tx) =>
+    const app = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.marketplaceApp.findUnique({
         where: { id: appId },
         include: {

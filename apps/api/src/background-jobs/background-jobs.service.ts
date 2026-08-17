@@ -55,7 +55,7 @@ export class BackgroundJobsService {
     progress: number,
     status: string = 'PROCESSING',
   ) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.backgroundJob.update({
         where: { id: jobId },
         data: {
@@ -70,7 +70,7 @@ export class BackgroundJobsService {
   }
 
   async completeJob(jobId: string, result: any = {}) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.backgroundJob.update({
         where: { id: jobId },
         data: {
@@ -84,7 +84,7 @@ export class BackgroundJobsService {
   }
 
   async failJob(jobId: string, error: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.backgroundJob.update({
         where: { id: jobId },
         data: {
@@ -97,7 +97,7 @@ export class BackgroundJobsService {
   }
 
   async cancelJob(jobId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.backgroundJob.update({
         where: { id: jobId },
         data: {

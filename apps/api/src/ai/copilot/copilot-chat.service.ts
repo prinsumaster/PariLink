@@ -40,7 +40,7 @@ export class AiCopilotChatService {
   }
 
   async getMessages(sessionId: string, userId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.aiChatMessage.findMany({
         where: { sessionId },
         orderBy: { createdAt: 'asc' },

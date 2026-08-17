@@ -41,7 +41,7 @@ export class GeofenceService {
     // 1. Fetch active geofences for this company
     // Optimisation: In a real system, you'd use PostGIS or Redis geospatial indexing (GEORADIUS)
     // rather than loading all geofences, but for the MVP we will filter in memory.
-    const geofences = await this.prisma.runAsSystem(async (tx) =>
+    const geofences = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.geofence.findMany({
         where: { companyId: tenantId, isActive: true },
       }),
@@ -58,7 +58,7 @@ export class GeofenceService {
       const isInsideNow = distance <= geofence.radiusMeters;
 
       // 3. Check previous state (did we already enter/exit?)
-      const lastEvent = await this.prisma.runAsSystem(async (tx) =>
+      const lastEvent = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.geofenceEvent.findFirst({
           where: { vehicleId, geofenceId: geofence.id },
           orderBy: { timestamp: 'desc' },
@@ -69,7 +69,7 @@ export class GeofenceService {
 
       if (isInsideNow && !wasInsideBefore) {
         // Trigger ENTER event
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.geofenceEvent.create({
             data: {
               companyId: tenantId,
@@ -102,7 +102,7 @@ export class GeofenceService {
           new Date(timestamp).getTime() -
           new Date(lastEvent.timestamp).getTime();
 
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.geofenceEvent.create({
             data: {
               companyId: tenantId,

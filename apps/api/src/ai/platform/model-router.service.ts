@@ -87,7 +87,7 @@ export class ModelRouterService implements OnModuleInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let configs: any[] = [];
     try {
-      configs = await this.prisma.runAsSystem(async (tx) =>
+      configs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.aiModelConfig.findMany({
           where: { isActive: true },
           orderBy: { priority: 'desc' },

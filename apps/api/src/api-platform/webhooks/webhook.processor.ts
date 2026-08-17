@@ -69,7 +69,7 @@ export class WebhookProcessor extends WorkerHost {
         });
 
         // 2. Mark Delivery Success
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.webhookDelivery.update({
             where: { id: deliveryId },
             data: {
@@ -92,7 +92,7 @@ export class WebhookProcessor extends WorkerHost {
         const isLastAttempt = job.attemptsMade >= job.opts.attempts! - 1;
         const newStatus = isLastAttempt ? 'DEAD_LETTER' : 'FAILED';
 
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.webhookDelivery.update({
             where: { id: deliveryId },
             data: {
@@ -135,7 +135,7 @@ export class WebhookProcessor extends WorkerHost {
     if (job.attemptsMade === 0) {
       // 1. Verify tenant ownership (IDOR protection for background workers)
       if (endpointId) {
-        const endpoint = await this.prisma.runAsSystem(async (tx) =>
+        const endpoint = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.webhookEndpoint.findFirst({
             where: { id: endpointId, companyId },
           }),
@@ -148,7 +148,7 @@ export class WebhookProcessor extends WorkerHost {
       }
 
       // First attempt
-      const delivery = await this.prisma.runAsSystem(async (tx) =>
+      const delivery = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.webhookDelivery.create({
           data: {
             companyId,

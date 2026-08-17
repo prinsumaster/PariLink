@@ -51,7 +51,7 @@ export class LicenseCapacityGuard implements CanActivate {
 
     if (!companyId) return true; // Auth guard handles missing user
 
-    const config = await this.prisma.runAsSystem(async (tx) =>
+    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfig.findUnique({ where: { companyId } }),
     );
 

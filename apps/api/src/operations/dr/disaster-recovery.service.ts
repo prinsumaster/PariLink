@@ -36,7 +36,7 @@ export class DisasterRecoveryService {
   ) {}
 
   async createRecoveryPlan(input: CreateDrPlanInput): Promise<unknown> {
-    const plan = await this.prisma.runAsSystem(async (tx) =>
+    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.disasterRecoveryPlan.create({
         data: {
           companyId: input.companyId,
@@ -65,13 +65,13 @@ export class DisasterRecoveryService {
   }
 
   async startDrill(input: StartDrillInput): Promise<unknown> {
-    const plan = await this.prisma.runAsSystem(async (tx) =>
+    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.disasterRecoveryPlan.findUnique({ where: { id: input.planId } }),
     );
     if (!plan || plan.companyId !== input.companyId)
       throw new NotFoundException(`DR Plan ${input.planId} not found`);
 
-    const drill = await this.prisma.runAsSystem(async (tx) =>
+    const drill = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.disasterRecoveryDrill.create({
         data: {
           planId: input.planId,

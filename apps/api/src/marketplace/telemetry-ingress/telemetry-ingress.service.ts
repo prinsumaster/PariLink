@@ -29,7 +29,7 @@ export class TelemetryIngressService {
 
     // In a real system, secretKey would be validated securely
     // For now, let's verify the installation exists
-    const installation = await this.prisma.runAsSystem(async (tx) =>
+    const installation = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.appInstallation.findUnique({
         where: {
           companyId_appId: {
@@ -54,7 +54,7 @@ export class TelemetryIngressService {
     let successCount = 0;
     for (const record of payload.records) {
       try {
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.vehicleLocation.create({
             data: {
               companyId: payload.companyId,
@@ -72,7 +72,7 @@ export class TelemetryIngressService {
         successCount++;
 
         // Push event to DomainEvent (Outbox)
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.domainEvent.create({
             data: {
               eventType: 'VehicleLocationReceived',

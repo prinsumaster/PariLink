@@ -49,7 +49,7 @@ export class IncidentManagementService {
   ) {}
 
   async createIncident(input: CreateIncidentInput): Promise<unknown> {
-    const incident = await this.prisma.runAsSystem(async (tx) =>
+    const incident = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incident.create({
         data: {
           companyId: input.companyId,
@@ -100,7 +100,7 @@ export class IncidentManagementService {
   async updateIncidentStatus(
     input: UpdateIncidentStatusInput,
   ): Promise<unknown> {
-    const incident = await this.prisma.runAsSystem(async (tx) =>
+    const incident = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incident.findUnique({ where: { id: input.incidentId } }),
     );
     if (!incident || incident.companyId !== input.companyId) {
@@ -113,7 +113,7 @@ export class IncidentManagementService {
     if (input.status === 'RESOLVED' && !incident.resolvedAt)
       data.resolvedAt = new Date();
 
-    const updated = await this.prisma.runAsSystem(async (tx) =>
+    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incident.update({ where: { id: input.incidentId }, data }),
     );
 
@@ -164,7 +164,7 @@ export class IncidentManagementService {
     metadata?: Record<string, unknown>;
     actorId?: string;
   }): Promise<unknown> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incidentTimelineEvent.create({
         data: {
           incidentId: data.incidentId,
@@ -206,7 +206,7 @@ export class IncidentManagementService {
   }
 
   async savePostmortem(input: PostmortemInput): Promise<unknown> {
-    const timeline = await this.prisma.runAsSystem(async (tx) =>
+    const timeline = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incidentTimelineEvent.findMany({
         where: { incidentId: input.incidentId },
         orderBy: { timestamp: 'asc' },
@@ -231,7 +231,7 @@ export class IncidentManagementService {
       authorId: input.authorId || null,
     };
 
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.postmortemReport.upsert({
         where: { incidentId: input.incidentId },
         update: data,

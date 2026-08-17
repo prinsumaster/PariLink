@@ -18,7 +18,7 @@ export class TenantOnboardingService {
   ) {
     this.logger.log(`Completing onboarding for company ${companyId}`);
 
-    const config = await this.prisma.runAsSystem(async (tx) => {
+    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       return tx.tenantConfiguration.upsert({
         where: { companyId },
         update: {
@@ -46,7 +46,7 @@ export class TenantOnboardingService {
   }
 
   async uploadLogo(companyId: string, logoUrl: string) {
-    return this.prisma.runAsSystem((tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { logoUrl },

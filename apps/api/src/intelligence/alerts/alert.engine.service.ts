@@ -17,7 +17,7 @@ export class AlertEngineService {
     const { tenantId, payload, timestamp } = event;
     const { vehicleId, speed, fuelLevel } = payload;
 
-    const rules = await this.prisma.runAsSystem(async (tx) =>
+    const rules = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.alertRule.findMany({
         where: { companyId: tenantId, isActive: true },
       }),

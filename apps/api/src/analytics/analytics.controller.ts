@@ -51,7 +51,7 @@ export class AnalyticsController {
     // Emits new metrics every 5 seconds
     return interval(5000).pipe(
       concatMap(async (_) => {
-        const liveActiveTrips = await this.prisma.runAsSystem((tx) =>
+        const liveActiveTrips = await this.prisma.runAsTenant(user.companyId, (tx) =>
           tx.trip.count({
             where: { companyId: user.companyId, status: 'IN_PROGRESS' },
           }),
@@ -101,7 +101,7 @@ export class AnalyticsController {
   @RequirePermissions('analytics:read')
   @ApiOperation({ summary: 'List custom dashboards' })
   getDashboards(@GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.analyticsDashboard.findMany({
         where: { companyId: user.companyId },
         include: { widgets: true },
@@ -116,7 +116,7 @@ export class AnalyticsController {
     @GetUser() user: AuthenticatedUser,
     @Body() data: Record<string, unknown>,
   ) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.analyticsDashboard.create({
         data: {
           companyId: user.companyId,

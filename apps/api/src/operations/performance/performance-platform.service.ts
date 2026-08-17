@@ -32,7 +32,7 @@ export class PerformancePlatformService {
    * Records an anomaly profile when slow queries, memory leaks, or CPU spikes occur.
    */
   async recordProfile(input: PerformanceProfileInput): Promise<unknown> {
-    const profile = await this.prisma.runAsSystem(async (tx) =>
+    const profile = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.performanceProfile.create({
         data: {
           companyId: input.companyId || null,
@@ -61,7 +61,7 @@ export class PerformancePlatformService {
    * Slow Query Detection: Scans query logs and returns slowest executing database operations.
    */
   async getSlowQueries(companyId?: string, limit = 20): Promise<unknown[]> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.performanceProfile.findMany({
         where: {
           ...(companyId ? { companyId } : {}),
@@ -115,7 +115,7 @@ export class PerformancePlatformService {
     companyId?: string,
   ): Promise<Record<string, unknown>> {
     try {
-      const execHistory = await this.prisma.runAsSystem(async (tx) =>
+      const execHistory = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.ruleExecutionHistory.findMany({
           where: companyId ? { rule: { companyId } } : {},
           orderBy: { createdAt: 'desc' },

@@ -88,7 +88,7 @@ export class EventStoreService {
   }
 
   async getStream(tenantId: string, streamId: string, fromVersion = 0) {
-    return await this.prisma.runAsSystem(async (tx) =>
+    return await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.domainEvent.findMany({
         where: { companyId: tenantId, streamId, version: { gt: fromVersion } },
         orderBy: { version: 'asc' },

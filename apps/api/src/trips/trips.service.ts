@@ -456,18 +456,17 @@ export class TripsService {
         );
       }
 
-      // Assign tripId to each load atomically
-      const { count } = await tx.load.updateMany({
-        where: { 
-          id: { in: loadIds }, 
-          companyId,
-          tripId: null,
-          status: 'PENDING'
-        },
-        data: { tripId: id, status: 'ASSIGNED' },
-      });
+      // Assign tripId to each load atomically using raw SQL to guarantee row-level lock check
+      const rowCount = await tx.$executeRaw`
+        UPDATE "Load" 
+        SET "tripId" = ${id}::uuid, status = 'ASSIGNED' 
+        WHERE id = ANY(${loadIds}::uuid[]) 
+          AND "companyId" = ${companyId}::uuid 
+          AND "tripId" IS NULL 
+          AND status = 'PENDING'
+      `;
 
-      if (count !== loadIds.length) {
+      if (rowCount !== loadIds.length) {
         throw new ConflictException(
           'One or more loads were already assigned by a concurrent request.',
         );

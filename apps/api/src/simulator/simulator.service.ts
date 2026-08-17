@@ -181,7 +181,7 @@ export class SimulatorService {
     progress: number,
     status: string = 'PROCESSING',
   ) {
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.backgroundJob.update({
         where: { id },
         data: {

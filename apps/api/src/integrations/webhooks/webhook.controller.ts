@@ -39,7 +39,7 @@ export class WebhookController {
     );
 
     // Verify connection exists
-    const connection = await this.prisma.runAsSystem(async (tx) =>
+    const connection = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.integrationConnection.findUnique({
         where: { id: connectionId },
         include: { connector: true },
@@ -54,7 +54,7 @@ export class WebhookController {
     // the provider's specific hashing logic using our ConnectionSecret.
 
     // Log Delivery
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.webhookDelivery.create({
         data: {
           companyId: connection.companyId,

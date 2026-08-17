@@ -25,7 +25,7 @@ export class FinanceAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const invoices = await this.prisma.runAsSystem(async (tx) =>
+          const invoices = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
             tx.invoice.findMany({
               where: {
                 companyId: parsed.companyId,

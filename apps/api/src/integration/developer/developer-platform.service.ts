@@ -102,7 +102,7 @@ export class DeveloperPlatformService {
   }
 
   async listApiVersions() {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiVersion.findMany({
         orderBy: { releaseDate: 'desc' },
       }),

@@ -66,7 +66,7 @@ export class AuthService {
   ) {
     const { email, password, companyName } = registerDto;
 
-    const existingUser = await this.prisma.runAsSystem(async (tx) =>
+    const existingUser = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
       }),
@@ -78,7 +78,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await this.prisma.runAsSystem(async (tx) => {
+    const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       // 1. Create company
       const company = await tx.company.create({
         data: { name: companyName, status: 'ACTIVE' },
@@ -134,7 +134,7 @@ export class AuthService {
     }
 
     // 2. Load user — use a generic error to prevent user enumeration
-    const user = await this.prisma.runAsSystem(async (tx) =>
+    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
         select: {
@@ -209,7 +209,7 @@ export class AuthService {
     let returnedDeviceIdentifier = undefined;
 
     if (loginDto.deviceIdentifier) {
-      const trustedDevice = await this.prisma.runAsSystem(async (tx) =>
+      const trustedDevice = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.trustedDevice.findFirst({
           where: {
             userId: user.id,
@@ -220,7 +220,7 @@ export class AuthService {
       );
       if (trustedDevice) {
         isTrusted = true;
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.trustedDevice.update({
             where: { id: trustedDevice.id },
             data: { lastUsedAt: new Date(), ipAddress, deviceInfo },
@@ -258,7 +258,7 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
 
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.trustedDevice.create({
             data: {
               userId: user.id,
@@ -284,7 +284,7 @@ export class AuthService {
       await this.mintTokens(user);
 
     // 6. Store hashed refresh token (never the raw token)
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.create({
         data: {
           token: refreshTokenHash,
@@ -352,7 +352,7 @@ export class AuthService {
       .update(rawToken)
       .digest('hex');
 
-    const tokenRecord = await this.prisma.runAsSystem(async (tx) =>
+    const tokenRecord = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.findUnique({
         where: { token: tokenHash },
         include: {
@@ -380,7 +380,7 @@ export class AuthService {
     if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
       if (tokenRecord) {
         // Possible token reuse attack — invalidate entire session
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.refreshToken.deleteMany({
             where: { familyId: tokenRecord.familyId },
           }),
@@ -399,7 +399,7 @@ export class AuthService {
         tokenRecord.updatedAt.getTime() > Date.now() - 15000;
 
       if (!isWithinGracePeriod) {
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.refreshToken.deleteMany({
             where: { familyId: tokenRecord.familyId },
           }),
@@ -463,7 +463,7 @@ export class AuthService {
 
     const { user } = tokenRecord;
     if (user.status !== 'ACTIVE' || user.deletedAt) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.refreshToken.deleteMany({
           where: { familyId: tokenRecord.familyId },
         }),
@@ -479,7 +479,7 @@ export class AuthService {
       refreshExpiresAt,
     } = await this.mintTokens(user);
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.update({
         where: { id: tokenRecord.id },
         data: {
@@ -500,7 +500,7 @@ export class AuthService {
     // Prune history to keep only the last 10 entries to save space
     if (newHistory.length > 10) newHistory.shift();
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.create({
         data: {
           token: refreshTokenHash,
@@ -537,7 +537,7 @@ export class AuthService {
         .update(rawToken)
         .digest('hex');
       await this.prisma
-        .runAsSystem(async (tx) =>
+        .runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.refreshToken.delete({ where: { token: tokenHash } }),
         )
         .catch(() => {}); // Already deleted — no-op
@@ -554,7 +554,7 @@ export class AuthService {
   }
 
   async logoutAllSessions(userId: string): Promise<void> {
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.deleteMany({ where: { userId } }),
     );
     this.logger.log(`All sessions revoked for user ${userId}`);
@@ -600,7 +600,7 @@ export class AuthService {
   }
 
   private async enforceSessionLimit(userId: string): Promise<void> {
-    const sessions = await this.prisma.runAsSystem(async (tx) =>
+    const sessions = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.findMany({
         where: { userId },
         orderBy: { lastActiveAt: 'asc' }, // oldest active first
@@ -612,7 +612,7 @@ export class AuthService {
         0,
         sessions.length - this.MAX_CONCURRENT_SESSIONS + 1,
       );
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.refreshToken.deleteMany({
           where: { id: { in: excess.map((s) => s.id) } },
         }),
@@ -624,7 +624,7 @@ export class AuthService {
   }
 
   async getActiveSessions(userId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.findMany({
         where: { userId },
         select: {
@@ -640,14 +640,14 @@ export class AuthService {
   }
 
   async revokeSession(userId: string, sessionId: string) {
-    const session = await this.prisma.runAsSystem(async (tx) =>
+    const session = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.findFirst({
         where: { id: sessionId, userId },
       }),
     );
     if (!session) throw new UnauthorizedException('Session not found');
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.delete({
         where: { id: sessionId },
       }),
@@ -664,7 +664,7 @@ export class AuthService {
   // ─────────────────────────────────────────────────────────────────────────
 
   async generateWebAuthnRegistrationOptions(email: string) {
-    const user = await this.prisma.runAsSystem(async (tx) =>
+    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
         include: { webAuthnCredentials: true },
@@ -705,7 +705,7 @@ export class AuthService {
     if (!expectedChallenge)
       throw new ForbiddenException('Challenge expired or not found');
 
-    const user = await this.prisma.runAsSystem(async (tx) =>
+    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
       }),
@@ -723,7 +723,7 @@ export class AuthService {
       const { credential, credentialDeviceType, credentialBackedUp } =
         verification.registrationInfo;
 
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.webAuthnCredential.create({
           data: {
             userId: user.id,
@@ -745,7 +745,7 @@ export class AuthService {
   }
 
   async generateWebAuthnAuthenticationOptions(email: string) {
-    const user = await this.prisma.runAsSystem(async (tx) =>
+    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
         include: { webAuthnCredentials: true },
@@ -784,7 +784,7 @@ export class AuthService {
     if (!expectedChallenge)
       throw new ForbiddenException('Challenge expired or not found');
 
-    const user = await this.prisma.runAsSystem(async (tx) =>
+    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: email.toLowerCase() },
         include: { webAuthnCredentials: true },
@@ -812,7 +812,7 @@ export class AuthService {
     });
 
     if (verification.verified) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.webAuthnCredential.update({
           where: { id: credential.id },
           data: {
@@ -836,7 +836,7 @@ export class AuthService {
       const { accessToken, refreshToken, refreshTokenHash, refreshExpiresAt } =
         await this.mintTokens(user);
 
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.refreshToken.create({
           data: {
             token: refreshTokenHash,
@@ -890,7 +890,7 @@ export class AuthService {
       await this.mintTokens(user);
 
     // Store hashed refresh token
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.refreshToken.create({
         data: {
           token: refreshTokenHash,

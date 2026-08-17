@@ -17,7 +17,7 @@ export class IntegrationAgent extends BaseAgent {
         'Fetch the most recent synchronization errors. Input should be {"limit": number}',
       func: async (input: string) => {
         const args = JSON.parse(input);
-        const errors = await this.prisma.runAsSystem(async (tx) =>
+        const errors = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.syncError.findMany({
             orderBy: { createdAt: 'desc' },
             take: args.limit || 5,

@@ -49,7 +49,7 @@ export class OptimizationController {
       );
     }
 
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.optimizationScenario.findMany({
         where: { id: { in: scenarioIds }, companyId: user.companyId },
         include: { recommendations: true },
@@ -62,7 +62,7 @@ export class OptimizationController {
   @RequirePermissions('dispatch:read')
   @ApiOperation({ summary: 'List all generated optimization scenarios' })
   async listScenarios(@GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.optimizationScenario.findMany({
         where: { companyId: user.companyId },
         include: { _count: { select: { recommendations: true } } },
@@ -79,7 +79,7 @@ export class OptimizationController {
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
   ) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.optimizationScenario.findUnique({
         where: { id, companyId: user.companyId },
         include: { recommendations: true },

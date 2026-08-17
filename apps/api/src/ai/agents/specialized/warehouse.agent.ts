@@ -25,7 +25,7 @@ export class WarehouseAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const items = await this.prisma.runAsSystem(async (tx) =>
+          const items = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
             tx.inventoryItem.findMany({
               where: {
                 warehouseId: parsed.warehouseId,

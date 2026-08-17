@@ -15,7 +15,7 @@ export class CustomerPromiseService {
     pickupAt: Date,
     deliveryAt: Date,
   ): Promise<void> {
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.customerPromise.upsert({
         where: { loadId },
         create: {
@@ -47,7 +47,7 @@ export class CustomerPromiseService {
 
     // When a speeding or route deviation alert is raised, flag delay risk for open loads
     if (['SPEEDING', 'DEVIATION'].includes(payload.ruleType)) {
-      const promise = await this.prisma.runAsSystem(async (tx) =>
+      const promise = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.customerPromise.findFirst({
           where: { companyId: tenantId, delayRiskScore: { lt: 1 } },
         }),
@@ -55,7 +55,7 @@ export class CustomerPromiseService {
       if (!promise) return;
 
       const newRisk = Math.min(1, promise.delayRiskScore + 0.1);
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.customerPromise.update({
           where: { id: promise.id },
           data: {

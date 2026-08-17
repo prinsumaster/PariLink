@@ -16,7 +16,7 @@ export class IoTService {
 
     // Example: Log to VehicleLocation for real-time map plotting
     if (payload.vehicleId && payload.latitude && payload.longitude) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.vehicleLocation.create({
           data: {
             companyId: 'UNKNOWN_COMPANY', // In prod, this would map from the provider settings

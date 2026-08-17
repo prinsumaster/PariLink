@@ -20,7 +20,7 @@ export class CompaniesService {
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto, userId?: string) {
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       const company = await tx.company.create({
         data: createCompanyDto,
       });
@@ -69,7 +69,7 @@ export class CompaniesService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.runAsSystem(async (tx) =>
+      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.company.findMany({
           where,
           skip,
@@ -77,14 +77,14 @@ export class CompaniesService {
           orderBy: { createdAt: 'desc' },
         }),
       ),
-      this.prisma.runAsSystem(async (tx) => tx.company.count({ where })),
+      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => tx.company.count({ where })),
     ]);
 
     return createPaginationResponse(data, total, page, limit);
   }
 
   async findOne(id: string) {
-    const company = await this.prisma.runAsSystem(async (tx) =>
+    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.company.findFirst({
         where: { id },
       }),
@@ -102,7 +102,7 @@ export class CompaniesService {
     userId?: string,
   ) {
     await this.findOne(id); // verify existence
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       const company = await tx.company.update({
         where: { id },
         data: updateCompanyDto,
@@ -131,7 +131,7 @@ export class CompaniesService {
 
   async remove(id: string, userId?: string) {
     await this.findOne(id); // verify existence
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       const company = await tx.company.update({
         where: { id },
         data: { deletedAt: new Date(), status: 'INACTIVE' },

@@ -78,7 +78,7 @@ export class OAuth2Service {
   ) {
     const secretHash = this.hashSecret(clientSecret);
 
-    const client = await this.prisma.runAsSystem(async (tx) =>
+    const client = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthClient.findFirst({
         where: { clientId, clientSecret: secretHash, isActive: true },
         include: { company: true },
@@ -114,7 +114,7 @@ export class OAuth2Service {
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthToken.create({
         data: {
           clientId: client.id,
@@ -144,7 +144,7 @@ export class OAuth2Service {
 
   async validateToken(token: string) {
     const tokenHash = this.hashSecret(token);
-    const oauthToken = await this.prisma.runAsSystem(async (tx) =>
+    const oauthToken = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthToken.findUnique({
         where: { tokenHash },
         include: { client: { include: { company: true } } },
@@ -169,7 +169,7 @@ export class OAuth2Service {
   async revokeToken(token: string) {
     const tokenHash = this.hashSecret(token);
 
-    const oauthToken = await this.prisma.runAsSystem(async (tx) =>
+    const oauthToken = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthToken.findUnique({
         where: { tokenHash },
         include: { client: true },
@@ -180,7 +180,7 @@ export class OAuth2Service {
       throw new NotFoundException('Token not found');
     }
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthToken.update({
         where: { id: oauthToken.id },
         data: { revokedAt: new Date() },

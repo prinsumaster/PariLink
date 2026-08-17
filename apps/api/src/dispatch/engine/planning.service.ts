@@ -157,7 +157,7 @@ export class PlanningService {
 
         // Persist violations
         if (result.violations.length > 0) {
-          await this.prisma.runAsSystem(async (tx) =>
+          await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
             tx.constraintViolation.createMany({
               data: result.violations.map((v) => ({
                 planId,
@@ -196,7 +196,7 @@ export class PlanningService {
     );
 
     if (scored.length > 0) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.dispatchCandidate.createMany({
           data: scored.map((c, idx) => ({
             planId,

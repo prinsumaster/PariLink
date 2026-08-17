@@ -68,7 +68,7 @@ export class FeatureToggleService implements OnModuleInit {
     const cached = await this.cache.get<boolean>(cacheKey);
     if (cached !== null) return cached;
 
-    const flag = await this.prisma.runAsSystem(async (tx) =>
+    const flag = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.featureFlag.findUnique({
         where: { companyId_key: { companyId: ctx.companyId, key: flagKey } },
       }),
@@ -99,7 +99,7 @@ export class FeatureToggleService implements OnModuleInit {
     flagKey: string,
     updatedBy: string,
   ): Promise<void> {
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.featureFlag.upsert({
         where: { companyId_key: { companyId, key: flagKey } },
         create: {

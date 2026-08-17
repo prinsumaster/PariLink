@@ -15,14 +15,14 @@ export class PreferencesController {
   @Get()
   @ApiOperation({ summary: 'Get user notification preferences' })
   async getPreferences(@GetUser() user: AuthenticatedUser) {
-    let prefs = await this.prisma.runAsSystem(async (tx) =>
+    let prefs = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.notificationPreference.findUnique({
         where: { userId: user.id },
       }),
     );
 
     if (!prefs) {
-      prefs = await this.prisma.runAsSystem(async (tx) =>
+      prefs = await this.prisma.runAsTenant(user.companyId, async (tx) =>
         tx.notificationPreference.create({
           data: {
             userId: user.id,
@@ -42,7 +42,7 @@ export class PreferencesController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: Record<string, unknown>,
   ) {
-    const prefs = await this.prisma.runAsSystem(async (tx) =>
+    const prefs = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.notificationPreference.update({
         where: { userId: user.id },
         data: {

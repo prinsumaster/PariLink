@@ -194,7 +194,7 @@ export class IamPolicyEngineService {
       return cached.permissions;
     }
 
-    const role = await this.prisma.runAsSystem(async (tx) =>
+    const role = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.role.findUnique({
         where: { id: roleId },
         select: { permissions: true },

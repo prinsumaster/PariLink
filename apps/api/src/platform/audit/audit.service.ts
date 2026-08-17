@@ -64,7 +64,7 @@ export class AuditService {
 
     // ── Hash Chain ──────────────────────────────────────────────────────
     // Retrieve the previous audit log for this tenant to link the chain.
-    const previousRecord = await this.prisma.runAsSystem(async (tx) =>
+    const previousRecord = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.auditLog.findFirst({
         where: { companyId: event.companyId },
         orderBy: { createdAt: 'desc' },
@@ -128,7 +128,7 @@ export class AuditService {
    * Returns true if the record has not been tampered with.
    */
   async verifyIntegrity(auditLogId: string): Promise<boolean> {
-    const record = await this.prisma.runAsSystem(async (tx) =>
+    const record = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.auditLog.findUnique({
         where: { id: auditLogId },
       }),
@@ -173,7 +173,7 @@ export class AuditService {
     broken: number;
     firstBrokenId: string | null;
   }> {
-    const records = await this.prisma.runAsSystem(async (tx) =>
+    const records = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.auditLog.findMany({
         where: { companyId },
         orderBy: { createdAt: 'asc' },
@@ -263,7 +263,7 @@ export class AuditService {
     };
     if (userId) where.userId = userId;
 
-    const records = await this.prisma.runAsSystem(async (tx) =>
+    const records = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.auditLog.findMany({
         where,
         orderBy: { createdAt: 'asc' },

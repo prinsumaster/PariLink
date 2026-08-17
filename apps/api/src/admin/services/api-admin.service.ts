@@ -20,7 +20,7 @@ export class ApiAdminService {
   ) {}
 
   async getApiClients(companyId: string) {
-    const keys = await this.prisma.runAsSystem(async (tx) =>
+    const keys = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiKey.findMany({
         where: { companyId },
         orderBy: { createdAt: 'desc' },
@@ -37,7 +37,7 @@ export class ApiAdminService {
       }),
     );
 
-    const config = await this.prisma.runAsSystem(async (tx) =>
+    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfig.findUnique({ where: { companyId } }),
     );
     const defaultRateLimit = config?.apiRateLimit ?? 1000;
@@ -56,7 +56,7 @@ export class ApiAdminService {
     const rawKey = `pk_${crypto.randomBytes(24).toString('hex')}`;
     const keyHash = await bcrypt.hash(rawKey, 10);
 
-    const apiKey = await this.prisma.runAsSystem(async (tx) =>
+    const apiKey = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiKey.create({
         data: {
           companyId,
@@ -69,7 +69,7 @@ export class ApiAdminService {
     );
 
     if (dto.rateLimitOverride) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.tenantConfig.upsert({
           where: { companyId },
           update: { apiRateLimit: dto.rateLimitOverride },
@@ -98,14 +98,14 @@ export class ApiAdminService {
   }
 
   async revokeApiClient(companyId: string, keyId: string, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem(async (tx) =>
+    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiKey.findFirst({
         where: { id: keyId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`API key ${keyId} not found`);
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiKey.update({
         where: { id: keyId },
         data: { isActive: false },
@@ -125,7 +125,7 @@ export class ApiAdminService {
   }
 
   async getOAuthClients(companyId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.oAuthClient.findMany({
         where: { companyId },
         orderBy: { createdAt: 'desc' },
@@ -162,7 +162,7 @@ export class ApiAdminService {
   }
 
   async getWebhookEndpoints(companyId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.webhookEndpoint.findMany({
         where: { companyId },
         orderBy: { createdAt: 'desc' },
@@ -185,7 +185,7 @@ export class ApiAdminService {
   ) {
     const secret = `whsec_${crypto.randomBytes(24).toString('hex')}`;
 
-    const endpoint = await this.prisma.runAsSystem(async (tx) =>
+    const endpoint = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.webhookEndpoint.create({
         data: {
           companyId,

@@ -19,16 +19,16 @@ export class SystemSettingsAdminService {
   ) {}
 
   private async getOrInitConfig(companyId: string) {
-    let config = await this.prisma.runAsSystem(async (tx) =>
+    let config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.findUnique({ where: { companyId } }),
     );
     if (!config) {
-      const company = await this.prisma.runAsSystem(async (tx) =>
+      const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.company.findUnique({ where: { id: companyId } }),
       );
       if (!company)
         throw new NotFoundException(`Tenant ${companyId} not found`);
-      config = await this.prisma.runAsSystem(async (tx) =>
+      config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.tenantConfiguration.create({
           data: { companyId, settings: {}, theme: {}, policies: {} },
         }),
@@ -81,7 +81,7 @@ export class SystemSettingsAdminService {
     const currentSettings = (config.settings || {}) as Record<string, any>;
     const updatedSmtp = { ...(currentSettings.smtp || {}), ...dto };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: { ...currentSettings, smtp: updatedSmtp } },
@@ -109,7 +109,7 @@ export class SystemSettingsAdminService {
     const currentSettings = (config.settings || {}) as Record<string, any>;
     const updatedStorage = { ...(currentSettings.storage || {}), ...dto };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: { ...currentSettings, storage: updatedStorage } },
@@ -137,7 +137,7 @@ export class SystemSettingsAdminService {
     const currentSettings = (config.settings || {}) as Record<string, any>;
     const updatedQueue = { ...(currentSettings.queue || {}), ...dto };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: { ...currentSettings, queue: updatedQueue } },
@@ -165,7 +165,7 @@ export class SystemSettingsAdminService {
     const currentSettings = (config.settings || {}) as Record<string, any>;
     const updatedRedis = { ...(currentSettings.redis || {}), ...dto };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: { ...currentSettings, redis: updatedRedis } },
@@ -193,7 +193,7 @@ export class SystemSettingsAdminService {
     const currentSettings = (config.settings || {}) as Record<string, any>;
     const updatedCdn = { ...(currentSettings.cdn || {}), ...dto };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: { ...currentSettings, cdn: updatedCdn } },
@@ -224,7 +224,7 @@ export class SystemSettingsAdminService {
       ...dto,
     };
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: {

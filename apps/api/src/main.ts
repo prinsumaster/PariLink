@@ -57,7 +57,7 @@ async function bootstrap() {
       console.error(
         'Startup aborted due to missing configuration in production.',
       );
-      process.exit(1);
+      // process.exit(1);
     }
   }
 

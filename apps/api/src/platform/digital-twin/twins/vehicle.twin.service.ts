@@ -37,7 +37,7 @@ export class VehicleTwinService {
     const { tenantId, payload } = event;
     const { streamId, data, version } = payload;
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.vehicleTelemetry.create({
         data: {
           companyId: tenantId,
@@ -82,7 +82,7 @@ export class VehicleTwinService {
     partialState: Record<string, unknown>,
   ) {
     // Upsert the snapshot
-    const existing = await this.prisma.runAsSystem(async (tx) =>
+    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.twinSnapshot.findUnique({
         where: { twinId_twinType: { twinId, twinType: 'VEHICLE' } },
       }),
@@ -92,7 +92,7 @@ export class VehicleTwinService {
       ? { ...(existing.state as Record<string, unknown>), ...partialState }
       : partialState;
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.twinSnapshot.upsert({
         where: { twinId_twinType: { twinId, twinType: 'VEHICLE' } },
         create: {

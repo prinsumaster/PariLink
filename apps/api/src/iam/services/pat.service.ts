@@ -73,7 +73,7 @@ export class PatService {
   async validatePat(rawToken: string) {
     const tokenHash = this.hashToken(rawToken);
 
-    const pat = await this.prisma.runAsSystem(async (tx) =>
+    const pat = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.personalAccessToken.findFirst({
         where: { tokenHash, revokedAt: null },
         include: { user: true, company: true },
@@ -90,7 +90,7 @@ export class PatService {
 
     // Update lastUsed asynchronously
     this.prisma
-      .runAsSystem(async (tx) =>
+      .runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.personalAccessToken.update({
           where: { id: pat.id },
           data: { lastUsedAt: new Date() },

@@ -13,7 +13,7 @@ export class BillingService {
   ) {}
 
   async getSubscriptionPlans() {
-    return this.prisma.runAsSystem((tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
       tx.subscriptionPlan.findMany({
         orderBy: { price: 'asc' },
       }),
@@ -21,7 +21,7 @@ export class BillingService {
   }
 
   async getCompanyBillingInfo(companyId: string) {
-    const company = await this.prisma.runAsSystem((tx) =>
+    const company = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
       tx.company.findUnique({
         where: { id: companyId },
         include: { subscriptionPlan: true },
@@ -39,13 +39,13 @@ export class BillingService {
     successUrl: string,
     cancelUrl: string,
   ) {
-    const company = await this.prisma.runAsSystem((tx) =>
+    const company = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
 
     if (!company) throw new NotFoundException('Company not found');
 
-    const plan = await this.prisma.runAsSystem((tx) =>
+    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
       tx.subscriptionPlan.findUnique({ where: { id: planId } }),
     );
 
@@ -58,7 +58,7 @@ export class BillingService {
     let customerId = company.stripeCustomerId;
     if (!customerId) {
       customerId = 'mock_stripe_cus_' + companyId;
-      await this.prisma.runAsSystem((tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
         tx.company.update({
           where: { id: companyId },
           data: { stripeCustomerId: customerId },
@@ -73,7 +73,7 @@ export class BillingService {
   async handleWebhook(event: any) {
     this.logger.log(`Handling stripe webhook: ${event.type}`);
     try {
-      await this.prisma.runAsSystem(async (tx) => {
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
         // Idempotency Check: Insert WebhookDelivery using event.id as primary key
         // If the event was already processed, Prisma will throw a P2002 Unique Constraint violation
         await tx.webhookDelivery.create({
@@ -130,7 +130,7 @@ export class BillingService {
         .digest('hex');
 
     try {
-      await this.prisma.runAsSystem(async (tx) => {
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
         // Idempotency Check: Insert WebhookDelivery using uniqueId as primary key
         await tx.webhookDelivery.create({
           data: {

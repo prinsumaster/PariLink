@@ -121,7 +121,7 @@ export class EnterpriseRagService {
 
     let chunks: any[] = [];
     try {
-      chunks = await this.prisma.runAsSystem(async (tx) =>
+      chunks = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.knowledgeChunk.findMany({
           where: whereClause,
           include: { document: true },

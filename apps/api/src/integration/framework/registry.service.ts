@@ -21,7 +21,7 @@ export class ConnectorRegistryService implements OnModuleInit {
     this.connectors.set(connector.providerName, connector);
 
     // Upsert into DB to keep the Marketplace catalogue updated (Fire and forget to not block startup)
-    this.prisma.runAsSystem(async (tx) =>
+    this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.integrationConnector.upsert({
         where: { provider: connector.providerName },
         update: {
@@ -54,7 +54,7 @@ export class ConnectorRegistryService implements OnModuleInit {
    * Lists all available connectors from the Registry
    */
   async listAvailableConnectors() {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.integrationConnector.findMany({
         where: { status: 'ACTIVE' },
       }),

@@ -21,7 +21,7 @@ export class ExecutionService {
 
     // In a real DAG, we would identify root nodes and execute them.
     // For MVP, we fetch PENDING steps and execute them sequentially or in parallel based on graph dependencies.
-    const steps = await this.prisma.runAsSystem(async (tx) =>
+    const steps = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.workflowExecutionStep.findMany({
         where: { executionId, status: 'PENDING' },
         orderBy: { executedAt: 'asc' }, // Simplified execution order
@@ -37,7 +37,7 @@ export class ExecutionService {
    * Executes a single step using the assigned Digital Worker
    */
   private async executeStep(stepId: string) {
-    const step = await this.prisma.runAsSystem(async (tx) =>
+    const step = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.workflowExecutionStep.findUnique({
         where: { id: stepId },
         include: { execution: true },
@@ -54,7 +54,7 @@ export class ExecutionService {
 
       const outputs = await worker.executeTask(step.nodeId, step.inputs);
 
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.workflowExecutionStep.update({
           where: { id: stepId },
           data: { status: 'SUCCESS', outputs },
@@ -84,7 +84,7 @@ export class ExecutionService {
       this.logger.warn(
         `Retrying step ${step.nodeId} (Attempt ${step.retryCount + 1})`,
       );
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.workflowExecutionStep.update({
           where: { id: step.id },
           data: { retryCount: step.retryCount + 1, error: errorMessage },
@@ -98,7 +98,7 @@ export class ExecutionService {
     this.logger.error(
       `Max retries reached for step ${step.nodeId}. Initiating Rollback.`,
     );
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.workflowExecutionStep.update({
         where: { id: step.id },
         data: { status: 'FAILED', error: errorMessage },
@@ -118,7 +118,7 @@ export class ExecutionService {
     }
 
     // Fail the entire execution
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.workflowExecution.update({
         where: { id: step.executionId },
         data: { status: 'FAILED', error: errorMessage },

@@ -22,7 +22,7 @@ export class OccController {
   @RequirePermissions('occ:read')
   @ApiOperation({ summary: 'Get Live Fleet Map data (Twin Snapshots)' })
   async getLiveFleetMap(@GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.twinSnapshot.findMany({
         where: { companyId: user.companyId, twinType: 'VEHICLE' },
         select: {
@@ -42,7 +42,7 @@ export class OccController {
     @GetUser() user: AuthenticatedUser,
     @Param('twinId') twinId: string,
   ) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.domainEvent.findMany({
         where: { companyId: user.companyId, streamId: twinId },
         orderBy: { version: 'desc' },

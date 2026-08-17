@@ -19,7 +19,7 @@ export class WebhookService {
     this.logger.log(`Dispatching event ${eventType} for company ${companyId}`);
 
     // Find all active apps for this company
-    const installations = await this.prisma.runAsSystem(async (tx) =>
+    const installations = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.appInstallation.findMany({
         where: {
           companyId,
@@ -35,7 +35,7 @@ export class WebhookService {
 
     for (const installation of installations) {
       // Find webhooks registered by this app
-      const webhooks = await this.prisma.runAsSystem(async (tx) =>
+      const webhooks = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.marketplaceWebhook.findMany({
           where: {
             appId: installation.appId,

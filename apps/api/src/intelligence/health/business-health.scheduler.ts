@@ -21,7 +21,7 @@ export class BusinessHealthScheduler {
 
     // In a real multi-tenant app, we'd loop through all active tenants.
     // For MVP/Demo purposes, we find distinct companies with active operations.
-    const companies = await this.prisma.runAsSystem(async (tx) =>
+    const companies = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.company.findMany({
         take: 10, // Process top 10 for demo scale
       }),

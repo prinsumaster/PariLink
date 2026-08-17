@@ -118,7 +118,7 @@ export class OperationsDashboardService {
   }
 
   private async getActiveIncidents(companyId?: string): Promise<unknown[]> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.incident.findMany({
         where: {
           ...(companyId ? { companyId } : {}),
@@ -131,7 +131,7 @@ export class OperationsDashboardService {
   }
 
   private async getCurrentAlerts(companyId?: string): Promise<unknown[]> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.alert.findMany({
         where: {
           ...(companyId ? { companyId } : {}),
@@ -149,7 +149,7 @@ export class OperationsDashboardService {
     { companyId: string; companyName: string; requestCount: number }[]
   > {
     try {
-      const logs = await this.prisma.runAsSystem(async (tx) =>
+      const logs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.apiAnalyticsLog.groupBy({
           by: ['companyId'],
           where: {
@@ -169,7 +169,7 @@ export class OperationsDashboardService {
       }[] = [];
       for (const item of logs) {
         if (!item.companyId) continue;
-        const comp = await this.prisma.runAsSystem(async (tx) =>
+        const comp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.company.findUnique({ where: { id: item.companyId as string } }),
         );
         results.push({
@@ -203,7 +203,7 @@ export class OperationsDashboardService {
 
   private async getActiveSecurityLocks(companyId?: string): Promise<number> {
     try {
-      const locks = await this.prisma.runAsSystem(async (tx) =>
+      const locks = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.auditLog.count({
           where: {
             ...(companyId ? { companyId } : {}),

@@ -52,7 +52,7 @@ export class OperationsScheduler {
       );
 
       if (unhealthyComps.length > 0) {
-        const company = await this.prisma.runAsSystem(async (tx) =>
+        const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.company.findFirst({ where: { status: 'ACTIVE' } }),
         );
         if (company) {
@@ -137,10 +137,10 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_30_SECONDS)
   async monitorQueueDepth(): Promise<void> {
     try {
-      const failedJobs = await this.prisma.runAsSystem(async (tx) =>
+      const failedJobs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.backgroundJob.count({ where: { status: 'FAILED' } }),
       );
-      const pendingJobs = await this.prisma.runAsSystem(async (tx) =>
+      const pendingJobs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.backgroundJob.count({ where: { status: 'PENDING' } }),
       );
 
@@ -163,7 +163,7 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async detectSlowEndpoints(): Promise<void> {
     try {
-      const slowLogs = await this.prisma.runAsSystem(async (tx) =>
+      const slowLogs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.apiAnalyticsLog.findMany({
           where: {
             latencyMs: { gte: 3000 }, // > 3 seconds
@@ -211,10 +211,10 @@ export class OperationsScheduler {
     try {
       const window = new Date(Date.now() - 300000); // 5 minutes
       const [total, errors] = await Promise.all([
-        this.prisma.runAsSystem(async (tx) =>
+        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.apiAnalyticsLog.count({ where: { timestamp: { gte: window } } }),
         ),
-        this.prisma.runAsSystem(async (tx) =>
+        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.apiAnalyticsLog.count({
             where: { timestamp: { gte: window }, statusCode: { gte: 500 } },
           }),
@@ -253,7 +253,7 @@ export class OperationsScheduler {
       '[Backup Scheduler] Starting daily automated database backups...',
     );
     try {
-      const companies = await this.prisma.runAsSystem(async (tx) =>
+      const companies = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.company.findMany({ where: { status: 'ACTIVE' }, take: 50 }),
       );
 
@@ -322,7 +322,7 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async expireMaintenanceWindows(): Promise<void> {
     try {
-      const expired = await this.prisma.runAsSystem(async (tx) =>
+      const expired = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.maintenanceWindow.updateMany({
           where: { isActive: true, endTime: { lt: new Date() } },
           data: { isActive: false },

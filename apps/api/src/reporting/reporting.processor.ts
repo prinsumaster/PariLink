@@ -32,7 +32,7 @@ export class ReportingProcessor extends WorkerHost {
       );
 
       // 2. Fetch data based on template type (Mocked for integration)
-      const template = await this.prisma.runAsSystem(async (tx) =>
+      const template = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.reportTemplate.findUnique({ where: { id: templateId } }),
       );
 

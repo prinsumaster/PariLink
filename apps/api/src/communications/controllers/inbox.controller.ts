@@ -19,7 +19,7 @@ export class InboxController {
   @Get('threads')
   @ApiOperation({ summary: 'Get user inbox threads' })
   async getThreads(@GetUser() user: AuthenticatedUser) {
-    const threads = await this.prisma.runAsSystem(async (tx) =>
+    const threads = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.inboxThread.findMany({
         where: { participantIds: { has: user.id } },
         include: {
@@ -50,7 +50,7 @@ export class InboxController {
       throw new NotFoundException('Thread not found or access denied');
     }
 
-    const messages = await this.prisma.runAsSystem(async (tx) =>
+    const messages = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.inboxMessage.findMany({
         where: { threadId },
         orderBy: { createdAt: 'asc' },
@@ -75,7 +75,7 @@ export class InboxController {
       throw new NotFoundException('Thread not found or access denied');
     }
 
-    const message = await this.prisma.runAsSystem(async (tx) =>
+    const message = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.inboxMessage.create({
         data: {
           threadId,
@@ -86,7 +86,7 @@ export class InboxController {
       }),
     );
 
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.inboxThread.update({
         where: { id: threadId },
         data: { updatedAt: new Date() },

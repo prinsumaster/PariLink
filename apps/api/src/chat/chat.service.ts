@@ -119,7 +119,7 @@ export class ChatService {
     );
 
     // Update last read
-    await this.prisma.runAsSystem(async (tx) =>
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.chatChannelMember.upsert({
         where: { channelId_userId: { channelId, userId } },
         update: { lastReadAt: new Date() },
@@ -159,7 +159,7 @@ export class ChatService {
 
     // Create notifications for mentioned users
     if (mentions.length > 0) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.notification.createMany({
           data: mentions.map((mentionedUserId) => ({
             companyId,
@@ -225,7 +225,7 @@ export class ChatService {
   }
 
   async addReaction(userId: string, messageId: string, emoji: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.messageReaction.upsert({
         where: { messageId_userId_emoji: { messageId, userId, emoji } },
         update: {},
@@ -235,7 +235,7 @@ export class ChatService {
   }
 
   async removeReaction(userId: string, messageId: string, emoji: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.messageReaction.deleteMany({
         where: { messageId, userId, emoji },
       }),
@@ -243,7 +243,7 @@ export class ChatService {
   }
 
   async joinChannel(userId: string, channelId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.chatChannelMember.upsert({
         where: { channelId_userId: { channelId, userId } },
         update: {},

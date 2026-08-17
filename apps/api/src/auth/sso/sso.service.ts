@@ -31,7 +31,7 @@ export class SsoService {
   // ---------------------------------------------------------
 
   async listProviders(companyId: string) {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.identityProvider.findMany({
         where: { companyId },
       }),
@@ -39,7 +39,7 @@ export class SsoService {
   }
 
   async createProvider(companyId: string, payload: any, adminUserId?: string) {
-    const idp = await this.prisma.runAsSystem(async (tx) =>
+    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.identityProvider.create({
         data: {
           ...payload,
@@ -67,7 +67,7 @@ export class SsoService {
     payload: any,
     adminUserId?: string,
   ) {
-    const idp = await this.prisma.runAsSystem(async (tx) =>
+    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.identityProvider.update({
         where: { id: idpId, companyId },
         data: payload,
@@ -88,7 +88,7 @@ export class SsoService {
   }
 
   async deleteProvider(companyId: string, idpId: string, adminUserId?: string) {
-    const idp = await this.prisma.runAsSystem(async (tx) =>
+    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.identityProvider.update({
         where: { id: idpId, companyId },
         data: { status: 'INACTIVE', deletedAt: new Date() },
@@ -143,7 +143,7 @@ export class SsoService {
   }
 
   private async getProvider(idpId: string) {
-    const idp = await this.prisma.runAsSystem(async (tx) =>
+    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.identityProvider.findUnique({ where: { id: idpId } }),
     );
     if (!idp || idp.status !== 'ACTIVE') {
@@ -155,7 +155,7 @@ export class SsoService {
   private async processSsoLogin(idp: any, profile: any, req: Request) {
     // profile should have { id (providerUserId), email, firstName, lastName, groups? }
     const providerUserId = profile.id;
-    let userIdentity = await this.prisma.runAsSystem(async (tx) =>
+    let userIdentity = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.userIdentity.findUnique({
         where: {
           identityProviderId_providerUserId: {
@@ -171,7 +171,7 @@ export class SsoService {
 
     if (!userIdentity) {
       // Identity doesn't exist. Check if user with email exists.
-      user = await this.prisma.runAsSystem(async (tx) =>
+      user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.user.findUnique({ where: { email: profile.email } }),
       );
 
@@ -196,7 +196,7 @@ export class SsoService {
         }
 
         // Create new user (JIT)
-        user = await this.prisma.runAsSystem(async (tx) =>
+        user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.user.create({
             data: {
               email: profile.email,
@@ -229,7 +229,7 @@ export class SsoService {
       }
 
       // Link identity
-      userIdentity = await this.prisma.runAsSystem(async (tx) =>
+      userIdentity = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.userIdentity.create({
           data: {
             userId: user.id,
@@ -248,7 +248,7 @@ export class SsoService {
 
       // Update profile data in background
       this.prisma
-        .runAsSystem(async (tx) =>
+        .runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.userIdentity.update({
             where: { id: userIdentity?.id || '' },
             data: { profileData: profile, updatedAt: new Date() },
@@ -270,7 +270,7 @@ export class SsoService {
         if (mapping[group]) {
           const newRoleId = mapping[group];
           if (user.roleId !== newRoleId) {
-            await this.prisma.runAsSystem(async (tx) =>
+            await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
               tx.user.update({
                 where: { id: user.id },
                 data: { roleId: newRoleId },
@@ -288,7 +288,7 @@ export class SsoService {
 
     // Record SSO session
     if (profile.sessionId) {
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.ssoSession.upsert({
           where: {
             identityProviderId_sessionId: {
@@ -330,7 +330,7 @@ export class SsoService {
     details: any,
   ) {
     await this.prisma
-      .runAsSystem(async (tx) =>
+      .runAsSystem('System operation or legacy bypass', async (tx) =>
         this.auditService.logEvent(
           {
             companyId,

@@ -34,7 +34,7 @@ export class NotificationController {
     if (status === 'unread') whereClause.isRead = false;
     if (status === 'archived') whereClause.isArchived = true;
 
-    const notifications = await this.prisma.runAsSystem(async (tx) =>
+    const notifications = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.notification.findMany({
         where: whereClause,
         orderBy: { createdAt: 'desc' },
@@ -65,7 +65,7 @@ export class NotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    const updated = await this.prisma.runAsSystem(async (tx) => {
+    const updated = await this.prisma.runAsTenant(user.companyId, async (tx) => {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
@@ -86,7 +86,7 @@ export class NotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsTenant(user.companyId, async (tx) => {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
@@ -101,7 +101,7 @@ export class NotificationController {
   @Post(':id/archive')
   @ApiOperation({ summary: 'Archive a notification' })
   async archive(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsTenant(user.companyId, async (tx) => {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
@@ -116,7 +116,7 @@ export class NotificationController {
   @Post(':id/pin')
   @ApiOperation({ summary: 'Pin a notification' })
   async pin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsTenant(user.companyId, async (tx) => {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
@@ -131,7 +131,7 @@ export class NotificationController {
   @Post(':id/unpin')
   @ApiOperation({ summary: 'Unpin a notification' })
   async unpin(@Param('id') id: string, @GetUser() user: AuthenticatedUser) {
-    return this.prisma.runAsSystem(async (tx) => {
+    return this.prisma.runAsTenant(user.companyId, async (tx) => {
       const existing = await tx.notification.findUnique({
         where: { id },
       });

@@ -21,7 +21,7 @@ export class EnterpriseIntegrationHubService {
   ) {}
 
   async getCatalog() {
-    const dbConnectors = await this.prisma.runAsSystem(async (tx) =>
+    const dbConnectors = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.integrationConnector.findMany({
         where: { status: 'ACTIVE' },
         include: { category: true },

@@ -65,13 +65,13 @@ export class AlertEngineService {
 
     let ruleId = input.ruleId;
     if (!ruleId) {
-      let rule = await this.prisma.runAsSystem(async (tx) =>
+      let rule = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.alertRule.findFirst({
           where: { companyId: input.companyId, type: input.type },
         }),
       );
       if (!rule) {
-        rule = await this.prisma.runAsSystem(async (tx) =>
+        rule = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.alertRule.create({
             data: {
               companyId: input.companyId,
@@ -88,7 +88,7 @@ export class AlertEngineService {
       ruleId = rule.id;
     }
 
-    const alert = await this.prisma.runAsSystem(async (tx) =>
+    const alert = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.alert.create({
         data: {
           companyId: input.companyId,
@@ -248,7 +248,7 @@ export class AlertEngineService {
     endTime: Date;
     affectedServices: string[];
   }): Promise<unknown> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.maintenanceWindow.create({
         data: {
           companyId: data.companyId,
@@ -269,7 +269,7 @@ export class AlertEngineService {
     severity: string;
     steps: Record<string, unknown>[];
   }): Promise<unknown> {
-    return this.prisma.runAsSystem(async (tx) =>
+    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.alertEscalationPolicy.create({
         data: {
           companyId: data.companyId,

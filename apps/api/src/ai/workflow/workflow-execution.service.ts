@@ -392,11 +392,11 @@ export class WorkflowExecutionService {
     notes?: string,
   ) {
     try {
-      const agentRecord = await this.prisma.runAsSystem(async (tx) =>
+      const agentRecord = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.aiAgent.findFirst(),
       );
       if (agentRecord) {
-        await this.prisma.runAsSystem(async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.aiInteractionLog.create({
             data: {
               agentId: agentRecord.id,

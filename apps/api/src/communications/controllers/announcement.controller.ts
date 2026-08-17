@@ -15,7 +15,7 @@ export class AnnouncementController {
   @Get()
   @ApiOperation({ summary: 'Get active company announcements' })
   async getAnnouncements(@GetUser() user: AuthenticatedUser) {
-    const announcements = await this.prisma.runAsSystem(async (tx) =>
+    const announcements = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.announcement.findMany({
         where: { companyId: user.companyId, status: 'PUBLISHED' },
         orderBy: { createdAt: 'desc' },
@@ -32,7 +32,7 @@ export class AnnouncementController {
     @Body() dto: Record<string, unknown>,
   ) {
     // Only admins would typically do this, governed by RBAC
-    const announcement = await this.prisma.runAsSystem(async (tx) =>
+    const announcement = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.announcement.create({
         data: {
           companyId: user.companyId,

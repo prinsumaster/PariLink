@@ -39,7 +39,7 @@ export class SecretsService {
   ): Promise<void> {
     const encryptedValue = this.encryption.encryptField(plaintextValue);
 
-    await this.prisma.runAsSystem(async (tx) => {
+    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
       let config = await tx.integrationConfig.findFirst({
         where: { companyId, provider },
       });
@@ -87,7 +87,7 @@ export class SecretsService {
     provider: string,
     key: string,
   ): Promise<string | null> {
-    const config = await this.prisma.runAsSystem(async (tx) =>
+    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.integrationConfig.findFirst({
         where: { companyId, provider },
       }),

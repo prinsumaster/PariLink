@@ -20,7 +20,7 @@ export class ReferenceDataService {
     const cached = await this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const data = await this.prisma.runAsSystem(async (tx) =>
+    const data = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.referenceData.findMany({
         where: { domain, isActive: true },
         orderBy: { code: 'asc' },
@@ -37,7 +37,7 @@ export class ReferenceDataService {
     const cached = await this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const data = await this.prisma.runAsSystem(async (tx) =>
+    const data = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.referenceData.findUnique({
         where: { domain_code: { domain, code } },
       }),
@@ -59,7 +59,7 @@ export class ReferenceDataService {
     name: string,
     attributes?: Record<string, any>,
   ) {
-    const result = await this.prisma.runAsSystem(async (tx) =>
+    const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.referenceData.upsert({
         where: { domain_code: { domain, code } },
         update: { name, attributes, version: { increment: 1 } },

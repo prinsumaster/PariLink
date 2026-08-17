@@ -29,7 +29,7 @@ export class DeliveryProcessor extends WorkerHost {
       `Processing delivery job ${job.id} for delivery ${deliveryId}`,
     );
 
-    const delivery = await this.prisma.runAsSystem(async (tx) =>
+    const delivery = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.notificationDelivery.findUnique({
         where: { id: deliveryId },
       }),
@@ -65,7 +65,7 @@ export class DeliveryProcessor extends WorkerHost {
         throw new Error(`Unsupported channel: ${delivery.channel}`);
       }
 
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.notificationDelivery.update({
           where: { id: delivery.id },
           data: {
@@ -85,7 +85,7 @@ export class DeliveryProcessor extends WorkerHost {
       const retryCount = delivery.retryCount + 1;
       const newStatus = retryCount >= 3 ? 'FAILED' : 'PENDING';
 
-      await this.prisma.runAsSystem(async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.notificationDelivery.update({
           where: { id: delivery.id },
           data: {

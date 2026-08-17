@@ -121,7 +121,7 @@ export class DistributedTracingService {
     events: Record<string, unknown>[];
   }): Promise<unknown> {
     try {
-      const span = await this.prisma.runAsSystem(async (tx) =>
+      const span = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.traceSpan.create({
           data: {
             traceId: data.traceId,
@@ -266,7 +266,7 @@ export class DistributedTracingService {
    * Trace Explorer: Retrieves a full trace tree by Trace ID, organizing parent-child span hierarchy.
    */
   async getTraceTree(traceId: string): Promise<TraceTree> {
-    const spans = await this.prisma.runAsSystem(async (tx) =>
+    const spans = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.traceSpan.findMany({
         where: { traceId },
         orderBy: { startTime: 'asc' },
@@ -369,7 +369,7 @@ export class DistributedTracingService {
     }
     if (filter.minDurationMs) where.durationMs = { gte: filter.minDurationMs };
 
-    const spans = await this.prisma.runAsSystem(async (tx) =>
+    const spans = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.traceSpan.findMany({
         where,
         orderBy: { startTime: 'desc' },

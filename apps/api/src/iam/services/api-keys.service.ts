@@ -75,7 +75,7 @@ export class ApiKeyService {
   async validateApiKey(rawKey: string) {
     const keyHash = this.hashKey(rawKey);
 
-    const apiKey = await this.prisma.runAsSystem(async (tx) =>
+    const apiKey = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.apiKey.findFirst({
         where: { keyHash, isActive: true },
         include: { user: true, company: true },
@@ -92,7 +92,7 @@ export class ApiKeyService {
 
     // Update lastUsed asynchronously
     this.prisma
-      .runAsSystem(async (tx) =>
+      .runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.apiKey.update({
           where: { id: apiKey.id },
           data: { lastUsed: new Date() },

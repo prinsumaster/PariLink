@@ -238,8 +238,10 @@ export class PrismaService
   /**
    * Executes a callback within a Prisma transaction that bypasses RLS policies
    * for system/admin operations across all companies.
+   * A valid reason MUST be provided for security auditing.
    */
   async runAsSystem<T>(
+    reason: string,
     callback: (
       tx: Omit<
         PrismaClient,
@@ -252,6 +254,14 @@ export class PrismaService
       >,
     ) => Promise<T>,
   ): Promise<T> {
+    if (!reason || reason.trim().length < 5) {
+      throw new Error('A valid reason must be provided to bypass RLS.');
+    }
+
+    this.logger.warn(
+      `[SECURITY_AUDIT] SYSTEM_BYPASS: Bypassing RLS. Reason: ${reason}`
+    );
+
     return this.$transaction(async (tx) => {
       // Set the PostgreSQL local configuration variable to bypass RLS
       await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
