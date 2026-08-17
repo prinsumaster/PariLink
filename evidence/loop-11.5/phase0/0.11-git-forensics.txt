@@ -1,0 +1,21 @@
+--- git forensics grep ---
+fbd4172 Merge pull request #18 from prinsumaster/infra/fix-deployment-blockers
+03b6f3d fix(infra): replace ghcr placeholder with ECR URIs; fix sed pipeline; scope RBAC away from system:masters
+fbfb701 chore(deps): bump @base-ui/react from 1.6.0 to 1.7.0
+7fa974d chore(deps): bump zod from 3.25.76 to 4.4.3
+c328ffe chore(deps): bump @react-native-voice/voice from 3.1.5 to 3.2.4
+dc6947c chore(deps-dev): bump ts-jest from 29.4.11 to 29.4.12
+6e1e53d chore(deps): bump react-native-permissions from 4.1.5 to 5.6.1
+8459c87 chore(deps): bump @tanstack/react-query from 5.101.2 to 5.101.4
+af64de6 chore(deps): bump @langchain/core from 0.1.63 to 1.2.5
+958a907 chore(deps-dev): bump prisma from 5.22.0 to 7.9.1
+eec5c3b chore(deps): bump docker/login-action from 3 to 4
+4352e63 chore(deps): bump aws-actions/configure-aws-credentials from 4 to 6
+996632b chore(deps): bump azure/setup-helm from 4 to 5
+38e57db chore(deps): bump github/codeql-action from 3 to 4
+c443f1e chore(deps): bump otplib from 11.0.1 to 13.4.1
+87cc5eb chore(deps): bump @react-navigation/native from 6.1.18 to 7.3.15
+e3c9e30 chore(deps): bump docker/metadata-action from 5 to 6
+2e995e8 chore(release): rc11 certified multi-tenant security architecture
+7fbe51c docs(release): absolute final deployment handoff and external state report
+dff1907 fix(security): final adversarial hardening - cross-domain cookies, rollback safeguards, terraform OIDC

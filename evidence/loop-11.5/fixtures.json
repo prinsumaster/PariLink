@@ -1,0 +1,68 @@
+{
+  "companies": {
+    "030ebc04-acd0-4189-b6de-92264978a5fd": {
+      "name": "Company A",
+      "code": "A",
+      "users": {
+        "ADMIN": {
+          "id": "b00f61af-bd48-4d93-a4f8-7330dde3e289",
+          "email": "admin@companya.com"
+        },
+        "DISPATCHER": {
+          "id": "3f1d6afc-ed07-437c-9537-6a727999db62",
+          "email": "dispatcher@companya.com"
+        },
+        "FINANCE": {
+          "id": "77fbcc02-ba6e-408b-93a3-4fd11fbcc133",
+          "email": "finance@companya.com"
+        },
+        "DRIVER": {
+          "id": "30e8e819-94a0-447b-b518-cd76b2436cd9",
+          "email": "driver@companya.com"
+        }
+      },
+      "entities": {
+        "customerId": "859c099e-04f4-4504-8084-40c45e528830",
+        "driverId": "a2a92234-01f9-474a-b476-2d58130ed3ba",
+        "vehicleId": "cb68c236-c3f8-4e69-a19f-ccdf81d7e381",
+        "loadId": "fb4653f2-78f1-4d58-9b56-eb626cac3351",
+        "tripId": "2e986ec1-72d3-40d1-a16e-9c9b5c0bdce5",
+        "invoiceId": "9b5f9acf-d16d-41cc-a4c9-1748dbcd3fc8",
+        "paymentId": "54bce933-b2a9-4c7c-9da5-8549c2a58c28",
+        "documentId": "07afb776-9382-4174-9f38-686740c34f88"
+      }
+    },
+    "bad77312-954c-437b-a34f-2e8d0d9587c5": {
+      "name": "Company B",
+      "code": "B",
+      "users": {
+        "ADMIN": {
+          "id": "db84b742-31bb-414f-92a1-42efbd8cc00c",
+          "email": "admin@companyb.com"
+        },
+        "DISPATCHER": {
+          "id": "359e2243-38f6-4e9f-8ad8-614caa1160e6",
+          "email": "dispatcher@companyb.com"
+        },
+        "FINANCE": {
+          "id": "9bf85327-c7d4-40d9-8443-0f0e2538653f",
+          "email": "finance@companyb.com"
+        },
+        "DRIVER": {
+          "id": "6cb68628-e407-4ecb-989b-509d5a268df7",
+          "email": "driver@companyb.com"
+        }
+      },
+      "entities": {
+        "customerId": "731947e3-c628-445f-bea1-8e39bb7e074b",
+        "driverId": "f0d3afe7-bad3-4e75-b06a-3d1cdd061963",
+        "vehicleId": "f8c93619-09c7-43bf-a3a5-6d80435927be",
+        "loadId": "80df8a33-4ce5-43e9-9ca9-fc31335dd3e0",
+        "tripId": "84ef36ac-c6f7-4ccb-bf4b-0138e339b039",
+        "invoiceId": "4b6f867b-10fe-43e3-8a2c-7a4d920c50a0",
+        "paymentId": "dd0b8f53-fcd7-425d-afd3-74c83e924dd6",
+        "documentId": "da4ef486-1ea3-4fe6-94c0-04ac51b83d6a"
+      }
+    }
+  }
+}

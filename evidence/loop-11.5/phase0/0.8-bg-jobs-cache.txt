@@ -1,0 +1,393 @@
+--- Queues ---
+apps/api/test/business-workflows.e2e-spec.ts:5:// Mock BullMQ completely so it doesn't crash ioredis-mock with Lua scripts
+apps/api/test/business-workflows.e2e-spec.ts:6:jest.mock('bullmq', () => ({
+apps/api/test/business-workflows.e2e-spec.ts:7:  Queue: class Queue {
+apps/api/test/business-workflows.e2e-spec.ts:22:  QueueEvents: class QueueEvents {
+apps/api/test/finops-orchestrator.e2e-spec.ts:8:// Mock BullMQ completely so it doesn't crash ioredis-mock with Lua scripts
+apps/api/test/finops-orchestrator.e2e-spec.ts:9:jest.mock('bullmq', () => ({
+apps/api/test/finops-orchestrator.e2e-spec.ts:10:  Queue: class Queue {
+apps/api/test/finops-orchestrator.e2e-spec.ts:25:  QueueEvents: class QueueEvents {
+apps/api/src/reporting/reporting.module.ts:2:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/reporting/reporting.module.ts:5:import { ReportingProcessor } from './reporting.processor';
+apps/api/src/reporting/reporting.module.ts:13:    BullModule.registerQueue({
+apps/api/src/reporting/reporting.module.ts:24:  providers: [ReportingService, ...(process.env.RUN_WORKERS === 'true' ? [ReportingProcessor] : [])],
+apps/api/src/reporting/reporting.controller.ts:48:  async createSchedule(@Req() req: any, @Body() dto: any) {
+apps/api/src/reporting/reporting.controller.ts:49:    return this.reportingService.createSchedule(
+apps/api/src/reporting/reporting.processor.ts:2:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/reporting/reporting.processor.ts:3:import { Job } from 'bullmq';
+apps/api/src/reporting/reporting.processor.ts:8:@Processor('reporting-queue', { concurrency: 5 })
+apps/api/src/reporting/reporting.processor.ts:9:export class ReportingProcessor extends WorkerHost {
+apps/api/src/reporting/reporting.processor.ts:10:  private readonly logger = new Logger(ReportingProcessor.name);
+apps/api/src/reporting/reporting.service.ts:4:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/reporting/reporting.service.ts:5:import { Queue } from 'bullmq';
+apps/api/src/reporting/reporting.service.ts:17:    @InjectQueue('reporting-queue') private readonly reportingQueue: Queue,
+apps/api/src/reporting/reporting.service.ts:69:  async createSchedule(companyId: string, data: any, userId: string) {
+apps/api/src/reporting/reporting.service.ts:76:      const schedule = await tx.reportSchedule.create({
+apps/api/src/reporting/reporting.service.ts:90:          entityType: 'ReportSchedule',
+apps/api/src/reporting/reporting.service.ts:107:        eventType: 'ReportScheduleCreated',
+apps/api/src/reporting/reporting.service.ts:150:    // Offload to BullMQ for PDF/Excel generation
+apps/api/src/reporting/reporting.service.ts:151:    await this.reportingQueue.add('generate-report', {
+apps/api/src/fuel/services/fuel-management.processor.ts:1:import { Processor, Process } from '@nestjs/bull';
+apps/api/src/fuel/services/fuel-management.processor.ts:2:import type { Job } from 'bull';
+apps/api/src/fuel/services/fuel-management.processor.ts:6:@Processor('fuel-management')
+apps/api/src/fuel/services/fuel-management.processor.ts:7:export class FuelManagementProcessor {
+apps/api/src/fuel/services/fuel-management.processor.ts:8:  private readonly logger = new Logger(FuelManagementProcessor.name);
+apps/api/src/fuel/services/fuel-management.processor.ts:12:  @Process('process-fuel-transaction')
+apps/api/src/main.ts:294:  app.enableShutdownHooks(); // P1: Required for graceful BullMQ & Prisma termination
+apps/api/src/intelligence/dispatch/dispatch-ai.service.ts:3:import { Queue } from 'bullmq';
+apps/api/src/intelligence/dispatch/dispatch-ai.service.ts:4:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/intelligence/dispatch/dispatch-ai.service.ts:12:    @InjectQueue('ai-inference') private readonly aiQueue: Queue,
+apps/api/src/intelligence/dispatch/dispatch-ai.service.ts:50:    await this.aiQueue.add('dispatch-match', {
+apps/api/src/intelligence/dispatch/ai-inference.processor.ts:1:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/intelligence/dispatch/ai-inference.processor.ts:2:import { Job } from 'bullmq';
+apps/api/src/intelligence/dispatch/ai-inference.processor.ts:6:@Processor('ai-inference', { concurrency: 2 })
+apps/api/src/intelligence/dispatch/ai-inference.processor.ts:7:export class AiInferenceProcessor extends WorkerHost {
+apps/api/src/intelligence/dispatch/ai-inference.processor.ts:8:  private readonly logger = new Logger(AiInferenceProcessor.name);
+apps/api/src/intelligence/dispatch/dispatch-ai.service.spec.ts:4:import { getQueueToken } from '@nestjs/bullmq';
+apps/api/src/intelligence/dispatch/dispatch-ai.service.spec.ts:30:          provide: getQueueToken('ai-inference'),
+apps/api/src/intelligence/dispatch/dispatch-ai.module.ts:4:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/intelligence/dispatch/dispatch-ai.module.ts:5:import { AiInferenceProcessor } from './ai-inference.processor';
+apps/api/src/intelligence/dispatch/dispatch-ai.module.ts:9:    BullModule.registerQueue({
+apps/api/src/intelligence/dispatch/dispatch-ai.module.ts:14:  providers: [DispatchAiService, ...(process.env.RUN_WORKERS === 'true' ? [AiInferenceProcessor] : [])],
+apps/api/src/intelligence/health/business-health.scheduler.ts:2:import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/intelligence/health/business-health.scheduler.ts:7:export class BusinessHealthScheduler {
+apps/api/src/intelligence/health/business-health.scheduler.ts:8:  private readonly logger = new Logger(BusinessHealthScheduler.name);
+apps/api/src/intelligence/health/business-health.scheduler.ts:18:  @Cron(CronExpression.EVERY_5_MINUTES)
+apps/api/src/intelligence/health/business-health.module.ts:2:import { ScheduleModule } from '@nestjs/schedule';
+apps/api/src/intelligence/health/business-health.module.ts:4:import { BusinessHealthScheduler } from './business-health.scheduler';
+apps/api/src/intelligence/health/business-health.module.ts:12:    ScheduleModule.forRoot(), // To enable the scheduler
+apps/api/src/intelligence/health/business-health.module.ts:14:  providers: [BusinessHealthService, BusinessHealthScheduler],
+apps/api/src/intelligence/network/lin.module.ts:2:import { ScheduleModule } from '@nestjs/schedule';
+apps/api/src/intelligence/network/lin.module.ts:9:  imports: [PrismaModule, ScheduleModule.forRoot()],
+apps/api/src/intelligence/network/lin-benchmark.engine.ts:2:import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/intelligence/network/lin-benchmark.engine.ts:16:  @Cron(CronExpression.EVERY_HOUR)
+apps/api/src/intelligence/scheduler/scheduler.service.ts:2:// import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/intelligence/scheduler/scheduler.service.ts:7:export class AiSchedulerService {
+apps/api/src/intelligence/scheduler/scheduler.service.ts:8:  private readonly logger = new Logger(AiSchedulerService.name);
+apps/api/src/intelligence/scheduler/scheduler.service.ts:15:  // Example Cron job that would run nightly to recalculate risk scores
+apps/api/src/intelligence/scheduler/scheduler.service.ts:16:  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+apps/api/src/intelligence/scheduler/scheduler.module.ts:2:import { AiSchedulerService } from './scheduler.service';
+apps/api/src/intelligence/scheduler/scheduler.module.ts:8:  providers: [AiSchedulerService],
+apps/api/src/intelligence/scheduler/scheduler.module.ts:10:export class AiSchedulerModule {}
+apps/api/src/intelligence/telemetry-processor/telemetry-processor.module.ts:2:import { TelemetryProcessorService } from './telemetry-processor.service';
+apps/api/src/intelligence/telemetry-processor/telemetry-processor.module.ts:8:  providers: [TelemetryProcessorService],
+apps/api/src/intelligence/telemetry-processor/telemetry-processor.module.ts:10:export class TelemetryProcessorModule {}
+apps/api/src/intelligence/telemetry-processor/telemetry-processor.service.ts:7:export class TelemetryProcessorService {
+apps/api/src/intelligence/telemetry-processor/telemetry-processor.service.ts:8:  private readonly logger = new Logger(TelemetryProcessorService.name);
+apps/api/src/integration/webhook/webhook.service.ts:37:   * In a real system, this pushes to BullMQ for reliable delivery.
+apps/api/src/integration/integration-platform.service.spec.ts:324:  describe('Module 9: Synchronization Scheduler', () => {
+apps/api/src/integration/developer/developer-platform.service.ts:60:          name: 'Synchronization Scheduler',
+apps/api/src/integration/developer/developer-platform.service.ts:61:          description: 'Cron scheduling and manual sync triggers',
+apps/api/src/integration/developer/developer-platform.service.ts:91:            tags: ['Synchronization Scheduler'],
+apps/api/src/integration/integration.module.ts:50:import { SyncSchedulerController } from './sync/sync-scheduler.controller';
+apps/api/src/integration/integration.module.ts:62:    SyncSchedulerController,
+apps/api/src/integration/sync/sync.service.ts:159:          entity: 'ScheduledSync',
+apps/api/src/integration/sync/sync.service.ts:170:  async listSchedules(companyId: string) {
+apps/api/src/integration/sync/sync-scheduler.controller.ts:18:@ApiTags('Synchronization Scheduler')
+apps/api/src/integration/sync/sync-scheduler.controller.ts:22:export class SyncSchedulerController {
+apps/api/src/integration/sync/sync-scheduler.controller.ts:28:    summary: 'Schedule an automated recurring sync job using cron expression',
+apps/api/src/integration/sync/sync-scheduler.controller.ts:43:  async listSchedules(@GetUser() user: AuthenticatedUser) {
+apps/api/src/integration/sync/sync-scheduler.controller.ts:44:    return this.syncEngine.listSchedules(user.companyId);
+apps/api/src/integration/services/tally-sync.processor.ts:1:import { Processor, Process } from '@nestjs/bull';
+apps/api/src/integration/services/tally-sync.processor.ts:2:import type { Job } from 'bull';
+apps/api/src/integration/services/tally-sync.processor.ts:7:@Processor('tally-sync')
+apps/api/src/integration/services/tally-sync.processor.ts:8:export class TallySyncProcessor {
+apps/api/src/integration/services/tally-sync.processor.ts:9:  private readonly logger = new Logger(TallySyncProcessor.name);
+apps/api/src/integration/services/tally-sync.processor.ts:13:  @Process('export-vouchers')
+apps/api/src/integration/services/csv-import.processor.ts:1:import { Processor, Process } from '@nestjs/bull';
+apps/api/src/integration/services/csv-import.processor.ts:2:import type { Job } from 'bull';
+apps/api/src/integration/services/csv-import.processor.ts:6:@Processor('csv-import')
+apps/api/src/integration/services/csv-import.processor.ts:7:export class CsvImportProcessor {
+apps/api/src/integration/services/csv-import.processor.ts:8:  private readonly logger = new Logger(CsvImportProcessor.name);
+apps/api/src/integration/services/csv-import.processor.ts:12:  @Process('import-drivers')
+apps/api/src/integration/services/csv-import.processor.ts:65:      // Update BullMQ progress
+apps/api/src/optimization/engine/vrp-solver.service.ts:74:   * For extremely large datasets, this would be swapped with a background worker (e.g. OR-Tools via BullMQ).
+apps/api/src/health/health.module.ts:7:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/health/health.module.ts:9:import { BullMQHealthIndicator } from './bullmq.health';
+apps/api/src/health/health.module.ts:17:    BullModule.registerQueue({ name: 'background_jobs' }), // Using one core queue for readiness check
+apps/api/src/health/health.module.ts:20:  providers: [RedisHealthIndicator, BullMQHealthIndicator],
+apps/api/src/health/health.controller.ts:11:import { BullMQHealthIndicator } from './bullmq.health';
+apps/api/src/health/health.controller.ts:12:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/health/health.controller.ts:13:import { Queue } from 'bullmq';
+apps/api/src/health/health.controller.ts:24:    private bullmqIndicator: BullMQHealthIndicator,
+apps/api/src/health/health.controller.ts:25:    @InjectQueue('background_jobs') private jobsQueue: Queue,
+apps/api/src/health/health.controller.ts:48:      // BullMQ health
+apps/api/src/health/health.controller.ts:49:      () => this.bullmqIndicator.isHealthy('queues', [this.jobsQueue]),
+apps/api/src/health/bullmq.health.ts:7:import { Queue } from 'bullmq';
+apps/api/src/health/bullmq.health.ts:10:export class BullMQHealthIndicator extends HealthIndicator {
+apps/api/src/health/bullmq.health.ts:12:  // since BullMQ uses Redis. A true check would evaluate if workers are active.
+apps/api/src/health/bullmq.health.ts:15:    queues: Queue[],
+apps/api/src/health/bullmq.health.ts:22:            throw new Error(`Queue ${q.name} Redis not ready`);
+apps/api/src/health/bullmq.health.ts:29:        'BullMQHealthCheck failed',
+apps/api/src/platform/runtime/platform-executable.interface.ts:12: * This guarantees a unified lifecycle for Workflow Tasks, AI Prompts, and Scheduled Jobs.
+apps/api/src/platform/bpm/task-management.service.ts:9:  assigneeId?: string; // If undefined, it goes to a Team Queue
+apps/api/src/platform/bpm/task-management.service.ts:25:   * Dispatches a Human Task to an Inbox or Team Queue.
+apps/api/src/platform/feature-management/feature-toggle.service.ts:155:    // Schedule gate
+apps/api/src/platform/api/health.service.ts:17://   - Non-critical failures (Redis, Queue) degrade gracefully
+apps/api/src/platform/performance/cache-manager.service.ts:53:    this.cleanupTimer = setInterval(() => this.evictExpired(), 120_000);
+apps/api/src/platform/performance/cache-manager.service.ts:61:      clearInterval(this.cleanupTimer);
+apps/api/src/platform/digital-twin/data-fabric/digital-twin-core.service.ts:34:        // We could route this to a Dead Letter Queue or Anomaly Detection table here
+apps/api/src/marketplace/webhooks/marketplace-webhooks.module.ts:2:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/marketplace/webhooks/marketplace-webhooks.module.ts:4:import { WebhookProcessor } from './webhook.processor';
+apps/api/src/marketplace/webhooks/marketplace-webhooks.module.ts:11:    BullModule.registerQueue({
+apps/api/src/marketplace/webhooks/marketplace-webhooks.module.ts:15:  providers: [WebhookService, ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : [])] : []), EventBusListener],
+apps/api/src/marketplace/webhooks/webhook.service.ts:2:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/marketplace/webhooks/webhook.service.ts:3:import { Queue } from 'bullmq';
+apps/api/src/marketplace/webhooks/webhook.service.ts:11:    @InjectQueue('webhooks') private readonly webhookQueue: Queue,
+apps/api/src/marketplace/webhooks/webhook.service.ts:81:      await this.webhookQueue.addBulk(jobs);
+apps/api/src/marketplace/webhooks/webhook.service.ts:83:        `Queued ${jobs.length} webhook deliveries for event ${eventType}`,
+apps/api/src/marketplace/webhooks/webhook.processor.ts:1:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/marketplace/webhooks/webhook.processor.ts:2:import { Job, UnrecoverableError } from 'bullmq';
+apps/api/src/marketplace/webhooks/webhook.processor.ts:29:@Processor('webhooks', { concurrency: 50 })
+apps/api/src/marketplace/webhooks/webhook.processor.ts:30:export class WebhookProcessor extends WorkerHost {
+apps/api/src/marketplace/webhooks/webhook.processor.ts:31:  private readonly logger = new Logger(WebhookProcessor.name);
+apps/api/src/marketplace/webhooks/webhook.processor.ts:85:      // For 5xx, timeouts, or network issues, throw to trigger BullMQ retry
+apps/api/src/admin/dto/enterprise-admin.dto.ts:228:export class UpdateQueueSettingsDto {
+apps/api/src/admin/admin.controller.ts:32:      activeQueues: 5,
+apps/api/src/admin/controllers/enterprise-admin.controller.ts:47:  UpdateQueueSettingsDto,
+apps/api/src/admin/controllers/enterprise-admin.controller.ts:892:  async updateQueue(
+apps/api/src/admin/controllers/enterprise-admin.controller.ts:893:    @Body() dto: UpdateQueueSettingsDto,
+apps/api/src/admin/controllers/enterprise-admin.controller.ts:896:    return this.service.updateQueue(user.companyId, dto, user.userId);
+apps/api/src/admin/services/system-settings-admin.service.ts:8:  UpdateQueueSettingsDto,
+apps/api/src/admin/services/system-settings-admin.service.ts:131:  async updateQueue(
+apps/api/src/admin/services/system-settings-admin.service.ts:133:    dto: UpdateQueueSettingsDto,
+apps/api/src/admin/services/system-settings-admin.service.ts:138:    const updatedQueue = { ...(currentSettings.queue || {}), ...dto };
+apps/api/src/admin/services/system-settings-admin.service.ts:143:        data: { settings: { ...currentSettings, queue: updatedQueue } },
+apps/api/src/admin/services/system-settings-admin.service.ts:156:    return updatedQueue;
+apps/api/src/background-jobs/background-jobs.module.ts:5:  WebhooksDlqProcessor,
+apps/api/src/background-jobs/background-jobs.module.ts:6:  BackgroundJobsDlqProcessor,
+apps/api/src/background-jobs/background-jobs.module.ts:16:    WebhooksDlqProcessor,
+apps/api/src/background-jobs/background-jobs.module.ts:17:    BackgroundJobsDlqProcessor,
+apps/api/src/background-jobs/dlq.processor.ts:3:  QueueEventsListener,
+apps/api/src/background-jobs/dlq.processor.ts:4:  QueueEventsHost,
+apps/api/src/background-jobs/dlq.processor.ts:5:  OnQueueEvent,
+apps/api/src/background-jobs/dlq.processor.ts:6:} from '@nestjs/bullmq';
+apps/api/src/background-jobs/dlq.processor.ts:9:@QueueEventsListener('webhooks')
+apps/api/src/background-jobs/dlq.processor.ts:10:export class WebhooksDlqProcessor extends QueueEventsHost {
+apps/api/src/background-jobs/dlq.processor.ts:11:  private readonly logger = new Logger(WebhooksDlqProcessor.name);
+apps/api/src/background-jobs/dlq.processor.ts:13:  @OnQueueEvent('failed')
+apps/api/src/background-jobs/dlq.processor.ts:15:    // Explicit DLQ Processor Hook
+apps/api/src/background-jobs/dlq.processor.ts:24:@QueueEventsListener('background_jobs')
+apps/api/src/background-jobs/dlq.processor.ts:25:export class BackgroundJobsDlqProcessor extends QueueEventsHost {
+apps/api/src/background-jobs/dlq.processor.ts:26:  private readonly logger = new Logger(BackgroundJobsDlqProcessor.name);
+apps/api/src/background-jobs/dlq.processor.ts:28:  @OnQueueEvent('failed')
+apps/api/src/background-jobs/dlq.processor.ts:30:    // Explicit DLQ Processor Hook
+apps/api/src/app.module.ts:103:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/app.module.ts:123:import { AiSchedulerModule } from './intelligence/scheduler/scheduler.module';
+apps/api/src/app.module.ts:124:import { TelemetryProcessorModule } from './intelligence/telemetry-processor/telemetry-processor.module';
+apps/api/src/app.module.ts:139:    AiSchedulerModule,
+apps/api/src/app.module.ts:140:    TelemetryProcessorModule,
+apps/api/src/app.module.ts:226:    BullModule.registerQueue(
+apps/api/src/operations/metrics/metrics-platform.service.ts:181:   * Generates Queue Metrics (Pending, Active, Failed, Completed jobs).
+apps/api/src/operations/metrics/metrics-platform.service.ts:183:  async getQueueMetrics(companyId?: string): Promise<Record<string, number>> {
+apps/api/src/operations/metrics/metrics-platform.service.ts:313:   * Generates Worker & Scheduler Metrics (Cron executions, Sync job status).
+apps/api/src/operations/metrics/metrics-platform.service.ts:315:  async getSchedulerMetrics(
+apps/api/src/operations/metrics/metrics-platform.service.ts:319:      const activeCrons = await this.prisma.runAsSystem(async (tx) =>
+apps/api/src/operations/metrics/metrics-platform.service.ts:328:        activeCrons,
+apps/api/src/operations/metrics/metrics-platform.service.ts:335:        activeCrons: 6,
+apps/api/src/operations/metrics/metrics-platform.service.ts:351:        this.getQueueMetrics(companyId),
+apps/api/src/operations/metrics/metrics-platform.service.ts:354:        this.getSchedulerMetrics(companyId),
+apps/api/src/operations/metrics/metrics-platform.controller.ts:64:      'Get comprehensive metrics dashboard across System, Business, Queue, API, and Database',
+apps/api/src/operations/tracing/distributed-tracing.service.ts:162:   * Helper methods for Request, Queue, Workflow, Webhook, Database, and External API Tracing.
+apps/api/src/operations/tracing/distributed-tracing.service.ts:181:  async traceQueue<T>(
+apps/api/src/operations/tracing/distributed-tracing.service.ts:190:        serviceName: 'bullmq-worker',
+apps/api/src/operations/tracing/distributed-tracing.controller.ts:30:      'Record a trace span (HTTP, Queue, Workflow, DB, ExternalAPI, Webhook)',
+apps/api/src/operations/health/enterprise-health.controller.ts:61:    summary: 'Get BullMQ async job queues health and backlog depth',
+apps/api/src/operations/health/enterprise-health.controller.ts:63:  async getQueueHealth(@GetUser() user: { companyId: string }) {
+apps/api/src/operations/health/enterprise-health.controller.ts:64:    return this.healthService.checkQueueHealth(user.companyId);
+apps/api/src/operations/health/enterprise-health.service.ts:68:      this.checkQueueHealth(companyId),
+apps/api/src/operations/health/enterprise-health.service.ts:236:  async checkQueueHealth(companyId?: string): Promise<HealthComponentStatus> {
+apps/api/src/operations/health/enterprise-health.service.ts:271:          activeQueues: ['webhooks', 'export', 'sync', 'notifications'],
+apps/api/src/operations/operations.scheduler.ts:2:import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/operations/operations.scheduler.ts:12: * OperationsScheduler — Autonomous background monitoring daemon.
+apps/api/src/operations/operations.scheduler.ts:19:export class OperationsScheduler {
+apps/api/src/operations/operations.scheduler.ts:20:  private readonly logger = new Logger(OperationsScheduler.name);
+apps/api/src/operations/operations.scheduler.ts:37:  @Cron(CronExpression.EVERY_MINUTE)
+apps/api/src/operations/operations.scheduler.ts:92:  @Cron(CronExpression.EVERY_5_MINUTES)
+apps/api/src/operations/operations.scheduler.ts:137:  @Cron(CronExpression.EVERY_30_SECONDS)
+apps/api/src/operations/operations.scheduler.ts:138:  async monitorQueueDepth(): Promise<void> {
+apps/api/src/operations/operations.scheduler.ts:149:          `[Queue Monitor] High failed job count: ${failedJobs}`,
+apps/api/src/operations/operations.scheduler.ts:163:  @Cron(CronExpression.EVERY_10_MINUTES)
+apps/api/src/operations/operations.scheduler.ts:209:  @Cron(CronExpression.EVERY_5_MINUTES)
+apps/api/src/operations/operations.scheduler.ts:250:  @Cron('0 2 * * *')
+apps/api/src/operations/operations.scheduler.ts:253:      '[Backup Scheduler] Starting daily automated database backups...',
+apps/api/src/operations/operations.scheduler.ts:271:        `[Backup Scheduler] Initiated ${companies.length} automated database backups`,
+apps/api/src/operations/operations.scheduler.ts:275:        `[Backup Scheduler] Daily backup failed: ${e instanceof Error ? e.message : String(e)}`,
+apps/api/src/operations/operations.scheduler.ts:284:  @Cron('0 3 * * *')
+apps/api/src/operations/operations.scheduler.ts:304:  @Cron('0 4 * * 0')
+apps/api/src/operations/operations.scheduler.ts:322:  @Cron(CronExpression.EVERY_10_MINUTES)
+apps/api/src/operations/performance/performance-platform.controller.ts:71:    return this.perfService.getWorkflowAndQueuePerformance(user.companyId);
+apps/api/src/operations/performance/performance-platform.service.ts:112:   * Queue & Workflow Latency Analysis: Measures processing delays across queues and rule execution engines.
+apps/api/src/operations/performance/performance-platform.service.ts:114:  async getWorkflowAndQueuePerformance(
+apps/api/src/operations/operations.module.ts:2:import { ScheduleModule } from '@nestjs/schedule';
+apps/api/src/operations/operations.module.ts:44:// Background Scheduler
+apps/api/src/operations/operations.module.ts:45:import { OperationsScheduler } from './operations.scheduler';
+apps/api/src/operations/operations.module.ts:48:  imports: [ScheduleModule.forRoot()],
+apps/api/src/operations/operations.module.ts:72:    OperationsScheduler,
+apps/api/src/integrations/integrations.module.ts:6:import { SyncEngineProcessor } from './sync/sync-engine.processor';
+apps/api/src/integrations/integrations.module.ts:13:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/integrations/integrations.module.ts:18:    BullModule.registerQueue({
+apps/api/src/integrations/integrations.module.ts:27:    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [SyncEngineProcessor] : [])] : []),
+apps/api/src/integrations/sync/sync-engine.processor.ts:1:import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
+apps/api/src/integrations/sync/sync-engine.processor.ts:2:import { Job } from 'bullmq';
+apps/api/src/integrations/sync/sync-engine.processor.ts:15:@Processor('integration-sync', { concurrency: 20 })
+apps/api/src/integrations/sync/sync-engine.processor.ts:16:export class SyncEngineProcessor extends WorkerHost {
+apps/api/src/integrations/sync/sync-engine.processor.ts:17:  private readonly logger = new Logger(SyncEngineProcessor.name);
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:1:import { Processor, Process } from '@nestjs/bull';
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:2:import type { Job } from 'bull';
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:6:@Processor('fastag-reconciliation')
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:7:export class FastagReconciliationProcessor {
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:8:  private readonly logger = new Logger(FastagReconciliationProcessor.name);
+apps/api/src/fastag/services/fastag-reconciliation.processor.ts:12:  @Process('reconcile-toll')
+apps/api/src/mobile/mobile.controller.ts:94:  processOfflineQueue(
+apps/api/src/mobile/mobile.controller.ts:98:    return this.mobileService.processOfflineQueue(
+apps/api/src/mobile/mobile.service.ts:165:  async processOfflineQueue(
+apps/api/src/ai/copilot/copilot-chat.service.ts:311:        'You are an executive analyst. Provide a brief daily operational summary and 2-3 key bulleted recommendations based on the provided metrics. Output must be valid JSON: {"summary": "string", "recommendations": ["string"]}. Keep it professional and action-oriented.',
+apps/api/src/ai/agents/specialized/warehouse.agent.ts:63:        'Schedule a dock appointment for inbound/outbound freight. Input: {"dockId": "string", "datetime": "string", "type": "INBOUND|OUTBOUND", "carrierId": "string"}',
+apps/api/src/ai/agents/specialized/compliance.agent.ts:49:          return `⚠️ WARNING: Vehicle ${parsed.vehicleId} annual inspection due in ${daysUntilDue} days. Schedule inspection to maintain compliance.`;
+apps/api/src/ai/agents/specialized/integration.agent.ts:40:        'Queue a manual retry for a specific failed connection. Input should be {"connectionId": "string"}',
+apps/api/src/ai/agents/specialized/fleet-health.agent.ts:31:              action: 'Schedule immediate maintenance',
+apps/api/src/workflow/workflow.module.ts:2:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/workflow/workflow.module.ts:9:    BullModule.registerQueue({
+apps/api/src/workflow/engine/execution.service.ts:6:import { SchedulerEngineService } from './scheduler.service';
+apps/api/src/workflow/engine/execution.service.ts:8:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/execution.service.ts:9:import { Queue } from 'bullmq';
+apps/api/src/workflow/engine/execution.service.ts:21:    @Inject(forwardRef(() => SchedulerEngineService))
+apps/api/src/workflow/engine/execution.service.ts:22:    private readonly schedulerEngine: SchedulerEngineService,
+apps/api/src/workflow/engine/execution.service.ts:24:    @InjectQueue('workflow_execution') private workflowQueue: Queue,
+apps/api/src/workflow/engine/execution.service.ts:175:      await this.workflowQueue.addBulk(jobs);
+apps/api/src/workflow/engine/execution.service.ts:195:   * Executes a specific node logic - Called from BullMQ Processor!
+apps/api/src/workflow/engine/execution.service.ts:324:      throw err; // Throw so BullMQ retries
+apps/api/src/workflow/engine/approval.service.ts:8:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/approval.service.ts:9:import { Queue } from 'bullmq';
+apps/api/src/workflow/engine/approval.service.ts:17:    @InjectQueue('workflow_execution') private workflowQueue: Queue,
+apps/api/src/workflow/engine/approval.service.ts:121:      await this.workflowQueue.add('RESUME_EXECUTION', {
+apps/api/src/workflow/engine/workflow-execution.processor.ts:1:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/workflow-execution.processor.ts:2:import { Job } from 'bullmq';
+apps/api/src/workflow/engine/workflow-execution.processor.ts:6:@Processor('workflow_execution', { concurrency: 20 })
+apps/api/src/workflow/engine/workflow-execution.processor.ts:7:export class WorkflowExecutionProcessor extends WorkerHost {
+apps/api/src/workflow/engine/workflow-execution.processor.ts:8:  private readonly logger = new Logger(WorkflowExecutionProcessor.name);
+apps/api/src/workflow/engine/workflow-executor.service.ts:2:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/workflow-executor.service.ts:3:import { Job } from 'bullmq';
+apps/api/src/workflow/engine/workflow-executor.service.ts:6:@Processor('background_jobs', { concurrency: 10 })
+apps/api/src/workflow/engine/workflow-executor.service.ts:28:      throw error; // Will be sent to Dead Letter Queue (DLQ) automatically by BullMQ
+apps/api/src/workflow/engine/execution.service.spec.ts:7:import { SchedulerEngineService } from './scheduler.service';
+apps/api/src/workflow/engine/execution.service.spec.ts:8:import { getQueueToken } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/execution.service.spec.ts:13:  let workflowQueue: any;
+apps/api/src/workflow/engine/execution.service.spec.ts:33:  const mockQueue = {
+apps/api/src/workflow/engine/execution.service.spec.ts:66:          provide: SchedulerEngineService,
+apps/api/src/workflow/engine/execution.service.spec.ts:70:          provide: getQueueToken('workflow_execution'),
+apps/api/src/workflow/engine/execution.service.spec.ts:71:          useValue: mockQueue,
+apps/api/src/workflow/engine/execution.service.spec.ts:78:    workflowQueue = module.get(getQueueToken('workflow_execution'));
+apps/api/src/workflow/engine/execution.service.spec.ts:125:      expect(mockQueue.addBulk).toHaveBeenCalledWith([
+apps/api/src/workflow/engine/scheduler.service.ts:2:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/workflow/engine/scheduler.service.ts:3:import { Queue } from 'bullmq';
+apps/api/src/workflow/engine/scheduler.service.ts:6:export class SchedulerEngineService {
+apps/api/src/workflow/engine/scheduler.service.ts:7:  private readonly logger = new Logger(SchedulerEngineService.name);
+apps/api/src/workflow/engine/scheduler.service.ts:10:    @InjectQueue('workflow_execution') private workflowQueue: Queue,
+apps/api/src/workflow/engine/scheduler.service.ts:14:   * Schedules a delayed resumption of a workflow execution using BullMQ.
+apps/api/src/workflow/engine/scheduler.service.ts:26:    await this.workflowQueue.add(
+apps/api/src/workflow/engine/action.service.ts:123:          this.logger.log(`[ACTION] Queued Job ${resolvedPayload.queueName}`);
+apps/api/src/api-platform/webhooks/webhook.module.ts:2:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/api-platform/webhooks/webhook.module.ts:4:import { WebhookProcessor } from './webhook.processor';
+apps/api/src/api-platform/webhooks/webhook.module.ts:8:    BullModule.registerQueue({
+apps/api/src/api-platform/webhooks/webhook.module.ts:21:  providers: [WebhookService, ...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : [])],
+apps/api/src/api-platform/webhooks/webhook.service.ts:2:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/api-platform/webhooks/webhook.service.ts:3:import { Queue } from 'bullmq';
+apps/api/src/api-platform/webhooks/webhook.service.ts:31:    @InjectQueue('webhooks_v2') private readonly webhookQueue: Queue,
+apps/api/src/api-platform/webhooks/webhook.service.ts:93:      await this.webhookQueue.addBulk(jobs);
+apps/api/src/api-platform/webhooks/webhook.service.ts:95:        `Queued ${jobs.length} webhook deliveries for event ${event}`,
+apps/api/src/api-platform/webhooks/webhook.processor.ts:2:import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
+apps/api/src/api-platform/webhooks/webhook.processor.ts:4:import { Job } from 'bullmq';
+apps/api/src/api-platform/webhooks/webhook.processor.ts:30:@Processor('webhooks_v2', { concurrency: 50 })
+apps/api/src/api-platform/webhooks/webhook.processor.ts:31:export class WebhookProcessor extends WorkerHost {
+apps/api/src/api-platform/webhooks/webhook.processor.ts:32:  private readonly logger = new Logger(WebhookProcessor.name);
+apps/api/src/api-platform/webhooks/webhook.processor.ts:112:          throw error; // Throwing triggers BullMQ to retry (Exponential Backoff)
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:3:import { WebhookProcessor } from './webhook.processor';
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:5:import { Job } from 'bullmq';
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:12:describe('WebhookProcessor', () => {
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:13:  let processor: WebhookProcessor;
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:19:        WebhookProcessor,
+apps/api/src/api-platform/webhooks/webhook.processor.spec.ts:38:    processor = module.get<WebhookProcessor>(WebhookProcessor);
+apps/api/src/vehicles/maintenance/maintenance.service.ts:222:  async createSchedule(companyId: string, data: any, userId?: string) {
+apps/api/src/vehicles/maintenance/maintenance.service.ts:224:      const schedule = await tx.maintenanceSchedule.create({
+apps/api/src/vehicles/maintenance/maintenance.service.ts:238:          entityType: 'MaintenanceSchedule',
+apps/api/src/vehicles/maintenance/maintenance.service.ts:252:        eventType: 'ScheduleCreated',
+apps/api/src/vehicles/maintenance/maintenance.service.ts:261:  async getSchedules(companyId: string, vehicleId?: string) {
+apps/api/src/vehicles/maintenance/maintenance.service.ts:265:      return tx.maintenanceSchedule.findMany({ where });
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:87:  @ApiOperation({ summary: 'Create Maintenance Schedule' })
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:88:  async createSchedule(@GetUser() user: AuthenticatedUser, @Body() data: any) {
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:89:    return this.maintenance.createSchedule(user.companyId, data, user.id);
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:94:  @ApiOperation({ summary: 'Get Maintenance Schedules' })
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:95:  async getSchedules(
+apps/api/src/vehicles/maintenance/maintenance.controller.ts:99:    return this.maintenance.getSchedules(user.companyId, vehicleId);
+apps/api/src/vehicles/fleet/maintenance.engine.ts:32:      // Dynamic rule checks (In reality, fetch from MaintenanceSchedule table)
+apps/api/src/vehicles/fleet/maintenance.engine.ts:35:      const serviceInterval = 10000;
+apps/api/src/vehicles/fleet/maintenance.engine.ts:37:      if (currentOdometer >= lastServiceOdometer + serviceInterval) {
+apps/api/src/finance/finance.module.ts:23:import { FastagScheduler } from './fastag/fastag.scheduler';
+apps/api/src/finance/finance.module.ts:50:    FastagScheduler,
+apps/api/src/finance/fastag/fastag.scheduler.ts:2:import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/finance/fastag/fastag.scheduler.ts:7:export class FastagScheduler {
+apps/api/src/finance/fastag/fastag.scheduler.ts:8:  private readonly logger = new Logger(FastagScheduler.name);
+apps/api/src/finance/fastag/fastag.scheduler.ts:16:   * Fastag Integration Scheduler
+apps/api/src/finance/fastag/fastag.scheduler.ts:20:  @Cron(CronExpression.EVERY_10_MINUTES)
+apps/api/src/fleet/fleet.module.ts:11:import { ComplianceScheduler } from './compliance.scheduler';
+apps/api/src/fleet/fleet.module.ts:24:    ComplianceScheduler,
+apps/api/src/fleet/compliance.scheduler.ts:2:import { Cron, CronExpression } from '@nestjs/schedule';
+apps/api/src/fleet/compliance.scheduler.ts:8:export class ComplianceScheduler {
+apps/api/src/fleet/compliance.scheduler.ts:9:  private readonly logger = new Logger(ComplianceScheduler.name);
+apps/api/src/fleet/compliance.scheduler.ts:21:  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+apps/api/src/fleet/compliance.scheduler.ts:74:   * Vehicle Maintenance Schedule Check
+apps/api/src/fleet/compliance.scheduler.ts:77:  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+apps/api/src/fleet/iot/iot.service.ts:12:    // and potentially push to a BullMQ queue for async processing.
+apps/api/src/warehouse/warehouse.controller.ts:12:import { DockSchedulerService } from './engine/dock-scheduler.service';
+apps/api/src/warehouse/warehouse.controller.ts:23:    private readonly dockScheduler: DockSchedulerService,
+apps/api/src/warehouse/warehouse.controller.ts:117:    return this.dockScheduler.scheduleAppointment(
+apps/api/src/warehouse/warehouse.module.ts:7:import { DockSchedulerService } from './engine/dock-scheduler.service';
+apps/api/src/warehouse/warehouse.module.ts:35:    DockSchedulerService,
+apps/api/src/warehouse/engine/dock-scheduler.service.ts:6:export class DockSchedulerService {
+apps/api/src/warehouse/engine/dock-scheduler.service.ts:7:  private readonly logger = new Logger(DockSchedulerService.name);
+apps/api/src/warehouse/engine/dock-scheduler.service.ts:15:   * Schedule a dock appointment for a Load
+apps/api/src/warehouse/engine/inbound-outbound.engine.ts:44:    // Schedule Dock
+apps/api/src/communications/enterprise-notification.service.spec.ts:14:  const mockQueue: any = {
+apps/api/src/communications/enterprise-notification.service.spec.ts:118:        { provide: 'BullQueue_notification-delivery', useValue: mockQueue },
+apps/api/src/communications/enterprise-notification.service.spec.ts:186:      expect(mockQueue.add).toHaveBeenCalled();
+apps/api/src/communications/engine/notification-orchestrator.service.ts:12:import { InjectQueue } from '@nestjs/bullmq';
+apps/api/src/communications/engine/notification-orchestrator.service.ts:13:import { Queue } from 'bullmq';
+apps/api/src/communications/engine/notification-orchestrator.service.ts:31:    @InjectQueue('notification-delivery') private readonly deliveryQueue: Queue,
+apps/api/src/communications/engine/notification-orchestrator.service.ts:382:      const status = shouldDeferForQuietHours ? 'PENDING' : 'PENDING'; // BullMQ will pick up PENDING
+apps/api/src/communications/engine/notification-orchestrator.service.ts:399:        await this.deliveryQueue
+apps/api/src/communications/engine/notification-orchestrator.service.ts:411:              `Failed to queue BullMQ job for delivery ${delivery.id}: ${err.message}`,
+apps/api/src/communications/engine/notification-orchestrator.service.ts:526:    await this.deliveryQueue.addBulk(jobs);
+apps/api/src/communications/engine/delivery.processor.ts:1:import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
+apps/api/src/communications/engine/delivery.processor.ts:2:import { Job } from 'bullmq';
+apps/api/src/communications/engine/delivery.processor.ts:14:@Processor('notification-delivery', { concurrency: 100 })
+apps/api/src/communications/engine/delivery.processor.ts:15:export class DeliveryProcessor extends WorkerHost {
+apps/api/src/communications/engine/delivery.processor.ts:16:  private readonly logger = new Logger(DeliveryProcessor.name);
+apps/api/src/communications/engine/delivery.processor.ts:101:        throw error; // Let BullMQ handle retry
+apps/api/src/communications/communications.module.ts:2:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/communications/communications.module.ts:4:import { DeliveryProcessor } from './engine/delivery.processor';
+apps/api/src/communications/communications.module.ts:25:    BullModule.registerQueue({
+apps/api/src/communications/communications.module.ts:38:    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [DeliveryProcessor] : [])] : []),
+apps/api/src/communications/communications.module.ts:48:    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [DeliveryProcessor] : [])] : []),
+apps/api/src/analytics/etl/analytics-etl.processor.ts:1:import { Processor, WorkerHost } from '@nestjs/bullmq';
+apps/api/src/analytics/etl/analytics-etl.processor.ts:2:import { Job } from 'bullmq';
+apps/api/src/analytics/etl/analytics-etl.processor.ts:6:@Processor('analytics_etl', { concurrency: 5 })
+apps/api/src/analytics/etl/analytics-etl.processor.ts:7:export class AnalyticsETLProcessor extends WorkerHost {
+apps/api/src/analytics/etl/analytics-etl.processor.ts:8:  private readonly logger = new Logger(AnalyticsETLProcessor.name);
+apps/api/src/analytics/analytics.module.ts:6:import { AnalyticsETLProcessor } from './etl/analytics-etl.processor';
+apps/api/src/analytics/analytics.module.ts:9:import { BullModule } from '@nestjs/bullmq';
+apps/api/src/analytics/analytics.module.ts:19:    BullModule.registerQueue({
+apps/api/src/analytics/analytics.module.ts:28:    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [AnalyticsETLProcessor] : [])] : []),
+--- Cache ---
+apps/api/src/platform/security/brute-force/brute-force-protection.service.ts:52:        const data = await this.redis.get(`bf:${key}`);
+apps/api/src/platform/security/brute-force/brute-force-protection.service.ts:73:        await this.redis.set(`bf:${key}`, JSON.stringify(record), 'EX', ttl);
+apps/api/src/platform/security/ratelimit/api-rate-limiter.middleware.ts:183:        const result = await this.redis.set(key, '1', 'EX', 86400, 'NX');
+apps/api/src/platform/security/ratelimit/api-rate-limiter.middleware.spec.ts:9:  let cacheManager: jest.Mocked<CacheManagerService>;
+apps/api/src/platform/security/ratelimit/api-rate-limiter.middleware.spec.ts:14:    cacheManager = {} as unknown as jest.Mocked<CacheManagerService>;
+apps/api/src/platform/security/guards/request-signature.guard.ts:180:      await redis.set(`nonce:${nonce}`, '1', 'EX', NONCE_TTL_SECONDS);
+apps/api/src/common/interceptors/idempotency.interceptor.ts:48:      const cachedResponseStr = await this.redis.get(cacheKey);
+apps/api/src/common/interceptors/idempotency.interceptor.ts:69:      await this.redis.set(cacheKey, 'IN_PROGRESS', 'EX', 30);
+apps/api/src/common/interceptors/idempotency.interceptor.ts:85:          await this.redis.set(
+apps/api/src/analytics/engine/analytics-cache.service.ts:20:      const data = await this.redis.get(key);
+apps/api/src/analytics/engine/analytics-cache.service.ts:34:      await this.redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);

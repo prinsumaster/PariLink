@@ -1,0 +1,11 @@
+--- storage service public methods ---
+--- storage related calls ---
+apps/api/src/platform/files/file.service.ts:14:import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+apps/api/src/platform/files/file.service.ts:133:    return getSignedUrl(this.s3Client, command, { expiresIn: expiresInSeconds });
+apps/api/src/exports/exports.service.ts:89:      const fileUrl = await this.storageService.getSignedUrl(fileKey, companyId, 7 * 24 * 60 * 60);
+apps/api/src/documents/enterprise-document.service.spec.ts:152:        { provide: require('./services/storage.service').StorageService, useValue: { upload: jest.fn(), getSignedUrl: jest.fn() } },
+apps/api/src/documents/documents.service.ts:215:      const signedUrl = await this.storage.getSignedUrl(document.fileUrl, companyId);
+apps/api/src/documents/services/storage.service.ts:3:import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+apps/api/src/documents/services/storage.service.ts:16:  getSignedUrl(
+apps/api/src/documents/services/storage.service.ts:114:  async getSignedUrl(
+apps/api/src/documents/services/storage.service.ts:130:      return await getSignedUrl(this.s3Client, command, { expiresIn: expiresInSeconds });

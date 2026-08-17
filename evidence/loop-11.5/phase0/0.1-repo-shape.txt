@@ -1,0 +1,932 @@
+--- git log ---
+007771a docs: add safe production environment variable template
+2002738 chore: remove fake customer logos from landing page for commercial integrity
+c143a1e feat: configure NEXT_PUBLIC_DEMO_URL for commercial lead capture
+5f6c2ab feat: align landing page messaging and pricing for commercial launch
+153fc4c feat: finalize parilink client showcase release
+b11a39d fix: update OIDC provider thumbprints for modern GitHub Actions
+2bf99ef chore: add production environment to diagnostic workflow
+0b62ec6 fix(iam): strictly scope OIDC trust policy to production environment subject
+4e0714d fix(iam): update OIDC sub condition to match actual GitHub token format with numeric IDs
+49cd82d chore(diag): safe OIDC claims diagnostic - decode JWT payload without exposing token
+fbd4172 Merge pull request #18 from prinsumaster/infra/fix-deployment-blockers
+03b6f3d fix(infra): replace ghcr placeholder with ECR URIs; fix sed pipeline; scope RBAC away from system:masters
+016969f Merge pull request #17 from prinsumaster/infra/fix-deployment-blockers
+970d3a2 fix(docker): enable monorepo-aware web Docker build for plugin-sdk
+4682cbc Merge pull request #16 from prinsumaster/infra/fix-deployment-blockers
+426fd60 fix(infra): correct OIDC trust policy, add EKS auth mapping, add ECR repos
+8bc9e88 chore(release): fix web plugin sdk dependency for rc11
+2e995e8 chore(release): rc11 certified multi-tenant security architecture
+7fbe51c docs(release): absolute final deployment handoff and external state report
+44a3f82 docs(release): final definitive production launch gate verification report
+f734340 docs(release): generate final definitive production launch gate verification report
+d807acb docs(release): declare absolute final release candidate freeze and eliminate duplicate deployment pipeline
+206ba66 docs(release): final forensic release audit and status report
+7abe73d fix(api): replace hardcoded localhost oauth callback uri with dynamic environment variable
+a782b0f fix(deploy): enforce parilink.app domain consistency across helm and cert-manager
+d1d17e1 docs(release): publish final production deployment execution report
+f12008f chore(deploy): harden bash scripts with set -euo pipefail
+dff1907 fix(security): final adversarial hardening - cross-domain cookies, rollback safeguards, terraform OIDC
+bb0b01b fix(deploy): remediate CORS blocking, domain mismatches, and base manifest application
+bf10155 fix(deploy): remediate CI/CD forensics, turbopack build, namespaces and hardcoded localhosts
+31b1fa2 fix(deploy): add docker build and push steps to production workflow
+4864962 fix(repo): convert apps/web from gitlink to standard monorepo tracked directory
+d6f7e73 chore(release): include latest production web frontend changes
+6bd6be5 test(e2e): fix socket exhaustion ECONNRESET in rate limiting test
+d407397 fix(deploy): deploy parilink-web alongside parilink-api
+1870be2 fix(deploy): update health check endpoints in all kubernetes manifests
+be32941 fix(deploy): update health check url and fix hardcoded AWS account in deployment scripts
+8ed03ce chore(release): Parilink Enterprise 2.0 final production fixes and security hardening
+c339fe9 PariLink Version 2.0 Launch Release
+--- git status ---
+ M apps/api/Dockerfile
+ M apps/api/package.json
+ M apps/api/prisma/bulk-seed.ts
+ M apps/api/prisma/schema.prisma
+ M apps/api/prisma/seed.ts
+ D apps/api/scratch-prisma-test.ts
+ M apps/api/src/analytics/engine/kpi-engine.service.ts
+ M apps/api/src/analytics/engine/metrics-engine.service.ts
+ M apps/api/src/api-platform/v2/controllers/loads-v2.controller.ts
+ M apps/api/src/app.module.ts
+ M apps/api/src/auth/auth.controller.ts
+ M apps/api/src/auth/auth.service.ts
+ M apps/api/src/background-jobs/background-jobs.controller.ts
+ M apps/api/src/background-jobs/background-jobs.service.ts
+ M apps/api/src/billing/stripe.controller.ts
+ M apps/api/src/chat/chat.controller.ts
+ M apps/api/src/comments/comments.controller.ts
+ M apps/api/src/common/middlewares/csrf.middleware.ts
+ M apps/api/src/communications/engine/delivery.processor.ts
+ M apps/api/src/crm/controllers/crm-lead/crm-lead.controller.ts
+ M apps/api/src/dashboard/dashboard-builder.controller.ts
+ M apps/api/src/dashboard/dashboard.controller.ts
+ M apps/api/src/dashboard/dashboard.module.ts
+ D apps/api/src/dashboard/orders.controller.ts
+ M apps/api/src/dashboard/settings.controller.ts
+ M apps/api/src/documents/documents.controller.ts
+ M apps/api/src/documents/documents.module.ts
+ M apps/api/src/documents/documents.service.ts
+ M apps/api/src/documents/enterprise-document.service.spec.ts
+ M apps/api/src/documents/services/document-version.service.ts
+ M apps/api/src/documents/services/storage.service.ts
+ M apps/api/src/drivers/dto/create-driver.dto.ts
+ M apps/api/src/exports/exports.controller.ts
+ M apps/api/src/exports/exports.module.ts
+ M apps/api/src/exports/exports.service.ts
+ M apps/api/src/finance/bank-reconciliation/controllers/bank-statement/bank-statement.controller.ts
+ M apps/api/src/finance/driver-wallet.service.ts
+ M apps/api/src/finance/events/finops-orchestrator.service.ts
+ M apps/api/src/finance/fastag/fastag.controller.ts
+ M apps/api/src/finance/fastag/fastag.service.ts
+ M apps/api/src/finance/finance.module.ts
+ M apps/api/src/finance/finance.service.ts
+ M apps/api/src/finance/invoicing/invoicing.controller.ts
+ M apps/api/src/finance/ledger/general-ledger.controller.ts
+ M apps/api/src/finance/ledger/general-ledger.service.ts
+ M apps/api/src/finance/payables/accounts-payable.controller.ts
+ M apps/api/src/finance/payroll/controllers/payroll/payroll.controller.ts
+ M apps/api/src/fleet/fleet.module.ts
+ M apps/api/src/integration/developer/developer-platform.service.ts
+ M apps/api/src/integrations/integrations.module.ts
+ M apps/api/src/integrations/security/crypto.service.ts
+ M apps/api/src/integrations/webhooks/webhook.controller.ts
+ M apps/api/src/intelligence/gps/gps.dto.ts
+ M apps/api/src/intelligence/network/lin.controller.ts
+ M apps/api/src/invoices/invoices.controller.ts
+ M apps/api/src/invoices/invoices.service.ts
+ M apps/api/src/loads/dto/create-load.dto.ts
+ M apps/api/src/loads/loads.service.ts
+ M apps/api/src/main.ts
+ M apps/api/src/marketplace/core/marketplace-core.controller.ts
+ M apps/api/src/marketplace/core/marketplace-extensions.controller.ts
+ M apps/api/src/marketplace/telemetry-ingress/telemetry-ingress.controller.ts
+ M apps/api/src/marketplace/webhooks/event-bus.listener.ts
+ M apps/api/src/mobile/mobile.module.ts
+ M apps/api/src/mobile/mobile.service.ts
+ M apps/api/src/payments/payments.controller.ts
+ M apps/api/src/payments/payments.service.ts
+ M apps/api/src/platform/audit/audit.service.ts
+ M apps/api/src/platform/digital-twin/event-store.service.ts
+ M apps/api/src/platform/files/file.service.ts
+ M apps/api/src/platform/resilience/global-exception.filter.ts
+ M apps/api/src/platform/security/brute-force/brute-force-protection.service.ts
+ M apps/api/src/platform/security/ratelimit/api-rate-limiter.middleware.ts
+ M apps/api/src/reports/reports.controller.ts
+ M apps/api/src/reports/reports.service.ts
+ M apps/api/src/search/search.controller.ts
+ M apps/api/src/tracking/dto/telematics.dto.ts
+ M apps/api/src/tracking/services/telematics-ingestion.service.ts
+ M apps/api/src/trips/dto/create-trip.dto.ts
+ M apps/api/src/trips/trips.module.ts
+ M apps/api/src/trips/trips.service.spec.ts
+ M apps/api/src/trips/trips.service.ts
+ M apps/api/src/wms/barcode.controller.ts
+ M apps/api/test/business-workflows.e2e-spec.ts
+ M apps/docs/static/openapi.json
+ M apps/web/Dockerfile
+ M apps/web/next.config.ts
+ M apps/web/package.json
+ M apps/web/src/app/(auth)/forgot-password/page.tsx
+ M apps/web/src/app/(auth)/login/page.tsx
+ M apps/web/src/app/(auth)/reset-password/page.tsx
+ M apps/web/src/app/(dashboard)/billing/page.tsx
+ M apps/web/src/app/(dashboard)/command-center/_components/AnalyticsDashboard.tsx
+ M apps/web/src/app/(dashboard)/command-center/_components/LiveFleetMap.tsx
+ M apps/web/src/app/(dashboard)/dashboard/page.tsx
+ M apps/web/src/app/(dashboard)/downloads/page.tsx
+ M apps/web/src/app/(dashboard)/drivers/attendance/page.tsx
+ M apps/web/src/app/(dashboard)/finance/bank-statements/page.tsx
+ M apps/web/src/app/(dashboard)/finance/page.tsx
+ M apps/web/src/app/(dashboard)/fleet-health/page.tsx
+ M apps/web/src/app/(dashboard)/integrations/[connectionId]/settings/page.tsx
+ M apps/web/src/app/(dashboard)/integrations/wizard/[provider]/page.tsx
+ M apps/web/src/app/(dashboard)/layout.tsx
+ M apps/web/src/app/(dashboard)/ledger/page.tsx
+ M apps/web/src/app/(dashboard)/loads/[id]/page.tsx
+ M apps/web/src/app/(dashboard)/loads/page.tsx
+ M apps/web/src/app/(dashboard)/payments/page.tsx
+ M apps/web/src/app/(public)/track/[id]/page.tsx
+ M apps/web/src/app/api/auth/[...nextauth]/route.ts
+ M apps/web/src/app/dashboard/admin/audit/audit-client.tsx
+ M apps/web/src/app/error.tsx
+ D apps/web/src/app/fleet/dashboard/page.tsx
+ D apps/web/src/app/fleet/layout.tsx
+ D apps/web/src/app/fleet/maintenance/page.tsx
+ D apps/web/src/app/fleet/sensors/page.tsx
+ M apps/web/src/components/bos/BusinessHealthPulse.tsx
+ M apps/web/src/components/drivers/driver-compliance.tsx
+ M apps/web/src/components/drivers/driver-detail-view.tsx
+ M apps/web/src/components/fleet/document-manager.tsx
+ M apps/web/src/components/layout/sidebar.tsx
+ M apps/web/src/components/trips/trip-detail-view.tsx
+ M apps/web/src/components/trips/trip-table.tsx
+ M apps/web/src/components/workspace/component-registry.tsx
+ M apps/web/src/components/workspace/workspace-shell.tsx
+ M apps/web/src/components/workspace/workspace-sidebar.tsx
+ M apps/web/src/config/navigation.ts
+ M apps/web/src/services/api.ts
+ M apps/web/src/services/documents.ts
+ M apps/web/src/services/drivers.ts
+ M apps/web/src/services/finance.ts
+ M apps/web/src/services/fleet.ts
+ M apps/web/src/services/reports.ts
+ M docker-compose.yml
+ M package-lock.json
+?? PARILINK_1_HOUR_PROGRESS.md
+?? PARILINK_PRODUCT_COMPLETION_LOOP_2.md
+?? PARILINK_PRODUCT_COMPLETION_LOOP_3.md
+?? apps/api/db_audit.js
+?? apps/api/prisma/migrations/20260817000000_schema_sync/
+?? apps/api/src/auth/dto/reset-password.dto.ts
+?? apps/api/src/finance/fastag/fastag.scheduler.ts
+?? apps/api/src/finance/fastag/providers/
+?? apps/api/src/fleet/compliance.scheduler.ts
+?? apps/api/src/inject_secret.ts
+?? apps/api/src/integrations/webhooks/webhook-parser.service.ts
+?? apps/api/test/finops-orchestrator.e2e-spec.ts
+?? apps/web/CLIENT_DEMO_CHECKLIST.md
+?? apps/web/CLIENT_DEMO_CREDENTIALS.md
+?? apps/web/CLIENT_DEMO_DATA_GUIDE.md
+?? apps/web/CLIENT_DEMO_FINAL_ACCEPTANCE.md
+?? apps/web/CLIENT_DEMO_FINAL_REPORT.md
+?? apps/web/CLIENT_DEMO_FINAL_STATUS.md
+?? apps/web/CLIENT_DEMO_READY.md
+?? apps/web/CLIENT_DEMO_RUNBOOK.md
+?? apps/web/public/sw.js
+?? apps/web/src/app/(dashboard)/finance/ap/
+?? apps/web/src/app/(dashboard)/finance/ledger/
+?? apps/web/src/app/(dashboard)/fleet/maintenance/
+?? apps/web/src/components/auth/can.tsx
+?? apps/web/src/components/errors/api-error-state.tsx
+?? apps/web/src/components/ui/local-error-boundary.tsx
+?? apps/web/src/components/ui/safe-map-container.tsx
+?? apps/web/src/lib/utils/
+?? apps/web/verify.js
+?? evidence/
+?? scratch-fix-loads.js
+?? scratch-fix-trips-module.js
+?? scratch-fix-trips-service.js
+?? scratch-fix-trips.js
+?? scratch-fix-webhooks.js
+?? seed-demo-data.js
+?? test-commercial-flow.js
+?? test-tenant-isolation.js
+--- git log prisma ---
+--- package.jsons ---
+./connectors/loconav-connector/package.json
+./package.json
+./packages/plugin-sdk/package.json
+./apps/web/.next/types/package.json
+./apps/web/.next/standalone/package.json
+./apps/web/.next/standalone/apps/web/.next/package.json
+./apps/web/.next/standalone/apps/web/package.json
+./apps/web/.next/package.json
+./apps/web/package.json
+./apps/docs/package.json
+./apps/mobile/package.json
+./apps/api/package.json
+--- ls ---
+total 69008
+drwxr-xr-x@  226 vishalvirda  staff      7232 Aug 17 21:06 .
+drwx------@   78 vishalvirda  staff      2496 Aug 17 20:49 ..
+-rw-r--r--@    1 vishalvirda  staff      6148 Aug  9 12:11 .DS_Store
+-rw-r--r--@    1 vishalvirda  staff        93 Aug 10 15:38 .dockerignore
+-rw-r--r--@    1 vishalvirda  staff      1117 Aug 17 15:05 .env
+-rw-r--r--@    1 vishalvirda  staff      4156 Aug  8 15:44 .env.example
+-rw-r--r--@    1 vishalvirda  staff      1403 Aug 12 19:50 .env.production.example
+drwxr-xr-x@   15 vishalvirda  staff       480 Aug 17 21:06 .git
+drwxr-xr-x@    8 vishalvirda  staff       256 Jul 30 12:35 .github
+-rw-r--r--@    1 vishalvirda  staff      2091 Jul 20 14:54 .gitignore
+-rwxr-xr-x@    1 vishalvirda  staff      6628 Jan  1  1981 AndroidManifest.xml
+-rw-r--r--@    1 vishalvirda  staff      2163 Aug  6 19:16 CEO_FINAL_REVIEW.md
+-rw-r--r--@    1 vishalvirda  staff      2738 Aug  6 19:07 CEO_LAUNCH_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2040 Aug  6 19:31 CEO_REVIEW.md
+-rw-r--r--@    1 vishalvirda  staff      1709 Jul 30 13:11 CHANGELOG.md
+-rw-r--r--@    1 vishalvirda  staff      2195 Aug  8 21:28 CLIENT_DEMO_BACKUP_PLAN.md
+-rw-r--r--@    1 vishalvirda  staff       988 Aug  8 21:28 CLIENT_DEMO_FINAL_STATUS.md
+-rw-r--r--@    1 vishalvirda  staff      2667 Aug  8 21:24 CLIENT_DEMO_GUIDE.md
+-rw-r--r--@    1 vishalvirda  staff      1396 Aug  8 21:24 CLIENT_DEMO_READINESS.md
+-rw-r--r--@    1 vishalvirda  staff      4338 Aug  8 21:28 CLIENT_PRESENTATION_TALK_TRACK.md
+-rw-r--r--@    1 vishalvirda  staff      2199 Aug  6 19:30 COMMERCIAL_CERTIFICATION.md
+-rw-r--r--@    1 vishalvirda  staff      1638 Aug  6 19:07 COMMERCIAL_ENGINE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2789 Aug  6 19:14 COMMERCIAL_VALIDATION_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff       911 Aug  5 23:01 COMPROMISE_TIMELINE.md
+-rw-r--r--@    1 vishalvirda  staff      1352 Jul 28 17:31 CONTRIBUTING.md
+-rw-r--r--@    1 vishalvirda  staff      3551 Aug  6 19:13 CUSTOMER_JOURNEY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1514 Aug  6 19:07 CUSTOMER_ONBOARDING_CHECKLIST.md
+-rw-r--r--@    1 vishalvirda  staff      1990 Aug  6 19:15 CUSTOMER_SUCCESS_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2319 Aug  6 19:30 DEMO_DATA_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2676 Aug  6 19:03 DEMO_MODE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2327 Aug  6 19:14 DEMO_READY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1395 Aug  6 19:08 DEMO_SCRIPT.md
+-rw-r--r--@    1 vishalvirda  staff      5399 Aug  6 17:01 DEPENDENCY_AUDIT.md
+-rw-r--r--@    1 vishalvirda  staff       998 Aug  5 23:01 DEPENDENCY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1954 Aug  6 19:31 DEVOPS_CERTIFICATE.md
+-rw-r--r--@    1 vishalvirda  staff      2579 Aug  6 19:15 DEVOPS_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1163 Aug  6 19:07 DOCUMENTATION_REPORT.md
+-rwxr-xr-x@    1 vishalvirda  staff      1738 Jan  1  1981 DebugProbesKt.bin
+-rw-r--r--@    1 vishalvirda  staff      3663 Aug  6 19:05 FINAL_CERTIFICATION.md
+-rw-r--r--@    1 vishalvirda  staff      1950 Aug  6 19:18 FINAL_EXECUTIVE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      3545 Aug  8 21:07 FINAL_PRODUCTION_DEPLOYMENT_EXECUTION.md
+-rw-r--r--@    1 vishalvirda  staff      1668 Aug  6 19:32 FINAL_RELEASE_CERTIFICATE.md
+-rw-r--r--@    1 vishalvirda  staff      2324 Aug  6 19:18 FINAL_RELEASE_NOTES.md
+-rw-r--r--@    1 vishalvirda  staff      1900 Aug  6 19:08 FINAL_RELEASE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2493 Aug  9 11:24 FINAL_RUNTIME_STABILITY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2528 Aug  6 19:16 FINAL_SECURITY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1936 Aug  6 19:18 GO_LIVE_CERTIFICATE.md
+-rw-r--r--@    1 vishalvirda  staff      1786 Aug  6 19:07 GO_LIVE_CHECKLIST.md
+-rw-r--r--@    1 vishalvirda  staff      1634 Aug  5 23:01 INCIDENT_RESPONSE_PLAN.md
+-rw-r--r--@    1 vishalvirda  staff      1656 Aug  6 19:32 JANMASHTAMI_LAUNCH.md
+-rw-r--r--@    1 vishalvirda  staff      1909 Jul 30 13:11 KNOWN_LIMITATIONS.md
+-rw-r--r--@    1 vishalvirda  staff      1481 Aug  6 19:32 LAUNCH_CHECKLIST.md
+-rw-r--r--@    1 vishalvirda  staff      3881 Aug  6 19:04 LICENSE_CONFIGURATION_GUIDE.md
+-rw-r--r--@    1 vishalvirda  staff       809 Aug  5 23:01 MALWARE_REPORT.md
+drwxr-xr-x@   39 vishalvirda  staff      1248 May  8 17:09 META-INF
+-rw-r--r--@    1 vishalvirda  staff      1897 Jul 28 17:27 ONBOARDING.md
+-rw-r--r--@    1 vishalvirda  staff      1971 Aug  6 19:30 ONBOARDING_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1574 Aug 14 21:25 PARILINK_1_HOUR_PROGRESS.md
+-rw-r--r--@    1 vishalvirda  staff      1858 Aug 10 16:15 PARILINK_2.0_RC11_FINAL_FORENSIC_AND_GO_LIVE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2619 Aug 14 21:29 PARILINK_PRODUCT_COMPLETION_LOOP_2.md
+-rw-r--r--@    1 vishalvirda  staff      3771 Aug 14 22:12 PARILINK_PRODUCT_COMPLETION_LOOP_3.md
+-rw-r--r--@    1 vishalvirda  staff      1980 Aug  6 19:30 PERFORMANCE_POLISH.md
+-rw-r--r--@    1 vishalvirda  staff      2609 Aug  6 19:07 PERFORMANCE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2349 Aug  6 19:07 PRODUCTION_READINESS_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1562 Aug  6 20:12 PRODUCTION_RUNBOOK.md
+-rw-r--r--@    1 vishalvirda  staff      3731 Aug  6 19:02 PRODUCT_COMPLETENESS_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1507 Aug  6 19:07 PRODUCT_FINALIZATION_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2223 Aug  6 19:14 QA_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1780 Aug  6 19:26 RC1_FINAL_STATUS.md
+-rw-r--r--@    1 vishalvirda  staff      2241 Jul 28 17:27 README.md
+-rw-r--r--@    1 vishalvirda  staff      3349 Jul 30 13:11 RELEASE_CHECKLIST.md
+-rw-r--r--@    1 vishalvirda  staff      1819 Jul 29 12:13 RELEASE_NOTES.md
+-rw-r--r--@    1 vishalvirda  staff      1813 Jul 30 13:11 RELEASE_NOTES_v1.0.0.md
+-rw-r--r--@    1 vishalvirda  staff      1124 Aug  5 23:01 RISK_MATRIX.md
+-rw-r--r--@    1 vishalvirda  staff      9868 Aug  6 17:00 RLS_AUDIT.md
+-rw-r--r--@    1 vishalvirda  staff     40818 Aug  6 17:44 RLS_REMEDIATION_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      2200 Aug  6 19:30 SALES_DEMO_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1737 Aug  6 19:08 SALES_DEMO_SCRIPT.md
+-rw-r--r--@    1 vishalvirda  staff      2176 Aug  6 19:15 SALES_ENABLEMENT_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1067 Aug  5 23:01 SECRET_SCAN.md
+-rw-r--r--@    1 vishalvirda  staff      1208 Jul 28 17:27 SECURITY.md
+-rw-r--r--@    1 vishalvirda  staff      1932 Aug  6 19:31 SECURITY_CERTIFICATE.md
+-rw-r--r--@    1 vishalvirda  staff      1596 Aug  5 23:01 SECURITY_FORENSICS_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      3445 Aug  6 19:04 SECURITY_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      5753 Aug  6 19:02 SUBSCRIPTION_ENGINE_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1160 Jul 28 17:27 SUPPORT.md
+-rw-r--r--@    1 vishalvirda  staff      1233 Aug  6 19:32 SYSTEM_HEALTH.md
+-rw-r--r--@    1 vishalvirda  staff      1493 Aug  6 19:18 SYSTEM_HEALTH_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff       588 Aug  9 12:38 TENANT_ISOLATION_ATTACK_REPORT_V2.md
+-rw-r--r--@    1 vishalvirda  staff      2080 Aug  6 19:29 UX_POLISH_REPORT.md
+-rw-r--r--@    1 vishalvirda  staff         6 Jul 30 13:10 VERSION
+-rw-r--r--@    1 vishalvirda  staff       714 Aug  4 18:33 api-test.js
+-rw-r--r--@    1 vishalvirda  staff    730935 Aug  9 12:35 api.log
+-rw-r--r--@    1 vishalvirda  staff      1615 Aug  9 11:20 api_startup_3.log
+-rw-r--r--@    1 vishalvirda  staff    182552 Aug  9 11:23 api_startup_4.log
+-rw-r--r--@    1 vishalvirda  staff      1615 Aug  9 11:22 api_startup_5.log
+-rw-r--r--@    1 vishalvirda  staff    189635 Aug  9 11:26 api_startup_6.log
+-rw-r--r--@    1 vishalvirda  staff   1020275 Aug  4 19:50 app.log
+drwxr-xr-x@    6 vishalvirda  staff       192 Jul 28 17:42 apps
+drwxr-xr-x@    6 vishalvirda  staff       192 May  8 17:09 assets
+-rw-r--r--@    1 vishalvirda  staff       532 Jul 18 13:13 audit-results.txt
+drwxr-xr-x@   10 vishalvirda  staff       320 Aug  6 20:58 business_operations
+-rw-r--r--@    1 vishalvirda  staff      2122 Aug  8 21:21 capture-screenshots.js
+-rw-r--r--@    1 vishalvirda  staff      1878 Jul 28 14:55 check-db-integrity.ts
+-rw-r--r--@    1 vishalvirda  staff   8398240 Jan  1  1981 classes.dex
+-rw-r--r--@    1 vishalvirda  staff     21636 Jan  1  1981 classes2.dex
+-rw-r--r--@    1 vishalvirda  staff    152384 Jan  1  1981 classes3.dex
+-rw-r--r--@    1 vishalvirda  staff     51856 Jan  1  1981 classes4.dex
+-rw-r--r--@    1 vishalvirda  staff    132184 Jan  1  1981 classes5.dex
+-rw-r--r--@    1 vishalvirda  staff       640 Jan  1  1981 classes6.dex
+-rw-r--r--@    1 vishalvirda  staff      1125 Aug 10 16:34 clean-duplicates.js
+drwxr-xr-x@   11 vishalvirda  staff       352 Aug  6 20:08 commercial_assets
+drwxr-xr-x@    3 vishalvirda  staff        96 Jul 20 13:13 connectors
+-rw-r--r--@    1 vishalvirda  staff      1676 Aug  9 12:37 debug-attack.js
+-rw-r--r--@    1 vishalvirda  staff    147699 Aug  6 09:48 debug-customers-page.png
+-rw-r--r--@    1 vishalvirda  staff    124815 Aug  4 23:04 debug-drivers-page.png
+-rw-r--r--@    1 vishalvirda  staff       755 Jul 18 11:20 debug-playwright-auth.ts
+-rw-r--r--@    1 vishalvirda  staff       344 Jul 17 18:27 debug-playwright.ts
+-rw-r--r--@    1 vishalvirda  staff      2286 Aug  4 19:28 debug-test.js
+drwxr-xr-x@    8 vishalvirda  staff       256 Aug  8 21:22 demo-screenshots
+-rw-r--r--@    1 vishalvirda  staff      1453 Aug 12 16:49 demo.log
+-rw-r--r--@    1 vishalvirda  staff  12573678 Aug  5 00:01 dev.log
+drwxr-xr-x@    2 vishalvirda  staff        64 Jul 15 15:04 docker
+-rw-r--r--@    1 vishalvirda  staff      1569 Aug  8 15:39 docker-compose.production.yml
+-rw-r--r--@    1 vishalvirda  staff      2367 Aug  8 15:39 docker-compose.staging.yml
+-rw-r--r--@    1 vishalvirda  staff      3155 Aug 17 15:19 docker-compose.yml
+drwxr-xr-x@    7 vishalvirda  staff       224 Jul 30 13:13 docs
+drwxr-xr-x@    7 vishalvirda  staff       224 Jul 29 17:21 documentation
+-rw-r--r--@    1 vishalvirda  staff    109391 Aug  6 09:48 dom-dump.html
+-rw-r--r--@    1 vishalvirda  staff      2433 Aug  9 11:30 e2e_results.log
+-rw-r--r--@    1 vishalvirda  staff     25701 Aug  9 11:28 endpoints_inventory.txt
+drwxr-xr-x@    3 vishalvirda  staff        96 Aug 17 21:06 evidence
+-rw-r--r--@    1 vishalvirda  staff      1337 Aug 10 16:33 fix-duplicates.js
+-rw-r--r--@    1 vishalvirda  staff       708 Aug 10 16:28 fix-import-paths.js
+-rw-r--r--@    1 vishalvirda  staff      1674 Aug 10 16:29 fix-mocks.js
+-rw-r--r--@    1 vishalvirda  staff      2979 Aug  6 17:45 fix-rls.js
+-rw-r--r--@    1 vishalvirda  staff      1081 Aug  9 11:33 fix_greedy_routes.js
+-rw-r--r--@    1 vishalvirda  staff      1141 Aug  9 11:33 fix_greedy_routes2.js
+-rw-r--r--@    1 vishalvirda  staff      1070 Aug  9 11:34 fix_greedy_routes3.js
+-rw-r--r--@    1 vishalvirda  staff      2064 Aug  6 17:01 generate-dependency-audit.js
+-rw-r--r--@    1 vishalvirda  staff      1367 Aug  6 16:59 generate-rls-audit.js
+-rw-r--r--@    1 vishalvirda  staff      2092 Aug  6 17:06 generate-rls-remediation.js
+drwxr-xr-x@    3 vishalvirda  staff        96 Jul 27 16:51 helm
+-rw-r--r--@    1 vishalvirda  staff      1711 Jul 28 16:32 indexed_models.txt
+drwxr-xr-x@    5 vishalvirda  staff       160 Jul 28 18:14 infra
+-rw-r--r--@    1 vishalvirda  staff       941 Aug 10 16:34 inject-counts.js
+drwxr-xr-x@   20 vishalvirda  staff       640 Jul 28 18:14 k8s
+drwxr-xr-x@    9 vishalvirda  staff       288 May  8 17:09 kotlin
+drwxr-xr-x@   10 vishalvirda  staff       320 Aug 10 16:49 kubernetes
+-rw-r--r--@    1 vishalvirda  staff      1484 Aug  9 11:28 list_endpoints.js
+-rw-r--r--@    1 vishalvirda  staff       842 Aug  9 11:27 list_routes.js
+-rw-r--r--@    1 vishalvirda  staff      2763 Jul 28 16:32 models.txt
+drwxr-xr-x@ 1777 vishalvirda  staff     56864 Aug 14 21:27 node_modules
+-rw-r--r--@    1 vishalvirda  staff     31357 Aug  6 17:00 npm-audit.json
+drwxr-xr-x@    3 vishalvirda  staff        96 May  8 17:09 org
+-rw-r--r--@    1 vishalvirda  staff   1999308 Aug 14 21:27 package-lock.json
+-rw-r--r--@    1 vishalvirda  staff       706 Aug  6 09:51 package.json
+drwxr-xr-x@    3 vishalvirda  staff        96 Jul 24 11:05 packages
+-rw-r--r--@    1 vishalvirda  staff       653 Aug 10 16:35 patch-admin.js
+-rw-r--r--@    1 vishalvirda  staff      1760 Aug 10 16:27 patch-tests-robust.js
+-rw-r--r--@    1 vishalvirda  staff      2233 Aug 10 16:26 patch-tests.js
+-rw-r--r--@    1 vishalvirda  staff       663 Aug  9 12:55 patch-updateWithOcc.js
+drwxr-xr-x@    3 vishalvirda  staff        96 Jul 17 16:01 performance
+drwxr-xr-x@    3 vishalvirda  staff        96 Aug  6 09:49 playwright-report
+-rw-r--r--@    1 vishalvirda  staff       757 Aug  5 22:47 playwright.config.ts
+drwxr-xr-x@    4 vishalvirda  staff       128 Aug  9 17:54 rc11-production-deployment
+-rw-r--r--@    1 vishalvirda  staff       698 Jul 24 17:25 rc5-load-results.json
+drwxr-xr-x@   44 vishalvirda  staff      1408 May  8 17:09 res
+-rwxr-xr-x@    1 vishalvirda  staff    290424 Jan  1  1981 resources.arsc
+-rw-r--r--@    1 vishalvirda  staff    112551 Aug  9 11:51 routes-audit-raw.json
+-rw-r--r--@    1 vishalvirda  staff      2240 Aug  9 11:27 routes_inventory.txt
+-rwxr-xr-x@    1 vishalvirda  staff       313 Jul 31 11:35 run_tests.sh
+-rw-r--r--@    1 vishalvirda  staff      3359 Aug  9 11:51 scratch-audit-routes.js
+-rw-r--r--@    1 vishalvirda  staff      4468 Aug  9 11:57 scratch-e2e-business-flows.js
+-rw-r--r--@    1 vishalvirda  staff       803 Jul 31 13:00 scratch-fix-client.js
+-rw-r--r--@    1 vishalvirda  staff       296 Aug 15 09:11 scratch-fix-loads.js
+-rw-r--r--@    1 vishalvirda  staff       463 Aug 15 09:12 scratch-fix-trips-module.js
+-rw-r--r--@    1 vishalvirda  staff      1582 Aug 15 09:12 scratch-fix-trips-service.js
+-rw-r--r--@    1 vishalvirda  staff       571 Aug 15 09:11 scratch-fix-trips.js
+-rw-r--r--@    1 vishalvirda  staff      3083 Aug 15 09:07 scratch-fix-webhooks.js
+-rw-r--r--@    1 vishalvirda  staff      2839 Aug  9 11:51 scratch-generate-reports.js
+-rw-r--r--@    1 vishalvirda  staff      1059 Aug  9 11:27 scratch-measure-startup.js
+-rw-r--r--@    1 vishalvirda  staff      1687 Aug  8 22:20 scratch-patch-modules.js
+-rw-r--r--@    1 vishalvirda  staff       846 Aug  9 12:20 scratch-phase2-routes.ts
+-rw-r--r--@    1 vishalvirda  staff      1624 Aug  9 12:21 scratch-phase2-shadowing.js
+-rw-r--r--@    1 vishalvirda  staff      1691 Aug  9 12:19 scratch-phase4-tenant-isolation.js
+-rw-r--r--@    1 vishalvirda  staff      5752 Aug  9 12:22 scratch-phase6-crud.js
+-rw-r--r--@    1 vishalvirda  staff      4307 Aug  9 12:35 scratch-phase7-attack.js
+-rw-r--r--@    1 vishalvirda  staff       572 Aug  9 12:37 scratch-phase7-lists.js
+-rw-r--r--@    1 vishalvirda  staff      2658 Aug  9 11:52 scratch-route-table.js
+-rw-r--r--@    1 vishalvirda  staff      3623 Aug  9 11:28 scratch-test-browser.js
+-rw-r--r--@    1 vishalvirda  staff      1606 Aug  9 11:58 scratch-unbounded-queries.js
+drwxr-xr-x@   18 vishalvirda  staff       576 Aug 12 17:07 scripts
+-rw-r--r--@    1 vishalvirda  staff     10273 Aug 12 20:54 seed-demo-data.js
+-rw-r--r--@    1 vishalvirda  staff   3915468 Aug  3 23:33 server.log
+-rw-r--r--@    1 vishalvirda  staff      1779 Aug  9 12:20 startup-logs.txt
+-rw-r--r--@    1 vishalvirda  staff    251444 Aug  9 12:20 swagger.json
+drwxr-xr-x@   25 vishalvirda  staff       800 Aug 10 13:13 terraform
+-rw-r--r--@    1 vishalvirda  staff      5208 Aug 12 20:22 test-commercial-flow.js
+-rw-r--r--@    1 vishalvirda  staff       392 Aug  4 17:53 test-db.js
+-rw-r--r--@    1 vishalvirda  staff       462 Aug  4 17:54 test-db2.js
+-rw-r--r--@    1 vishalvirda  staff       573 Jul 30 15:57 test-loads.mjs
+-rw-r--r--@    1 vishalvirda  staff       762 Jul 30 16:01 test-prisma-tx-include-where.mjs
+-rw-r--r--@    1 vishalvirda  staff       733 Jul 30 16:01 test-prisma-tx-include.mjs
+-rw-r--r--@    1 vishalvirda  staff       733 Jul 30 15:59 test-prisma-tx-str.mjs
+-rw-r--r--@    1 vishalvirda  staff       714 Jul 30 15:59 test-prisma-tx.mjs
+-rw-r--r--@    1 vishalvirda  staff       442 Jul 30 15:58 test-prisma.mjs
+drwxr-xr-x@    3 vishalvirda  staff        96 Aug  6 09:49 test-results
+-rw-r--r--@    1 vishalvirda  staff    248681 Aug 10 16:26 test-results.txt
+-rw-r--r--@    1 vishalvirda  staff    248393 Aug 10 16:27 test-results2.txt
+-rw-r--r--@    1 vishalvirda  staff      3180 Aug 12 20:22 test-tenant-isolation.js
+-rw-r--r--@    1 vishalvirda  staff       512 Aug  4 21:35 test-vehicle.js
+drwxr-xr-x@    7 vishalvirda  staff       224 Jul 28 14:06 tests
+-rw-r--r--@    1 vishalvirda  staff       369 Aug  8 20:43 tsconfig.e2e.json
+-rw-r--r--@    1 vishalvirda  staff       280 Aug  8 21:40 tsconfig.json
+drwxr-xr-x@    2 vishalvirda  staff        64 Jul 29 13:14 uploads
+-rw-r--r--@    1 vishalvirda  staff      1550 Aug  6 20:54 v2.0.1_RELEASE_NOTES.md
+-rw-r--r--@    1 vishalvirda  staff      1288 Aug  6 20:58 v2.0.2_RELEASE_NOTES.md
+-rw-r--r--@    1 vishalvirda  staff      6330 Aug  8 20:41 verify-e2e.ts
+-rw-r--r--@    1 vishalvirda  staff       613 Aug  9 21:47 web.log
+-rw-r--r--@    1 vishalvirda  staff       147 Aug  9 11:13 web_startup_2.log
+-rw-r--r--@    1 vishalvirda  staff       618 Aug  9 11:20 web_startup_3.log
+-rw-r--r--@    1 vishalvirda  staff       613 Aug  9 11:23 web_startup_4.log
+-rw-r--r--@    1 vishalvirda  staff       618 Aug  9 11:22 web_startup_5.log
+-rw-r--r--@    1 vishalvirda  staff       318 Aug  9 11:23 web_startup_6.log
+-rw-r--r--@    1 vishalvirda  staff   3523952 Aug  9 21:47 worker.log
+total 0
+drwxr-xr-x@   6 vishalvirda  staff   192 Jul 28 17:42 .
+drwxr-xr-x@ 226 vishalvirda  staff  7232 Aug 17 21:06 ..
+drwxr-xr-x@  43 vishalvirda  staff  1376 Aug 17 20:21 api
+drwxr-xr-x@  19 vishalvirda  staff   608 Aug 17 14:51 docs
+drwxr-xr-x@  13 vishalvirda  staff   416 Jul 29 13:25 mobile
+drwxr-xr-x@  48 vishalvirda  staff  1536 Aug 14 22:12 web
+total 8
+drwxr-xr-x@   7 vishalvirda  staff   224 Jul 30 13:13 .
+drwxr-xr-x@ 226 vishalvirda  staff  7232 Aug 17 21:06 ..
+drwxr-xr-x@   3 vishalvirda  staff    96 Jul 29 11:47 architecture
+-rw-r--r--@   1 vishalvirda  staff  2458 Jul 29 16:13 cloud-readiness-review.md
+drwxr-xr-x@   3 vishalvirda  staff    96 Jul 30 13:13 customer
+drwxr-xr-x@   2 vishalvirda  staff    64 Jul 30 13:10 release
+drwxr-xr-x@   8 vishalvirda  staff   256 Jul 30 13:13 runbooks
+--- docker-compose ---
+version: '3.8'
+
+services:
+  api:
+    image: ${REGISTRY}/parilink-api:${TAG:-latest}
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health/readiness"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  worker:
+    image: ${REGISTRY}/parilink-api:${TAG:-latest}
+    command: ["node", "dist/apps/api/main.js"]
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: parilink-api:staging
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/parilink?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PORT=3000
+      - JWT_SECRET=test-staging-secret-must-be-64-bytes-long-for-hmac-sha512-verification-to-pass-security-checks
+      - MASTER_ENCRYPTION_KEY_V1=staging-encryption-key-that-is-long-enough
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health/readiness"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: parilink-worker:staging
+    command: ["node", "dist/apps/api/main.js"] # In staging, we might split worker/api if configured
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/parilink?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=test-staging-secret-must-be-64-bytes-long-for-hmac-sha512-verification-to-pass-security-checks
+      - MASTER_ENCRYPTION_KEY_V1=staging-encryption-key-that-is-long-enough
+    depends_on:
+      - redis
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: parilink
+    ports:
+      - "5432:5432" # Exposed for local debugging in staging
+    volumes:
+      - pgdata-staging:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379" # Exposed for local debugging in staging
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata-staging:
+version: '3.8'
+
+networks:
+  parilink_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: parilink
+      POSTGRES_DB: parilink_db
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - parilink_net
+    #secrets:
+      #- db_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U parilink -d parilink_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    networks:
+      - parilink_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    restart: always
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: "${MINIO_PASSWORD:-CHANGE_ME_IN_PRODUCTION}"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - parilink_net
+    #secrets:
+      #- db_password
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@postgres:5432/parilink_db?schema=public
+      - REDIS_URL=redis://redis:6379
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=admin
+      - S3_SECRET_KEY=${POSTGRES_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET environment variable is required and must not be empty}
+      - APP_URL=http://api:8080
+      - PORT=8080
+    networks:
+      - parilink_net
+    #secrets:
+    #  - jwt_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/v1/health/readiness"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://api:8080/api/v1
+      - PORT=3000
+    networks:
+      - parilink_net
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+--- Dockerfiles ---
+=== ./apps/web/Dockerfile ===
+# =============================================================================
+# PariLink Web — Production Docker Image
+# Built from monorepo root context (context: .)
+# =============================================================================
+
+# Base Stage
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat dumb-init
+WORKDIR /app
+
+# Deps Stage — workspace-aware install
+FROM base AS deps
+# Copy root workspace config
+COPY package.json package-lock.json ./
+# Copy workspace package.json files needed for resolution
+COPY apps/web/package.json ./apps/web/package.json
+COPY packages/plugin-sdk/package.json ./packages/plugin-sdk/package.json
+# Install all workspace dependencies
+RUN npm ci --workspace=apps/web --workspace=packages/plugin-sdk --include-workspace-root || npm install --legacy-peer-deps
+
+# Builder Stage
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+# Copy plugin-sdk source
+COPY packages/plugin-sdk ./packages/plugin-sdk
+# Build plugin-sdk first
+RUN cd packages/plugin-sdk && npx tsc || true
+# Copy web app source
+COPY apps/web ./apps/web
+# Build Next.js
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN cd apps/web && npm run build
+
+# Runner Stage
+FROM base AS runner
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+RUN chown nextjs:nodejs /app
+
+USER nextjs
+
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./public
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["dumb-init", "node", "server.js"]
+=== ./apps/api/Dockerfile ===
+# Base Stage
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat dumb-init openssl
+WORKDIR /usr/src/app
+
+# Dependencies Stage
+FROM base AS deps
+COPY package*.json ./
+COPY prisma ./prisma
+RUN npm install
+
+# Builder Stage
+FROM base AS builder
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY . .
+RUN npx prisma generate
+RUN npm run build
+
+# Production Stage
+FROM base AS production
+ENV NODE_ENV=production
+
+# Change to non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs
+
+COPY package*.json ./
+# Install only production dependencies cleanly
+RUN npm install --omit=dev && npm cache clean --force
+
+COPY --from=builder /usr/src/app/prisma ./prisma
+# Generate prisma client with production binaries
+RUN npx prisma generate
+
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/dist ./dist
+
+# Set correct permissions
+RUN chown -R nestjs:nodejs /usr/src/app
+
+USER nestjs
+
+# Health Check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3000}/api/v1/health/readiness || exit 1
+
+EXPOSE 3000
+
+COPY --chown=nestjs:nodejs start.sh ./
+RUN chmod +x start.sh
+
+# Use dumb-init to handle PID 1 signals properly
+ENTRYPOINT ["dumb-init", "./start.sh"]
+CMD ["node", "dist/src/main.js"]
+--- .env.example ---
+# ══════════════════════════════════════════════════════════════════════════════
+# PARILINK ENTERPRISE CONFIGURATION
+# ══════════════════════════════════════════════════════════════════════════════
+# Copy this file to .env and populate all values.
+# NEVER commit .env to version control.
+# Production secrets MUST be injected via a secrets manager (Vault, AWS SSM, 
+# GCP Secret Manager, etc.) — NOT from this file.
+
+# ── Application ────────────────────────────────────────────────────────────────
+NODE_ENV=development
+PORT=3000
+
+# ── Database ────────────────────────────────────────────────────────────────
+# Use PgBouncer in front of PostgreSQL for connection pooling in production
+DATABASE_URL=postgresql://parilink:password@localhost:5432/parilink
+SHADOW_DATABASE_URL=postgresql://parilink:password@localhost:5432/parilink_shadow
+
+# ── Authentication ─────────────────────────────────────────────────────────
+# Generate: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+JWT_SECRET=GENERATE_64_BYTE_HEX_SECRET_HERE
+
+# ── Cookie Security ────────────────────────────────────────────────────────
+# Generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+COOKIE_SECRET=GENERATE_32_BYTE_HEX_SECRET_HERE
+
+# ── Envelope Encryption (KEK) ──────────────────────────────────────────────
+# Generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# V1 = active key. V2 = rotation key (promoted on next deploy during rotation).
+MASTER_ENCRYPTION_KEY_V1=GENERATE_32_BYTE_HEX_KEY_HERE
+# MASTER_ENCRYPTION_KEY_V2=GENERATE_32_BYTE_HEX_KEY_HERE_FOR_ROTATION
+
+# ── Field-level Encryption (legacy CryptoService — being phased out) ───────
+ENCRYPTION_KEY=GENERATE_32_BYTE_HEX_KEY_HERE
+
+# ── CORS ───────────────────────────────────────────────────────────────────
+# Comma-separated list of allowed frontend origins (exact match, no wildcards)
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost:3001
+
+# ── Redis (Caching, Rate Limiting, Session Store) ──────────────────────────
+REDIS_URL=redis://localhost:6379
+
+# ── Object Storage ────────────────────────────────────────────────────────
+# S3-compatible: AWS S3, Cloudflare R2, MinIO
+STORAGE_PROVIDER=local   # local | s3 | r2
+STORAGE_BUCKET=parilink-documents
+AWS_REGION=ap-south-1
+# AWS_ACCESS_KEY_ID=
+# AWS_SECRET_ACCESS_KEY=
+
+# ── Frontend Specific Variables ────────────────────────────────────────────
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+NEXT_TELEMETRY_DISABLED=1
+
+# ── Observability ──────────────────────────────────────────────────────────
+# OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+# OTEL_SERVICE_NAME=parilink-api
+# SENTRY_DSN=

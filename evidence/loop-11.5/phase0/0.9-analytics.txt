@@ -1,0 +1,20 @@
+--- analytics and aggregations ---
+apps/api/src/optimization/analytics/optimization-analytics.service.ts:11:   * Generates aggregated metrics for Executive Analytics dashboards.
+apps/api/src/optimization/analytics/optimization-analytics.service.ts:22:        tx.optimizationRecommendation.aggregate({
+apps/api/src/optimization/analytics/optimization-analytics.service.ts:40:        tx.optimizationFeedback.groupBy({
+apps/api/src/dispatch/engine/control-tower.service.ts:15:   * Generates a real-time aggregate of fleet operations for the Control Tower Dashboard.
+apps/api/src/platform/bpm/bpm-analytics.service.ts:50:      // Mock metrics generation. In reality, these aggregate via the EventStore
+apps/api/src/operations/dashboard/operations-dashboard.service.ts:153:        tx.apiAnalyticsLog.groupBy({
+apps/api/src/dashboard/dashboard.controller.ts:22:        tx.invoice.aggregate({
+apps/api/src/dashboard/dashboard.controller.ts:32:        tx.expense.aggregate({
+apps/api/src/portals/customer/analytics/customer-analytics.service.ts:30:        tx.invoice.aggregate({
+apps/api/src/portals/customer/analytics/customer-analytics.service.ts:41:      onTimeDeliveryRate: 98.5, // Mock for now, would aggregate from IntelligenceRiskAssessment
+apps/api/src/vehicles/fleet/fleet-analytics.service.ts:52:      // Mock metrics generation. In a real system, these would aggregate `EventStore` streams
+apps/api/src/warehouse/engine/warehouse-analytics.service.ts:51:      // Mock metrics generation. In a real system, these would aggregate `EventStore` streams
+apps/api/src/analytics/etl/analytics-etl.service.ts:28:      tx.invoice.aggregate({
+apps/api/src/reports/reports.service.ts:34:        tx.invoice.aggregate({
+apps/api/src/reports/reports.service.ts:38:        tx.invoice.aggregate({
+apps/api/src/reports/reports.service.ts:53:      const partialPaymentsResult = await tx.payment.aggregate({
+apps/api/src/reports/reports.service.ts:106:      const invoiceAgg = await tx.invoice.groupBy({
+apps/api/src/reports/reports.service.ts:136:      const expenseAgg = await tx.expense.groupBy({
+apps/api/src/reports/reports.service.ts:145:      const settlementAgg = await tx.settlement.groupBy({

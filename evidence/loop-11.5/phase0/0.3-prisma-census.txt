@@ -1,0 +1,76 @@
+--- all prisma calls ---
+      83 /tmp/prisma-census.txt
+--- high risk pattern: findUnique with id ---
+apps/api/src/comments/comments.service.ts:62:      const comment = await tx.comment.findUnique({ where: { id: commentId } });
+apps/api/src/reporting/reporting.processor.ts:36:        tx.reportTemplate.findUnique({ where: { id: templateId } }),
+apps/api/src/auth/mfa.service.ts:29:      tx.user.findUnique({ where: { id: userId } }),
+apps/api/src/auth/mfa.service.ts:55:      tx.user.findUnique({ where: { id: userId } }),
+apps/api/src/auth/mfa.service.ts:113:      tx.user.findUnique({ where: { id: userId } }),
+apps/api/src/auth/sso/sso.service.ts:147:      tx.identityProvider.findUnique({ where: { id: idpId } }),
+apps/api/src/integration/webhook/webhook-platform.service.ts:164:      return tx.webhookDelivery.findUnique({ where: { id: newDelivery.id } });
+apps/api/src/integration/developer/developer-platform.service.ts:250:      const existing = await tx.apiKey.findUnique({ where: { id: keyId } });
+apps/api/src/admin/services/license-admin.service.ts:153:      tx.subscriptionPlan.findUnique({ where: { id: dto.subscriptionPlanId } }),
+apps/api/src/admin/services/license-admin.service.ts:208:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/admin/services/license-admin.service.ts:239:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/admin/services/license-admin.service.ts:266:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/admin/services/license-admin.service.ts:307:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/admin/services/tenant-admin.service.ts:66:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/admin/services/system-settings-admin.service.ts:27:        tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/operations/dr/disaster-recovery.service.ts:69:      tx.disasterRecoveryPlan.findUnique({ where: { id: input.planId } }),
+apps/api/src/operations/dashboard/operations-dashboard.service.ts:173:          tx.company.findUnique({ where: { id: item.companyId as string } }),
+apps/api/src/operations/backup/backup-recovery.service.ts:150:      tx.backupJob.findUnique({ where: { id: jobId } }),
+apps/api/src/operations/backup/backup-recovery.service.ts:188:      tx.backupJob.findUnique({ where: { id: jobId } }),
+apps/api/src/operations/incidents/incident-management.service.ts:104:      tx.incident.findUnique({ where: { id: input.incidentId } }),
+apps/api/src/operations/incidents/incident-management.service.ts:188:      tx.incident.findUnique({ where: { id: incidentId } }),
+apps/api/src/integrations/integrations.service.ts:121:        entityData = await tx.trip.findUnique({ where: { id: dto.entityId } });
+apps/api/src/vehicles/fleet/maintenance.engine.ts:29:      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId } });
+apps/api/src/vehicles/fleet/fleet-analytics.service.ts:55:      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId } });
+apps/api/src/documents/services/document-folder.service.ts:20:        tx.documentFolder.findUnique({ where: { id: dto.parentId } }),
+apps/api/src/documents/services/document-folder.service.ts:176:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-folder.service.ts:185:        async (tx) => tx.documentFolder.findUnique({ where: { id: folderId } }),
+apps/api/src/documents/services/document-signature.service.ts:28:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-signature.service.ts:82:      tx.documentSignature.findUnique({ where: { id: signatureId } }),
+apps/api/src/documents/services/document-signature.service.ts:143:      tx.documentSignature.findUnique({ where: { id: signatureId } }),
+apps/api/src/documents/services/document-version.service.ts:27:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-version.service.ts:69:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-version.service.ts:143:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-version.service.ts:183:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-version.service.ts:225:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/documents/services/document-ai.service.ts:20:      tx.document.findUnique({ where: { id: documentId } }),
+apps/api/src/saas/billing/billing.service.ts:43:      tx.company.findUnique({ where: { id: companyId } }),
+apps/api/src/saas/billing/billing.service.ts:49:      tx.subscriptionPlan.findUnique({ where: { id: planId } }),
+apps/api/src/communications/engine/notification-orchestrator.service.ts:258:      tx.user.findUnique({ where: { id: dto.targetUserId } }),
+apps/api/src/analytics/engine/kpi-engine.service.ts:84:      tx.kpiDefinition.findUnique({ where: { id: kpiId, companyId } }),
+--- raw SQL bypasses ---
+apps/api/test/webhook.e2e-spec.ts:25:    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "WebhookDelivery" CASCADE`);
+apps/api/prisma/seed.ts:16:    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:14:    $queryRaw: jest.fn(),
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:37:      mockPrisma.$queryRaw.mockResolvedValue([{ id: 'rec-1' }]);
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:44:      // Verify $queryRaw was called with params
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:45:      const args = mockPrisma.$queryRaw.mock.calls[0];
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:58:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:68:      const args = mockPrisma.$queryRaw.mock.calls[0];
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:79:      mockPrisma.$queryRaw.mockRejectedValue(new Error('DB Error'));
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:90:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/mdm-search.service.spec.ts:94:      const args = mockPrisma.$queryRaw.mock.calls[0];
+apps/api/src/platform/mdm/data-quality-engine.service.ts:141:          tx.$queryRaw<{ id: string }[]>`
+apps/api/src/platform/mdm/mdm-search.service.ts:56:          tx.$queryRaw<Record<string, unknown>[]>`
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:13:    $queryRaw: jest.fn(),
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:33:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:49:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:61:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:69:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:81:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:92:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:103:      mockPrisma.$queryRaw.mockResolvedValue([]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:118:      mockPrisma.$queryRaw.mockResolvedValue([
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:133:      mockPrisma.$queryRaw.mockResolvedValue([{ id: 'dup-1' }]);
+apps/api/src/platform/mdm/data-quality-engine.service.spec.ts:151:      // No PAN, GSTIN, email, phone, etc. — $queryRaw should not be called with conditions
+apps/api/src/platform/api/health.service.ts:121:        this.prisma.runAsSystem(async (tx) => tx.$queryRaw`SELECT 1`),
+apps/api/src/prisma/prisma.service.ts:232:      await tx.$executeRaw`SELECT set_config('app.current_company_id', ${companyId}, true)`;
+apps/api/src/prisma/prisma.service.ts:257:      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
+apps/api/src/prisma/prisma.service.ts:293:    const configResult = await tx.$queryRaw<{ current_company_id: string | null }[]>`SELECT current_setting('app.current_company_id', true) as current_company_id`;
+apps/api/src/operations/health/enterprise-health.service.ts:194:      await this.prisma.runAsSystem(async (tx) => tx.$queryRaw`SELECT 1`);
+apps/api/src/ai/copilot/sql-generator.service.ts:56:        tx.$queryRawUnsafe(sanitizedQuery, companyId),
+apps/api/src/ai/copilot/sql-generator.service.ts:120:    // Note: We use string replacement here, but ideally we extract the query structure and pass companyId as a param to prisma.$queryRaw.
+apps/api/src/tracking/tracking.service.ts:30:        latestLocations = await tx.$queryRaw<any[]>`
