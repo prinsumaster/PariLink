@@ -460,8 +460,8 @@ export class TripsService {
       const rowCount = await tx.$executeRaw`
         UPDATE "Load" 
         SET "tripId" = ${id}::uuid, status = 'ASSIGNED' 
-        WHERE id = ANY(${loadIds}::uuid[]) 
-          AND "companyId" = ${companyId}::uuid 
+        WHERE id::text IN (${Prisma.join(loadIds)}) 
+          AND "companyId"::text = ${companyId} 
           AND "tripId" IS NULL 
           AND status = 'PENDING'
       `;

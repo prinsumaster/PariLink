@@ -1,6 +1,6 @@
 # Base Stage
 FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat dumb-init
+RUN apk add --no-cache libc6-compat dumb-init openssl
 WORKDIR /usr/src/app
 
 # Dependencies Stage
