@@ -5,47 +5,23 @@ import { AdminSsoController } from './admin-sso.controller';
 import { OidcService } from './oidc.service';
 import { SamlService } from './saml.service';
 import { AuthModule } from '../auth.module';
-import { JwtModule } from '@nestjs/jwt';
+import { TenantGuard } from '../guards/tenant.guard';
 
 // ---------------------------------------------------------------------------
-// P0-1 FIX: Removed insecure `|| 'super-secret-fallback'` fallback.
-// This factory throws at module initialization if JWT_SECRET is absent or
-// uses any known insecure placeholder. The application cannot start without
-// a valid, cryptographically strong secret.
+// SsoModule
+//
+// Uses the JwtModule from AuthModule (RS256 key-pair) — no separate JwtModule
+// registration here, which avoids the previous HS512/JWT_SECRET symmetric path.
+// TenantGuard is provided here so AdminSsoController can inject it via
+// UseGuards without requiring a global registration.
 // ---------------------------------------------------------------------------
-
-const INSECURE_DEFAULTS = new Set([
-  'super-secret-fallback',
-  'parilink-secure-jwt-secret-in-prod',
-  'GENERATE_64_BYTE_HEX_SECRET_HERE',
-]);
-
-function resolveJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret || INSECURE_DEFAULTS.has(secret)) {
-    throw new Error(
-      '[SSO] JWT_SECRET is missing or uses an insecure placeholder. ' +
-        "Generate a production secret: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"",
-    );
-  }
-  return secret;
-}
 
 @Module({
   imports: [
-    AuthModule,
-    JwtModule.registerAsync({
-      useFactory: () => ({
-        secret: resolveJwtSecret(),
-        signOptions: {
-          expiresIn: '15m',
-          algorithm: 'HS512',
-        },
-      }),
-    }),
+    AuthModule, // Re-exports JwtModule (RS256), JwtStrategy, etc.
   ],
   controllers: [SsoController, AdminSsoController],
-  providers: [SsoService, OidcService, SamlService],
+  providers: [SsoService, OidcService, SamlService, TenantGuard],
   exports: [SsoService],
 })
 export class SsoModule {}

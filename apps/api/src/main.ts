@@ -38,7 +38,6 @@ async function bootstrap() {
   const requiredEnvVars = [
     'DATABASE_URL',
     'REDIS_URL',
-    'JWT_SECRET',
     'COOKIE_SECRET',
     'RAZORPAY_KEY_ID',
     'RAZORPAY_KEY_SECRET',
@@ -67,19 +66,6 @@ async function bootstrap() {
     }
   }
 
-  if (
-    !process.env.JWT_SECRET ||
-    process.env.JWT_SECRET === 'super-secret-fallback' ||
-    process.env.JWT_SECRET === 'parilink-secure-jwt-secret-in-prod'
-  ) {
-    console.error(
-      '⚠️  CRITICAL: JWT_SECRET is not set or uses an insecure/default value. ' +
-        "Generate a 64-byte hex secret: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"",
-    );
-    if (process.env.NODE_ENV === 'production') {
-      process.exit(1);
-    }
-  }
 
   if (!process.env.MASTER_ENCRYPTION_KEY_V1) {
     console.warn(

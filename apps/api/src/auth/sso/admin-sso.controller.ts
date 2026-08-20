@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { TenantGuard } from '../guards/tenant.guard';
 import { PermissionsGuard } from '../guards/permissions.guard';
 import { RequirePermissions } from '../decorators/permissions.decorator';
 import { SsoService } from './sso.service';
@@ -18,7 +19,7 @@ import type { Request } from 'express';
 
 @ApiTags('admin-sso')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(JwtAuthGuard, TenantGuard, PermissionsGuard)
 @Controller('companies/:companyId/idps')
 export class AdminSsoController {
   constructor(private readonly ssoService: SsoService) {}

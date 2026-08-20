@@ -78,6 +78,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       message = 'Invalid data provided. Please check your request.';
       errorCode = 'VALIDATION_ERROR';
     }
+    // ── CSRF Token Errors (csurf throws Error with code EBADCSRFTOKEN)
+    // Must be mapped to 403 — falling through to the unknown handler produces
+    // a 500, which leaks that CSRF is in use and enables cheap availability hits.
+    else if ((exception as any)?.code === 'EBADCSRFTOKEN') {
+      statusCode = HttpStatus.FORBIDDEN;
+      message = 'Invalid or missing CSRF token.';
+      errorCode = 'CSRF_TOKEN_INVALID';
+    }
     // ── Unknown errors
     else {
       // Log full error internally for 5xx events

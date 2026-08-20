@@ -579,7 +579,7 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '15m',
-      algorithm: 'HS512', // SHA-512 MAC — stronger than HS256
+      algorithm: 'RS256',
     });
 
     const rawRefreshToken = crypto.randomBytes(48).toString('base64url');
