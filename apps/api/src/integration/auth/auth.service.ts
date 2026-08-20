@@ -67,7 +67,7 @@ export class IntegrationAuthService {
    * Validates an HMAC signature for incoming webhooks
    */
   verifyWebhookSignature(
-    payload: string,
+    payload: string | Buffer,
     signature: string,
     secret: string,
   ): boolean {
@@ -76,6 +76,13 @@ export class IntegrationAuthService {
       .update(payload)
       .digest('hex');
 
-    return signature === expectedSignature;
+    const signatureBuffer = Buffer.from(signature, 'utf8');
+    const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+
+    if (signatureBuffer.length !== expectedBuffer.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
   }
 }

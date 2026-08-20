@@ -7,7 +7,10 @@ import {
   Get,
   UseGuards,
   UnauthorizedException,
+  Req,
 } from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
+import type { Request } from 'express';
 import { ConnectorRegistryService } from '../framework/registry.service';
 import { WebhookEngineService } from '../webhook/webhook.service';
 import { IntegrationAuthService } from '../auth/auth.service';
@@ -30,6 +33,7 @@ export class IntegrationGatewayController {
 
   @Post(':provider/webhook/:companyId')
   async handleIncomingWebhook(
+    @Req() req: RawBodyRequest<Request>,
     @Param('provider') provider: string,
     @Param('companyId') companyId: string,
     @Headers() headers: any,
@@ -64,10 +68,13 @@ export class IntegrationGatewayController {
     if (!signature) {
       throw new UnauthorizedException('Missing webhook signature');
     }
+    
+    const rawBody = req.rawBody;
+    if (!rawBody) {
+      throw new UnauthorizedException('Missing raw body');
+    }
 
-    // We stringify the body to verify the HMAC. In a real system, we'd use rawBody.
-    // However, for this proof, body stringification is sufficient for the mock test.
-    const isValid = this.authService.verifyWebhookSignature(JSON.stringify(body), signature, secret);
+    const isValid = this.authService.verifyWebhookSignature(rawBody, signature, secret);
     if (!isValid) {
       throw new UnauthorizedException('Invalid webhook signature');
     }
