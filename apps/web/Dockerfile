@@ -20,9 +20,10 @@ RUN npm ci --workspace=apps/web --workspace=packages/plugin-sdk --include-worksp
 
 # Builder Stage
 FROM base AS builder
+COPY package.json package-lock.json ./
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules 2>/dev/null || true
-COPY --from=deps /app/packages/plugin-sdk/node_modules ./packages/plugin-sdk/node_modules 2>/dev/null || true
+COPY --from=deps /app/apps/web/node_module[s] ./apps/web/node_modules
+COPY --from=deps /app/packages/plugin-sdk/node_module[s] ./packages/plugin-sdk/node_modules
 # Copy plugin-sdk source
 COPY packages/plugin-sdk ./packages/plugin-sdk
 # Build plugin-sdk first
@@ -30,6 +31,10 @@ RUN cd packages/plugin-sdk && npx tsc || true
 # Copy web app source
 COPY apps/web ./apps/web
 # Build Next.js
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_GIT_SHA
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_GIT_SHA=$NEXT_PUBLIC_GIT_SHA
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN cd apps/web && npm run build
 
@@ -43,9 +48,9 @@ RUN chown nextjs:nodejs /app
 
 USER nextjs
 
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
@@ -54,4 +59,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["dumb-init", "node", "server.js"]
+CMD ["dumb-init", "node", "apps/web/server.js"]

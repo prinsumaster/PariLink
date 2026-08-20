@@ -17,22 +17,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 // resolveJwtSecret() throws at construction time if secret is absent/insecure.
 // ---------------------------------------------------------------------------
 
-const INSECURE_DEFAULTS = new Set([
-  'super-secret-fallback',
-  'parilink-secure-jwt-secret-in-prod',
-  'GENERATE_64_BYTE_HEX_SECRET_HERE',
-]);
-
-function resolveJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret || INSECURE_DEFAULTS.has(secret)) {
-    throw new Error(
-      '[JwtStrategy] JWT_SECRET is missing or uses an insecure placeholder. ' +
-        "Generate a production secret: node -e \"console.log(require('crypto').randomBytes(64).toString('hex'))\"",
-    );
-  }
-  return secret;
-}
+import { getJwtPublicKey } from '../auth.module';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -52,8 +37,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromUrlQueryParameter('token'),
       ]),
       ignoreExpiration: false,
-      secretOrKey: resolveJwtSecret(),
-      algorithms: ['HS512'],
+      secretOrKey: getJwtPublicKey(),
+      algorithms: ['RS256'],
     });
   }
 

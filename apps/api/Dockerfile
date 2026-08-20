@@ -50,4 +50,4 @@ RUN chmod +x start.sh
 
 # Use dumb-init to handle PID 1 signals properly
 ENTRYPOINT ["dumb-init", "./start.sh"]
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]

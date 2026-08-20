@@ -79,6 +79,7 @@ services:
       - "8080:8080"
     env_file: [".env"]
     environment:
+      - GIT_SHA=${GIT_SHA:-unknown}
       - NODE_ENV=production
       - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@postgres:5432/parilink_db?schema=public
       - REDIS_URL=redis://redis:6379
@@ -110,8 +111,11 @@ services:
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+        - NEXT_PUBLIC_GIT_SHA=${GIT_SHA:-unknown}
     restart: always
     ports:
       - "3000:3000"

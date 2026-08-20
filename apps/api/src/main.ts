@@ -99,6 +99,9 @@ async function bootstrap() {
     rawBody: true,
   });
 
+  // Trust proxy for X-Forwarded-For parsing (Docker gateway / Nginx)
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+
   const appLogger = app.get(Logger);
   app.useLogger(appLogger);
   app.useGlobalInterceptors(

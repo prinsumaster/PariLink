@@ -11,23 +11,27 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
+import { RequirePermissions } from '../decorators/permissions.decorator';
 import { SsoService } from './sso.service';
 import type { Request } from 'express';
 
 @ApiTags('admin-sso')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('companies/:companyId/idps')
 export class AdminSsoController {
   constructor(private readonly ssoService: SsoService) {}
 
   @Get()
+  @RequirePermissions('sso:read')
   @ApiOperation({ summary: 'List Identity Providers for a company' })
   async listProviders(@Param('companyId') companyId: string) {
     return this.ssoService.listProviders(companyId);
   }
 
   @Post()
+  @RequirePermissions('sso:write')
   @ApiOperation({ summary: 'Create an Identity Provider' })
   async createProvider(
     @Param('companyId') companyId: string,
@@ -39,6 +43,7 @@ export class AdminSsoController {
   }
 
   @Patch(':idpId')
+  @RequirePermissions('sso:write')
   @ApiOperation({ summary: 'Update an Identity Provider' })
   async updateProvider(
     @Param('companyId') companyId: string,
@@ -51,6 +56,7 @@ export class AdminSsoController {
   }
 
   @Delete(':idpId')
+  @RequirePermissions('sso:write')
   @ApiOperation({ summary: 'Delete/Disable an Identity Provider' })
   async deleteProvider(
     @Param('companyId') companyId: string,

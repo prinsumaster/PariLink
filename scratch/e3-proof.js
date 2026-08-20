@@ -31,15 +31,19 @@ const { chromium } = require('playwright-core');
   console.log('--- Login succeeded ---');
 
   // Step 2: Install route interceptor BEFORE navigating to audit page
+  // Setup request logging
+  page.on('request', request => {
+    console.log(`REQ: ${request.method()} ${request.url()}`);
+  });
+
   console.log('--- Step 2: Installing 401 interceptor on API routes ---');
-  await page.route('**/*', async route => {
-    const reqUrl = route.request().url();
-    if (reqUrl.includes('audit/timeline') || reqUrl.includes('auth/refresh')) {
-      console.log('INTERCEPTED 401:', reqUrl);
-      await route.fulfill({ status: 401, contentType: 'application/json', body: '{"message":"Unauthorized","statusCode":401}' });
-    } else {
-      await route.continue();
-    }
+  await page.route('**/api/v1/admin/audit/**', async (route) => {
+    console.log(`[INTERCEPTED] Returning 401 for: ${route.request().url()}`);
+    await route.fulfill({
+      status: 401,
+      contentType: 'application/json',
+      body: JSON.stringify({ message: 'Unauthorized (Testing Interceptor)' }),
+    });
   });
 
   // Step 3: Navigating to /dashboard/admin/audit

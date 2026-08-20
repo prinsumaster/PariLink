@@ -1,11 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Hexagon, Loader2, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+
+function getValidatedCallbackUrl(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url, window.location.origin);
+    return parsed.origin === window.location.origin ? parsed.pathname + parsed.search + parsed.hash : null;
+  } catch {
+    return null;
+  }
+}
+
 import { api } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { getDashboardRouteForRole } from '@/utils/role-router';
@@ -23,6 +34,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +77,8 @@ export default function LoginPage() {
       // Ensure auth state is persisted before navigation
       await new Promise(resolve => setTimeout(resolve, 500));
       // Automatic RBAC Redirection (Phase 3)
-      const targetRoute = getDashboardRouteForRole(user.role, user.onboardingCompleted);
+      const callback = getValidatedCallbackUrl(searchParams.get('callbackUrl'));
+      const targetRoute = callback || getDashboardRouteForRole(user.role, user.onboardingCompleted);
       router.replace(targetRoute);
       
     } catch (err: any) {

@@ -7,7 +7,12 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   // Handle session expired parameter
   if (request.nextUrl.searchParams.get('session_expired') === 'true') {
-    const response = NextResponse.redirect(new URL('/login', request.url));
+    const loginUrl = new URL('/login', request.url);
+    const callbackUrl = request.nextUrl.searchParams.get('callbackUrl');
+    if (callbackUrl) {
+      loginUrl.searchParams.set('callbackUrl', callbackUrl);
+    }
+    const response = NextResponse.redirect(loginUrl);
     response.cookies.delete('parilink_session');
     response.cookies.delete('access_token');
     return response;
