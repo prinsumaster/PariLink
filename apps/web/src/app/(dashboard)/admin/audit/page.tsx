@@ -11,15 +11,19 @@ import { toast } from 'sonner';
 export default function AuditLogsPage() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = async () => {
     try {
       setLoading(true);
+      setError(null);
       // Fetching the global/tenant audit timeline
       const res = await api.get('/admin/audit/timeline?limit=100');
       setData(res.data?.data || res.data || []);
     } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Failed to load audit logs');
+      const msg = e.response?.data?.message || 'Failed to load audit logs';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -63,6 +67,12 @@ export default function AuditLogsPage() {
                 {loading ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">Loading audit data...</TableCell>
+                  </TableRow>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center text-red-500">
+                      Failed to load audit logs: {error}
+                    </TableCell>
                   </TableRow>
                 ) : data.length === 0 ? (
                   <TableRow>

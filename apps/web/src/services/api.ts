@@ -69,7 +69,7 @@ api.interceptors.response.use(
         // Refresh failed, logout
         useAuthStore.getState().logout();
         const nextUrl = typeof window !== 'undefined' ? encodeURIComponent(window.location.pathname + window.location.search) : '';
-        window.location.href = `/login?session_expired=true${nextUrl ? `&next=${nextUrl}` : ''}`;
+        window.location.href = `/login?session_expired=true${nextUrl ? `&callbackUrl=${nextUrl}` : ''}`;
         return Promise.reject(refreshError);
       }
     }

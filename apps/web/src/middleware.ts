@@ -5,6 +5,13 @@ const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-pa
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  // Handle session expired parameter
+  if (request.nextUrl.searchParams.get('session_expired') === 'true') {
+    const response = NextResponse.redirect(new URL('/login', request.url));
+    response.cookies.delete('parilink_session');
+    response.cookies.delete('access_token');
+    return response;
+  }
   
   // Exclude static files and API routes from middleware
   if (

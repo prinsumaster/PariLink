@@ -28,6 +28,12 @@ import { csrfMiddleware } from './common/middlewares/csrf.middleware';
 // ---------------------------------------------------------------------------
 
 async function bootstrap() {
+  const jwtKeyRaw = process.env.JWT_PUBLIC_KEY || '';
+  const pubKey = Buffer.from(jwtKeyRaw, 'base64').toString('utf8');
+  const pubKeyFingerprint = require('crypto').createHash('sha256').update(pubKey).digest('hex').substring(0, 8);
+  const gitSha = process.env.NEXT_PUBLIC_GIT_SHA || process.env.GIT_SHA || 'unknown';
+  console.log(`[BOOTSTRAP] DEPLOY FINGERPRINT: GitSHA=${gitSha} | JWT_ALG=RS256 | PubKeyFingerprint=${pubKeyFingerprint}`);
+
   // ── Pre-boot security configuration verification (Fail-Fast)
   const requiredEnvVars = [
     'DATABASE_URL',

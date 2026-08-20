@@ -1,0 +1,1 @@
+SELECT "companyId" FROM "Invoice" WHERE id = '9b5f9acf-d16d-41cc-a4c9-1748dbcd3fc8';
