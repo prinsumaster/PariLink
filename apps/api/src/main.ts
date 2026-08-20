@@ -102,8 +102,13 @@ async function bootstrap() {
   app.useWebSocketAdapter(redisIoAdapter);
 
   // ── Payload Limits (Enterprise Bulk Operations)
-  app.use(json({ limit: '10mb' }));
-  app.use(urlencoded({ extended: true, limit: '10mb' }));
+  const rawBodyBuffer = (req: any, res: any, buf: Buffer) => {
+    if (buf && buf.length) {
+      req.rawBody = buf;
+    }
+  };
+  app.use(json({ limit: '10mb', verify: rawBodyBuffer }));
+  app.use(urlencoded({ extended: true, limit: '10mb', verify: rawBodyBuffer }));
 
   // ── Cookie parsing (HttpOnly refresh token support)
   app.use(cookieParser(process.env.COOKIE_SECRET));

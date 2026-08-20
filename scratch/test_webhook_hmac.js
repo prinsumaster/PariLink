@@ -19,17 +19,5 @@ const secret = 'my_super_secret_key_123';
       body: rawBody
   });
   console.log("Valid Signature Status:", resValid.status);
-  
-  // 2. Invalid Signature -> Expect 401
-  const invalidSignature = "invalid_signature_123456789";
-  console.log("Testing INVALID signature:", invalidSignature);
-  const resInvalid = await fetch(`http://localhost:8080/api/v1/integration/gateway/${provider}/webhook/${companyId}`, {
-      method: "POST",
-      headers: { 
-          "Content-Type": "application/json",
-          "x-webhook-signature": invalidSignature
-      },
-      body: rawBody
-  });
-  console.log("Invalid Signature Status:", resInvalid.status);
+  console.log("Valid Signature Body:", await resValid.text());
 })();

@@ -45,8 +45,10 @@ export class IntegrationGatewayController {
     }
 
     // 1. Verify HMAC signature
-    const connection = await this.prisma.integrationConnection.findFirst({
-      where: { companyId, connectorId: provider },
+    const connection = await this.prisma.runAsSystem('Webhook verification bypass', async (tx) => {
+      return tx.integrationConnection.findFirst({
+        where: { companyId, connector: { provider: provider } },
+      });
     });
     if (!connection || !connection.credentials) {
       throw new UnauthorizedException('Integration not configured');
@@ -54,10 +56,13 @@ export class IntegrationGatewayController {
     
     let secret = '';
     try {
-      const credentials = this.authService.decryptCredentials(connection.credentials as string);
+      const credsString = typeof connection.credentials === 'string' 
+        ? connection.credentials 
+        : JSON.stringify(connection.credentials);
+      const credentials = this.authService.decryptCredentials(credsString);
       secret = credentials?.webhookSecret;
-    } catch (e) {
-      throw new UnauthorizedException('Invalid credentials state');
+    } catch (e: any) {
+      throw new UnauthorizedException('Invalid credentials state: ' + e.message);
     }
 
     if (!secret) {

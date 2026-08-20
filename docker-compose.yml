@@ -74,6 +74,8 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+      args:
+        - GIT_SHA=${GIT_SHA:-unknown}
     restart: always
     ports:
       - "8080:8080"
