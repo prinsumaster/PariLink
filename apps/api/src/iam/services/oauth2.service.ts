@@ -45,8 +45,8 @@ export class OAuth2Service {
           clientSecret: clientSecretHash,
           name,
           description,
-          scopes: JSON.stringify(scopes),
-          grantTypes: JSON.stringify(['client_credentials']),
+          scopes,
+          grantTypes: ['client_credentials'],
         },
       }),
     );
@@ -88,7 +88,7 @@ export class OAuth2Service {
       throw new UnauthorizedException('Invalid client credentials');
     }
 
-    const allowedScopes = JSON.parse(client.scopes as string) as string[];
+    const allowedScopes = (client.scopes as string[]) || [];
     const grantedScopes =
       requestedScopes.length > 0
         ? requestedScopes.filter((scope) => allowedScopes.includes(scope))
@@ -108,7 +108,7 @@ export class OAuth2Service {
         data: {
           clientId: client.id,
           tokenHash,
-          scopes: JSON.stringify(grantedScopes),
+          scopes: grantedScopes,
           expiresAt,
         },
       }),

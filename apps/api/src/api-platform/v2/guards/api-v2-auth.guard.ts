@@ -44,7 +44,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
           email: 'api-key@system.local',
           roleId: 'system-role',
           roles: [],
-          scopes: JSON.parse(key.scopes as string) || [],
+          scopes: (key.scopes as string[]) || [],
           type: 'api_key',
         } as AuthenticatedUser;
         return true;
@@ -59,7 +59,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
           email: pat.user?.email || 'pat@system.local',
           roleId: pat.user?.roleId || 'system-role',
           roles: [],
-          scopes: JSON.parse(pat.scopes as string) || [],
+          scopes: (pat.scopes as string[]) || [],
           type: 'pat',
         } as AuthenticatedUser;
         return true;
@@ -75,7 +75,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
           email: 'oauth2-client@system.local',
           roleId: 'system-role',
           roles: [],
-          scopes: JSON.parse(oauthToken.scopes as string) || [],
+          scopes: (oauthToken.scopes as string[]) || [],
           type: 'oauth2_client',
         } as AuthenticatedUser;
         return true;
