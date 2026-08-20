@@ -6,17 +6,6 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import * as crypto from 'crypto';
-import * as jsonwebtoken from 'jsonwebtoken';
-
-// Resolve the RSA private key for RS256 signing (same key as AuthModule)
-function resolveRsaPrivateKey(): string {
-  const key = process.env.JWT_PRIVATE_KEY;
-  if (!key) throw new Error('[OAuth2] JWT_PRIVATE_KEY is not configured');
-  if (!key.includes('-----BEGIN')) {
-    return Buffer.from(key, 'base64').toString('utf8');
-  }
-  return key;
-}
 
 @Injectable()
 export class OAuth2Service {
@@ -106,18 +95,9 @@ export class OAuth2Service {
         : allowedScopes;
 
     const expiresIn = 3600; // 1 hour
-    const payload = {
-      sub: clientId,
-      type: 'client_credentials',
-      companyId: client.companyId,
-      scopes: grantedScopes,
-    };
 
-    const privateKey = resolveRsaPrivateKey();
-    const token = jsonwebtoken.sign(payload, privateKey, {
-      expiresIn,
-      algorithm: 'RS256',
-    });
+    // Issue an opaque token (base64url to be URL-safe and compact)
+    const token = crypto.randomBytes(48).toString('base64url');
     const tokenHash = this.hashSecret(token);
 
     const expiresAt = new Date();

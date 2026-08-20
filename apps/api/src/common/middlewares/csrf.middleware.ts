@@ -23,10 +23,9 @@ export function csrfMiddleware(
 ) {
   // 1. Skip CSRF for Webhooks, Auth Login, and OAuth token endpoints (Stateless/Server-to-Server)
   if (
-    req.path.includes('/webhooks') ||
-    req.path.includes('/auth/login') ||
-    req.path.includes('/auth/register') ||
-    req.path.includes('/iam/oauth/token')
+    req.path.match(/^\/api\/v[0-9]+\/auth\/(login|register)$/) ||
+    req.path.match(/^\/api\/v[0-9]+\/iam\/oauth\/token$/) ||
+    req.path.match(/^\/api\/v[0-9]+\/(.*\/)?webhook(s)?(\/|$)/)
   ) {
     return next();
   }

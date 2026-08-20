@@ -27,6 +27,10 @@ Welcome to PariLink 2.0. This major release transforms the platform into a true 
 - **Zero Placeholders:** Complete elimination of all "Coming Soon", dummy data, and unhandled `TODO` comments in the production codebase.
 - **Strict Typing:** The entire API and Web codebase now passes strict TypeScript compilation with 0 errors.
 
+## ⚠️ Breaking Changes
+
+- **OAuth2 Token Migration:** `client_credentials` tokens have been migrated from signed JWTs to high-entropy opaque tokens. Existing issued tokens (JWTs) are now invalid and will return `401 Unauthorized`. Integrations must execute a new `client_credentials` grant exchange to obtain a valid opaque token.
+
 ## 🐛 Bug Fixes & Polish
 
 - Fixed dropdown menu trigger types in the Super Admin dashboard.
