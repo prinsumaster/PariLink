@@ -30,7 +30,7 @@ RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
 
 COPY --from=builder /usr/src/app/prisma ./prisma
 # Generate prisma client with production binaries
-RUN npx prisma generate
+RUN npx prisma@5.22.0 generate
 
 COPY --from=builder --chown=nestjs:nodejs /usr/src/app/dist ./dist
 
