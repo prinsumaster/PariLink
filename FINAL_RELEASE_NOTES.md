@@ -39,3 +39,12 @@ Welcome to PariLink 2.0. This major release transforms the platform into a true 
 
 ---
 *PariLink 2.0 is now ready for Staging Deployment and Customer Onboarding.*
+
+## ⚠️ Data Loss — Q3 Gate (2026-08-21)
+
+**OAuthClient fixture rows permanently lost.**
+During Q3 security gate testing, an unfiltered `DELETE FROM "OAuthToken"; DELETE FROM "OAuthClient";` was executed to clean up test rows. At the time of execution, 4 OAuthClient records (created as test fixtures during the session) and 2 OAuthToken records were present in the database. These were not part of any seed file (`prisma/seed.ts` and `prisma/seed/marketplace.ts` contain no OAuthClient or IntegrationConnection creation). Re-running `npx prisma db seed` does not restore them.
+
+**Impact:** No production OAuthClients existed; these were test fixtures. No customer data was affected. IntegrationConnectors (19 rows) were restored by the marketplace seed.
+
+**Remediation:** Any OAuthClient entries needed for staging/demo purposes must be created manually via the `/iam/oauth/clients` API or a dedicated seed script. A seed script covering OAuthClient creation has NOT been added to `prisma/seed.ts` as part of this gate — this is a known gap to be addressed in a follow-up.

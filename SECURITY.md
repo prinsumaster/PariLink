@@ -31,3 +31,24 @@ PariLink v1.0 Enterprise forces strict multi-tenant Data Isolation (Row Level Se
 ## DB Password Rotation Runbook
 - Correct method: ALTER USER parilink WITH PASSWORD '...'; then update .env, restart the API only.
 - WARNING: never `docker volume rm` a data volume to change credentials. Postgres reads POSTGRES_PASSWORD only on first init.
+
+## Test Fixture Cleanup Policy
+
+**Rule: Every cleanup DELETE must carry a WHERE clause scoped to the fixture.**
+
+An unfiltered `DELETE FROM "OAuthClient"` during Q3 testing permanently erased 4 test-fixture rows that could not be restored from seed. All future test fixture teardown scripts must:
+
+1. Identify the specific IDs or key fields created at the start of the test.
+2. Delete using a narrow `where` clause — for example:
+   ```typescript
+   // CORRECT — scoped delete
+   await prisma.oAuthClient.deleteMany({
+     where: { id: { in: [throwawayClientId] } },
+   });
+
+   // WRONG — never do this in a test script
+   await prisma.oAuthClient.deleteMany({});
+   ```
+3. Print before/after counts around any delete block to make the blast radius visible.
+
+The IoT webhook cleanup (`cleanup_iot.ts`) from this same session is the canonical correct example — it used `where: { vehicleId: 'V1' }`, `where: { companyId: 'SYSTEM', provider: 'IOT_PROVIDER' }`, etc., and printed before/after row counts.
