@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 FROM base AS deps
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Builder Stage
 FROM base AS builder
@@ -26,7 +26,7 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 COPY package*.json ./
 # Install only production dependencies cleanly
-RUN npm install --omit=dev && npm cache clean --force
+RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
 
 COPY --from=builder /usr/src/app/prisma ./prisma
 # Generate prisma client with production binaries
