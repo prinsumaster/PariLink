@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 
 export const ExceptionCenter = () => {
-  const exceptions = useControlTowerStore((state) => state.exceptions);
+  const rawExceptions = useControlTowerStore((state) => state.exceptions);
+  const exceptions = Array.isArray(rawExceptions) ? rawExceptions : [];
 
   const getSeverityColor = (ruleType: string) => {
     if (ruleType.includes('CRITICAL') || ruleType === 'OVERSPEEDING') return 'bg-red-500/10 text-red-500 border-red-500/20';

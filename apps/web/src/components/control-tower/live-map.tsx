@@ -16,8 +16,8 @@ const INITIAL_VIEW_STATE = {
 };
 
 export const LiveMap = () => {
-  const vehicles = useControlTowerStore((state) => Object.values(state.vehicles));
-
+  const rawVehicles = useControlTowerStore((state) => state.vehicles);
+  const vehicles = Object.values(rawVehicles || {});
   const layers = useMemo(() => {
     return [
       new ScatterplotLayer({

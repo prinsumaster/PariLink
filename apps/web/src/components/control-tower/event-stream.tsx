@@ -7,7 +7,8 @@ import { Navigation2, LogIn, Fuel, AlertTriangle, CheckCircle2 } from 'lucide-re
 import { format } from 'date-fns';
 
 export const EventStream = () => {
-  const events = useControlTowerStore((state) => state.events);
+  const rawEvents = useControlTowerStore((state) => state.events);
+  const events = Array.isArray(rawEvents) ? rawEvents : [];
 
   const getEventIcon = (type: string) => {
     switch (type) {

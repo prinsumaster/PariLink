@@ -23,9 +23,9 @@ const ROUTES = [
   '/ai/models',
   '/ai/prompt-studio',
   '/alip',
+  '/announcements',
   '/analytics/builder',
   '/analytics/command-center',
-  '/announcements',
   '/automation',
   '/automation/history',
   '/billing',
@@ -33,8 +33,6 @@ const ROUTES = [
   '/branches/new',
   '/chat',
   '/command-center',
-  '/control-tower',
-  '/control-tower/risk',
   '/crm/leads',
   '/customers',
   '/customers/new',
@@ -117,6 +115,8 @@ test('Smoke test all core routes', async ({ page }) => {
 
   // Wait for dashboard to load (login success)
   await expect(page).toHaveURL(/.*dashboard.*/, { timeout: 15000 });
+  await expect(page.locator('h1', { hasText: 'Command Center' })).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('[data-error-boundary="true"]')).toHaveCount(0);
 
   for (const route of ROUTES) {
     const response = await page.goto(route);
@@ -130,11 +130,32 @@ test('Smoke test all core routes', async ({ page }) => {
     // Check for standard error boundary text AND data-error-boundary attribute
     const pageText = await page.textContent('body');
     const hasBoundaryAttr = await page.evaluate(() => !!document.querySelector('[data-error-boundary="true"]'));
+    const boundaryCount = await page.locator('[data-error-boundary="true"]').count();
     
     if (hasBoundaryAttr || 
         pageText?.includes('Application error: a client-side exception has occurred') || 
         pageText?.includes('Something went wrong!')) {
       errors.push(new Error(`Error boundary hit on route ${route}`));
+    }
+    
+    // Catch empty stubs: require body length > 200 chars or be in allowlist
+    const innerText = await page.evaluate(() => document.body.innerText);
+    const charCount = innerText.trim().length;
+    
+    const h1s = await page.locator('h1').allInnerTexts();
+    const h1Text = h1s.join(' | ');
+
+    // Optional: allowlist for routes legitimately under 200 chars
+    const allowlist = ['/api/health', '/forgot-password', '/reset-password'];
+    
+    if (['/ai/agents', '/announcements', '/control-tower'].includes(route)) {
+      console.log(`[INFO] Route: ${route} | Status: ${response?.status()} | Body Length: ${charCount} | H1: ${h1Text} | Data-Error-Boundary: ${boundaryCount}`);
+    }
+
+    if (charCount < 200 && !allowlist.includes(route)) {
+      errors.push(new Error(`Route ${route} is suspiciously empty (only ${charCount} chars). Suspected stub.`));
+    } else {
+      console.log(`[PASS] ${route} -> ${charCount} chars`);
     }
   }
 

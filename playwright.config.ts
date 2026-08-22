@@ -25,7 +25,7 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'cd apps/web && npm run start',
+      command: 'cd apps/web && PORT=3001 npm run start',
       port: 3001,
       reuseExistingServer: !process.env.CI,
     }

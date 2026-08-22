@@ -12,9 +12,11 @@ export default function AnnouncementsPage() {
   const fetchAnnouncements = async () => {
     try {
       const res = await api.get('/announcements');
-      setAnnouncements(res.data);
+      const items = Array.isArray(res?.data) ? res.data : [];
+      setAnnouncements(items);
     } catch (e) {
       console.error(e);
+      setAnnouncements([]);
     }
   };
 

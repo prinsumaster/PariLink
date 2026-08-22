@@ -28,10 +28,12 @@ export default function AgentConsolePage() {
     try {
       const res = await aiApi.listAgents();
       // Assume the backend returns an array of agents, or map if it's an object
-      const agentList = Array.isArray(res.data) ? res.data : (res.data?.agents || []);
-      setAgents(agentList);
+      const dataAgents = res?.data?.agents;
+      const items = Array.isArray(res?.data) ? res.data : (Array.isArray(dataAgents) ? dataAgents : []);
+      setAgents(items);
     } catch (e) {
       console.error('Failed to load agents', e);
+      setAgents([]);
     } finally {
       setLoading(false);
     }
@@ -75,6 +77,12 @@ export default function AgentConsolePage() {
           {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="bg-slate-900 border border-slate-800 rounded-xl h-64 animate-pulse" />
           ))}
+        </div>
+      ) : filteredAgents.length === 0 ? (
+        <div className="text-center p-12 bg-slate-900 border border-slate-800 rounded-xl">
+          <Bot className="h-12 w-12 text-slate-700 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-slate-300">No active agents found</h3>
+          <p className="text-slate-500 mt-2">Adjust your search or check back later.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
