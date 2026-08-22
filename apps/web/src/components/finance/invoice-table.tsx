@@ -83,14 +83,18 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
         id: 'financials',
         header: 'Amount',
         cell: ({ row }) => {
-          const inv = row.original;
+          const inv = row.original as any;
+          const grandTotal = inv.grandTotal ?? inv.amount ?? 0;
+          const balanceDue = inv.balanceDue ?? inv.amount ?? 0;
+          const currency = inv.currency || 'USD';
+          
           return (
             <div className="flex flex-col items-end gap-1">
               <span className="font-semibold text-gray-900 dark:text-white">
-                ${inv.grandTotal.toLocaleString()} <span className="text-xs font-normal text-gray-500">{inv.currency}</span>
+                ${grandTotal.toLocaleString()} <span className="text-xs font-normal text-gray-500">{currency}</span>
               </span>
-              {inv.balanceDue > 0 && inv.status !== 'DRAFT' && (
-                <span className="text-xs font-medium text-red-500">Balance: ${inv.balanceDue.toLocaleString()}</span>
+              {balanceDue > 0 && inv.status !== 'DRAFT' && (
+                <span className="text-xs font-medium text-red-500">Balance: ${balanceDue.toLocaleString()}</span>
               )}
             </div>
           );

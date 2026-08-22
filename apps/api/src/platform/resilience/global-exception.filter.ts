@@ -58,7 +58,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (status >= 500 || status === 403 || status === 401) {
       try {
         await this.eventStore.append({
-          tenantId: 'SYSTEM',
+          tenantId: null,
           streamId: (request.headers['x-correlation-id'] as string) || 'system',
           streamType: 'SYSTEM_EXCEPTION',
           eventType: `HTTP_${status}_ERROR`,

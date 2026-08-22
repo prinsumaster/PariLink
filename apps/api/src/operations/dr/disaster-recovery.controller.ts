@@ -11,6 +11,66 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsArray,
+  IsBoolean,
+  ValidateNested,
+  IsNotEmpty,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class FailoverProcedureDto {
+  @IsNumber()
+  step!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  action!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  targetRegion!: string;
+
+  @IsBoolean()
+  automated!: boolean;
+}
+
+export class CreateDrPlanDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsNumber()
+  @IsOptional()
+  rtoTargetMinutes?: number;
+
+  @IsNumber()
+  @IsOptional()
+  rpoTargetMinutes?: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FailoverProcedureDto)
+  failoverProcedures!: FailoverProcedureDto[];
+}
+
+export class StartDrillDto {
+  @IsString()
+  @IsNotEmpty()
+  planId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  drillName!: string;
+}
+
 @ApiTags('Operations - Disaster Recovery')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -27,7 +87,7 @@ export class DisasterRecoveryController {
   })
   async createPlan(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
-    @Body() body: Omit<CreateDrPlanInput, 'companyId' | 'actorId'>,
+    @Body() body: CreateDrPlanDto,
   ) {
     return this.drService.createRecoveryPlan({
       ...body,
@@ -44,7 +104,7 @@ export class DisasterRecoveryController {
   })
   async startDrill(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
-    @Body() body: Omit<StartDrillInput, 'companyId' | 'conductedBy'>,
+    @Body() body: StartDrillDto,
   ) {
     return this.drService.startDrill({
       ...body,

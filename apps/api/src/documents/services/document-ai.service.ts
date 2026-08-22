@@ -19,7 +19,7 @@ export class DocumentAiService {
     const doc = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.document.findUnique({ where: { id: documentId } }),
     );
-    if (!doc || doc.companyId !== companyId || doc.deletedAt) {
+    if (!doc || doc.companyId !== companyId) {
       throw new NotFoundException('Document not found');
     }
 

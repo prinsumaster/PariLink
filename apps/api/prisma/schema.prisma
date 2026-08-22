@@ -761,7 +761,7 @@ model RefreshToken {
 
 model AuditLog {
   id            String   @id @default(uuid())
-  companyId     String
+  companyId     String?
   userId        String?
   entity        String // Keep existing
   entityType    String? // e.g., 'Load', 'Invoice', 'FeatureFlag'
@@ -774,7 +774,7 @@ model AuditLog {
   correlationId String?
   source        String? // e.g., 'API', 'WORKFLOW', 'AI_AGENT', 'INTEGRATION'
   createdAt     DateTime @default(now())
-  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user          User?    @relation(fields: [userId], references: [id])
 
   @@index([companyId, entity, entityId])
@@ -1248,7 +1248,7 @@ model VehicleTelemetry {
 
 model DomainEvent {
   id            String   @id @default(uuid())
-  companyId     String
+  companyId     String?
   streamId      String // ID of the Twin (e.g. Vehicle ID)
   streamType    String // VEHICLE, DRIVER, TRIP
   eventType     String // e.g. GpsUpdated, FuelAdded
@@ -1258,7 +1258,7 @@ model DomainEvent {
   correlationId String?
   userId        String? // SYSTEM or actual user id
   timestamp     DateTime @default(now())
-  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([streamId, version])
   @@index([companyId, streamId, timestamp])

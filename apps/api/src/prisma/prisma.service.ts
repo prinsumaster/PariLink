@@ -65,6 +65,10 @@ export class PrismaService
     this.setupSoftDeleteMiddleware();
   }
 
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+
   private setupSoftDeleteMiddleware() {
     this.$use(async (params, next) => {
       if (!params.model) return next(params);
@@ -89,8 +93,11 @@ export class PrismaService
         }
         params.args = params.args || {};
 
+        // Detect if this is a drill-down lookup (explicitly querying by ID)
+        const isDrillDown = params.args?.where?.id !== undefined;
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const injectSoftDelete = (args: any, modelName: string) => {
+        const injectSoftDelete = (args: any, modelName: string, isRoot = false) => {
           if (!args) return;
           const currentModel = this.dmmfModels.get(modelName);
           if (!currentModel) return;
@@ -102,6 +109,9 @@ export class PrismaService
           if (hasDelAt) {
             if (!args.where) {
               args.where = {};
+            }
+            if (isRoot && isDrillDown) {
+              // Bypass soft-delete injection for root drill-down queries
             } else if (args.where.deletedAt === undefined) {
               args.where.deletedAt = null;
             }
@@ -117,14 +127,14 @@ export class PrismaService
                 if (val === true) {
                   container[key] = {};
                   if (field.isList) {
-                    injectSoftDelete(container[key], field.type);
+                    injectSoftDelete(container[key], field.type, false);
                   } else {
                     // For to-one relations, we just process nested includes but don't inject `where` on this level
                     processNestedIncludeOnly(container[key], field.type);
                   }
                 } else if (typeof val === 'object' && val !== null) {
                   if (field.isList) {
-                    injectSoftDelete(val, field.type);
+                    injectSoftDelete(val, field.type, false);
                   } else {
                     processNestedIncludeOnly(val, field.type);
                   }
@@ -149,13 +159,13 @@ export class PrismaService
                   if (val === true) {
                     container[key] = {};
                     if (field.isList) {
-                      injectSoftDelete(container[key], field.type);
+                      injectSoftDelete(container[key], field.type, false);
                     } else {
                       processNestedIncludeOnly(container[key], field.type);
                     }
                   } else if (typeof val === 'object' && val !== null) {
                     if (field.isList) {
-                      injectSoftDelete(val, field.type);
+                      injectSoftDelete(val, field.type, false);
                     } else {
                       processNestedIncludeOnly(val, field.type);
                     }
@@ -171,8 +181,43 @@ export class PrismaService
           processNested(args.select);
         };
 
-        injectSoftDelete(params.args, params.model);
+        injectSoftDelete(params.args, params.model, true);
       }
+      
+      const result = await next(params);
+      
+      // Post-process the result to append deleted: true flag
+      if (
+        params.action === 'findFirst' ||
+        params.action === 'findMany'
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const flagDeleted = (obj: any, seen = new Set()) => {
+          if (!obj || typeof obj !== 'object') return;
+          if (seen.has(obj)) return;
+          seen.add(obj);
+
+          if (obj.deletedAt !== null && obj.deletedAt !== undefined) {
+            obj.deleted = true;
+          }
+
+          for (const key of Object.keys(obj)) {
+            if (Array.isArray(obj[key])) {
+              obj[key].forEach((item: any) => flagDeleted(item, seen));
+            } else if (typeof obj[key] === 'object') {
+              flagDeleted(obj[key], seen);
+            }
+          }
+        };
+
+        if (Array.isArray(result)) {
+          result.forEach(item => flagDeleted(item));
+        } else {
+          flagDeleted(result);
+        }
+      }
+      
+      return result;
       // We DO NOT convert 'update' to 'updateMany' because updateMany does not support 'include'/'select'
       // and returns a BatchPayload { count: number } instead of the updated object.
       // If we want to prevent updating deleted records, we rely on findFirst/findUnique checks beforehand,
@@ -203,10 +248,6 @@ export class PrismaService
       }
       return next(params);
     });
-  }
-
-  async onModuleDestroy() {
-    await this.$disconnect();
   }
 
   /**

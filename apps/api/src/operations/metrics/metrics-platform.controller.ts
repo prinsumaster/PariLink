@@ -10,6 +10,56 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsObject,
+  IsISO8601,
+  IsNotEmpty,
+} from 'class-validator';
+
+export class RecordMetricDto {
+  @IsString()
+  @IsNotEmpty()
+  category!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  metricName!: string;
+
+  @IsNumber()
+  metricValue!: number;
+
+  @IsObject()
+  @IsOptional()
+  dimensions?: Record<string, unknown>;
+}
+
+export class MetricQueryFilterDto {
+  @IsString()
+  @IsOptional()
+  category?: string;
+
+  @IsString()
+  @IsOptional()
+  metricName?: string;
+
+  @IsString()
+  @IsISO8601()
+  @IsOptional()
+  startTime?: string;
+
+  @IsString()
+  @IsISO8601()
+  @IsOptional()
+  endTime?: string;
+
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+}
+
 @ApiTags('Operations - Metrics Platform')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -25,13 +75,7 @@ export class MetricsPlatformController {
   })
   async recordMetric(
     @GetUser() user: { companyId: string },
-    @Body()
-    body: {
-      category: string;
-      metricName: string;
-      metricValue: number;
-      dimensions?: Record<string, unknown>;
-    },
+    @Body() body: RecordMetricDto,
   ) {
     return this.metricsService.recordMetric(
       user.companyId,
@@ -49,10 +93,12 @@ export class MetricsPlatformController {
   })
   async queryMetrics(
     @GetUser() user: { companyId: string },
-    @Body() filter: Record<string, unknown>,
+    @Body() filter: MetricQueryFilterDto,
   ) {
     return this.metricsService.queryMetrics({
-      ...(filter as MetricQueryFilter),
+      ...filter,
+      startTime: filter.startTime ? new Date(filter.startTime) : undefined,
+      endTime: filter.endTime ? new Date(filter.endTime) : undefined,
       companyId: user.companyId,
     });
   }

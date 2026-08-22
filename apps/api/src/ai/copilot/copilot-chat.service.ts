@@ -39,7 +39,18 @@ export class AiCopilotChatService {
     );
   }
 
-  async getMessages(sessionId: string, userId: string) {
+  async getMessages(companyId: string, sessionId: string, userId: string) {
+    // First, verify the session belongs to this tenant and user
+    const session = await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.aiChatSession.findUnique({
+        where: { id: sessionId, userId }
+      })
+    );
+    
+    if (!session) {
+      throw new Error('Session not found or access denied');
+    }
+
     return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.aiChatMessage.findMany({
         where: { sessionId },
@@ -82,12 +93,12 @@ export class AiCopilotChatService {
 
     try {
       // Retrieve Context via RAG (Phase 3)
-      const ragContext = await this.rag.retrieveContext(userMessage);
+      const ragContext = await this.rag.retrieveContext(userMessage, { companyId });
 
       // Route via Agent Orchestrator (Phase 6)
       const result = await this.orchestrator.routeIntent(
         companyId,
-        userMessage + '\n\nKnowledge Context:\n' + JSON.stringify(ragContext),
+        userMessage + (Object.keys(ragContext).length > 0 ? '\n\n<context>\n' + JSON.stringify(ragContext) + '\n</context>' : ''),
         'Chat',
         sessionId,
         userId,
@@ -159,10 +170,10 @@ export class AiCopilotChatService {
 
           try {
             // Retrieve Context via RAG
-            const ragContext = await this.rag.retrieveContext(userMessage);
+            const ragContext = await this.rag.retrieveContext(userMessage, { companyId });
             const contextStr =
               Object.keys(ragContext).length > 0
-                ? '\n\nKnowledge Context:\n' + JSON.stringify(ragContext)
+                ? '\n\n<context>\n' + JSON.stringify(ragContext) + '\n</context>'
                 : '';
 
             const model = await this.llmManager.getModel();

@@ -112,6 +112,34 @@ export class CustomersService {
       });
       if (!existingCustomer) throw new NotFoundException();
 
+      const activeLoadsCount = await tx.load.count({
+        where: {
+          companyId,
+          customerId: id,
+          status: { in: ['PENDING', 'PLANNED', 'DISPATCHED', 'IN_TRANSIT'] },
+        },
+      });
+
+      if (activeLoadsCount > 0) {
+        throw new ConflictException(
+          `Cannot delete customer. ${activeLoadsCount} active load(s) are currently in progress.`,
+        );
+      }
+
+      const activeInvoicesCount = await tx.invoice.count({
+        where: {
+          companyId,
+          customerId: id,
+          status: { in: ['DRAFT', 'OPEN', 'OVERDUE'] },
+        },
+      });
+
+      if (activeInvoicesCount > 0) {
+        throw new ConflictException(
+          `Cannot delete customer. ${activeInvoicesCount} unpaid invoice(s) require resolution.`,
+        );
+      }
+
       return tx.customer.updateMany({
         where: { id, companyId },
         data: { deletedAt: new Date(), status: 'INACTIVE' },

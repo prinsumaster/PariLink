@@ -26,6 +26,10 @@ export const adminService = {
     await api.post(`/admin/users/${id}/lock`);
   },
 
+  unlockUserAccount: async (id: string): Promise<void> => {
+    await api.post(`/admin/users/${id}/unlock`);
+  },
+
   resetUserPassword: async (id: string): Promise<void> => {
     await api.post(`/admin/users/${id}/reset-password`);
   },

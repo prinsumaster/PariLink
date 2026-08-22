@@ -1,3 +1,4 @@
+import { CreateWebhookDto, UpdateWebhookDto } from '../dto/webhook.dto';
 import {
   Controller,
   Post,
@@ -11,7 +12,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CryptoService } from '../security/crypto.service';
+import { IntegrationAuthService } from '../../integration/auth/auth.service';
+import * as crypto from 'crypto';
+import type { RawBodyRequest } from '@nestjs/common';
+import type { Request } from 'express';
 
 @ApiTags('webhooks')
 @Controller('webhooks/v1')
@@ -20,7 +24,7 @@ export class WebhookController {
 
   constructor(
     private prisma: PrismaService,
-    private crypto: CryptoService,
+    private authService: IntegrationAuthService,
   ) {}
 
   @Post('incoming/:provider/:connectionId')
@@ -28,11 +32,11 @@ export class WebhookController {
     summary: 'Receive incoming webhooks from external providers',
   })
   async receiveWebhook(
+    @Req() req: RawBodyRequest<Request>,
     @Param('provider') provider: string,
     @Param('connectionId') connectionId: string,
     @Headers('x-webhook-signature') signature: string,
-    @Body() payload: Record<string, unknown>,
-    @Req() req: any,
+    @Body() payload: CreateWebhookDto,
   ) {
     this.logger.log(
       `Received webhook from ${provider} for connection ${connectionId}`,
@@ -46,12 +50,44 @@ export class WebhookController {
       }),
     );
 
-    if (!connection) {
+    if (!connection || !connection.credentials) {
       throw new HttpException('Connection not found', HttpStatus.NOT_FOUND);
     }
 
-    // In a production scenario, we would validate the `signature` against
-    // the provider's specific hashing logic using our ConnectionSecret.
+    let secret = '';
+    try {
+      const credsString = typeof connection.credentials === 'string' 
+        ? connection.credentials 
+        : JSON.stringify(connection.credentials);
+      const credentials = this.authService.decryptCredentials(credsString);
+      secret = credentials?.webhookSecret;
+    } catch (e: any) {
+      throw new HttpException('Invalid credentials state', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (!secret) {
+      throw new HttpException('Webhook secret not configured', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (!signature) {
+      throw new HttpException('Missing signature', HttpStatus.UNAUTHORIZED);
+    }
+
+    const payloadBuffer = req.rawBody || Buffer.from(JSON.stringify(payload));
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(payloadBuffer)
+      .digest('hex');
+
+    const expectedBuffer = Buffer.from(expectedSignature);
+    const actualBuffer = Buffer.from(signature);
+
+    if (
+      expectedBuffer.length !== actualBuffer.length ||
+      !crypto.timingSafeEqual(expectedBuffer, actualBuffer)
+    ) {
+      throw new HttpException('Invalid signature', HttpStatus.UNAUTHORIZED);
+    }
 
     // Log Delivery
     await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>

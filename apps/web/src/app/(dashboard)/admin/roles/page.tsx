@@ -91,12 +91,12 @@ const ALL_PERMISSIONS = Object.values(PERMISSION_GROUPS).flat();
 // ─── Role Service ─────────────────────────────────────────────────────────────
 const rolesService = {
   list: (params?: Record<string, any>) =>
-    api.get<PaginatedRoles>('/roles', { params }).then(r => r.data),
+    api.get<PaginatedRoles>('/admin/roles', { params }).then(r => r.data),
   create: (dto: { name: string; description?: string; permissions: string[] }) =>
-    api.post<Role>('/roles', dto).then(r => r.data),
+    api.post<Role>('/admin/roles', dto).then(r => r.data),
   update: (id: string, dto: { name?: string; description?: string; permissions?: string[] }) =>
-    api.patch<Role>(`/roles/${id}`, dto).then(r => r.data),
-  delete: (id: string) => api.delete(`/roles/${id}`),
+    api.patch<Role>(`/admin/roles/${id}`, dto).then(r => r.data),
+  delete: (id: string) => api.delete(`/admin/roles/${id}`),
 };
 
 // ─── Permission Badge ─────────────────────────────────────────────────────────
@@ -135,23 +135,51 @@ function RoleDialog({
   const createMutation = useMutation({
     mutationFn: (dto: { name: string; description?: string; permissions: string[] }) =>
       rolesService.create(dto),
+    onMutate: async (dto) => {
+      await qc.cancelQueries({ queryKey: ['roles'] });
+      const previous = qc.getQueryData(['roles', '']); // assuming no search active or we ignore it for optimistic
+      qc.setQueryData(['roles', ''], (old: any) => {
+        if (!old) return old;
+        const newRole = { id: 'temp-' + Date.now(), ...dto, _count: { users: 0 }, createdAt: new Date().toISOString() };
+        return { ...old, data: [newRole, ...old.data], meta: { ...old.meta, total: old.meta.total + 1 } };
+      });
+      return { previous };
+    },
     onSuccess: () => {
       toast.success('Role created');
       qc.invalidateQueries({ queryKey: ['roles'] });
       onClose();
     },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to create role'),
+    onError: (err: any, dto, context: any) => {
+      if (context?.previous) qc.setQueryData(['roles', ''], context.previous);
+      toast.error(err?.response?.data?.message || 'Failed to create role');
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: (dto: { name?: string; description?: string; permissions?: string[] }) =>
       rolesService.update(role!.id, dto),
+    onMutate: async (dto) => {
+      await qc.cancelQueries({ queryKey: ['roles'] });
+      const previous = qc.getQueryData(['roles', '']);
+      qc.setQueryData(['roles', ''], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((r: any) => r.id === role!.id ? { ...r, ...dto } : r)
+        };
+      });
+      return { previous };
+    },
     onSuccess: () => {
       toast.success('Role updated');
       qc.invalidateQueries({ queryKey: ['roles'] });
       onClose();
     },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to update role'),
+    onError: (err: any, dto, context: any) => {
+      if (context?.previous) qc.setQueryData(['roles', ''], context.previous);
+      toast.error(err?.response?.data?.message || 'Failed to update role');
+    },
   });
 
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -364,7 +392,7 @@ function RoleCard({ role, onEdit, onDelete }: { role: Role; onEdit: () => void; 
   const displayPerms = expanded ? role.permissions : role.permissions.slice(0, 6);
 
   return (
-    <div className="rounded-xl border border-border bg-card p-5 hover:shadow-md transition-all duration-200">
+    <div className="rounded-xl border border-border bg-card p-5 hover:shadow-md transition-all duration-200 animate-in fade-in slide-in-from-bottom-2 duration-160">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <div className={cn(
@@ -447,8 +475,23 @@ export default function RolesPage() {
 
   const deleteMutation = useMutation({
     mutationFn: rolesService.delete,
-    onSuccess: () => { toast.success('Role deleted'); qc.invalidateQueries({ queryKey: ['roles'] }); },
-    onError: (err: any) => toast.error(err?.response?.data?.message || 'Failed to delete role'),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ['roles'] });
+      const previous = qc.getQueryData(['roles', search]);
+      qc.setQueryData(['roles', search], (old: any) => {
+        if (!old) return old;
+        return { ...old, data: old.data.filter((r: any) => r.id !== id), meta: { ...old.meta, total: Math.max(0, old.meta.total - 1) } };
+      });
+      return { previous };
+    },
+    onSuccess: () => { 
+      toast.success('Role deleted'); 
+      qc.invalidateQueries({ queryKey: ['roles'] }); 
+    },
+    onError: (err: any, id, context: any) => { 
+      if (context?.previous) qc.setQueryData(['roles', search], context.previous);
+      toast.error(err?.response?.data?.message || 'Failed to delete role');
+    },
   });
 
   const openCreate = () => { setEditRole(null); setDialogOpen(true); };
@@ -502,9 +545,29 @@ export default function RolesPage() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-32 rounded-xl border border-border bg-muted/40 animate-pulse" />
+                <div key={i} className="rounded-xl border border-border bg-card p-5 animate-in fade-in duration-120 opacity-50">
+                  <div className="flex items-start gap-3">
+                    <div className="h-9 w-9 rounded-xl bg-muted shrink-0" />
+                    <div className="space-y-2.5 w-full">
+                      <div className="h-5 bg-muted rounded w-1/3" />
+                      <div className="h-3 bg-muted rounded w-2/3" />
+                      <div className="flex gap-3 mt-1.5 pt-0.5">
+                        <div className="h-3 bg-muted rounded w-16" />
+                        <div className="h-3 bg-muted rounded w-20" />
+                        <div className="h-3 bg-muted rounded w-24" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-border/60">
+                    <div className="flex gap-1.5">
+                      <div className="h-5 bg-muted rounded w-16" />
+                      <div className="h-5 bg-muted rounded w-20" />
+                      <div className="h-5 bg-muted rounded w-14" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : roles.length === 0 ? (

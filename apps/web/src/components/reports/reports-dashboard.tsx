@@ -74,7 +74,7 @@ export function ReportsDashboard({ filters }: ReportsDashboardProps) {
                       </tr>
                     ))
                   ) : (
-                    data?.regionalData.map((row, i) => (
+                    (data?.regionalData || []).map((row, i) => (
                       <tr key={i}>
                         <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{row.region}</td>
                         <td className="px-4 py-3 text-right">{row.deliveries.toLocaleString()}</td>

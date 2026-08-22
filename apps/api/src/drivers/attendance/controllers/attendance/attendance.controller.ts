@@ -1,3 +1,4 @@
+import { CreateAttendanceDto, UpdateAttendanceDto } from '../dto/attendance.dto';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Controller,
@@ -20,7 +21,7 @@ export class AttendanceController {
   constructor(private readonly service: AttendanceTrackingService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreateAttendanceDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
@@ -38,7 +39,7 @@ export class AttendanceController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateAttendanceDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

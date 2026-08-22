@@ -13,10 +13,11 @@ export default function DashboardError({
 }) {
   useEffect(() => {
     console.error('Dashboard Error Boundary caught:', error);
+    console.error('[BOUNDARY]', error.message);
   }, [error]);
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-950">
+    <div data-error-boundary="true" className="flex h-full w-full flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-950">
       <div className="flex flex-col items-center max-w-md text-center p-8 bg-white dark:bg-slate-900 rounded-2xl border border-red-100 dark:border-red-900/30 shadow-sm">
         <div className="h-12 w-12 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-4">
           <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-500" />

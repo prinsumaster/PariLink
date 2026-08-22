@@ -1,3 +1,4 @@
+import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../dto/workspace.dto';
 import {
   Controller,
   Get,
@@ -64,7 +65,7 @@ export class WorkspaceController {
   @ApiOperation({ summary: 'Update user workspace preferences' })
   updatePreferences(
     @GetUser() user: AuthenticatedUser,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateWorkspaceDto,
   ) {
     return this.workspaceService.updatePreferences(user.userId, body);
   }

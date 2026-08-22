@@ -1,3 +1,4 @@
+import { CreatePermitDto, UpdatePermitDto } from '../dto/permit.dto';
 import {
   Controller,
   Get,
@@ -21,7 +22,7 @@ export class PermitController {
   constructor(private readonly service: PermitComplianceService) {}
 
   @Post()
-  create(@GetUser() user: AuthenticatedUser, @Body() data: Record<string, unknown>) {
+  create(@GetUser() user: AuthenticatedUser, @Body() data: CreatePermitDto) {
     return this.service.create(user.companyId, user.id, data);
   }
 
@@ -39,7 +40,7 @@ export class PermitController {
   update(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreatePermitDto,
   ) {
     return this.service.update(user.companyId, id, user.id, data);
   }

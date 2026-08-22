@@ -12,6 +12,7 @@ export class ExternalIdentityMappingService {
    * Useful for API integrations (e.g. LocoNav sending telemetry for vehicle 'LOC-123')
    */
   async resolveToGoldenId(
+    companyId: string,
     sourceSystem: string,
     externalId: string,
   ): Promise<string | null> {
@@ -28,7 +29,11 @@ export class ExternalIdentityMappingService {
 
     const ref = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.externalReference.findFirst({
-        where: { sourceSystem, externalId },
+        where: { 
+          sourceSystem, 
+          externalId,
+          masterRecord: { companyId } 
+        },
         select: {
           masterRecordId: true,
           masterRecord: { select: { isGolden: true, mergedIntoId: true } },

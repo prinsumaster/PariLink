@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -73,6 +74,12 @@ export class ImportExportController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: { entityType: string; format: string; filter?: any },
   ) {
+    if (!dto || typeof dto.entityType !== 'string' || dto.entityType.trim() === '') {
+      throw new BadRequestException('entityType is required and must be a string');
+    }
+    if (!dto.format || !['csv', 'json'].includes(dto.format.toLowerCase())) {
+      throw new BadRequestException('format is required and must be either csv or json');
+    }
     return this.importExportService.executeExport(
       user.companyId,
       user.userId,

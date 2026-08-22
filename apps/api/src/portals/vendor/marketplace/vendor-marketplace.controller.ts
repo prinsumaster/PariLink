@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Get,
@@ -13,9 +14,15 @@ import { GetUser } from '../../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../../auth/decorators/get-user.decorator';
 import { VendorMarketplaceService } from './vendor-marketplace.service';
 
+export class SubmitBidDto {
+  @IsNumber() amount!: number;
+}
+
 @ApiTags('vendor-portal/marketplace')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+
+
 @Controller('vendor-portal/marketplace')
 export class VendorMarketplaceController {
   constructor(
@@ -40,7 +47,7 @@ export class VendorMarketplaceController {
   submitBid(
     @GetUser() user: AuthenticatedUser,
     @Param('id') tenderId: string,
-    @Body('amount') amount: number,
+    @Body() dto: SubmitBidDto,
   ) {
     if (!user.vendorId)
       throw new UnauthorizedException(
@@ -50,7 +57,7 @@ export class VendorMarketplaceController {
       user.companyId,
       user.vendorId,
       tenderId,
-      amount,
+      dto.amount,
     );
   }
 }

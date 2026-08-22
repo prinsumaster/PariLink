@@ -1,3 +1,4 @@
+import { CreateAnnouncementDto, UpdateAnnouncementDto } from '../dto/announcement.dto';
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -29,7 +30,7 @@ export class AnnouncementController {
   @ApiOperation({ summary: 'Create a new announcement' })
   async createAnnouncement(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreateAnnouncementDto,
   ) {
     // Only admins would typically do this, governed by RBAC
     const announcement = await this.prisma.runAsTenant(user.companyId, async (tx) =>

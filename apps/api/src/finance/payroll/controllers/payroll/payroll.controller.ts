@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../../auth/guards/jwt-auth.guard';
 import { PayrollEngineService } from '../../services/payroll-engine/payroll-engine.service';
+import { CreatePayrollDto, UpdatePayrollDto } from '../../dto/payroll.dto';
 
 @Controller('finance/payroll')
 @UseGuards(JwtAuthGuard)
@@ -19,7 +20,7 @@ export class PayrollController {
   constructor(private readonly service: PayrollEngineService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreatePayrollDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
@@ -37,7 +38,7 @@ export class PayrollController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: UpdatePayrollDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

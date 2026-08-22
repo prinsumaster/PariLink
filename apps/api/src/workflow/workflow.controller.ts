@@ -1,3 +1,4 @@
+import { CreateWorkflowDto, UpdateWorkflowDto } from '../dto/workflow.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -160,7 +161,7 @@ export class WorkflowController {
   @ApiOperation({ summary: 'Create a new workflow definition (Graph)' })
   createWorkflow(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateWorkflowDto,
   ) {
     return this.engineWorkflowService.createWorkflow(
       user.companyId,

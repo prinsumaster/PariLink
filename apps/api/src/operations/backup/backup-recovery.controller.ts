@@ -18,6 +18,31 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import { IsString, IsOptional, IsNumber, IsEnum, IsISO8601 } from 'class-validator';
+
+export enum BackupType {
+  DATABASE = 'DATABASE',
+  STORAGE = 'STORAGE',
+  CONFIGURATION = 'CONFIGURATION',
+  FULL_SYSTEM = 'FULL_SYSTEM',
+}
+
+export class CreateBackupDto {
+  @IsEnum(BackupType)
+  backupType!: BackupType;
+
+  @IsNumber()
+  @IsOptional()
+  retentionDays?: number;
+}
+
+export class RestoreWizardDto {
+  @IsString()
+  @IsOptional()
+  @IsISO8601()
+  pointInTime?: string;
+}
+
 @ApiTags('Operations - Backup & Recovery')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -34,7 +59,7 @@ export class BackupRecoveryController {
   })
   async startBackup(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
-    @Body() body: Omit<CreateBackupInput, 'companyId' | 'actorId'>,
+    @Body() body: CreateBackupDto,
   ) {
     return this.backupService.startBackupJob({
       ...body,
@@ -68,7 +93,7 @@ export class BackupRecoveryController {
   async restore(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
     @Param('id') id: string,
-    @Body() body: { pointInTime?: string },
+    @Body() body: RestoreWizardDto,
   ) {
     const pointInTime = body.pointInTime
       ? new Date(body.pointInTime)

@@ -76,6 +76,12 @@ export class CompaniesController {
     if (id !== user.companyId) {
       throw new Error('Unauthorized cross-tenant access');
     }
+    
+    // AV2: Extreme risk operation. Require platform-admin.
+    if (!user.roles?.includes('SUPER_ADMIN')) {
+      throw new Error('Company deletion requires platform-admin privileges (SUPER_ADMIN).');
+    }
+
     return this.companiesService.remove(id, user.id);
   }
 }

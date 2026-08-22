@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Post,
@@ -12,9 +13,15 @@ import { GetUser } from '../../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../../auth/decorators/get-user.decorator';
 import { DriverChecklistsService } from './driver-checklists.service';
 
+export class SubmitChecklistDto {
+  @IsNotEmptyObject() data!: any;
+}
+
 @ApiTags('driver-portal/checklists')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+
+
 @Controller('driver-portal/checklists')
 export class DriverChecklistsController {
   constructor(
@@ -28,14 +35,14 @@ export class DriverChecklistsController {
   submitChecklist(
     @GetUser() user: AuthenticatedUser,
     @Param('id') tripId: string,
-    @Body() checklistData: any,
+    @Body() dto: SubmitChecklistDto,
   ) {
     const driverId = (user as any).driverId || user.userId;
     return this.driverChecklistsService.submitChecklist(
       user.companyId,
       driverId,
       tripId,
-      checklistData,
+      dto.data,
     );
   }
 }

@@ -102,6 +102,6 @@ export function getJwtPrivateKey(): string {
     BruteForceProtectionService,
     MfaService,
   ],
-  exports: [AuthService, MfaService],
+  exports: [AuthService, MfaService, BruteForceProtectionService],
 })
 export class AuthModule {}

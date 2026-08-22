@@ -267,6 +267,20 @@ export class DriversService {
           );
         }
 
+        const activeTripsCount = await tx.trip.count({
+          where: {
+            companyId,
+            driverId: id,
+            status: { notIn: ['COMPLETED', 'CANCELLED'] },
+          },
+        });
+
+        if (activeTripsCount > 0) {
+          throw new ConflictException(
+            `Cannot delete driver. ${activeTripsCount} active trip(s) are currently assigned to them.`,
+          );
+        }
+
         const deletedDriver = await tx.driver.update({
           where: { id, companyId },
           data: { deletedAt: new Date(), status: 'TERMINATED' },

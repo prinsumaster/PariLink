@@ -34,9 +34,19 @@ export class EnterpriseIntegrationHubService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.integrationConnection.findMany({
         where: { companyId },
-        include: {
+        select: {
+          id: true,
+          companyId: true,
+          connectorId: true,
+          status: true,
+          settings: true,
+          lastSync: true,
+          lastError: true,
+          retryCount: true,
+          createdAt: true,
+          updatedAt: true,
           connector: true,
-          syncJobs: { take: 5, orderBy: { createdAt: 'desc' } },
+          syncJobs: { take: 5, orderBy: { createdAt: 'desc' } }
         },
       });
     });
@@ -138,6 +148,11 @@ export class EnterpriseIntegrationHubService {
     userId: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      const existing = await tx.integrationConnection.findFirst({
+        where: { id: connectionId, companyId },
+      });
+      if (!existing) throw new NotFoundException('Connection not found');
+
       const conn = await tx.integrationConnection.update({
         where: { id: connectionId },
         data: { status: 'ENABLED' },
@@ -162,6 +177,11 @@ export class EnterpriseIntegrationHubService {
     userId: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      const existing = await tx.integrationConnection.findFirst({
+        where: { id: connectionId, companyId },
+      });
+      if (!existing) throw new NotFoundException('Connection not found');
+
       const conn = await tx.integrationConnection.update({
         where: { id: connectionId },
         data: { status: 'DISABLED' },

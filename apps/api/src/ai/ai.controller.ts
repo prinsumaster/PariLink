@@ -137,7 +137,7 @@ export class AiController {
     @GetUser() user: AuthenticatedUser,
     @Param('sessionId') sessionId: string,
   ) {
-    return this.copilotChat.getMessages(sessionId, user.userId);
+    return this.copilotChat.getMessages(user.companyId, sessionId, user.userId);
   }
 
   @Post('copilot/sessions/:sessionId/chat')
@@ -213,6 +213,11 @@ export class AiController {
       const result = await this.llmManager.generateResponse(
         prompt,
         'Process this document.',
+        {
+          companyId: user.companyId,
+          userId: user.userId,
+          role: user.roles?.[0],
+        },
       );
       const cleaned = result.replace(/^```json\n/, '').replace(/\n```$/, '');
       return JSON.parse(cleaned);
@@ -245,7 +250,11 @@ export class AiController {
       const result = await this.llmManager.generateResponse(
         prompt,
         'Analyze dispatch data.',
-        {},
+        {
+          companyId: user.companyId,
+          userId: user.userId,
+          role: user.roles?.[0],
+        },
         undefined,
         'logistics_analyst',
       );

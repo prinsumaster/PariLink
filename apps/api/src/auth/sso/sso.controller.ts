@@ -1,3 +1,4 @@
+import { CreateSsoDto, UpdateSsoDto } from '../dto/sso.dto';
 import {
   Controller,
   Get,
@@ -33,7 +34,7 @@ export class SsoController {
   @ApiOperation({ summary: 'SAML Callback URL' })
   async samlCallback(
     @Param('idpId') idpId: string,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateSsoDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {
@@ -57,7 +58,7 @@ export class SsoController {
   @ApiOperation({ summary: 'OIDC Callback URL (POST)' })
   async oidcCallbackPost(
     @Param('idpId') idpId: string,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateSsoDto,
     @Res() res: Response,
     @Req() req: Request,
   ) {

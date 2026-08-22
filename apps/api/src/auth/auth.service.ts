@@ -126,11 +126,14 @@ export class AuthService {
 
     // 1. Brute-force check BEFORE touching the database
     const bfCheck = await this.bruteForce.checkLoginAttempt(email, ipAddress);
-    if (!bfCheck.allowed) {
-      const reason = bfCheck.permanentlyLocked
-        ? 'Account permanently locked. Contact your administrator.'
-        : `Account temporarily locked until ${bfCheck.lockedUntil?.toISOString()}.`;
-      throw new ForbiddenException(reason);
+    if (bfCheck.requiresCaptcha && !loginDto.captchaToken) {
+      throw new ForbiddenException('CAPTCHA required due to multiple failed login attempts');
+    }
+
+    // Apply progressive delay if needed
+    if (bfCheck.delayMs > 0) {
+      this.logger.debug(`Applying progressive delay of ${bfCheck.delayMs}ms for ${email}`);
+      await new Promise((resolve) => setTimeout(resolve, bfCheck.delayMs));
     }
 
     // 2. Load user — use a generic error to prevent user enumeration
@@ -175,12 +178,14 @@ export class AuthService {
         action: 'LOGIN_FAILED',
         entity: 'User',
         entityId: email,
-        companyId: null as any, // AuditLog requires companyId optionally? Let's assume it's optional or handled.
+        companyId: 'SYSTEM',
         source: 'AUTH',
         details: { reason: 'User not found or inactive', ip: ipAddress },
       });
       throw new UnauthorizedException(GENERIC_AUTH_ERROR);
     }
+
+    if (!user.password) throw new UnauthorizedException(GENERIC_AUTH_ERROR);
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -198,7 +203,6 @@ export class AuthService {
         details: {
           reason: 'Invalid password',
           ip: ipAddress,
-          remainingAttempts: result.remainingAttempts,
         },
       });
       throw new UnauthorizedException(GENERIC_AUTH_ERROR);
@@ -547,7 +551,7 @@ export class AuthService {
       action: 'LOGOUT',
       entity: 'User',
       entityId: userId,
-      companyId: 'N/A', // Caller should pass companyId if available
+      companyId: 'SYSTEM', // Caller should pass companyId if available
       userId,
       source: 'AUTH',
     });

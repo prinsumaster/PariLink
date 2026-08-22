@@ -4,6 +4,7 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
+import { IsString, IsNotEmpty, IsOptional, IsObject, IsArray, IsDateString } from 'class-validator';
 
 import { WarehouseMasterService } from './engine/warehouse-master.service';
 import { InventoryService } from './engine/inventory.service';
@@ -11,6 +12,39 @@ import { InboundService } from './engine/inbound.service';
 import { OutboundService } from './engine/outbound.service';
 import { DockSchedulerService } from './engine/dock-scheduler.service';
 import { InventoryOptimizerService } from './engine/inventory-optimizer.service';
+
+export class CreateWarehouseDto {
+  @IsString() @IsNotEmpty() name!: string;
+  @IsOptional() @IsString() location?: string;
+}
+
+export class CreateAsnDto {
+  @IsString() @IsNotEmpty() warehouseId!: string;
+  @IsString() @IsNotEmpty() reference!: string;
+  @IsArray() @IsNotEmpty() items!: unknown[];
+}
+
+export class ReceiveGoodsDto {
+  @IsString() @IsNotEmpty() stagingBinId!: string;
+  @IsArray() @IsNotEmpty() items!: unknown[];
+}
+
+export class CreateOutboundDto {
+  @IsString() @IsNotEmpty() loadId!: string;
+  @IsString() @IsNotEmpty() orderNumber!: string;
+  @IsArray() @IsNotEmpty() items!: unknown[];
+}
+
+export class PickOrderDto {
+  @IsArray() @IsNotEmpty() picks!: unknown[];
+}
+
+export class ScheduleDockDto {
+  @IsString() @IsNotEmpty() dockId!: string;
+  @IsString() @IsNotEmpty() type!: string;
+  @IsDateString() @IsNotEmpty() start!: string;
+  @IsDateString() @IsNotEmpty() end!: string;
+}
 
 @Controller('warehouse')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -27,7 +61,6 @@ export class WarehouseController {
   @Get()
   @RequirePermissions('warehouse:read')
   getWarehouses(@GetUser() user: AuthenticatedUser) {
-    // Assuming masterData has a getWarehouses or findAll method, we'll mock it if not
     return this.masterData.getWarehouses(user.companyId);
   }
 
@@ -35,7 +68,7 @@ export class WarehouseController {
   @RequirePermissions('warehouse:write')
   createWarehouse(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateWarehouseDto,
   ) {
     return this.masterData.createWarehouse(user.companyId, data);
   }
@@ -50,11 +83,11 @@ export class WarehouseController {
   @RequirePermissions('warehouse:write')
   createAsn(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateAsnDto,
   ) {
     return this.inbound.createASN(
       user.companyId,
-      data.warehouseId as string,
+      data.warehouseId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data as any,
     );
@@ -65,12 +98,12 @@ export class WarehouseController {
   receiveGoods(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: ReceiveGoodsDto,
   ) {
     return this.inbound.receiveGoods(
       user.companyId,
       id,
-      data.stagingBinId as string,
+      data.stagingBinId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.items as any,
       user.userId,
@@ -81,12 +114,12 @@ export class WarehouseController {
   @RequirePermissions('warehouse:write')
   createOutbound(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateOutboundDto,
   ) {
     return this.outbound.createOutboundOrder(
       user.companyId,
-      data.loadId as string,
-      data.orderNumber as string,
+      data.loadId,
+      data.orderNumber,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.items as any,
     );
@@ -97,7 +130,7 @@ export class WarehouseController {
   pickOrder(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: PickOrderDto,
   ) {
     return this.outbound.pickOrder(
       user.companyId,
@@ -112,16 +145,16 @@ export class WarehouseController {
   @RequirePermissions('warehouse:write')
   scheduleDock(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: ScheduleDockDto,
   ) {
     return this.dockScheduler.scheduleAppointment(
       user.companyId,
-      data.dockId as string,
+      data.dockId,
       user.userId,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (data.type as any) || 'INBOUND',
-      new Date(data.start as string),
-      new Date(data.end as string),
+      new Date(data.start),
+      new Date(data.end),
       user.userId,
     );
   }

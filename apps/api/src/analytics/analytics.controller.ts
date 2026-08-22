@@ -1,3 +1,4 @@
+import { CreateAnalyticsDto, UpdateAnalyticsDto } from '../dto/analytics.dto';
 import {
   ServiceUnavailableException,
   Controller,
@@ -114,7 +115,7 @@ export class AnalyticsController {
   @ApiOperation({ summary: 'Create a custom dashboard' })
   createDashboard(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateAnalyticsDto,
   ) {
     return this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.analyticsDashboard.create({

@@ -79,6 +79,9 @@ export class LlmManagerService {
         new HumanMessage(sanitizedQuery),
       ];
 
+      // Security Tracing: Log the final context sent to the LLM to verify tenant isolation
+      this.logger.log(`[AI_SECURITY_TRACE] Payload context: ${JSON.stringify(context)}`);
+      
       const response = await model.invoke(messages);
       const duration = Date.now() - startTime;
 
@@ -118,6 +121,7 @@ export class LlmManagerService {
         completionTokens: approxOutputTokens,
         cost: inputCost + outputCost,
         success: true,
+        companyId: context?.companyId,
       });
 
       return validation.valid
@@ -132,6 +136,7 @@ export class LlmManagerService {
         completionTokens: 0,
         cost: 0,
         success: false,
+        companyId: context?.companyId,
       });
       this.logger.error(`LLM Generation Failed: ${error.message}`);
       throw error;

@@ -38,7 +38,10 @@ export function DocumentViewer({ document, isOpen, onClose }: DocumentViewerProp
               <div className="text-sm text-gray-500 mt-1 flex items-center gap-4">
                 <span>Version {document.version}</span>
                 <span>•</span>
-                <span>Uploaded by {document.uploadedBy} on {new Date(document.createdAt).toLocaleDateString()}</span>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Uploaded by {document.uploadedBy ? (typeof document.uploadedBy === 'string' ? document.uploadedBy : `${document.uploadedBy.firstName} ${document.uploadedBy.lastName}`) : 'Unknown'} on {new Date(document.createdAt).toLocaleDateString()}</span>
+                </div>
                 {document.entityId && (
                   <>
                     <span>•</span>

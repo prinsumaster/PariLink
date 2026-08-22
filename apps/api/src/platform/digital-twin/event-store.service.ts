@@ -3,7 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { EventService } from '../events/event.service';
 
 export interface AppendEventParams {
-  tenantId: string;
+  tenantId: string | null;
   streamId: string;
   streamType: string;
   eventType: string;
@@ -71,7 +71,7 @@ export class EventStoreService {
 
       // 4. Publish to Memory Bus for Live Projections to pick up
       this.eventService.publish(`DomainEvent.${streamType}.${eventType}`, {
-        tenantId,
+        tenantId: tenantId || 'SYSTEM',
         correlationId: correlationId || `event-${newEvent.id}`,
         timestamp: newEvent.timestamp,
         payload: {

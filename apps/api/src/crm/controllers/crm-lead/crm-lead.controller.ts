@@ -13,6 +13,21 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { CrmLeadService } from '../../services/crm-lead/crm-lead.service';
+import { IsString, IsNotEmpty, IsOptional, IsObject } from 'class-validator';
+
+export class CreateLeadDto {
+  @IsString() @IsNotEmpty() title!: string;
+  @IsString() @IsNotEmpty() status!: string;
+  @IsOptional() @IsString() source?: string;
+  @IsOptional() @IsObject() data?: Record<string, unknown>;
+}
+
+export class UpdateLeadDto {
+  @IsOptional() @IsString() title?: string;
+  @IsOptional() @IsString() status?: string;
+  @IsOptional() @IsString() source?: string;
+  @IsOptional() @IsObject() data?: Record<string, unknown>;
+}
 
 @Controller('crm/leads')
 @UseGuards(JwtAuthGuard)
@@ -20,7 +35,7 @@ export class CrmLeadController {
   constructor(private readonly service: CrmLeadService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreateLeadDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
@@ -38,7 +53,7 @@ export class CrmLeadController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: UpdateLeadDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

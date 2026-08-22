@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Get,
@@ -13,9 +14,15 @@ import { GetUser } from '../../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../../auth/decorators/get-user.decorator';
 import { VendorOperationsService } from './vendor-operations.service';
 
+export class SubmitPodDto {
+  @IsString() @IsNotEmpty() documentUrl!: string;
+}
+
 @ApiTags('vendor-portal/operations')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+
+
 @Controller('vendor-portal/operations')
 export class VendorOperationsController {
   constructor(
@@ -42,7 +49,7 @@ export class VendorOperationsController {
   uploadPod(
     @GetUser() user: AuthenticatedUser,
     @Param('id') tenderBidId: string,
-    @Body('documentUrl') documentUrl: string,
+    @Body() dto: SubmitPodDto,
   ) {
     if (!user.vendorId)
       throw new UnauthorizedException(
@@ -52,7 +59,7 @@ export class VendorOperationsController {
       user.companyId,
       user.vendorId,
       tenderBidId,
-      documentUrl,
+      dto.documentUrl,
     );
   }
 }

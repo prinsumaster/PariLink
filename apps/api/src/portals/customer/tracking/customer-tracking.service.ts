@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class CustomerTrackingService {
     );
 
     if (!load) {
-      throw new UnauthorizedException('Invalid load or unauthorized');
+      throw new NotFoundException('Invalid load or unauthorized');
     }
 
     // Return tracking information and ETA

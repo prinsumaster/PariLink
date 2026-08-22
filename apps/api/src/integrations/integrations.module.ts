@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { IntegrationsController } from './integrations.controller';
 import { IntegrationsService } from './integrations.service';
 import { CryptoService } from './security/crypto.service';
+import { IntegrationAuthService } from '../integration/auth/auth.service';
 import { ConnectorFactoryService } from './connectors/connector-factory.service';
 import { SyncEngineProcessor } from './sync/sync-engine.processor';
 import { WebhookController } from './webhooks/webhook.controller';
@@ -22,6 +23,7 @@ import { BullModule } from '@nestjs/bullmq';
   providers: [
     IntegrationsService,
     CryptoService,
+    IntegrationAuthService,
     ConnectorFactoryService,
     ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [SyncEngineProcessor] : [])] : []),
     RazorpayService,

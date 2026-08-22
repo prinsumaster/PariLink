@@ -16,15 +16,15 @@ export class CreateVehicleDto {
   @IsOptional()
   companyId?: string;
 
-  @ApiPropertyOptional({ example: 'Freightliner' })
+  @ApiProperty({ example: 'Freightliner' })
   @IsString()
-  @IsOptional()
-  make?: string;
+  @IsNotEmpty()
+  make: string;
 
-  @ApiPropertyOptional({ example: 'Cascadia' })
+  @ApiProperty({ example: 'Cascadia' })
   @IsString()
-  @IsOptional()
-  model?: string;
+  @IsNotEmpty()
+  model: string;
 
   @ApiPropertyOptional({ example: 2022 })
   @IsOptional()
@@ -32,28 +32,28 @@ export class CreateVehicleDto {
   @IsNumber()
   year?: number;
 
-  @ApiPropertyOptional({ example: 'TX-123456' })
+  @ApiProperty({ example: 'TX-123456' })
   @IsString()
-  @IsOptional()
-  licensePlate?: string;
+  @IsNotEmpty()
+  licensePlate: string;
 
   @ApiPropertyOptional({ example: '1FUJGHDBXKL123456' })
   @IsString()
   @IsOptional()
   vin?: string;
 
-  @ApiPropertyOptional({ enum: ['TRUCK', 'TRAILER', 'VAN'], default: 'TRUCK' })
+  @ApiProperty({ enum: ['TRUCK', 'TRAILER', 'VAN'], default: 'TRUCK' })
   @IsIn(['TRUCK', 'TRAILER', 'VAN'])
-  @IsOptional()
-  type?: string;
+  @IsNotEmpty()
+  type: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     enum: ['IN_SERVICE', 'MAINTENANCE', 'OUT_OF_SERVICE'],
     default: 'IN_SERVICE',
   })
   @IsIn(['IN_SERVICE', 'MAINTENANCE', 'OUT_OF_SERVICE'])
-  @IsOptional()
-  status?: string;
+  @IsNotEmpty()
+  status: string;
 
   @ApiPropertyOptional({ example: 40000 })
   @IsOptional()

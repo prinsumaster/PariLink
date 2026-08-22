@@ -11,6 +11,119 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsObject,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+} from 'class-validator';
+
+export enum LogLevel {
+  INFO = 'INFO',
+  WARN = 'WARN',
+  ERROR = 'ERROR',
+  DEBUG = 'DEBUG',
+  FATAL = 'FATAL',
+}
+
+export enum ExportFormat {
+  JSON = 'JSON',
+  CSV = 'CSV',
+}
+
+export class LogEntryDto {
+  @IsEnum(LogLevel)
+  level!: LogLevel;
+
+  @IsString()
+  @IsNotEmpty()
+  service!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  message!: string;
+
+  @IsObject()
+  @IsOptional()
+  structuredData?: Record<string, unknown>;
+
+  @IsString()
+  @IsOptional()
+  correlationId?: string;
+
+  @IsString()
+  @IsOptional()
+  traceId?: string;
+
+  @IsString()
+  @IsOptional()
+  spanId?: string;
+
+  @IsOptional()
+  error?: unknown;
+}
+
+export class LogSearchFilterDto {
+  @IsString()
+  @IsOptional()
+  level?: string;
+
+  @IsString()
+  @IsOptional()
+  service?: string;
+
+  @IsString()
+  @IsOptional()
+  query?: string;
+
+  @IsString()
+  @IsOptional()
+  correlationId?: string;
+
+  @IsString()
+  @IsOptional()
+  traceId?: string;
+
+  @IsString()
+  @IsOptional()
+  errorGroup?: string;
+
+  @IsString()
+  @IsISO8601()
+  @IsOptional()
+  startTime?: string;
+
+  @IsString()
+  @IsISO8601()
+  @IsOptional()
+  endTime?: string;
+
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+}
+
+export class ExportLogsDto {
+  @IsString()
+  @IsISO8601()
+  from!: string;
+
+  @IsString()
+  @IsISO8601()
+  to!: string;
+
+  @IsEnum(ExportFormat)
+  @IsOptional()
+  format?: ExportFormat;
+
+  @IsString()
+  @IsOptional()
+  level?: string;
+}
+
 @ApiTags('Operations - Logging Platform')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -27,7 +140,7 @@ export class LoggingPlatformController {
   })
   async log(
     @GetUser() user: { companyId: string },
-    @Body() body: Omit<LogEntryInput, 'companyId'>,
+    @Body() body: LogEntryDto,
   ) {
     return this.loggingService.log({ ...body, companyId: user.companyId });
   }
@@ -40,10 +153,12 @@ export class LoggingPlatformController {
   })
   async searchLogs(
     @GetUser() user: { companyId: string },
-    @Body() filter: Omit<LogSearchFilter, 'companyId'>,
+    @Body() filter: LogSearchFilterDto,
   ) {
     return this.loggingService.searchLogs({
       ...filter,
+      startTime: filter.startTime ? new Date(filter.startTime) : undefined,
+      endTime: filter.endTime ? new Date(filter.endTime) : undefined,
       companyId: user.companyId,
     });
   }
@@ -66,8 +181,7 @@ export class LoggingPlatformController {
   })
   async exportLogs(
     @GetUser() user: { companyId: string },
-    @Body()
-    body: { from: string; to: string; format?: 'JSON' | 'CSV'; level?: string },
+    @Body() body: ExportLogsDto,
   ) {
     const filter: LogSearchFilter = {
       companyId: user.companyId,

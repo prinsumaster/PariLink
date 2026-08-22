@@ -54,6 +54,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           deletedAt: true,
           roleId: true,
           companyId: true,
+          customerId: true,
+          vendorId: true,
+          driver: { select: { id: true } },
         },
       }),
     );
@@ -74,6 +77,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: user.email,
       roleId: user.roleId,
       companyId: user.companyId,
+      customerId: user.customerId,
+      vendorId: user.vendorId,
+      driverId: user.driver?.id,
     };
   }
 }

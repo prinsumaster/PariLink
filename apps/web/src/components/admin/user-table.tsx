@@ -28,17 +28,20 @@ interface UserTableProps {
   filters: AdminFilters;
   onFiltersChange: (filters: AdminFilters) => void;
   onLockUser: (id: string) => void;
+  onUnlockUser: (id: string) => void;
   onResetPassword: (id: string) => void;
 }
 
-const getRoleBadge = (role: string) => {
-  if (role.includes('ADMIN')) return <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Admin</Badge>;
-  if (role === 'OPERATIONS' || role === 'DISPATCHER') return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">{role}</Badge>;
-  if (role === 'FINANCE' || role === 'SALES') return <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">{role}</Badge>;
-  return <Badge variant="outline">{role}</Badge>;
+const getRoleBadge = (role: string | null | undefined) => {
+  if (!role) return <Badge variant="outline">Unknown</Badge>;
+  const roleStr = String(role);
+  if (roleStr.includes('ADMIN')) return <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Admin</Badge>;
+  if (roleStr === 'OPERATIONS' || roleStr === 'DISPATCHER') return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">{roleStr}</Badge>;
+  if (roleStr === 'FINANCE' || roleStr === 'SALES') return <Badge className="bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">{roleStr}</Badge>;
+  return <Badge variant="outline">{roleStr}</Badge>;
 };
 
-export function UserTable({ users, total, isLoading, filters, onFiltersChange, onLockUser, onResetPassword }: UserTableProps) {
+export function UserTable({ users, total, isLoading, filters, onFiltersChange, onLockUser, onUnlockUser, onResetPassword }: UserTableProps) {
   const router = useRouter();
 
   const columns = useMemo<ColumnDef<User>[]>(
@@ -109,13 +112,18 @@ export function UserTable({ users, total, isLoading, filters, onFiltersChange, o
                     <Lock className="mr-2 h-4 w-4" /> Lock Account
                   </DropdownMenuItem>
                 )}
+                {row.original.status === 'LOCKED' && (
+                  <DropdownMenuItem onClick={() => onUnlockUser(row.original.id)} className="text-green-600 focus:text-green-600">
+                    <Unlock className="mr-2 h-4 w-4" /> Unlock Account
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         ),
       }
     ],
-    [router, onLockUser, onResetPassword]
+    [router, onLockUser, onUnlockUser, onResetPassword]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -142,15 +150,15 @@ export function UserTable({ users, total, isLoading, filters, onFiltersChange, o
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800 relative">
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  <td className="px-4 py-4"><div className="flex items-center gap-3"><div className="h-8 w-8 bg-gray-200 dark:bg-gray-800 rounded-full"></div><div className="space-y-2"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-32"></div><div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-24"></div></div></div></td>
-                  <td className="px-4 py-4"><div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-full w-20"></div></td>
-                  <td className="px-4 py-4"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-24"></div></td>
-                  <td className="px-4 py-4"><div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-full w-20"></div></td>
-                  <td className="px-4 py-4"></td>
+                <tr key={i} className="animate-in fade-in duration-120 opacity-50">
+                  <td className="px-4 py-3"><div className="flex items-center gap-3"><div className="h-8 w-8 bg-gray-200 dark:bg-gray-800 rounded-full border border-transparent"></div><div className="space-y-2"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-32"></div><div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-24"></div></div></div></td>
+                  <td className="px-4 py-3"><div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-full w-20"></div></td>
+                  <td className="px-4 py-3"><div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-24"></div></td>
+                  <td className="px-4 py-3"><div className="h-5 bg-gray-200 dark:bg-gray-800 rounded-full w-20"></div></td>
+                  <td className="px-4 py-3"></td>
                 </tr>
               ))
             ) : users.length === 0 ? (
@@ -161,7 +169,7 @@ export function UserTable({ users, total, isLoading, filters, onFiltersChange, o
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors animate-in fade-in duration-120">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

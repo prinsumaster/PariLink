@@ -81,11 +81,11 @@ export class EnterpriseRagService {
   async retrieveContext(
     query: string,
     options: {
-      companyId?: string;
+      companyId: string;
       limit?: number;
       permissionTags?: string[];
       semanticWeight?: number; // 0–1, defaults to 0.7
-    } = {},
+    },
   ): Promise<RagResult> {
     const {
       companyId,
@@ -94,17 +94,20 @@ export class EnterpriseRagService {
       semanticWeight = 0.7,
     } = options;
 
+    if (!companyId) {
+      throw new Error('Tenant isolation failure: companyId is required for RAG context retrieval.');
+    }
+
     this.logger.log(
-      `RAG retrieval — query: "${query.substring(0, 80)}", company: ${companyId || 'global'}`,
+      `RAG retrieval — query: "${query.substring(0, 80)}", company: ${companyId}`,
     );
 
     const queryVector = await this.getEmbedding(query);
 
     // Tenant-isolated fetch
-    const whereClause: any = {};
-    if (companyId) {
-      whereClause.document = { companyId };
-    }
+    const whereClause: any = {
+      document: { companyId }
+    };
     if (permissionTags.length > 0) {
       // Only return chunks whose document does NOT have restricted tags
       // that the caller doesn't possess
@@ -186,8 +189,8 @@ export class EnterpriseRagService {
   /**
    * Legacy compatibility shim — returns just the context string
    */
-  async retrieveContextLegacy(query: string, limit = 3): Promise<string> {
-    const result = await this.retrieveContext(query, { limit });
+  async retrieveContextLegacy(query: string, companyId: string, limit = 3): Promise<string> {
+    const result = await this.retrieveContext(query, { companyId, limit });
     return result.context;
   }
 }

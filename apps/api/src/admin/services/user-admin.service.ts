@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
+import { BruteForceProtectionService } from '../../platform/security/brute-force/brute-force-protection.service';
 import {
   InviteUserDto,
   BulkUserImportDto,
@@ -18,6 +19,7 @@ export class UserAdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly bruteForce: BruteForceProtectionService,
   ) {}
 
   async getUsers(companyId: string, status?: string) {
@@ -279,13 +281,15 @@ export class UserAdminService {
       }),
     );
 
+    await this.bruteForce.adminUnlock(updated.email);
+
     await this.audit.logEvent({
       action: 'admin:user:unlock',
       entity: 'User',
       entityId: targetUserId,
       userId: adminUserId,
       companyId,
-      details: { previousStatus: user.status },
+      details: { reason: 'Admin unlock' },
     });
 
     return updated;

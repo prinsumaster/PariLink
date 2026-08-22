@@ -8,7 +8,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateCompanyDto {
-  @ApiProperty({ example: 'Acme Logistics' })
+  @ApiProperty({ example: 'Acme Corp' })
   @IsString()
   @IsNotEmpty()
   name!: string;

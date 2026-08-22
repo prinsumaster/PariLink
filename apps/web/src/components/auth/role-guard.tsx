@@ -40,7 +40,7 @@ export function RoleGuard({ children, allowedRoles, requiredPermissions, fallbac
     return <>{children}</>;
   }
 
-  if (fallback) {
+  if (fallback !== undefined) {
     return <>{fallback}</>;
   }
 

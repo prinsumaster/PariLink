@@ -15,6 +15,83 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsObject,
+  IsArray,
+  IsISO8601,
+  IsNotEmpty,
+} from 'class-validator';
+
+export class RecordSpanDto {
+  @IsString()
+  @IsNotEmpty()
+  traceId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  spanId!: string;
+
+  @IsString()
+  @IsOptional()
+  parentSpanId?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  serviceName!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  operationName!: string;
+
+  @IsString()
+  @IsISO8601()
+  startTime!: string;
+
+  @IsString()
+  @IsISO8601()
+  endTime!: string;
+
+  @IsNumber()
+  durationMs!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  status!: string;
+
+  @IsObject()
+  @IsOptional()
+  tags?: Record<string, unknown>;
+
+  @IsArray()
+  @IsOptional()
+  events?: Record<string, unknown>[];
+}
+
+export class SearchTracesDto {
+  @IsString()
+  @IsOptional()
+  serviceName?: string;
+
+  @IsString()
+  @IsOptional()
+  operationName?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
+
+  @IsNumber()
+  @IsOptional()
+  minDurationMs?: number;
+
+  @IsNumber()
+  @IsOptional()
+  limit?: number;
+}
+
 @ApiTags('Operations - Distributed Tracing')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -31,20 +108,7 @@ export class DistributedTracingController {
   })
   async recordSpan(
     @GetUser() user: { companyId: string },
-    @Body()
-    body: {
-      traceId: string;
-      spanId: string;
-      parentSpanId?: string;
-      serviceName: string;
-      operationName: string;
-      startTime: string;
-      endTime: string;
-      durationMs: number;
-      status: string;
-      tags?: Record<string, unknown>;
-      events?: Record<string, unknown>[];
-    },
+    @Body() body: RecordSpanDto,
   ) {
     return this.tracingService.recordSpan({
       traceId: body.traceId,
@@ -82,14 +146,7 @@ export class DistributedTracingController {
   })
   async searchTraces(
     @GetUser() user: { companyId: string },
-    @Body()
-    filter: {
-      serviceName?: string;
-      operationName?: string;
-      status?: string;
-      minDurationMs?: number;
-      limit?: number;
-    },
+    @Body() filter: SearchTracesDto,
   ) {
     return this.tracingService.searchTraces({
       ...filter,

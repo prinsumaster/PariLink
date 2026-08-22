@@ -1,3 +1,4 @@
+import { CreatePaymentsDto, UpdatePaymentsDto } from '../dto/payments.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -50,7 +51,7 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Record a new payment' })
   recordPayment(
     @GetUser() user: AuthenticatedUser,
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: CreatePaymentsDto,
   ) {
     return this.paymentsService.recordPayment(user.companyId, payload);
   }

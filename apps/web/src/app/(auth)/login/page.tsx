@@ -107,16 +107,16 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col min-h-[500px]">
       <div className="flex items-center gap-3 mb-8">
-        <div className="bg-slate-900 dark:bg-white p-2.5 rounded-xl shadow-lg border border-slate-800 dark:border-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
-          <Hexagon className="h-6 w-6 text-white dark:text-slate-900 fill-white/10 dark:fill-slate-900/10" strokeWidth={2} />
+        <div className="bg-[#FF4500] p-2.5 rounded-sm shadow-lg border border-[#FF4500]/50">
+          <Hexagon className="h-6 w-6 text-white fill-white/20" strokeWidth={2} />
         </div>
-        <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">PariLink</span>
+        <span className="text-2xl font-black text-white tracking-tighter">PariLink</span>
       </div>
 
-      <h2 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+      <h2 className="text-3xl font-medium tracking-tight text-white">
         Log in to your account
       </h2>
-      <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
+      <p className="mt-2 text-sm text-white/60 font-mono tracking-widest uppercase">
         Securely access your enterprise workspace.
       </p>
 
@@ -160,24 +160,24 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <Label htmlFor="email" className="font-medium text-slate-700 dark:text-slate-300">Work Email</Label>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-xs font-mono uppercase tracking-widest text-white/70">Work Email</Label>
             <Input
               id="email"
               type="email"
               autoComplete="email"
               placeholder="name@company.com"
               {...register('email')}
-              className={`h-11 transition-all duration-200 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm ${errors.email ? 'border-red-500 focus-visible:ring-red-500' : 'focus-visible:ring-slate-400 dark:focus-visible:ring-slate-600 hover:border-slate-400 dark:hover:border-slate-500'}`}
+              className={`h-11 bg-black/50 border-white/10 text-white rounded-none focus-visible:ring-[#FF4500] focus-visible:border-[#FF4500] transition-colors font-mono ${errors.email ? 'border-red-500' : ''}`}
             />
-            {errors.email && <p className="text-sm text-red-500 font-medium animate-in slide-in-from-top-1">{errors.email.message}</p>}
+            {errors.email && <p className="text-xs text-[#FF4500] font-mono animate-in slide-in-from-top-1">{errors.email.message}</p>}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="font-medium text-slate-700 dark:text-slate-300">Password</Label>
-              <a href="/forgot-password" className="text-sm font-semibold text-slate-900 hover:text-slate-700 dark:text-white dark:hover:text-slate-300 transition-colors">
-                Forgot your password?
+              <Label htmlFor="password" className="text-xs font-mono uppercase tracking-widest text-white/70">Password</Label>
+              <a href="/forgot-password" className="text-[10px] font-mono uppercase tracking-widest text-white/40 hover:text-white transition-colors">
+                Forgot password?
               </a>
             </div>
             <div className="relative">
@@ -186,29 +186,29 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 {...register('password')}
-                className={`h-11 pr-10 transition-all duration-200 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm ${errors.password ? 'border-red-500 focus-visible:ring-red-500' : 'focus-visible:ring-slate-400 dark:focus-visible:ring-slate-600 hover:border-slate-400 dark:hover:border-slate-500'}`}
+                className={`h-11 pr-10 bg-black/50 border-white/10 text-white rounded-none focus-visible:ring-[#FF4500] focus-visible:border-[#FF4500] transition-colors font-mono tracking-widest ${errors.password ? 'border-red-500' : ''}`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                className="absolute right-3 top-3 text-white/40 hover:text-white transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {capsLockOn && <p className="text-xs text-amber-600 dark:text-amber-400 font-medium flex items-center gap-1 mt-1"><AlertTriangle className="h-3 w-3" /> Caps Lock is on</p>}
-            {errors.password && <p className="text-sm text-red-500 font-medium animate-in slide-in-from-top-1">{errors.password.message}</p>}
+            {capsLockOn && <p className="text-[10px] text-yellow-500 font-mono flex items-center gap-1 mt-1 uppercase"><AlertTriangle className="h-3 w-3" /> Caps Lock is on</p>}
+            {errors.password && <p className="text-xs text-[#FF4500] font-mono animate-in slide-in-from-top-1">{errors.password.message}</p>}
           </div>
 
-          <div className="flex items-center space-x-2 pt-1 pb-2">
-            <input type="checkbox" id="remember" className="rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:checked:bg-white dark:focus:ring-white h-4 w-4 transition-all" />
-            <Label htmlFor="remember" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-              Remember this device for 30 days
+          <div className="flex items-center space-x-2 pt-2 pb-4">
+            <input type="checkbox" id="remember" className="rounded-none border-white/20 bg-black/50 text-[#FF4500] focus:ring-[#FF4500] h-4 w-4 transition-all" />
+            <Label htmlFor="remember" className="text-[10px] font-mono uppercase tracking-widest text-white/60 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Remember this device
             </Label>
           </div>
 
-          <Button type="submit" className="w-full h-11 text-base font-semibold shadow-sm transition-all duration-200 hover:shadow-md bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200" disabled={isLoading}>
+          <Button type="submit" className="w-full h-12 rounded-none text-sm font-mono uppercase tracking-widest transition-all duration-200 bg-[#FF4500] text-white hover:bg-[#FF4500]/90 border border-[#FF4500] hover:shadow-[0_0_15px_rgba(255,69,0,0.5)]" disabled={isLoading}>
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -225,10 +225,10 @@ export default function LoginPage() {
           <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+                <div className="w-full border-t border-white/10" />
               </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-slate-50 dark:bg-slate-950 px-3 text-slate-500 uppercase font-semibold tracking-wider">Enterprise SSO</span>
+              <div className="relative flex justify-center text-[10px]">
+                <span className="bg-[#0A0A0A] px-3 text-white/40 uppercase font-mono tracking-widest">Enterprise SSO</span>
               </div>
             </div>
 
@@ -236,7 +236,7 @@ export default function LoginPage() {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full h-11 font-medium bg-white/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="w-full h-12 rounded-none font-mono uppercase tracking-widest text-xs bg-black/50 border-white/10 hover:bg-white/10 text-white transition-colors"
                 onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/saml/login`}
               >
                 Continue with SAML SSO
@@ -247,12 +247,12 @@ export default function LoginPage() {
       </div>
 
       <div className="mt-auto pt-10 text-center">
-        <p className="text-xs text-slate-500 dark:text-slate-500 font-medium">
+        <p className="text-[10px] text-white/40 font-mono tracking-widest uppercase">
           © {new Date().getFullYear()} PariLink Enterprise. All rights reserved. V2.4.1
         </p>
-        <div className="flex justify-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-500 font-medium">
-          <a href="/legal/privacy" className="hover:text-slate-800 dark:hover:text-slate-300">Privacy Policy</a>
-          <a href="/legal/terms" className="hover:text-slate-800 dark:hover:text-slate-300">Terms of Service</a>
+        <div className="flex justify-center gap-6 mt-3 text-[10px] text-white/40 font-mono tracking-widest uppercase">
+          <a href="/legal/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+          <a href="/legal/terms" className="hover:text-white transition-colors">Terms of Service</a>
         </div>
       </div>
     </div>

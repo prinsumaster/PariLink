@@ -1,0 +1,55 @@
+groups:
+  - name: parilink-api-alerts
+    rules:
+      # Container Restarts
+      - alert: ContainerRestartLoop
+        expr: rate(kube_pod_container_status_restarts_total{namespace="parilink-prod"}[15m]) * 900 > 2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.container }} is restarting frequently"
+          description: "Container {{ $labels.container }} in pod {{ $labels.pod }} has restarted more than 2 times in the last 15 minutes."
+
+      # 5xx Error Rate > 5% over 5m
+      - alert: High5xxErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) 
+          / 
+          sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High 5xx error rate detected"
+          description: "More than 5% of all HTTP requests in the last 5 minutes resulted in 5xx server errors."
+
+      # DB Connection Failures
+      - alert: DatabaseConnectionFailures
+        expr: rate(prisma_client_queries_active{job="parilink-api"}[1m]) == 0 and rate(http_requests_total[1m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection appears down"
+          description: "API is receiving traffic but no Prisma active queries are being processed."
+
+      # Redis Down
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis instance is down"
+          description: "Redis target {{ $labels.instance }} has been unreachable for 1 minute."
+
+      # Disk Usage > 80%
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.instance }} ({{ $labels.mountpoint }}) has exceeded 80%."

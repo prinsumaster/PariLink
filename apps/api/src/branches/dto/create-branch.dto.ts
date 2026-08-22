@@ -16,7 +16,7 @@ export class CreateBranchDto {
 
   @ApiProperty({ example: 'Dallas Terminal' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   name!: string;
 
   @ApiPropertyOptional({ example: 'DFW-01' })

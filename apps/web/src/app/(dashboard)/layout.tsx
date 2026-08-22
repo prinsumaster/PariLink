@@ -51,6 +51,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  // The WorkspaceShell now handles the Sidebar, TopBar, Tabs, Dock, and BottomBar
-  return <WorkspaceShell>{children}</WorkspaceShell>;
+  // Removed WorkspaceShell since AppShell is already handling the layout
+  return <>{children}</>;
 }

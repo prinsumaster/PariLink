@@ -10,25 +10,58 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
-@ApiTags('Operations - Performance Platform')
+import { IsString, IsOptional, IsNumber, IsEnum, IsObject, IsNotEmpty } from 'class-validator';
+
+export enum ProfileType {
+  SLOW_QUERY = 'SLOW_QUERY',
+  CPU_SPIKE = 'CPU_SPIKE',
+  MEMORY_LEAK = 'MEMORY_LEAK',
+  HIGH_LATENCY = 'HIGH_LATENCY',
+  CACHE_MISS_ANOMALY = 'CACHE_MISS_ANOMALY',
+}
+
+export class CreatePerformanceProfileDto {
+  @IsEnum(ProfileType)
+  profileType!: ProfileType;
+
+  @IsString()
+  @IsNotEmpty()
+  targetResource!: string;
+
+  @IsNumber()
+  metricValue!: number;
+
+  @IsNumber()
+  thresholdValue!: number;
+
+  @IsString()
+  @IsOptional()
+  stackTraceOrQuery?: string;
+
+  @IsObject()
+  @IsOptional()
+  analysisDetails?: Record<string, unknown>;
+}
+
+@ApiTags('Operations - Performance Profiling')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @SkipThrottle()
 @Controller('operations/performance')
 export class PerformancePlatformController {
-  constructor(private readonly perfService: PerformancePlatformService) {}
+  constructor(private readonly performanceService: PerformancePlatformService) {}
 
-  @Post('profile')
+  @Post('profiles')
   @RequirePermissions('operations:performance:write')
   @ApiOperation({
     summary:
-      'Record a performance anomaly profile (slow query, CPU spike, memory leak, etc.)',
+      'Log an anomalous performance profile (slow query, cpu spike, memory leak)',
   })
-  async recordProfile(
+  async submitPerformanceProfile(
     @GetUser() user: { companyId: string },
-    @Body() body: Omit<PerformanceProfileInput, 'companyId'>,
+    @Body() body: CreatePerformanceProfileDto,
   ) {
-    return this.perfService.recordProfile({
+    return this.performanceService.recordProfile({
       ...body,
       companyId: user.companyId,
     });
@@ -43,7 +76,7 @@ export class PerformancePlatformController {
     @GetUser() user: { companyId: string },
     @Query('limit') limit = '20',
   ) {
-    return this.perfService.getSlowQueries(user.companyId, parseInt(limit, 10));
+    return this.performanceService.getSlowQueries(user.companyId, parseInt(limit, 10));
   }
 
   @Get('resource-utilization')
@@ -52,14 +85,14 @@ export class PerformancePlatformController {
     summary: 'Get CPU, memory heap, GC, and disk utilization diagnostics',
   })
   async getResourceUtilization() {
-    return this.perfService.getResourceUtilization();
+    return this.performanceService.getResourceUtilization();
   }
 
   @Get('cache')
   @RequirePermissions('operations:performance:read')
   @ApiOperation({ summary: 'Get Redis cache hit/miss ratio and eviction rate' })
   async getCachePerformance() {
-    return this.perfService.getCachePerformance();
+    return this.performanceService.getCachePerformance();
   }
 
   @Get('workflows')
@@ -68,6 +101,6 @@ export class PerformancePlatformController {
     summary: 'Get workflow execution and queue processing latency metrics',
   })
   async getWorkflowPerformance(@GetUser() user: { companyId: string }) {
-    return this.perfService.getWorkflowAndQueuePerformance(user.companyId);
+    return this.performanceService.getWorkflowAndQueuePerformance(user.companyId);
   }
 }

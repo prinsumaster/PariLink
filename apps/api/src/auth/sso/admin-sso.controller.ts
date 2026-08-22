@@ -1,3 +1,4 @@
+import { CreateAdminSsoDto, UpdateAdminSsoDto } from '../dto/admin-sso.dto';
 import {
   Controller,
   Get,
@@ -36,7 +37,7 @@ export class AdminSsoController {
   @ApiOperation({ summary: 'Create an Identity Provider' })
   async createProvider(
     @Param('companyId') companyId: string,
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: CreateAdminSsoDto,
     @Req() req: Request,
   ) {
     const userId = (req as any).user?.id;
@@ -49,7 +50,7 @@ export class AdminSsoController {
   async updateProvider(
     @Param('companyId') companyId: string,
     @Param('idpId') idpId: string,
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: CreateAdminSsoDto,
     @Req() req: Request,
   ) {
     const userId = (req as any).user?.id;

@@ -20,6 +20,126 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  IsObject,
+  ValidateNested,
+  IsNotEmpty,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export enum IncidentSeverity {
+  SEV1 = 'SEV1',
+  SEV2 = 'SEV2',
+  SEV3 = 'SEV3',
+  SEV4 = 'SEV4',
+}
+
+export enum IncidentStatus {
+  INVESTIGATING = 'INVESTIGATING',
+  IDENTIFIED = 'IDENTIFIED',
+  MONITORING = 'MONITORING',
+  RESOLVED = 'RESOLVED',
+  CLOSED = 'CLOSED',
+}
+
+export enum ActionItemStatus {
+  OPEN = 'OPEN',
+  IN_PROGRESS = 'IN_PROGRESS',
+  DONE = 'DONE',
+}
+
+export class CreateIncidentDto {
+  @IsString()
+  @IsNotEmpty()
+  title!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description!: string;
+
+  @IsEnum(IncidentSeverity)
+  severity!: IncidentSeverity;
+
+  @IsString()
+  @IsOptional()
+  assignedToId?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  affectedServices!: string[];
+}
+
+export class UpdateIncidentStatusDto {
+  @IsEnum(IncidentStatus)
+  status!: IncidentStatus;
+
+  @IsString()
+  @IsOptional()
+  rootCause?: string;
+
+  @IsString()
+  @IsOptional()
+  mitigationSteps?: string;
+}
+
+export class TimelineEventDto {
+  @IsString()
+  @IsNotEmpty()
+  eventType!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description!: string;
+
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
+export class ActionItemDto {
+  @IsString()
+  @IsNotEmpty()
+  id!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  task!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  ownerId!: string;
+
+  @IsEnum(ActionItemStatus)
+  status!: ActionItemStatus;
+}
+
+export class PostmortemDto {
+  @IsString()
+  @IsNotEmpty()
+  title!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  summary!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  rootCauseAnalysis!: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ActionItemDto)
+  actionItems!: ActionItemDto[];
+
+  @IsString()
+  @IsOptional()
+  preventativeMeasures?: string;
+}
+
 @ApiTags('Operations - Incident Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -36,7 +156,7 @@ export class IncidentManagementController {
   })
   async createIncident(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
-    @Body() body: Omit<CreateIncidentInput, 'companyId' | 'actorId'>,
+    @Body() body: CreateIncidentDto,
   ) {
     return this.incidentService.createIncident({
       ...body,
@@ -54,11 +174,7 @@ export class IncidentManagementController {
   async updateStatus(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
     @Param('id') id: string,
-    @Body()
-    body: Omit<
-      UpdateIncidentStatusInput,
-      'incidentId' | 'companyId' | 'actorId'
-    >,
+    @Body() body: UpdateIncidentStatusDto,
   ) {
     return this.incidentService.updateIncidentStatus({
       ...body,
@@ -77,12 +193,7 @@ export class IncidentManagementController {
   async addTimelineEvent(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
     @Param('id') id: string,
-    @Body()
-    body: {
-      eventType: string;
-      description: string;
-      metadata?: Record<string, unknown>;
-    },
+    @Body() body: TimelineEventDto,
   ) {
     return this.incidentService.addTimelineEvent({
       incidentId: id,
@@ -130,8 +241,7 @@ export class IncidentManagementController {
   async savePostmortem(
     @GetUser() user: { companyId: string; userId?: string; id?: string },
     @Param('id') id: string,
-    @Body()
-    body: Omit<PostmortemInput, 'incidentId' | 'companyId' | 'authorId'>,
+    @Body() body: PostmortemDto,
   ) {
     return this.incidentService.savePostmortem({
       ...body,

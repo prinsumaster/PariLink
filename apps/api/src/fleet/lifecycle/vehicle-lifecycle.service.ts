@@ -29,4 +29,14 @@ export class VehicleLifecycleService {
       }),
     );
   }
+
+  async getLocations(companyId: string) {
+    return await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.vehicleLocation.findMany({
+        where: { companyId },
+        orderBy: { gpsTimestamp: 'asc' },
+        take: 200,
+      }),
+    );
+  }
 }

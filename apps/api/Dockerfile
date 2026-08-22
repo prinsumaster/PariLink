@@ -19,25 +19,26 @@ RUN npm run build
 # Production Stage
 FROM base AS production
 ENV NODE_ENV=production
+ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
 # Change to non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nestjs
+    adduser --system --uid 1001 nestjs && \
+    chown -R nestjs:nodejs /usr/src/app
 
-COPY package*.json ./
-# Install only production dependencies cleanly
-RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
-
-COPY --from=builder /usr/src/app/prisma ./prisma
-# Generate prisma client with production binaries
-RUN npx prisma@5.22.0 generate
-
-COPY --from=builder --chown=nestjs:nodejs /usr/src/app/dist ./dist
-
-# Set correct permissions
-RUN chown -R nestjs:nodejs /usr/src/app
+COPY --chown=nestjs:nodejs package*.json ./
 
 USER nestjs
+
+# Install only production dependencies cleanly as the nestjs user
+# This avoids needing a separate 800MB layer for chowning node_modules!
+RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
+
+# Copy pre-generated Prisma client and dist directly as nestjs user
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/prisma ./prisma
+COPY --from=builder --chown=nestjs:nodejs /usr/src/app/dist ./dist
 
 # Health Check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \

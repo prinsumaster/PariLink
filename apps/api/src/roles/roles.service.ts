@@ -3,7 +3,7 @@ import {
   getPaginationParams,
   createPaginationResponse,
 } from '../platform/api/utils/pagination.util';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -99,6 +99,16 @@ export class RolesService {
         where: { id, companyId },
       });
       if (!existingRole) throw new NotFoundException();
+
+      const boundUsers = await tx.user.count({
+        where: { roleId: id, companyId },
+      });
+
+      if (boundUsers > 0) {
+        throw new ConflictException(
+          `Cannot delete role. ${boundUsers} active user(s) are currently assigned to it.`
+        );
+      }
 
       return tx.role.update({
         where: { id, companyId },

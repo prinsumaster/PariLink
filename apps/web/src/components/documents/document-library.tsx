@@ -80,12 +80,18 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
       {
         id: 'uploaded',
         header: 'Uploaded',
-        cell: ({ row }) => (
-          <div className="text-sm">
-            <div className="text-gray-900 dark:text-white">{new Date(row.original.createdAt).toLocaleDateString()}</div>
-            <div className="text-xs text-gray-500">by {row.original.uploadedBy}</div>
-          </div>
-        ),
+        cell: ({ row }) => {
+          const uploadedBy = row.original.uploadedBy;
+          const uploaderName = uploadedBy 
+            ? (typeof uploadedBy === 'string' ? uploadedBy : `${uploadedBy.firstName} ${uploadedBy.lastName}`)
+            : 'Unknown';
+          return (
+            <div className="text-sm">
+              <div className="text-gray-900 dark:text-white">{new Date(row.original.createdAt).toLocaleDateString()}</div>
+              <div className="text-xs text-gray-500">by {uploaderName}</div>
+            </div>
+          );
+        },
       },
       {
         id: 'actions',

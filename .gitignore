@@ -41,3 +41,4 @@ prisma/.env
 
 # ── Uploads (local dev only) ──────────────────────────────────────────────
 uploads/
+apps/api/src/**/*.js

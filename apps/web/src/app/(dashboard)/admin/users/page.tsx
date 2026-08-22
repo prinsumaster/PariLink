@@ -27,11 +27,58 @@ export default function UsersAdminPage() {
 
   const lockMutation = useMutation({
     mutationFn: (id: string) => adminService.lockUserAccount(id),
-    onSuccess: () => {
-      toast.success('User account locked successfully');
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['users'] });
+      const previousUsers = queryClient.getQueryData(['users', filters]);
+      queryClient.setQueryData(['users', filters], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((user: any) => user.id === id ? { ...user, status: 'LOCKED' } : user)
+        };
+      });
+      return { previousUsers };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['users', filters], context.previousUsers);
+      }
+      toast.error('Failed to lock account');
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
-    onError: () => toast.error('Failed to lock account')
+    onSuccess: () => {
+      toast.success('User account locked successfully');
+    }
+  });
+
+  const unlockMutation = useMutation({
+    mutationFn: (id: string) => adminService.unlockUserAccount(id),
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: ['users'] });
+      const previousUsers = queryClient.getQueryData(['users', filters]);
+      queryClient.setQueryData(['users', filters], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((user: any) => user.id === id ? { ...user, status: 'ACTIVE' } : user)
+        };
+      });
+      return { previousUsers };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['users', filters], context.previousUsers);
+      }
+      toast.error('Failed to unlock account');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onSuccess: () => {
+      toast.success('User account unlocked successfully');
+    }
   });
 
   const resetMutation = useMutation({
@@ -45,6 +92,12 @@ export default function UsersAdminPage() {
   const handleLockUser = (id: string) => {
     if (confirm('Are you sure you want to lock this user account? They will be immediately signed out and unable to log in.')) {
       lockMutation.mutate(id);
+    }
+  };
+
+  const handleUnlockUser = (id: string) => {
+    if (confirm('Are you sure you want to unlock this user account? They will be able to log in again.')) {
+      unlockMutation.mutate(id);
     }
   };
 
@@ -84,6 +137,7 @@ export default function UsersAdminPage() {
             filters={filters}
             onFiltersChange={setFilters}
             onLockUser={handleLockUser}
+            onUnlockUser={handleUnlockUser}
             onResetPassword={handleResetPassword}
           />
         </div>

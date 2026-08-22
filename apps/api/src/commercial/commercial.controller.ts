@@ -13,6 +13,13 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
+import {
+  CreateRateCardDto,
+  CreateQuotationDto,
+  CreateContractDto,
+  CreateTenderDto,
+  SubmitBidDto,
+} from './dto/commercial.dto';
 
 import { PricingService } from './engine/pricing.service';
 import { ContractService } from './engine/contract.service';
@@ -40,7 +47,7 @@ export class CommercialController {
   @ApiOperation({ summary: 'Create or update a customer Rate Card' })
   async createRateCard(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreateRateCardDto,
   ) {
     return this.pricing.createRateCard(user.companyId, dto);
   }
@@ -51,7 +58,7 @@ export class CommercialController {
   async createQuote(
     @GetUser() user: AuthenticatedUser,
     @Param('customerId') customerId: string,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreateQuotationDto,
   ) {
     return this.pricing.createQuotation(user.companyId, customerId, dto);
   }
@@ -83,7 +90,7 @@ export class CommercialController {
   @ApiOperation({ summary: 'Draft a new MSA or Carrier Agreement' })
   async createContract(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreateContractDto,
   ) {
     return this.contract.createContract(user.companyId, dto);
   }
@@ -105,7 +112,7 @@ export class CommercialController {
   @ApiOperation({ summary: 'Create a new carrier tender' })
   async createTender(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreateTenderDto,
   ) {
     return this.tender.createTender(user.companyId, dto);
   }
@@ -116,12 +123,12 @@ export class CommercialController {
   async submitBid(
     @GetUser() user: AuthenticatedUser,
     @Param('tenderId') tenderId: string,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: SubmitBidDto,
   ) {
     return this.tender.submitBid(
       user.companyId,
       tenderId,
-      (dto as any).vendorId,
+      dto.vendorId,
       dto,
     );
   }

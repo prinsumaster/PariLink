@@ -1,3 +1,4 @@
+import { CreateGstRuleDto, UpdateGstRuleDto } from '../dto/gst-rule.dto';
 import {
   Controller,
   Get,
@@ -19,7 +20,7 @@ export class GstRuleController {
   constructor(private readonly service: GstEngineService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreateGstRuleDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
@@ -37,7 +38,7 @@ export class GstRuleController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: CreateGstRuleDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

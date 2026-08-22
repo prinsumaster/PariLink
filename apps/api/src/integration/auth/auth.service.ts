@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { EnvelopeEncryptionService } from '../../platform/encryption/envelope/envelope-encryption.service';
 
 @Injectable()
 export class IntegrationAuthService {
@@ -12,28 +13,17 @@ export class IntegrationAuthService {
   ); // 32 bytes
   private readonly ALGORITHM = 'aes-256-gcm';
 
+  constructor(
+    private readonly envelopeEncryption: EnvelopeEncryptionService
+  ) {}
+
   /**
    * Encrypts sensitive credentials before storing in the database
    */
   encryptCredentials(credentials: any): string {
     try {
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(
-        this.ALGORITHM,
-        this.ENCRYPTION_KEY,
-        iv,
-      );
-
-      let encrypted = cipher.update(JSON.stringify(credentials), 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      const authTag = cipher.getAuthTag().toString('hex');
-
-      // Store IV and AuthTag alongside the encrypted payload
-      return JSON.stringify({
-        iv: iv.toString('hex'),
-        content: encrypted,
-        tag: authTag,
-      });
+      const plaintext = JSON.stringify(credentials);
+      return this.envelopeEncryption.encryptField(plaintext);
     } catch (e: any) {
       this.logger.error(`Failed to encrypt credentials: ${e.message}`);
       throw new Error('Encryption failed');
@@ -45,6 +35,13 @@ export class IntegrationAuthService {
    */
   decryptCredentials(encryptedPayloadString: string): any {
     try {
+      // Check if this is a modern envelope-encrypted payload
+      if (encryptedPayloadString.startsWith('enc:')) {
+        const decryptedString = this.envelopeEncryption.decryptField(encryptedPayloadString);
+        return JSON.parse(decryptedString);
+      }
+
+      // Fallback: Legacy static key decryption (V0)
       const payload = JSON.parse(encryptedPayloadString);
       const decipher = crypto.createDecipheriv(
         this.ALGORITHM,

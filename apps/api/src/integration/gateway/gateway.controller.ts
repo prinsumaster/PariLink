@@ -1,3 +1,4 @@
+import { CreateGatewayDto, UpdateGatewayDto } from '../dto/gateway.dto';
 import {
   Controller,
   Post,
@@ -37,7 +38,7 @@ export class IntegrationGatewayController {
     @Param('provider') provider: string,
     @Param('companyId') companyId: string,
     @Headers() headers: any,
-    @Body() body: Record<string, unknown>,
+    @Body() body: CreateGatewayDto,
   ) {
     const connector = this.registry.getConnector(provider);
     if (!connector) {

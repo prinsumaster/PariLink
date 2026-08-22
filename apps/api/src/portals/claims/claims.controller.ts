@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Post,
@@ -15,9 +16,22 @@ import { RequirePermissions } from '../../auth/decorators/permissions.decorator'
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
 
+export class SubmitClaimDto {
+  @IsOptional() @IsString() loadId?: string;
+  @IsNumber() amount!: number;
+  @IsString() @IsNotEmpty() reason!: string;
+}
+
+
+export class UpdateClaimStatusDto {
+  @IsString() @IsNotEmpty() status!: string;
+}
+
 @ApiTags('portals-customer-claims')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+
+
 @Controller('portals/customer/claims')
 export class ClaimsController {
   constructor(private readonly claimsService: ClaimsService) {}
@@ -27,13 +41,13 @@ export class ClaimsController {
   @ApiOperation({ summary: 'Submit a new customer claim' })
   async createClaim(
     @GetUser() user: AuthenticatedUser,
-    @Body() body: { loadId?: string; amount: number; reason: string },
+    @Body() dto: SubmitClaimDto,
   ) {
     // Assuming the user token maps directly to a customer portal user
     // or we pass the customerId if acting as an internal user.
     // For V9 OS Customer Portal, we assume the user.sub or user.customerId is available.
     // We will use user.userId as customerId for demo purposes of the OS.
-    return this.claimsService.createClaim(user.companyId, user.userId, body);
+    return this.claimsService.createClaim(user.companyId, user.userId, dto);
   }
 
   @Get()
@@ -59,12 +73,12 @@ export class ClaimsController {
   async updateClaimStatus(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: { status: string },
+    @Body() dto: UpdateClaimStatusDto,
   ) {
     return this.claimsService.updateClaimStatus(
       user.companyId,
       id,
-      body.status,
+      dto.status,
     );
   }
 }

@@ -32,4 +32,10 @@ export class VehicleLifecycleController {
   onboardVehicle(@GetUser() user: AuthenticatedUser, @Body() data: any) {
     return this.vehicleLifecycleService.onboardVehicle(user.companyId, data);
   }
+
+  @Get('locations')
+  @ApiOperation({ summary: 'Get vehicle locations for replay' })
+  getLocations(@GetUser() user: AuthenticatedUser) {
+    return this.vehicleLifecycleService.getLocations(user.companyId);
+  }
 }

@@ -74,5 +74,11 @@ export const fleetService = {
   addMaintenanceRecord: async (vehicleId: string, record: Partial<MaintenanceRecord>): Promise<MaintenanceRecord> => {
     const { data } = await api.post(`/vehicles/${vehicleId}/maintenance`, record);
     return data;
+  },
+
+  // Telemetry Replay
+  getLocations: async (): Promise<any[]> => {
+    const { data } = await api.get('/fleet/lifecycle/locations');
+    return data;
   }
 };

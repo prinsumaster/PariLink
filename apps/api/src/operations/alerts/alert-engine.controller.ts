@@ -15,6 +15,87 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsArray,
+  IsObject,
+  IsISO8601,
+  IsNotEmpty,
+} from 'class-validator';
+
+export enum AlertSeverity {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
+}
+
+export class AlertTriggerDto {
+  @IsString()
+  @IsOptional()
+  ruleId?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type!: string;
+
+  @IsEnum(AlertSeverity)
+  severity!: AlertSeverity;
+
+  @IsString()
+  @IsNotEmpty()
+  message!: string;
+
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+
+  @IsString()
+  @IsOptional()
+  vehicleId?: string;
+
+  @IsString()
+  @IsOptional()
+  driverId?: string;
+}
+
+export class CreateMaintenanceWindowDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @IsString()
+  @IsISO8601()
+  startTime!: string;
+
+  @IsString()
+  @IsISO8601()
+  endTime!: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  affectedServices!: string[];
+}
+
+export class CreateEscalationPolicyDto {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  severity!: string;
+
+  @IsArray()
+  steps!: Record<string, unknown>[];
+}
+
 @ApiTags('Operations - Alert Engine')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -31,10 +112,10 @@ export class AlertEngineController {
   })
   async triggerAlert(
     @GetUser() user: { companyId: string },
-    @Body() body: Record<string, unknown>,
+    @Body() body: AlertTriggerDto,
   ) {
     return this.alertService.triggerAlert({
-      ...(body as unknown as AlertTriggerInput),
+      ...body,
       companyId: user.companyId,
     });
   }
@@ -75,14 +156,7 @@ export class AlertEngineController {
   })
   async createMaintenanceWindow(
     @GetUser() user: { companyId: string },
-    @Body()
-    body: {
-      name: string;
-      description?: string;
-      startTime: string;
-      endTime: string;
-      affectedServices: string[];
-    },
+    @Body() body: CreateMaintenanceWindowDto,
   ) {
     return this.alertService.createMaintenanceWindow({
       companyId: user.companyId,
@@ -99,8 +173,7 @@ export class AlertEngineController {
   @ApiOperation({ summary: 'Create an alert escalation policy' })
   async createEscalationPolicy(
     @GetUser() user: { companyId: string },
-    @Body()
-    body: { name: string; severity: string; steps: Record<string, unknown>[] },
+    @Body() body: CreateEscalationPolicyDto,
   ) {
     return this.alertService.createEscalationPolicy({
       companyId: user.companyId,

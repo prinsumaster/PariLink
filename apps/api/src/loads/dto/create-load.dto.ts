@@ -17,10 +17,10 @@ export class CreateLoadDto {
   @IsNotEmpty()
   customerId!: string;
 
-  @ApiPropertyOptional({ example: 'LD-10045' })
+  @ApiProperty({ example: 'LD-10045' })
   @IsString()
-  @IsOptional()
-  referenceNumber?: string;
+  @IsNotEmpty()
+  referenceNumber!: string;
 
   @ApiPropertyOptional({ example: 'Acme Corp' })
   @IsString()
@@ -62,15 +62,15 @@ export class CreateLoadDto {
   @IsNotEmpty()
   destinationState!: string;
 
-  @ApiPropertyOptional({ example: '2028-12-01T10:00:00Z' })
+  @ApiProperty({ example: '2028-12-01T10:00:00Z' })
   @IsDateString()
-  @IsOptional()
-  pickupDate?: string;
+  @IsNotEmpty()
+  pickupDate!: string;
 
-  @ApiPropertyOptional({ example: '2028-12-02T14:00:00Z' })
+  @ApiProperty({ example: '2028-12-02T14:00:00Z' })
   @IsDateString()
-  @IsOptional()
-  deliveryDate?: string;
+  @IsNotEmpty()
+  deliveryDate!: string;
 
   @ApiPropertyOptional({ example: 42000 })
   @IsOptional()

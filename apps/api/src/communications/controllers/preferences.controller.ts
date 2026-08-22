@@ -1,3 +1,4 @@
+import { CreatePreferencesDto, UpdatePreferencesDto } from '../dto/preferences.dto';
 import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -40,7 +41,7 @@ export class PreferencesController {
   @ApiOperation({ summary: 'Update user notification preferences' })
   async updatePreferences(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: Record<string, unknown>,
+    @Body() dto: CreatePreferencesDto,
   ) {
     const prefs = await this.prisma.runAsTenant(user.companyId, async (tx) =>
       tx.notificationPreference.update({

@@ -17,28 +17,28 @@ export class CreateTripDto {
   @IsOptional()
   tripNumber?: string;
 
-  @ApiPropertyOptional({ example: 'd123d2ca-1122-3344-5566-778899aabbcc' })
+  @ApiProperty({ example: 'd123d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
-  @IsOptional()
-  driverId?: string;
+  @IsNotEmpty()
+  driverId: string;
 
-  @ApiPropertyOptional({ example: 'v123d2ca-1122-3344-5566-778899aabbcc' })
+  @ApiProperty({ example: 'v123d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
-  @IsOptional()
-  vehicleId?: string;
+  @IsNotEmpty()
+  vehicleId: string;
 
   @ApiPropertyOptional({ example: 'v456d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
   @IsOptional()
   trailerId?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     enum: ['PLANNED', 'DISPATCHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
     default: 'PLANNED',
   })
   @IsIn(['PLANNED', 'DISPATCHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
-  @IsOptional()
-  status?: string;
+  @IsNotEmpty()
+  status: string;
 
   @ApiPropertyOptional({ example: '2028-12-01T10:00:00Z' })
   @IsDateString()

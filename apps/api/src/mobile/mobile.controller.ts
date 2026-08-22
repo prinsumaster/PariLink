@@ -1,3 +1,4 @@
+import { CreateMobileDto, UpdateMobileDto } from '../dto/mobile.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -93,7 +94,7 @@ export class MobileController {
   })
   processOfflineQueue(
     @GetUser() user: AuthenticatedUser,
-    @Body() queueData: Record<string, unknown>[],
+    @Body() queueData: CreateMobileDto[],
   ) {
     return this.mobileService.processOfflineQueue(
       user.companyId,

@@ -37,6 +37,8 @@ export class RuleEngineService {
     const { tenantId, payload } = event;
     const { streamId } = payload;
 
+    if (!tenantId) return;
+
     // In a pure Event Sourced system, we fetch the latest snapshot
     const snapshot = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.twinSnapshot.findFirst({

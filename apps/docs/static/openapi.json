@@ -17987,6 +17987,26 @@
         ]
       }
     },
+    "/api/v1/fleet/lifecycle/locations": {
+      "get": {
+        "operationId": "VehicleLifecycleController_getLocations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vehicle locations for replay",
+        "tags": [
+          "fleet/lifecycle"
+        ]
+      }
+    },
     "/api/v1/fleet/maintenance/upcoming": {
       "get": {
         "operationId": "FleetMaintenanceController_getUpcomingMaintenance_v1",
@@ -18233,7 +18253,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Acme Logistics"
+            "example": "Acme Corp"
           },
           "taxId": {
             "type": "string",
@@ -18282,7 +18302,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Acme Logistics"
+            "example": "Acme Corp"
           },
           "taxId": {
             "type": "string",
@@ -18611,7 +18631,12 @@
           }
         },
         "required": [
-          "companyId"
+          "companyId",
+          "make",
+          "model",
+          "licensePlate",
+          "type",
+          "status"
         ]
       },
       "UpdateVehicleDto": {
@@ -18975,12 +19000,15 @@
         },
         "required": [
           "customerId",
+          "referenceNumber",
           "originAddress",
           "originCity",
           "originState",
           "destinationAddress",
           "destinationCity",
           "destinationState",
+          "pickupDate",
+          "deliveryDate",
           "rate"
         ]
       },
@@ -19163,7 +19191,12 @@
           "notes": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "driverId",
+          "vehicleId",
+          "status"
+        ]
       },
       "UpdateTripDto": {
         "type": "object",

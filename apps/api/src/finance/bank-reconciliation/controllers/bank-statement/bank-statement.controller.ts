@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../../auth/guards/jwt-auth.guard';
 import { BankSyncService } from '../../services/bank-sync/bank-sync.service';
+import { CreateBankStatementDto, UpdateBankStatementDto } from '../../dto/bank-statement.dto';
 
 @Controller('finance/bank-statements')
 @UseGuards(JwtAuthGuard)
@@ -19,7 +20,7 @@ export class BankStatementController {
   constructor(private readonly service: BankSyncService) {}
 
   @Post()
-  create(@Req() req: any, @Body() data: Record<string, unknown>) {
+  create(@Req() req: any, @Body() data: CreateBankStatementDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
 
@@ -37,7 +38,7 @@ export class BankStatementController {
   update(
     @Req() req: any,
     @Param('id') id: string,
-    @Body() data: Record<string, unknown>,
+    @Body() data: UpdateBankStatementDto,
   ) {
     return this.service.update(req.user.companyId, id, req.user.id, data);
   }

@@ -60,6 +60,9 @@ describe('Authentication Flow (e2e)', () => {
     if (app) {
       await app.close();
     }
+    if (prisma) {
+      await prisma.$disconnect();
+    }
   });
 
   describe('Password Login & Token Refresh', () => {
@@ -165,6 +168,43 @@ describe('Authentication Flow (e2e)', () => {
         where: { userId: testUser.id },
       });
       expect(dbTokens.length).toBe(0);
+    });
+  });
+
+  describe('Passwordless User Hardening', () => {
+    it('should reject login for passwordless user with empty password', async () => {
+      // Create a passwordless user directly in DB (simulating an empty password hash for PostgreSQL since it is NOT NULL)
+      const ghostUser = await prisma.user.create({
+        data: {
+          email: `ghost-${Date.now()}@example.com`,
+          firstName: 'Ghost',
+          lastName: 'User',
+          password: '', // Empty password to simulate broken state
+          companyId: company.id,
+          status: 'ACTIVE',
+        },
+      });
+
+      // a) password: "" (intercepted by ValidationPipe if DTO is active, but we expect 400 or 401 depending on validation)
+      // Since we just fixed ValidationPipe, it returns 400.
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: ghostUser.email, password: '' })
+        .expect(400);
+
+      // b) password: "x" (passes validation, hits our new guard and returns 401)
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: ghostUser.email, password: 'x' })
+        .expect(401);
+
+      // c) no password key (intercepted by ValidationPipe)
+      await request(app.getHttpServer())
+        .post('/auth/login')
+        .send({ email: ghostUser.email })
+        .expect(400);
+
+      await prisma.user.delete({ where: { id: ghostUser.id } });
     });
   });
 

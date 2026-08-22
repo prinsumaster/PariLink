@@ -20,6 +20,7 @@ export class CreateRateCardDto {
 
   @ApiProperty()
   @IsNumber()
+  @IsNotEmpty()
   rate!: number;
 
   @ApiPropertyOptional()

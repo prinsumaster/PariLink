@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Post,
@@ -11,9 +12,17 @@ import { GetUser } from '../../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../../auth/decorators/get-user.decorator';
 import { DriverTelemetryService } from './driver-telemetry.service';
 
+export class LogLocationDto {
+  @IsString() @IsNotEmpty() tripId!: string;
+  @IsNumber() latitude!: number;
+  @IsNumber() longitude!: number;
+}
+
 @ApiTags('driver-portal/telemetry')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+
+
 @Controller('driver-portal/telemetry')
 export class DriverTelemetryController {
   constructor(
@@ -26,17 +35,15 @@ export class DriverTelemetryController {
   })
   logLocation(
     @GetUser() user: AuthenticatedUser,
-    @Body('tripId') tripId: string,
-    @Body('latitude') latitude: number,
-    @Body('longitude') longitude: number,
+    @Body() dto: LogLocationDto,
   ) {
     const driverId = (user as any).driverId || user.userId;
     return this.driverTelemetryService.logLocation(
       user.companyId,
       driverId,
-      tripId,
-      latitude,
-      longitude,
+      dto.tripId,
+      dto.latitude,
+      dto.longitude,
     );
   }
 }

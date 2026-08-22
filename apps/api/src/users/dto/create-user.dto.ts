@@ -17,23 +17,23 @@ export class CreateUserDto {
 
   @ApiProperty({ example: 'driver@parilink.com' })
   @IsEmail()
-  @IsOptional()
+  @IsNotEmpty()
   email!: string;
 
   @ApiProperty({ example: 'password123' })
   @IsString()
   @MinLength(8)
-  @IsOptional()
+  @IsNotEmpty()
   password!: string;
 
   @ApiProperty({ example: 'John' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   firstName!: string;
 
   @ApiProperty({ example: 'Doe' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   lastName!: string;
 
   @ApiPropertyOptional()

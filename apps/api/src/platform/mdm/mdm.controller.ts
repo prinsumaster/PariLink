@@ -20,6 +20,39 @@ import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
+import { IsString, IsNotEmpty, IsOptional, IsObject, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class CreateGoldenRecordDto {
+  @IsObject() @IsNotEmpty() masterData!: Record<string, unknown>;
+  @IsOptional() @IsString() sourceSystem?: string;
+}
+
+export class SurvivorshipRuleDto {
+  @IsString() @IsNotEmpty() attribute!: string;
+  @IsString() @IsNotEmpty() strategy!: 'LATEST' | 'TRUSTED_SOURCE' | 'MANUAL';
+  @IsOptional() @IsString() trustedSource?: string;
+}
+
+export class MergeRecordsDto {
+  @IsString() @IsNotEmpty() primaryId!: string;
+  @IsString() @IsNotEmpty() duplicateId!: string;
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SurvivorshipRuleDto)
+  survivorshipRules?: SurvivorshipRule[];
+}
+
+export class EvaluateQualityDto {
+  @IsObject() @IsNotEmpty() payload!: Record<string, unknown>;
+}
+
+export class UpsertReferenceDataDto {
+  @IsString() @IsNotEmpty() code!: string;
+  @IsString() @IsNotEmpty() name!: string;
+  @IsOptional() @IsObject() attributes?: Record<string, unknown>;
+}
 
 @Controller('mdm')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -39,8 +72,7 @@ export class MdmController {
   async createGoldenRecord(
     @GetUser() user: AuthenticatedUser,
     @Param('entityType') entityType: string,
-    @Body()
-    payload: { masterData: Record<string, unknown>; sourceSystem: string },
+    @Body() payload: CreateGoldenRecordDto,
   ) {
     return this.goldenEngine.createGoldenRecord(
       user.companyId,
@@ -55,12 +87,7 @@ export class MdmController {
   @RequirePermissions('mdm:record:merge')
   async mergeRecords(
     @GetUser() user: AuthenticatedUser,
-    @Body()
-    payload: {
-      primaryId: string;
-      duplicateId: string;
-      survivorshipRules: SurvivorshipRule[];
-    },
+    @Body() payload: MergeRecordsDto,
   ) {
     return this.goldenEngine.mergeRecords(
       user.companyId,
@@ -78,9 +105,9 @@ export class MdmController {
   async evaluateQuality(
     @GetUser() user: AuthenticatedUser,
     @Param('entityType') entityType: string,
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: EvaluateQualityDto,
   ) {
-    return this.dqEngine.evaluateQuality(user.companyId, entityType, payload);
+    return this.dqEngine.evaluateQuality(user.companyId, entityType, payload.payload);
   }
 
   // ── 3. External Identity APIs ────────────────────────────────────────────
@@ -88,10 +115,12 @@ export class MdmController {
   @Get('identities/:sourceSystem/:externalId')
   @RequirePermissions('mdm:identity:read')
   async resolveIdentity(
+    @GetUser() user: AuthenticatedUser,
     @Param('sourceSystem') sourceSystem: string,
     @Param('externalId') externalId: string,
   ) {
     const goldenId = await this.identityMap.resolveToGoldenId(
+      user.companyId,
       sourceSystem,
       externalId,
     );
@@ -109,12 +138,7 @@ export class MdmController {
   @RequirePermissions('mdm:reference:write')
   async upsertReferenceData(
     @Param('domain') domain: string,
-    @Body()
-    payload: {
-      code: string;
-      name: string;
-      attributes?: Record<string, unknown>;
-    },
+    @Body() payload: UpsertReferenceDataDto,
   ) {
     return this.refData.upsertReferenceData(
       domain,

@@ -1,3 +1,4 @@
+import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
 import {
   Controller,
   Get,
@@ -13,9 +14,16 @@ import { GetUser } from '../../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../../auth/decorators/get-user.decorator';
 import { DriverTripsService } from './driver-trips.service';
 
+export class UpdateTripStatusDto {
+  @IsString() @IsNotEmpty() status!: string;
+  @IsNotEmptyObject() location!: any;
+}
+
 @ApiTags('driver-portal/trips')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+
+
 @Controller('driver-portal/trips')
 export class DriverTripsController {
   constructor(private readonly driverTripsService: DriverTripsService) {}
@@ -40,16 +48,15 @@ export class DriverTripsController {
   updateTripStatus(
     @GetUser() user: AuthenticatedUser,
     @Param('id') tripId: string,
-    @Body('status') status: string,
-    @Body('location') location: any,
+    @Body() dto: UpdateTripStatusDto,
   ) {
     const driverId = (user as any).driverId || user.userId;
     return this.driverTripsService.updateTripStatus(
       user.companyId,
       driverId,
       tripId,
-      status,
-      location,
+      dto.status,
+      dto.location,
     );
   }
 }

@@ -1,3 +1,4 @@
+import { CreateInvoicesDto, UpdateInvoicesDto } from '../dto/invoices.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -55,7 +56,7 @@ export class InvoicesController {
   @ApiOperation({ summary: 'Create a new invoice' })
   createInvoice(
     @GetUser() user: AuthenticatedUser,
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: CreateInvoicesDto,
   ) {
     return this.invoicesService.createInvoice(user.companyId, payload, user.id);
   }

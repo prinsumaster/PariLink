@@ -15,7 +15,7 @@ export class CreateRoleDto {
 
   @ApiProperty({ example: 'Senior Dispatcher' })
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   name!: string;
 
   @ApiPropertyOptional({ example: 'Can manage all dispatch boards' })
