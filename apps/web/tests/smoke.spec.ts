@@ -127,9 +127,12 @@ test('Smoke test all core routes', async ({ page }) => {
     // Wait briefly for client-side rendering (Error boundaries render quickly)
     await page.waitForTimeout(1500);
     
-    // Check for standard error boundary text
+    // Check for standard error boundary text AND data-error-boundary attribute
     const pageText = await page.textContent('body');
-    if (pageText?.includes('Application error: a client-side exception has occurred') || 
+    const hasBoundaryAttr = await page.evaluate(() => !!document.querySelector('[data-error-boundary="true"]'));
+    
+    if (hasBoundaryAttr || 
+        pageText?.includes('Application error: a client-side exception has occurred') || 
         pageText?.includes('Something went wrong!')) {
       errors.push(new Error(`Error boundary hit on route ${route}`));
     }

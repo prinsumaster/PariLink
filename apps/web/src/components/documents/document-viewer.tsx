@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, ExternalLink, Tag } from 'lucide-react';
+import { Download, ExternalLink, Tag, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
 interface DocumentViewerProps {
@@ -40,7 +40,7 @@ export function DocumentViewer({ document, isOpen, onClose }: DocumentViewerProp
                 <span>•</span>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  <span>Uploaded by {document.uploadedBy ? (typeof document.uploadedBy === 'string' ? document.uploadedBy : `${document.uploadedBy.firstName} ${document.uploadedBy.lastName}`) : 'Unknown'} on {new Date(document.createdAt).toLocaleDateString()}</span>
+                  <span>Uploaded by {document.uploadedBy ? (typeof document.uploadedBy === 'string' ? document.uploadedBy : `${(document.uploadedBy as any).firstName} ${(document.uploadedBy as any).lastName}`) : 'Unknown'} on {new Date(document.createdAt).toLocaleDateString()}</span>
                 </div>
                 {document.entityId && (
                   <>

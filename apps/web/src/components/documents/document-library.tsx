@@ -83,7 +83,7 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
         cell: ({ row }) => {
           const uploadedBy = row.original.uploadedBy;
           const uploaderName = uploadedBy 
-            ? (typeof uploadedBy === 'string' ? uploadedBy : `${uploadedBy.firstName} ${uploadedBy.lastName}`)
+            ? (typeof uploadedBy === 'string' ? uploadedBy : `${(uploadedBy as any).firstName} ${(uploadedBy as any).lastName}`)
             : 'Unknown';
           return (
             <div className="text-sm">
