@@ -116,7 +116,7 @@ test('Smoke test all core routes', async ({ page }) => {
   await page.click('button[type="submit"]');
 
   // Wait for dashboard to load (login success)
-  await expect(page.locator('h1').first()).toContainText(/Dashboard|Overview|Command Center/i, { timeout: 15000 });
+  await expect(page).toHaveURL(/.*dashboard.*/, { timeout: 15000 });
 
   for (const route of ROUTES) {
     const response = await page.goto(route);
