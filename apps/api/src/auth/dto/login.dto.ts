@@ -40,9 +40,4 @@ export class LoginDto {
   @IsString()
   @IsOptional()
   deviceFingerprint?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  captchaToken?: string;
 }

@@ -13,12 +13,15 @@ import { RedisManagerService } from '../../../common/redis/redis-manager.service
 interface LoginAttempt {
   count: number;
   firstAttemptAt: number;
+  lockedUntil?: number;
+  permanentLock: boolean;
 }
 
 export interface LoginAttemptResult {
-  allowed: boolean; // Always true now, but kept for interface compat if needed
-  delayMs: number;
-  requiresCaptcha: boolean;
+  allowed: boolean;
+  remainingAttempts?: number;
+  lockedUntil?: Date;
+  permanentlyLocked?: boolean;
 }
 
 @Injectable()
@@ -29,8 +32,10 @@ export class BruteForceProtectionService implements OnModuleDestroy {
   private readonly redis: Redis | null = null;
   private useRedis = false;
 
+  private readonly MAX_ATTEMPTS_SOFT = 5;
+  private readonly MAX_ATTEMPTS_HARD = 10;
   private readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-  private readonly CAPTCHA_THRESHOLD = 3;
+  private readonly SOFT_LOCK_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
   constructor(private readonly redisManager: RedisManagerService) {
     this.redis = this.redisManager.getClient();
@@ -55,7 +60,11 @@ export class BruteForceProtectionService implements OnModuleDestroy {
     ttlMs: number,
   ): Promise<void> {
     if (this.useRedis && this.redis) {
-      const ttl = Math.ceil(ttlMs / 1000);
+      // If permanently locked, we can store it for a long time (e.g., 30 days) or indefinitely,
+      // but let's just use 30 days so we don't leak memory forever.
+      const ttl = record.permanentLock
+        ? 30 * 24 * 60 * 60
+        : Math.ceil(ttlMs / 1000);
       await this.redis.set(`bf:${key}`, JSON.stringify(record), 'EX', ttl);
     } else {
       this.store.set(key, record);
@@ -70,17 +79,6 @@ export class BruteForceProtectionService implements OnModuleDestroy {
     }
   }
 
-  private calculateDelayAndCaptcha(count: number): { delayMs: number, requiresCaptcha: boolean } {
-    if (count < this.CAPTCHA_THRESHOLD) {
-      return { delayMs: 0, requiresCaptcha: false };
-    }
-    // progressive delay (1s, 2s, 4s...)
-    const exponent = count - this.CAPTCHA_THRESHOLD;
-    // Cap exponent to prevent ridiculously large numbers (e.g. max 64s delay -> exp 6)
-    const delayMs = Math.pow(2, Math.min(exponent, 6)) * 1000;
-    return { delayMs, requiresCaptcha: true };
-  }
-
   async checkLoginAttempt(
     email: string,
     ipAddress?: string,
@@ -90,20 +88,29 @@ export class BruteForceProtectionService implements OnModuleDestroy {
     const record = await this.getRecord(key);
 
     if (!record) {
-      return { allowed: true, delayMs: 0, requiresCaptcha: false };
+      return { allowed: true, remainingAttempts: this.MAX_ATTEMPTS_SOFT };
+    }
+
+    // Check permanent lock
+    if (record.permanentLock) {
+      return { allowed: false, permanentlyLocked: true };
+    }
+
+    // Check soft lock
+    if (record.lockedUntil && now < record.lockedUntil) {
+      return { allowed: false, lockedUntil: new Date(record.lockedUntil) };
     }
 
     // Sliding window: reset if window has expired
     if (now - record.firstAttemptAt > this.WINDOW_MS) {
       await this.deleteRecord(key);
-      return { allowed: true, delayMs: 0, requiresCaptcha: false };
+      return { allowed: true, remainingAttempts: this.MAX_ATTEMPTS_SOFT };
     }
 
-    const { delayMs, requiresCaptcha } = this.calculateDelayAndCaptcha(record.count);
+    const remaining = this.MAX_ATTEMPTS_SOFT - record.count;
     return {
-      allowed: true, // we never lock anymore
-      delayMs,
-      requiresCaptcha,
+      allowed: true,
+      remainingAttempts: Math.max(0, remaining),
     };
   }
 
@@ -117,20 +124,35 @@ export class BruteForceProtectionService implements OnModuleDestroy {
 
     let record: LoginAttempt;
     if (!existing || now - existing.firstAttemptAt > this.WINDOW_MS) {
-      record = { count: 1, firstAttemptAt: now };
+      record = { count: 1, firstAttemptAt: now, permanentLock: false };
     } else {
       record = { ...existing, count: existing.count + 1 };
     }
 
-    await this.setRecord(key, record, this.WINDOW_MS);
-    
-    const { delayMs, requiresCaptcha } = this.calculateDelayAndCaptcha(record.count);
-    
-    if (requiresCaptcha) {
-      this.logger.warn(`[BruteForce] Progressive delay (${delayMs}ms) & CAPTCHA triggered for ${key} after ${record.count} attempts`);
+    if (record.count >= this.MAX_ATTEMPTS_HARD) {
+      record.permanentLock = true;
+      this.logger.warn(
+        `[BruteForce] HARD LOCK triggered for ${key} after ${record.count} attempts — requires admin reset`,
+      );
+      await this.setRecord(key, record, this.WINDOW_MS);
+      return { allowed: false, permanentlyLocked: true };
     }
 
-    return { allowed: true, delayMs, requiresCaptcha };
+    if (record.count >= this.MAX_ATTEMPTS_SOFT) {
+      record.lockedUntil = now + this.SOFT_LOCK_DURATION_MS;
+      this.logger.warn(
+        `[BruteForce] SOFT LOCK triggered for ${key} until ${new Date(record.lockedUntil).toISOString()}`,
+      );
+      // TTL should cover the lock duration
+      await this.setRecord(key, record, this.SOFT_LOCK_DURATION_MS);
+      return { allowed: false, lockedUntil: new Date(record.lockedUntil) };
+    }
+
+    await this.setRecord(key, record, this.WINDOW_MS);
+    return {
+      allowed: true,
+      remainingAttempts: this.MAX_ATTEMPTS_SOFT - record.count,
+    };
   }
 
   async recordSuccessfulLogin(email: string): Promise<void> {
@@ -143,7 +165,10 @@ export class BruteForceProtectionService implements OnModuleDestroy {
   }
 
   async isAccountLocked(email: string): Promise<boolean> {
-    // Accounts are never locked out completely anymore
+    const record = await this.getRecord(email.toLowerCase());
+    if (!record) return false;
+    if (record.permanentLock) return true;
+    if (record.lockedUntil && Date.now() < record.lockedUntil) return true;
     return false;
   }
 }

@@ -126,14 +126,11 @@ export class AuthService {
 
     // 1. Brute-force check BEFORE touching the database
     const bfCheck = await this.bruteForce.checkLoginAttempt(email, ipAddress);
-    if (bfCheck.requiresCaptcha && !loginDto.captchaToken) {
-      throw new ForbiddenException('CAPTCHA required due to multiple failed login attempts');
-    }
-
-    // Apply progressive delay if needed
-    if (bfCheck.delayMs > 0) {
-      this.logger.debug(`Applying progressive delay of ${bfCheck.delayMs}ms for ${email}`);
-      await new Promise((resolve) => setTimeout(resolve, bfCheck.delayMs));
+    if (!bfCheck.allowed) {
+      const reason = bfCheck.permanentlyLocked
+        ? 'Account permanently locked. Contact your administrator.'
+        : `Account temporarily locked until ${bfCheck.lockedUntil?.toISOString()}.`;
+      throw new ForbiddenException(reason);
     }
 
     // 2. Load user — use a generic error to prevent user enumeration
@@ -203,6 +200,7 @@ export class AuthService {
         details: {
           reason: 'Invalid password',
           ip: ipAddress,
+          remainingAttempts: result.remainingAttempts,
         },
       });
       throw new UnauthorizedException(GENERIC_AUTH_ERROR);
