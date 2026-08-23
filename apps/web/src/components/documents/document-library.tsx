@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, FileImage, File, Trash2, Download, Eye, Clock, AlertTriangle } from 'lucide-react';
+import { RowCollapse, FlyTo } from '@/components/motion';
 
 interface DocumentLibraryProps {
   documents: Document[];
@@ -20,6 +21,7 @@ interface DocumentLibraryProps {
   onFiltersChange: (filters: DocumentFilters) => void;
   onViewDocument: (doc: Document) => void;
   onDeleteDocument: (id: string) => void;
+  optimisticDeletedIds?: Set<string>;
 }
 
 const getFileIcon = (mimeType: string) => {
@@ -36,8 +38,7 @@ const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-export function DocumentLibrary({ documents, total, isLoading, filters, onFiltersChange, onViewDocument, onDeleteDocument }: DocumentLibraryProps) {
-  
+export function DocumentLibrary({ documents, total, isLoading, filters, onFiltersChange, onViewDocument, onDeleteDocument, optimisticDeletedIds = new Set() }: DocumentLibraryProps) {
   const columns = useMemo<ColumnDef<Document>[]>(
     () => [
       {
@@ -45,9 +46,14 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
         header: 'File Name',
         cell: ({ row }) => (
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => onViewDocument(row.original)}>
-            <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors">
-              {getFileIcon(row.original.mimeType)}
-            </div>
+            <FlyTo 
+              layoutId={row.original.id.startsWith('optimistic') ? 'document-icon' : undefined} 
+              isVisible={true}
+            >
+              <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-colors">
+                {getFileIcon(row.original.mimeType)}
+              </div>
+            </FlyTo>
             <div>
               <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {row.original.filename}
@@ -104,7 +110,7 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
             <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500 hover:text-gray-900" onClick={() => window.open(row.original.url, '_blank')}>
               <Download className="h-4 w-4" />
             </Button>
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50" onClick={() => onDeleteDocument(row.original.id)}>
+            <Button size="icon" variant="ghost" className="h-8 w-8 text-gray-500 hover:text-red-600 hover:bg-red-50" onClick={(e) => { e.stopPropagation(); onDeleteDocument(row.original.id); }}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -159,8 +165,10 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
               </tr>
             ) : (
               table.getRowModel().rows.map((row) => (
-                <tr 
-                  key={row.id} 
+                <RowCollapse 
+                  key={row.id}
+                  as="tr"
+                  isVisible={!optimisticDeletedIds.has(row.id)}
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 cursor-pointer transition-all duration-200 hover:elevation-1 group"
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -168,7 +176,7 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
-                </tr>
+                </RowCollapse>
               ))
             )}
           </tbody>

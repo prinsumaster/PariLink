@@ -21,6 +21,7 @@ export default function DocumentsPage() {
   
   // Viewer State
   const [viewingDoc, setViewingDoc] = useState<Document | null>(null);
+  const [optimisticDeletedIds, setOptimisticDeletedIds] = useState<Set<string>>(new Set());
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['documents', filters],
@@ -30,16 +31,48 @@ export default function DocumentsPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => documentService.deleteDocument(id),
     onSuccess: () => {
-      toast.success('Document deleted securely');
       queryClient.invalidateQueries({ queryKey: ['documents'] });
     },
-    onError: () => toast.error('Failed to delete document')
+    onError: (_, id) => {
+      toast.error('Failed to delete document');
+      setOptimisticDeletedIds(prev => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
   });
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
-      deleteMutation.mutate(id);
-    }
+    // 1. Optimistically hide row
+    setOptimisticDeletedIds(prev => new Set(prev).add(id));
+    
+    // 2. Show toast with undo
+    toast('Document deleted', {
+      duration: 5000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          setOptimisticDeletedIds(prev => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+          });
+          toast.success('Deletion undone');
+        }
+      },
+      onAutoClose: () => {
+        // If they didn't click undo, actually delete it
+        if (optimisticDeletedIds.has(id)) {
+           deleteMutation.mutate(id);
+        }
+      },
+      onDismiss: () => {
+        if (optimisticDeletedIds.has(id)) {
+           deleteMutation.mutate(id);
+        }
+      }
+    });
   };
 
   return (
@@ -74,6 +107,7 @@ export default function DocumentsPage() {
             onFiltersChange={setFilters}
             onViewDocument={setViewingDoc}
             onDeleteDocument={handleDelete}
+            optimisticDeletedIds={optimisticDeletedIds}
           />
         </div>
 

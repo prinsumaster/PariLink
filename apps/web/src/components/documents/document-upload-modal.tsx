@@ -20,8 +20,10 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { UploadCloud, X, Loader2 } from 'lucide-react';
+import { UploadCloud, X, Loader2, File as FileIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { FlyTo } from '@/components/motion';
+import { Document, PaginatedDocuments } from '@/types/documents';
 
 interface DocumentUploadModalProps {
   isOpen: boolean;
@@ -41,12 +43,50 @@ export function DocumentUploadModal({ isOpen, onClose }: DocumentUploadModalProp
       const tagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
       return documentService.uploadDocument(file, category, entityId, tagsArray);
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      if (!file) return;
+      const tagsArray = tags.split(',').map(t => t.trim()).filter(Boolean);
+      await queryClient.cancelQueries({ queryKey: ['documents'] });
+      const previousDocs = queryClient.getQueryData<PaginatedDocuments>(['documents', { page: 1, limit: 20 }]);
+      
+      const optimisticDoc: Document = {
+        id: `optimistic-${Date.now()}`,
+        filename: file.name,
+        originalName: file.name,
+        mimeType: file.type,
+        sizeBytes: file.size,
+        category: category as any,
+        status: 'PENDING_REVIEW',
+        url: '',
+        version: 1,
+        tags: tagsArray,
+        uploadedBy: 'Current User',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      queryClient.setQueryData<PaginatedDocuments>(['documents', { page: 1, limit: 20 }], old => {
+        if (!old) return { data: [optimisticDoc], total: 1, page: 1, limit: 20 };
+        return {
+          ...old,
+          data: [optimisticDoc, ...old.data],
+          total: old.total + 1
+        };
+      });
+      
+      resetAndClose();
+      return { previousDocs, optimisticId: optimisticDoc.id };
+    },
+    onSuccess: (data, variables, context) => {
       toast.success('Document uploaded successfully');
       queryClient.invalidateQueries({ queryKey: ['documents'] });
-      resetAndClose();
     },
-    onError: () => toast.error('Failed to upload document')
+    onError: (err, variables, context) => {
+      toast.error('Failed to upload document');
+      if (context?.previousDocs) {
+        queryClient.setQueryData(['documents', { page: 1, limit: 20 }], context.previousDocs);
+      }
+    }
   });
 
   const resetAndClose = () => {
@@ -79,13 +119,16 @@ export function DocumentUploadModal({ isOpen, onClose }: DocumentUploadModalProp
             <Label>Select File</Label>
             <div className={`border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center transition-colors ${file ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : 'border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'}`}>
               {file ? (
-                <div className="text-center">
-                  <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">{file.name}</p>
-                  <p className="text-xs text-gray-500 mb-4">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                  <Button size="sm" variant="outline" onClick={() => setFile(null)}>
-                    <X className="h-4 w-4 mr-2" /> Remove
-                  </Button>
-                </div>
+                <FlyTo layoutId="document-icon" isVisible={true}>
+                  <div className="text-center">
+                    <FileIcon className="mx-auto h-10 w-10 text-blue-500 mb-3" />
+                    <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">{file.name}</p>
+                    <p className="text-xs text-gray-500 mb-4">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <Button size="sm" variant="outline" onClick={() => setFile(null)}>
+                      <X className="h-4 w-4 mr-2" /> Remove
+                    </Button>
+                  </div>
+                </FlyTo>
               ) : (
                 <div className="text-center">
                   <UploadCloud className="mx-auto h-10 w-10 text-gray-400 mb-3" />

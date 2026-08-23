@@ -14,18 +14,41 @@ const TripMap = dynamic(() => import('./trip-map').then(mod => mod.TripMap), {
     </div>
   )
 });
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Clock, Calendar, CheckCircle, Truck, FileText, Activity } from 'lucide-react';
+import { MapPin, Clock, Calendar, CheckCircle, Truck, FileText, Activity, Send } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { StatusFlip } from '@/components/motion';
+import { tripService } from '@/services/trips';
+import { toast } from 'sonner';
 
 interface TripDetailViewProps {
   trip: Trip;
 }
 
 export function TripDetailView({ trip }: TripDetailViewProps) {
+  const [optimisticStatus, setOptimisticStatus] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+
+  const handleDispatch = async () => {
+    setIsPending(true);
+    setOptimisticStatus('IN_TRANSIT');
+    try {
+      await tripService.updateTrip(trip.id, { status: 'IN_TRANSIT' });
+      toast.success('Trip dispatched successfully');
+    } catch (err) {
+      setOptimisticStatus(null);
+      toast.error('Failed to dispatch trip');
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const currentStatus = optimisticStatus || trip.status;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
@@ -107,7 +130,9 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">Current Status</span>
-              <Badge className="text-sm">{trip.status.replace('_', ' ')}</Badge>
+              <StatusFlip statusKey={currentStatus}>
+                <Badge className="text-sm">{currentStatus.replace('_', ' ')}</Badge>
+              </StatusFlip>
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">SLA</span>
@@ -119,6 +144,11 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
               <span className="text-sm text-gray-500">Est. Distance</span>
               <span className="text-sm font-medium">{trip.distance} miles</span>
             </div>
+            {(currentStatus === 'PLANNED' || currentStatus === 'DRAFT') && (
+              <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700" onClick={handleDispatch} disabled={isPending}>
+                <Send className="mr-2 h-4 w-4" /> Dispatch Trip
+              </Button>
+            )}
           </CardContent>
         </Card>
 
@@ -135,11 +165,11 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Trip Created</p>
                 <p className="text-xs text-gray-500">{new Date(trip.createdAt).toLocaleString()}</p>
               </div>
-              {trip.status !== 'DRAFT' && trip.status !== 'PLANNED' && (
+              {currentStatus !== 'DRAFT' && currentStatus !== 'PLANNED' && (
                 <div className="relative pl-6">
                   <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white dark:border-gray-900" />
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Dispatched</p>
-                  <p className="text-xs text-gray-500">{trip.actualDeparture ? new Date(trip.actualDeparture).toLocaleString() : 'Pending'}</p>
+                  <p className="text-xs text-gray-500">{trip.actualDeparture ? new Date(trip.actualDeparture).toLocaleString() : 'Just now'}</p>
                 </div>
               )}
             </div>
