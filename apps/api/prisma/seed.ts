@@ -79,10 +79,10 @@ async function main() {
     );
 
     // ── 3. Admin User (@unique on email) ───────────────────────────────────
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash('Password123!', 10);
     await tx.user.upsert({
       where:  { email: 'admin@parilink.com' },
-      update: {},
+      update: { password: hashedPassword },
       create: {
         email: 'admin@parilink.com', password: hashedPassword,
         firstName: 'Demo', lastName: 'Administrator',

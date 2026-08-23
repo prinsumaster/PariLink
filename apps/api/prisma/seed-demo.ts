@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding demo data...');
 
-  const hashedPassword = await bcrypt.hash('password123', 10);
+  const hashedPassword = await bcrypt.hash('Password123!', 10);
 
   // Find the existing demo admin to use its company
   const existingAdmin = await prisma.user.findUnique({
