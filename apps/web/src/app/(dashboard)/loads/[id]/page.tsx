@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LoadStatus } from '@/types';
+import { StatusFlip } from '@/components/motion';
 
 const LOAD_STATUS_FLOW: LoadStatus[] = ['PENDING', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED'];
 
@@ -45,13 +46,21 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
   const { mutate: updateLoad, isPending: isUpdating } = useUpdateLoad(id);
   const { mutate: deleteLoad } = useDeleteLoad();
   const { data: driversData } = useDrivers({ limit: 100, status: 'AVAILABLE' });
+  const [optimisticStatus, setOptimisticStatus] = useState<string | null>(null);
 
   const handleStatusChange = (newStatus: string) => {
+    setOptimisticStatus(newStatus);
     updateLoad(
       { status: newStatus },
       {
-        onSuccess: () => toast.success(`Load status updated to ${newStatus.replace('_', ' ')}`),
-        onError: () => toast.error('Failed to update status'),
+        onSuccess: () => {
+          setOptimisticStatus(null);
+          toast.success(`Load status updated to ${newStatus.replace('_', ' ')}`);
+        },
+        onError: () => {
+          setOptimisticStatus(null);
+          toast.error('Failed to update status');
+        },
       }
     );
   };
@@ -92,11 +101,12 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
     );
   }
 
-  const allowedTransitions = statusTransitions[load.status] ?? [];
+  const currentStatus = optimisticStatus || load.status;
+  const allowedTransitions = statusTransitions[currentStatus as LoadStatus] ?? [];
 
   // Build timeline from status
   const timelineEvents = LOAD_STATUS_FLOW.map((s) => {
-    const idx = LOAD_STATUS_FLOW.indexOf(load.status);
+    const idx = LOAD_STATUS_FLOW.indexOf(currentStatus as LoadStatus);
     const thisIdx = LOAD_STATUS_FLOW.indexOf(s);
     return {
       id: s,
@@ -126,7 +136,9 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
               <h1 className="text-2xl font-bold tracking-tight font-mono text-blue-600 dark:text-blue-400">
                 {load.referenceNumber}
               </h1>
-              <StatusBadge status={load.status} />
+              <StatusFlip statusKey={currentStatus}>
+                <StatusBadge status={currentStatus} />
+              </StatusFlip>
             </div>
             <p className="text-sm text-muted-foreground mt-0.5">
               Created {format(new Date(load.createdAt), 'MMM d, yyyy')}
@@ -408,7 +420,10 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
             <h3 className="font-semibold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Quick Assign Driver</h3>
             <select
               className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              defaultValue=""
+              value=""
+              onChange={(e) => {
+                if (e.target.value) handleStatusChange('ASSIGNED');
+              }}
             >
               <option value="">Select available driver</option>
               {driversData?.data.map((d) => (

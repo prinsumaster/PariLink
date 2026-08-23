@@ -7,6 +7,7 @@ import { Header } from './header';
 import { CommandPalette } from './command-palette';
 import { ErrorBoundary } from 'react-error-boundary';
 import { GlobalErrorFallback } from '../errors/global-error-fallback';
+import { AnimatePresence } from 'framer-motion';
 
 interface AppShellProps {
   children: ReactNode;
@@ -55,9 +56,11 @@ export function AppShell({ children }: AppShellProps) {
         
         <main id="main-content" tabIndex={-1} className="flex-1 relative overflow-y-auto focus:outline-none">
           <div className="py-6 px-4 sm:px-6 md:px-8">
-            <ErrorBoundary FallbackComponent={GlobalErrorFallback}>
-              {children}
-            </ErrorBoundary>
+            <AnimatePresence>
+              <ErrorBoundary FallbackComponent={GlobalErrorFallback}>
+                {children}
+              </ErrorBoundary>
+            </AnimatePresence>
           </div>
         </main>
       </div>
