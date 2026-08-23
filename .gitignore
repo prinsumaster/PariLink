@@ -42,3 +42,11 @@ prisma/.env
 # ── Uploads (local dev only) ──────────────────────────────────────────────
 uploads/
 apps/*/src/**/*.js
+
+.env.bak
+token.json
+apps/web/tests/.auth/
+
+.env.bak
+token.json
+apps/web/tests/.auth/
