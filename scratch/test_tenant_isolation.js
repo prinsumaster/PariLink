@@ -7,7 +7,7 @@
         body: JSON.stringify({
             companyName: "Hacker Corp",
             email: email,
-            password: "HackerPassword123!"
+            password: "Hackerpassword123"
         })
     });
     const registerJson = await registerRes.json();

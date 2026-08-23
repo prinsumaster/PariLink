@@ -177,3 +177,9 @@ grep -v 'already exists' restore.err | grep -c 'pg_restore: error'
 The disaster recovery and restore paths documented above have been proven against a minimal initial dataset. While the structural restoration and RLS preservation are fully verified, real-world data complexity can introduce edge cases.
 *   After the first production backup containing real data, you **must** repeat a Disaster Recovery drill (Dump -> Fresh Container -> Verify Row Counts -> Check RLS) to ensure large datasets restore correctly without foreign key or constraint violations.
 *   Record the specific row counts and restoration times in this runbook after that drill.
+
+## 9. Post-Deployment Errata & Caveats
+
+During the v0.1.0 RC deployment, the following discrepancies from the written procedure were observed:
+* **Missing Git Remote Configuration:** GitHub Actions and GHCR builds rely on the `origin` remote. If the deploy environment is cloned or initialized locally, you must explicitly run `git remote add origin <url>` before pushing tags, otherwise the CI workflows will not trigger and the GHCR images will remain unbuilt.
+* **Domain Configuration:** The `NEXT_PUBLIC_API_URL` and base URLs must be explicitly set to the live domain (e.g., `https://parilink.com`) in the production `.env` files. Leaving them as localhost breaks the client-side fetch calls in the standalone build.

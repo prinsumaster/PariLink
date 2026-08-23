@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const company = await prisma.company.findFirst();
-  const passwordHash = await bcrypt.hash('Password123!', 10);
+  const passwordHash = await bcrypt.hash('password123', 10);
   const adminUser = await prisma.user.findUnique({ where: { email: 'admin@parilink.com' } });
   
   console.log('Creating temp admin...');
@@ -35,7 +35,7 @@ async function main() {
       'x-csrf-token': initCsrfToken,
       'x-xsrf-token': initCsrfToken
     },
-    body: JSON.stringify({ email: 'temp-admin-unlock@parilink.com', password: 'Password123!' })
+    body: JSON.stringify({ email: 'temp-admin-unlock@parilink.com', password: 'password123' })
   });
   
   console.log('Login Status:', loginRes.status);

@@ -12,7 +12,7 @@ async function run() {
   try {
     await page.waitForSelector('input[type="email"]', { timeout: 5000 });
     await page.fill('input[type="email"]', 'admin@parilink.com');
-    await page.fill('input[type="password"]', 'Password123!');
+    await page.fill('input[type="password"]', 'password123');
     await page.click('button[type="submit"]');
   } catch(e) {
     console.log("Already logged in or no input.");

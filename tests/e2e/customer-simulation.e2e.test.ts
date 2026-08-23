@@ -6,7 +6,7 @@ test.describe('Customer #1 Zero-Friction Go-Live Validation', () => {
   const runId = Date.now();
   const companyName = `Global Logistics ${runId}`;
   const adminEmail = `admin_${runId}@globallogistics.com`;
-  const password = 'SuperSecretPassword123!';
+  const password = 'SuperSecretpassword123';
 
   test.beforeEach(async ({ page }) => {
     // Navigate to root to ensure we start clean

@@ -41,7 +41,7 @@ describe('Enterprise Notification & Multi-Channel Alerting (e2e)', () => {
       },
     });
 
-    const hashedPassword = await bcrypt.hash('Password123!', 10);
+    const hashedPassword = await bcrypt.hash('password123', 10);
     const user = await prisma.user.create({
       data: {
         email: testEmail,
@@ -58,7 +58,7 @@ describe('Enterprise Notification & Multi-Channel Alerting (e2e)', () => {
       .post('/auth/login')
       .send({
         email: testEmail,
-        password: 'Password123!',
+        password: 'password123',
         companyId,
       });
     accessToken = loginRes.body.access_token;

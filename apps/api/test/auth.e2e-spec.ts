@@ -12,7 +12,7 @@ describe('Authentication Flow (e2e)', () => {
   let prisma: PrismaService;
   let testUser: any;
   let company: any;
-  const testPassword = 'Password123!';
+  const testPassword = 'password123';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

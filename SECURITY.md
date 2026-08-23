@@ -52,3 +52,12 @@ An unfiltered `DELETE FROM "OAuthClient"` during Q3 testing permanently erased 4
 3. Print before/after counts around any delete block to make the blast radius visible.
 
 The IoT webhook cleanup (`cleanup_iot.ts`) from this same session is the canonical correct example — it used `where: { vehicleId: 'V1' }`, `where: { companyId: 'SYSTEM', provider: 'IOT_PROVIDER' }`, etc., and printed before/after row counts.
+
+## Architecture Decision Records
+
+### ADR-SEC-001: Rate Limiting & Hard Lockout
+**Status**: Accepted (v1.0), Scheduled for Migration (v1.1)
+
+**Context:** The current authentication implementation uses a strict IP-based rate limiter that triggers a hard lockout on violations.
+**Reality Check (Post-Deploy):** This implementation still reflects reality. It successfully mitigates brute-force attacks but introduces an accepted risk of DoS via IP spoofing or NAT overlap.
+**Milestone:** This is an accepted risk for v1.0. In the v1.1 milestone, the hard lockout mechanism will be migrated to a progressive delay/CAPTCHA system or account-level scoped lockout to reduce DoS surface area.

@@ -11,7 +11,7 @@ async function main() {
   console.log('login -> No rows (Login screen)');
 
   await page.fill('input[type="email"]', 'admin@parilink.com');
-  await page.fill('input[type="password"]', 'Password123!');
+  await page.fill('input[type="password"]', 'password123');
   await Promise.all([
     page.waitForURL(/dashboard/),
     page.click('button[type="submit"]')

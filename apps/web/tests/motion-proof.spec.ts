@@ -9,7 +9,7 @@ test.describe('Action Motion Proofs', () => {
     try {
       await page.waitForSelector('input[type="email"]', { timeout: 5000 });
       await page.fill('input[type="email"]', 'admin@parilink.com');
-      await page.fill('input[type="password"]', 'Password123!');
+      await page.fill('input[type="password"]', 'password123');
       await page.click('button[type="submit"]');
     } catch(e) {}
     await page.waitForURL('**/dashboard**');

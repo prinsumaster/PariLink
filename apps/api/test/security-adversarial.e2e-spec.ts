@@ -22,7 +22,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
   let userAToken: string;
   let adminBToken: string;
 
-  const testPassword = 'AdversarialPassword123!';
+  const testPassword = 'Adversarialpassword123';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

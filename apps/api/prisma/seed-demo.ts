@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding demo data...');
 
-  const hashedPassword = await bcrypt.hash('Password123!', 10);
+  const hashedPassword = await bcrypt.hash('password123', 10);
 
   // Find the existing demo admin to use its company
   const existingAdmin = await prisma.user.findUnique({
@@ -126,17 +126,17 @@ async function main() {
     createdTrailers.push(t);
   }
 
-  // 12 Customers
+  // 12 Customers (Realistic Freight Names)
   const customerNames = [
-    'Acme Corp', 'Global Logistics', 'Midwest Manufacturing', 'Northern Foods',
-    'TechSupply Inc', 'Builders FirstSource', 'Target Distribution', 'Amazon Fulfillment',
-    'Walmart Supply', 'Home Depot Logistics', 'Kraft Heinz', 'Procter & Gamble'
+    'J.B. Hunt Transport', 'C.H. Robinson', 'XPO Logistics', 'Knight-Swift Transportation',
+    'Schneider National', 'Landstar System', 'Old Dominion Freight Line', 'TFI International',
+    'Estes Express Lines', 'ArcBest', 'Werner Enterprises', 'Saia LTL Freight'
   ];
   const createdCustomers = [];
   for (let i=0; i<customerNames.length; i++) {
     const c = await prisma.customer.upsert({
       where: { id: `demo-cust-${i}` },
-      update: {},
+      update: { name: customerNames[i] },
       create: {
         id: `demo-cust-${i}`,
         companyId: company.id,
@@ -150,21 +150,37 @@ async function main() {
   // 20 Loads
   const createdLoads = [];
   const statuses = ['PENDING', 'PLANNED', 'DISPATCHED', 'IN_TRANSIT', 'DELIVERED'];
+  const routes = [
+    { o: 'Chicago, IL', d: 'Atlanta, GA' },
+    { o: 'Dallas, TX', d: 'Houston, TX' },
+    { o: 'Los Angeles, CA', d: 'Phoenix, AZ' },
+    { o: 'Denver, CO', d: 'Salt Lake City, UT' },
+    { o: 'Seattle, WA', d: 'Portland, OR' }
+  ];
   for (let i=0; i<20; i++) {
+    const route = routes[i % 5];
+    const [oCity, oState] = route.o.split(', ');
+    const [dCity, dState] = route.d.split(', ');
+    
     const l = await prisma.load.upsert({
       where: { id: `demo-load-${i}` },
-      update: {},
+      update: {
+        originCity: oCity,
+        originState: oState,
+        destinationCity: dCity,
+        destinationState: dState
+      },
       create: {
         id: `demo-load-${i}`,
         companyId: company.id,
         customerId: createdCustomers[i % 12].id,
         referenceNumber: `LD-2026-${1000 + i}`,
-        originAddress: '100 Main St',
-        originCity: i % 2 === 0 ? 'Chicago' : 'Detroit',
-        originState: i % 2 === 0 ? 'IL' : 'MI',
-        destinationAddress: '200 Oak St',
-        destinationCity: i % 3 === 0 ? 'Indianapolis' : 'Columbus',
-        destinationState: i % 3 === 0 ? 'IN' : 'OH',
+        originAddress: '100 Distribution Way',
+        originCity: oCity,
+        originState: oState,
+        destinationAddress: '200 Logistics Blvd',
+        destinationCity: dCity,
+        destinationState: dState,
         pickupDate: new Date(),
         deliveryDate: new Date(Date.now() + 86400000 * 2),
         rate: 1500 + (i * 100),
@@ -228,18 +244,16 @@ async function main() {
   const baseLng = -87.6298;
   for (let v=0; v<3; v++) {
     for (let p=0; p<10; p++) {
-      // Avoid unique constraint issues by deleting old first or just using createMany
-      // We will create using a generated ID to avoid conflicts if we run multiple times, 
-      // but let's just clear old demo location history first
-      await prisma.vehicleLocation.deleteMany({
-        where: { companyId: company.id, vehicleId: createdVehicles[v].id }
-      });
-    }
-    
-    for (let p=0; p<10; p++) {
-      await prisma.vehicleLocation.create({
-        data: {
-          id: `demo-loc-${v}-${p}-${Date.now()}`,
+      const locId = `demo-loc-${v}-${p}`;
+      await prisma.vehicleLocation.upsert({
+        where: { id: locId },
+        update: {
+          latitude: baseLat + (v * 0.1) + (p * 0.05),
+          longitude: baseLng - (v * 0.1) - (p * 0.05),
+          gpsTimestamp: new Date(Date.now() - (10 - p) * 60000)
+        },
+        create: {
+          id: locId,
           companyId: company.id,
           vehicleId: createdVehicles[v].id,
           provider: 'DEMO',

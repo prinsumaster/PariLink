@@ -16,7 +16,7 @@ async function main() {
       'x-csrf-token': initCsrfToken,
       'x-xsrf-token': initCsrfToken
     },
-    body: JSON.stringify({ email: 'admin@parilink.com', password: 'Password123!' })
+    body: JSON.stringify({ email: 'admin@parilink.com', password: 'password123' })
   });
   
   console.log('Login Status:', loginRes.status);

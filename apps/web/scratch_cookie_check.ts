@@ -7,7 +7,7 @@ async function main() {
   
   await page.goto('http://localhost:3000/login');
   await page.fill('input[type="email"]', 'admin@parilink.com');
-  await page.fill('input[type="password"]', 'Password123!');
+  await page.fill('input[type="password"]', 'password123');
   
   await Promise.all([
     page.waitForURL(/dashboard/),

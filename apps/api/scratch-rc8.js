@@ -14,7 +14,7 @@ async function setupTestData() {
   console.log('[*] Setting up Tenant A and Tenant B seed data...');
   
   const timestamp = Date.now();
-  const passwordHash = await hash('Password123!', 10);
+  const passwordHash = await hash('password123', 10);
   
   // Tenant A
   const companyA = await prisma.company.create({
@@ -159,8 +159,8 @@ async function runAdversarialTest() {
   console.log(`[+] Seeded Tenant A: ${companyA.id}, User: ${userA.email}`);
   console.log(`[+] Seeded Tenant B: ${companyB.id}, User: ${userB.email}\n`);
 
-  const tokenA = await login(userA.email, 'Password123!');
-  const tokenB = await login(userB.email, 'Password123!');
+  const tokenA = await login(userA.email, 'password123');
+  const tokenB = await login(userB.email, 'password123');
   
   console.log('[+] Authenticated successfully.\n');
 

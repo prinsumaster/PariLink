@@ -17,7 +17,7 @@ async function runAdversarialTest() {
     console.log('[*] Authenticating as Tenant A Administrator...');
     const loginA = await axios.post(`${BASE_URL}/auth/login`, {
       email: 'admin@logistics-a.com',
-      password: 'Password123!',
+      password: 'password123',
     });
     const tokenA = loginA.data.accessToken;
     const clientA = axios.create({ headers: { Authorization: `Bearer ${tokenA}` } });
@@ -27,7 +27,7 @@ async function runAdversarialTest() {
     console.log('[*] Authenticating as Tenant B Administrator...');
     const loginB = await axios.post(`${BASE_URL}/auth/login`, {
       email: 'admin@freight-b.com',
-      password: 'Password123!',
+      password: 'password123',
     });
     const tokenB = loginB.data.accessToken;
     const clientB = axios.create({ headers: { Authorization: `Bearer ${tokenB}` } });

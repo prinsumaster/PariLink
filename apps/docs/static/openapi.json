@@ -18870,9 +18870,6 @@
           "deviceFingerprint": {
             "type": "string",
             "description": "Hardware fingerprint for refresh token binding"
-          },
-          "captchaToken": {
-            "type": "string"
           }
         },
         "required": [
@@ -18893,7 +18890,7 @@
           },
           "password": {
             "type": "string",
-            "example": "Password123!"
+            "example": "password123"
           }
         },
         "required": [

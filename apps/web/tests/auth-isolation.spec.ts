@@ -37,7 +37,7 @@ test.describe('Authentication & Tenant Isolation', () => {
     });
 
     await page.fill('input[type="email"]', 'admin@parilink.com');
-    await page.fill('input[type="password"]', 'Password123!');
+    await page.fill('input[type="password"]', 'password123');
     await page.click('button[type="submit"]');
 
     // Wait for navigation to dashboard
