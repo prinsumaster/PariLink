@@ -8,19 +8,17 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash('password123', 10);
 
-  // 1 Company
-  const company = await prisma.company.upsert({
-    where: { id: 'demo-company-1' },
-    update: {},
-    create: {
-      id: 'demo-company-1',
-      name: 'Vanguard Freight Lines',
-      city: 'Chicago',
-      state: 'IL',
-      country: 'USA',
-      status: 'ACTIVE'
-    }
+  // Find the existing demo admin to use its company
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: 'admin@parilink.com' },
+    include: { company: true }
   });
+
+  if (!existingAdmin) {
+    throw new Error('admin@parilink.com not found. Ensure initial seed is run first.');
+  }
+
+  const company = existingAdmin.company;
 
   // Roles
   const roles = [

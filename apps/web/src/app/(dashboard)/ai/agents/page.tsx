@@ -30,7 +30,16 @@ export default function AgentConsolePage() {
       // Assume the backend returns an array of agents, or map if it's an object
       const dataAgents = res?.data?.agents;
       const items = Array.isArray(res?.data) ? res.data : (Array.isArray(dataAgents) ? dataAgents : []);
-      setAgents(items);
+      const mapped = items.map((a: any) => ({
+        name: a.name || 'Unknown Agent',
+        description: a.description || 'No description',
+        capabilities: a.capabilities || Array.from({length: a.toolCount || 0}, (_, i) => `Tool ${i+1}`),
+        status: a.status || 'IDLE',
+        lastActive: a.lastActive || new Date().toISOString(),
+        successRate: a.successRate || 100,
+        tasksCompleted: a.tasksCompleted || 0
+      }));
+      setAgents(mapped);
     } catch (e) {
       console.error('Failed to load agents', e);
       setAgents([]);

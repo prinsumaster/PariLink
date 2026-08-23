@@ -72,8 +72,6 @@ export default function LoginPage() {
       const user = response.data.user;
       setAuth(user, response.data.access_token);
       
-      // Set authentication cookie expected by custom storage
-      document.cookie = 'logged_in=true; path=/';
       // Ensure auth state is persisted before navigation
       await new Promise(resolve => setTimeout(resolve, 500));
       // Automatic RBAC Redirection (Phase 3)

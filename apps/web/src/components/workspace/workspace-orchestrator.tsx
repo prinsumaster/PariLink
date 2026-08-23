@@ -20,7 +20,7 @@ const PlaceholderOverlay = ({ title, type }: { title?: string; type: string }) =
     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
       <Zap className="h-6 w-6 text-primary" />
     </div>
-    <h3 className="text-lg font-semibold text-foreground">{title || 'Coming Soon'}</h3>
+    <h3 className="text-lg font-semibold text-foreground">{title || 'In Development'}</h3>
     <p className="text-sm text-muted-foreground mt-2 max-w-[280px]">
       This {type} workflow is being integrated into the Workspace Orchestrator.
     </p>

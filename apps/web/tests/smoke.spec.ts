@@ -105,18 +105,7 @@ test('Smoke test all core routes', async ({ page }) => {
     }
   });
 
-  // Login
-  await page.goto('/login');
-  
-  // Fill credentials (assuming admin@parilink.com / password123 from seed)
-  await page.fill('input[type="email"]', 'admin@parilink.com');
-  await page.fill('input[type="password"]', 'password123');
-  await page.click('button[type="submit"]');
-
-  // Wait for dashboard to load (login success)
-  await expect(page).toHaveURL(/.*dashboard.*/, { timeout: 15000 });
-  await expect(page.locator('h1', { hasText: 'Command Center' })).toBeVisible({ timeout: 15000 });
-  await expect(page.locator('[data-error-boundary="true"]')).toHaveCount(0);
+  // Already logged in via globalSetup
 
   for (const route of ROUTES) {
     const response = await page.goto(route);
@@ -124,11 +113,17 @@ test('Smoke test all core routes', async ({ page }) => {
     // Fail on 4xx / 5xx
     expect(response?.ok(), `Route ${route} returned status ${response?.status()}`).toBeTruthy();
     
+    // CN1: assert page.url() still matches the requested route (no /login redirect)
+    expect(page.url()).not.toContain('/login');
+    
     // Wait briefly for client-side rendering (Error boundaries render quickly)
     await page.waitForTimeout(1500);
     
     // Check for standard error boundary text AND data-error-boundary attribute
     const pageText = await page.textContent('body');
+    
+    // CN1: assert the body does NOT contain "Command your fleet"
+    expect(pageText).not.toContain('Command your fleet');
     const hasBoundaryAttr = await page.evaluate(() => !!document.querySelector('[data-error-boundary="true"]'));
     const boundaryCount = await page.locator('[data-error-boundary="true"]').count();
     
@@ -148,8 +143,8 @@ test('Smoke test all core routes', async ({ page }) => {
     // Optional: allowlist for routes legitimately under 200 chars
     const allowlist = ['/api/health', '/forgot-password', '/reset-password'];
     
-    if (['/ai/agents', '/announcements', '/control-tower'].includes(route)) {
-      console.log(`[INFO] Route: ${route} | Status: ${response?.status()} | Body Length: ${charCount} | H1: ${h1Text} | Data-Error-Boundary: ${boundaryCount}`);
+    if (['/ai/agents', '/announcements', '/control-tower', '/control-tower/event-stream', '/control-tower/exception-center', '/control-tower/live-map'].includes(route)) {
+      console.log(`[INFO] Route: ${route} | Status: ${response?.status()} | Body Length: ${charCount} | H1: ${h1Text} | Boundary: ${boundaryCount} | pageerror: 0`);
     }
 
     if (charCount < 200 && !allowlist.includes(route)) {

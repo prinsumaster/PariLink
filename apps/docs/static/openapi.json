@@ -460,6 +460,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGoldenRecordDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -474,6 +484,16 @@
       "post": {
         "operationId": "MdmController_mergeRecords_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeRecordsDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -497,6 +517,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluateQualityDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -572,6 +602,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertReferenceDataDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -676,6 +716,16 @@
       "post": {
         "operationId": "InvoicesController_createInvoice_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvoicesDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -1277,6 +1327,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -1365,6 +1425,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSsoDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -1411,6 +1481,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSsoDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -1462,6 +1542,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminSsoDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -1499,6 +1589,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminSsoDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -2324,6 +2424,16 @@
       "post": {
         "operationId": "PermitController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePermitDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -2380,6 +2490,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePermitDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -3468,6 +3588,16 @@
       "post": {
         "operationId": "AttendanceController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttendanceDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3524,6 +3654,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAttendanceDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -3571,6 +3711,16 @@
       "post": {
         "operationId": "WarehouseController_createWarehouse_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWarehouseDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3608,6 +3758,16 @@
       "post": {
         "operationId": "WarehouseController_createAsn_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAsnDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3631,6 +3791,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiveGoodsDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3645,6 +3815,16 @@
       "post": {
         "operationId": "WarehouseController_createOutbound_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOutboundDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3668,6 +3848,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PickOrderDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3682,6 +3872,16 @@
       "post": {
         "operationId": "WarehouseController_scheduleDock_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleDockDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -5851,6 +6051,16 @@
       "post": {
         "operationId": "BarcodeController_processScan_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProcessScanDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -6126,6 +6336,16 @@
       "post": {
         "operationId": "AnalyticsController_createDashboard_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAnalyticsDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -7223,6 +7443,16 @@
       "post": {
         "operationId": "AnnouncementController_createAnnouncement_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAnnouncementDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -7261,6 +7491,16 @@
       "put": {
         "operationId": "PreferencesController_updatePreferences_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePreferencesDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -8399,6 +8639,16 @@
       "post": {
         "operationId": "PaymentsController_recordPayment_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentsDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -9694,6 +9944,16 @@
       "post": {
         "operationId": "BankStatementController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBankStatementDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -9750,6 +10010,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBankStatementDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -9785,6 +10055,16 @@
       "post": {
         "operationId": "PayrollController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayrollDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -9841,6 +10121,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePayrollDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -9963,6 +10253,16 @@
       "post": {
         "operationId": "WorkspaceController_updatePreferences_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkspaceDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -12431,6 +12731,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGatewayDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -14324,6 +14634,16 @@
       "post": {
         "operationId": "CommercialController_createRateCard_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRateCardDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -14353,6 +14673,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuotationDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -14431,6 +14761,16 @@
       "post": {
         "operationId": "CommercialController_createContract_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContractDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -14480,6 +14820,16 @@
       "post": {
         "operationId": "CommercialController_createTender_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenderDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -14509,6 +14859,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitBidDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -15960,6 +16320,16 @@
       "post": {
         "operationId": "MetricsPlatformController_recordMetric_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordMetricDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -15980,6 +16350,16 @@
       "post": {
         "operationId": "MetricsPlatformController_queryMetrics_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetricQueryFilterDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16060,6 +16440,16 @@
       "post": {
         "operationId": "DistributedTracingController_recordSpan_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordSpanDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16109,6 +16499,16 @@
       "post": {
         "operationId": "DistributedTracingController_searchTraces_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchTracesDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16149,6 +16549,16 @@
       "post": {
         "operationId": "LoggingPlatformController_log_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogEntryDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16169,6 +16579,16 @@
       "post": {
         "operationId": "LoggingPlatformController_searchLogs_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogSearchFilterDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16209,6 +16629,16 @@
       "post": {
         "operationId": "LoggingPlatformController_exportLogs_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportLogsDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16229,6 +16659,16 @@
       "post": {
         "operationId": "AlertEngineController_triggerAlert_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertTriggerDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16307,6 +16747,16 @@
       "post": {
         "operationId": "AlertEngineController_createMaintenanceWindow_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMaintenanceWindowDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16327,6 +16777,16 @@
       "post": {
         "operationId": "AlertEngineController_createEscalationPolicy_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEscalationPolicyDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16347,6 +16807,16 @@
       "post": {
         "operationId": "IncidentManagementController_createIncident_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16376,6 +16846,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIncidentStatusDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16405,6 +16885,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimelineEventDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16492,6 +16982,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostmortemDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16512,6 +17012,16 @@
       "post": {
         "operationId": "BackupRecoveryController_startBackup_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16570,6 +17080,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreWizardDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16610,6 +17130,16 @@
       "post": {
         "operationId": "DisasterRecoveryController_createPlan_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDrPlanDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16630,6 +17160,16 @@
       "post": {
         "operationId": "DisasterRecoveryController_startDrill_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartDrillDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16675,10 +17215,20 @@
         ]
       }
     },
-    "/api/v1/operations/performance/profile": {
+    "/api/v1/operations/performance/profiles": {
       "post": {
-        "operationId": "PerformancePlatformController_recordProfile_v1",
+        "operationId": "PerformancePlatformController_submitPerformanceProfile_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceProfileDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16689,9 +17239,9 @@
             "bearer": []
           }
         ],
-        "summary": "Record a performance anomaly profile (slow query, CPU spike, memory leak, etc.)",
+        "summary": "Log an anomalous performance profile (slow query, cpu spike, memory leak)",
         "tags": [
-          "Operations - Performance Platform"
+          "Operations - Performance Profiling"
         ]
       }
     },
@@ -16711,7 +17261,7 @@
         ],
         "summary": "Get top slow database queries ranked by execution time",
         "tags": [
-          "Operations - Performance Platform"
+          "Operations - Performance Profiling"
         ]
       }
     },
@@ -16731,7 +17281,7 @@
         ],
         "summary": "Get CPU, memory heap, GC, and disk utilization diagnostics",
         "tags": [
-          "Operations - Performance Platform"
+          "Operations - Performance Profiling"
         ]
       }
     },
@@ -16751,7 +17301,7 @@
         ],
         "summary": "Get Redis cache hit/miss ratio and eviction rate",
         "tags": [
-          "Operations - Performance Platform"
+          "Operations - Performance Profiling"
         ]
       }
     },
@@ -16771,7 +17321,7 @@
         ],
         "summary": "Get workflow execution and queue processing latency metrics",
         "tags": [
-          "Operations - Performance Platform"
+          "Operations - Performance Profiling"
         ]
       }
     },
@@ -16808,6 +17358,16 @@
       "post": {
         "operationId": "CrmLeadController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeadDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16864,6 +17424,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeadDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -16899,6 +17469,16 @@
       "post": {
         "operationId": "GstRuleController_create_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGstRuleDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -16955,6 +17535,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGstRuleDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -17273,6 +17863,16 @@
       "post": {
         "operationId": "ClaimsController_createClaim_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitClaimDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -17349,6 +17949,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClaimStatusDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -17527,6 +18137,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitBidDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -17576,6 +18196,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitPodDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -17665,6 +18295,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTripStatusDto"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": ""
@@ -17694,6 +18334,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitChecklistDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -17743,6 +18393,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitExpenseDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -17763,6 +18423,16 @@
       "post": {
         "operationId": "DriverTelemetryController_logLocation_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogLocationDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -18149,6 +18819,33 @@
       }
     },
     "schemas": {
+      "CreateGoldenRecordDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "MergeRecordsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "EvaluateQualityDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpsertReferenceDataDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateInvoicesDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
       "LoginDto": {
         "type": "object",
         "properties": {
@@ -18173,6 +18870,9 @@
           "deviceFingerprint": {
             "type": "string",
             "description": "Hardware fingerprint for refresh token binding"
+          },
+          "captchaToken": {
+            "type": "string"
           }
         },
         "required": [
@@ -18246,6 +18946,50 @@
         "required": [
           "entityType",
           "entityId"
+        ]
+      },
+      "CreateWebhookDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "secret": {
+            "type": "string"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "url",
+          "secret",
+          "events"
+        ]
+      },
+      "CreateSsoDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "CreateAdminSsoDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
         ]
       },
       "CreateCompanyDto": {
@@ -18576,6 +19320,17 @@
           }
         }
       },
+      "CreatePermitDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
       "CreateVehicleDto": {
         "type": "object",
         "properties": {
@@ -18789,6 +19544,41 @@
             "default": "AVAILABLE"
           }
         }
+      },
+      "CreateAttendanceDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "CreateWarehouseDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateAsnDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ReceiveGoodsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateOutboundDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PickOrderDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ScheduleDockDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateCustomerDto": {
         "type": "object",
@@ -19362,27 +20152,28 @@
           "bolFileName"
         ]
       },
+      "ProcessScanDto": {
+        "type": "object",
+        "properties": {}
+      },
       "GpsPingDto": {
         "type": "object",
         "properties": {}
       },
-      "UpdateTripStatusDto": {
+      "CreateAnalyticsDto": {
         "type": "object",
         "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "PLANNED",
-              "DISPATCHED",
-              "IN_PROGRESS",
-              "COMPLETED",
-              "CANCELLED"
-            ]
+          "payload": {
+            "type": "object"
           }
         },
         "required": [
-          "status"
+          "payload"
         ]
+      },
+      "UpdateTripStatusDto": {
+        "type": "object",
+        "properties": {}
       },
       "UpdateLoadStatusDto": {
         "type": "object",
@@ -19470,17 +20261,7 @@
       },
       "LogLocationDto": {
         "type": "object",
-        "properties": {
-          "locations": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocationPointDto"
-            }
-          }
-        },
-        "required": [
-          "locations"
-        ]
+        "properties": {}
       },
       "VehicleTelemetryDto": {
         "type": "object",
@@ -19685,6 +20466,28 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "CreateAnnouncementDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
+      "CreatePreferencesDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
         ]
       },
       "CreateNotificationTemplateDto": {
@@ -19940,6 +20743,17 @@
           "ocrText"
         ]
       },
+      "CreatePaymentsDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
       "CreateTrailerDto": {
         "type": "object",
         "properties": {
@@ -20081,41 +20895,23 @@
           "customerId": {
             "type": "string"
           },
-          "type": {
-            "type": "string",
-            "enum": [
-              "DISTANCE",
-              "WEIGHT",
-              "FLAT",
-              "ROUTE"
-            ]
+          "serviceType": {
+            "type": "string"
           },
-          "rate": {
-            "type": "number"
-          },
-          "fuelSurcharge": {
-            "type": "number"
-          },
-          "tollSurcharge": {
-            "type": "number"
-          },
-          "waitingCharge": {
+          "baseRate": {
             "type": "number"
           },
           "currency": {
             "type": "string"
           },
-          "originCity": {
-            "type": "string"
-          },
-          "destinationCity": {
-            "type": "string"
+          "terms": {
+            "type": "object"
           }
         },
         "required": [
           "customerId",
-          "type",
-          "rate"
+          "serviceType",
+          "baseRate"
         ]
       },
       "GenerateInvoiceDto": {
@@ -20245,6 +21041,115 @@
           "amount",
           "method",
           "paymentDate"
+        ]
+      },
+      "CreateBankStatementDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "statementDate": {
+            "type": "string"
+          },
+          "closingBalance": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "accountId",
+          "statementDate",
+          "closingBalance"
+        ]
+      },
+      "UpdateBankStatementDto": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "statementDate": {
+            "type": "string"
+          },
+          "closingBalance": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      },
+      "CreatePayrollDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string"
+          },
+          "payPeriodStart": {
+            "type": "string"
+          },
+          "payPeriodEnd": {
+            "type": "string"
+          },
+          "grossAmount": {
+            "type": "number"
+          },
+          "netAmount": {
+            "type": "number"
+          },
+          "deductions": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "employeeId",
+          "payPeriodStart",
+          "payPeriodEnd",
+          "grossAmount",
+          "netAmount"
+        ]
+      },
+      "UpdatePayrollDto": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string"
+          },
+          "payPeriodStart": {
+            "type": "string"
+          },
+          "payPeriodEnd": {
+            "type": "string"
+          },
+          "grossAmount": {
+            "type": "number"
+          },
+          "netAmount": {
+            "type": "number"
+          },
+          "deductions": {
+            "type": "object"
+          }
+        }
+      },
+      "CreateWorkspaceDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
         ]
       },
       "UpdateTenantStatusDto": {
@@ -20830,6 +21735,17 @@
           "maintenanceMode"
         ]
       },
+      "CreateGatewayDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
       "CreateApiKeyDto": {
         "type": "object",
         "properties": {
@@ -20859,28 +21775,6 @@
         },
         "required": [
           "name"
-        ]
-      },
-      "CreateWebhookDto": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string"
-          },
-          "secret": {
-            "type": "string"
-          },
-          "events": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "url",
-          "secret",
-          "events"
         ]
       },
       "CreateOAuthClientDto": {
@@ -20928,6 +21822,85 @@
         "required": [
           "name"
         ]
+      },
+      "CreateQuotationDto": {
+        "type": "object",
+        "properties": {
+          "origin": {
+            "type": "string"
+          },
+          "destination": {
+            "type": "string"
+          },
+          "equipmentType": {
+            "type": "string"
+          },
+          "estimatedWeight": {
+            "type": "number"
+          },
+          "requirements": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "origin",
+          "destination",
+          "equipmentType"
+        ]
+      },
+      "CreateContractDto": {
+        "type": "object",
+        "properties": {
+          "partyId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "clauses": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "partyId",
+          "type",
+          "startDate",
+          "endDate"
+        ]
+      },
+      "CreateTenderDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "requirements": {
+            "type": "object"
+          },
+          "invitedVendors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "deadline"
+        ]
+      },
+      "SubmitBidDto": {
+        "type": "object",
+        "properties": {}
       },
       "GateEventDto": {
         "type": "object",
@@ -21045,6 +22018,101 @@
           }
         }
       },
+      "RecordMetricDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "MetricQueryFilterDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RecordSpanDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SearchTracesDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LogEntryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LogSearchFilterDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ExportLogsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AlertTriggerDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateMaintenanceWindowDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateEscalationPolicyDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateIncidentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateIncidentStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "TimelineEventDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PostmortemDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateBackupDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RestoreWizardDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateDrPlanDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "StartDrillDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePerformanceProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateLeadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateLeadDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateGstRuleDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
+      },
       "CreateTollAccountDto": {
         "type": "object",
         "properties": {}
@@ -21090,6 +22158,26 @@
           "endDate",
           "reason"
         ]
+      },
+      "SubmitClaimDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateClaimStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SubmitPodDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SubmitChecklistDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SubmitExpenseDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   }

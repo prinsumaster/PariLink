@@ -60,6 +60,16 @@ export default function DispatchPage() {
   return (
     <div className="-mx-4 sm:-mx-6 md:-mx-8 -my-6 h-[calc(100vh-64px)] relative overflow-hidden bg-[#0A0A0A] text-[#FAFAFA]">
       
+      {/* Mobile Desktop-Recommended Overlay */}
+      <div className="md:hidden absolute inset-0 z-50 bg-[#0A0A0A]/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+        <Activity className="h-12 w-12 text-[#FF4500] mb-4" />
+        <h2 className="text-xl font-bold mb-2 font-mono tracking-wide text-white">Desktop Recommended</h2>
+        <p className="text-gray-400 text-sm">The live dispatch workspace is optimized for larger screens to track fleets and analyze routes.</p>
+        <button className="mt-6 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 font-mono text-xs text-white uppercase tracking-widest transition-colors" onClick={(e) => (e.currentTarget.parentElement as HTMLElement).style.display = 'none'}>
+          Continue Anyway
+        </button>
+      </div>
+
       {/* Full Bleed Map */}
       <Map
         ref={mapRef}

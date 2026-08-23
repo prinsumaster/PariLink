@@ -13,6 +13,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  globalSetup: require.resolve('./tests/global.setup'),
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -31,6 +32,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on',
     video: 'on',
+    storageState: 'tests/.auth/user.json',
   },
 
   /* Configure projects for major browsers */
@@ -72,9 +74,16 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npm run start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: 'cd ../api && npm run start:prod',
+      port: 8080,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'npm run start',
+      port: 3000,
+      reuseExistingServer: !process.env.CI,
+    }
+  ],
 });
