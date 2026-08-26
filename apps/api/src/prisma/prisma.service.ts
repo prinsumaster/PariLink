@@ -21,7 +21,7 @@ export class PrismaService
   private readonly dmmfModels = new Map<string, any>();
 
   constructor() {
-    let datasourceUrl = process.env.DATABASE_URL;
+    let datasourceUrl = process.env.APP_DATABASE_URL || process.env.DATABASE_URL;
     if (datasourceUrl) {
       try {
         const url = new URL(datasourceUrl);
