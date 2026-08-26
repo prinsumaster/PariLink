@@ -304,9 +304,9 @@ export class ProfitabilityService {
         tx.fuelTransaction.findMany({ where: { companyId, transactionTime: { gte: startDateBound } } })
       ]);
 
-      const revenueMap = new Map(loadsRev.map(l => [l.tripId, l._sum.rate ?? 0]));
-      const tollMap = new Map(tollGroup.map(t => [t.tripId, t._sum.amount ?? 0]));
-      const expMap = new Map(expGroup.map(e => [e.tripId, e._sum.amount ?? 0]));
+      const revenueMap = new Map(loadsRev.map((l: any) => [l.tripId, l._sum.rate ? Number(l._sum.rate) : 0]));
+      const tollMap = new Map(tollGroup.map((t: any) => [t.tripId, t._sum.amount ? Number(t._sum.amount) : 0]));
+      const expMap = new Map(expGroup.map((e: any) => [e.tripId, e._sum.amount ? Number(e._sum.amount) : 0]));
       
       const routeMap = new Map();
       for (const l of firstLoads) {
@@ -326,10 +326,10 @@ export class ProfitabilityService {
         totalRevenue += revenue;
 
         let fuel = 0;
-        if (trip.vehicleId && trip.startDate) {
+         if (trip.vehicleId && trip.startDate) {
            fuel = fuelTxns
-             .filter(f => f.vehicleId === trip.vehicleId && f.transactionTime && trip.startDate && f.transactionTime >= trip.startDate && (!trip.endDate || f.transactionTime <= trip.endDate))
-             .reduce((sum, f) => sum + f.totalCost, 0);
+             .filter((f: any) => f.vehicleId === trip.vehicleId && f.transactionTime && trip.startDate && f.transactionTime >= trip.startDate && (!trip.endDate || f.transactionTime <= trip.endDate))
+             .reduce((sum: number, f: any) => sum + Number(f.totalCost), 0);
         }
         if (fuel === 0 && trip.fuelExpenses) fuel = trip.fuelExpenses;
 

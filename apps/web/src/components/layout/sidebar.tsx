@@ -50,8 +50,9 @@ const navigation: NavItem[] = [
     href: '/loads',
     icon: Package,
     children: [
-      { name: 'Loads', href: '/loads' },
+      { name: 'Bookings', href: '/loads' },
       { name: 'Trips', href: '/trips' },
+      { name: 'Bilty (LR)', href: '/bilty' },
       { name: 'Orders', href: '/orders' },
     ],
   },
@@ -116,21 +117,21 @@ const navigation: NavItem[] = [
   },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Notifications', href: '/notifications', icon: Bell },
-  {
-    name: 'Admin',
-    href: '/admin',
-    icon: Shield,
-    children: [
-      { name: 'Overview', href: '/admin' },
-      { name: 'Users', href: '/admin/users' },
-      { name: 'Roles', href: '/admin/roles' },
-      { name: 'Audit Log', href: '/admin/audit' },
-      { name: 'Enterprise', href: '/admin/enterprise' },
-      { name: 'Marketplace', href: '/admin/marketplace' },
-    ],
-  },
-  { name: 'Integrations', href: '/integrations', icon: Store },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  // {
+  //   name: 'Admin',
+  //   href: '/admin',
+  //   icon: Shield,
+  //   children: [
+  //     { name: 'Overview', href: '/admin' },
+  //     { name: 'Users', href: '/admin/users' },
+  //     { name: 'Roles', href: '/admin/roles' },
+  //     { name: 'Audit Log', href: '/admin/audit' },
+  //     { name: 'Enterprise', href: '/admin/enterprise' },
+  //     { name: 'Marketplace', href: '/admin/marketplace' },
+  //   ],
+  // },
+  // { name: 'Integrations', href: '/integrations', icon: Store },
+  // { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 interface SidebarProps {

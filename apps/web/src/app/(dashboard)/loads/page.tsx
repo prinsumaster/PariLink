@@ -12,6 +12,7 @@ import {
   Plus, Package, Search, ArrowRight, Calendar,
   DollarSign, Truck, AlertTriangle, Clock, CheckCircle2,
   ChevronDown, ChevronUp, FileDown, Eye, Trash2, X,
+  FileText,
 } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
 import Link from 'next/link';
@@ -189,16 +190,36 @@ function LoadCard({ load, index }: { load: Load; index: number }) {
       )}
 
       {/* Hover actions */}
-      <div className="mt-3 pt-3 border-t border-border/60 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+      <div className="mt-3 pt-3 border-t border-border/60 flex flex-wrap gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <Link
           href={`/loads/${load.id}`}
-          className="flex-1 h-7 rounded-md border border-border flex items-center justify-center gap-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+          className="flex-1 min-w-[70px] h-7 rounded-md border border-border flex items-center justify-center gap-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
         >
           <Eye className="h-3 w-3" />
           View
         </Link>
         <button
-          className="h-7 w-7 rounded-md border border-red-200 dark:border-red-800 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+          className="flex-1 min-w-[70px] h-7 rounded-md border border-border flex items-center justify-center gap-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+          onClick={async () => {
+            try {
+              toast.info('Generating Bilty...');
+              const res = await api.post('/lorry-receipts', { loadId: load.id });
+              toast.success('Bilty Generated!');
+              window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/lorry-receipts/${res.data.id}/print`, '_blank');
+            } catch (err: any) {
+              if (err.response?.status === 409) {
+                toast.error('Bilty already exists for this load.');
+              } else {
+                toast.error('Failed to generate Bilty');
+              }
+            }
+          }}
+        >
+          <FileText className="h-3 w-3" />
+          Bilty
+        </button>
+        <button
+          className="h-7 w-7 shrink-0 rounded-md border border-red-200 dark:border-red-800 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
           title="Delete load"
           onClick={() => deleteLoad(load.id, {
             onSuccess: () => toast.success('Load deleted'),

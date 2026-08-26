@@ -112,7 +112,7 @@ export class ModelRouterService implements OnModuleInit {
               temperature: details.temperature ?? 0,
               maxTokens: details.maxTokens,
               streaming: false,
-            });
+            }) as any;
             break;
 
           case 'ANTHROPIC':
@@ -144,7 +144,7 @@ export class ModelRouterService implements OnModuleInit {
 
           case 'OLLAMA':
             try {
-              // @ts-expect-error - Dynamic import for optional provider
+              // Dynamic import for optional provider
               const { ChatOllama } = await import('@langchain/ollama');
               model = new ChatOllama({
                 model: config.modelName,
@@ -174,7 +174,7 @@ export class ModelRouterService implements OnModuleInit {
               azureOpenAIApiVersion: details.apiVersion || '2024-02-01',
               temperature: details.temperature ?? 0,
               maxTokens: details.maxTokens,
-            });
+            }) as any;
             break;
 
           default:
@@ -209,7 +209,7 @@ export class ModelRouterService implements OnModuleInit {
         'No active AI models found in DB or environment. Injecting Mock Chat Model fallback.',
       );
       this.activeModels.push({
-        model: new MockChatModel(),
+        model: new MockChatModel() as any,
         provider: 'MOCK',
         modelName: 'mock-chat-model',
         priority: -1,

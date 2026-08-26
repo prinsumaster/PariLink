@@ -23,13 +23,13 @@ export const LiveMap = () => {
       new ScatterplotLayer({
         id: 'vehicle-glow-layer',
         data: vehicles,
-        getPosition: (d) => [d.longitude, d.latitude],
-        getFillColor: (d) => {
+        getPosition: (d: any) => [d.longitude, d.latitude],
+        getFillColor: (d: any) => {
           if (d.status === 'DELAYED') return [239, 68, 68, 200]; // Red
           if (d.status === 'IDLE') return [234, 179, 8, 200]; // Yellow
           return [34, 197, 94, 200]; // Green
         },
-        getRadius: (d) => (d.status === 'DELAYED' ? 15000 : 8000), // Larger glow for delayed
+        getRadius: (d: any) => (d.status === 'DELAYED' ? 15000 : 8000), // Larger glow for delayed
         pickable: true,
         stroked: true,
         getLineColor: [255, 255, 255, 100],
@@ -50,7 +50,7 @@ export const LiveMap = () => {
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
         layers={layers}
-        getTooltip={({ object }) => object && `Vehicle: ${object.id}\nSpeed: ${object.speed} km/h\nStatus: ${object.status}`}
+        getTooltip={({ object }: any) => object && `Vehicle: ${object.id}\nSpeed: ${object.speed} km/h\nStatus: ${object.status}`}
       >
         <Map
           mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"

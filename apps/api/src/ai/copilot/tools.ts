@@ -22,7 +22,7 @@ export const createCopilotTools = (
           .default(5)
           .describe('Max results to return'),
       }),
-      func: async ({ status, limit }) => {
+      func: async ({ status, limit }: { status?: string; limit?: number }) => {
         const results = await prisma.runAsTenant(companyId, async (tx) =>
           tx.trip.findMany({
             where: { ...(status ? { status } : {}) },
@@ -41,7 +41,7 @@ export const createCopilotTools = (
         status: z.string().optional(),
         limit: z.number().optional().default(5),
       }),
-      func: async ({ status, limit }) => {
+      func: async ({ status, limit }: { status?: string; limit?: number }) => {
         const results = await prisma.runAsTenant(companyId, async (tx) =>
           tx.driver.findMany({
             where: { ...(status ? { status } : {}) },
@@ -58,7 +58,7 @@ export const createCopilotTools = (
         status: z.string().optional(),
         limit: z.number().optional().default(5),
       }),
-      func: async ({ status, limit }) => {
+      func: async ({ status, limit }: { status?: string; limit?: number }) => {
         const results = await prisma.runAsTenant(companyId, async (tx) =>
           tx.vehicle.findMany({
             where: { ...(status ? { status } : {}) },
@@ -74,7 +74,7 @@ export const createCopilotTools = (
       schema: z.object({
         limit: z.number().optional().default(5),
       }),
-      func: async ({ limit }) => {
+      func: async ({ limit }: { limit?: number }) => {
         const results = await prisma.runAsTenant(companyId, async (tx) =>
           tx.customer.findMany({
             take: limit,
@@ -90,7 +90,7 @@ export const createCopilotTools = (
         status: z.string().optional(),
         limit: z.number().optional().default(5),
       }),
-      func: async ({ status, limit }) => {
+      func: async ({ status, limit }: { status?: string; limit?: number }) => {
         const results = await prisma.runAsTenant(companyId, async (tx) =>
           tx.load.findMany({
             where: { ...(status ? { status } : {}) },
@@ -108,7 +108,7 @@ export const createCopilotTools = (
         status: z.string().optional(),
         limit: z.number().optional().default(5),
       }),
-      func: async ({ status, limit }) => {
+      func: async ({ status, limit }: { status?: string; limit?: number }) => {
         const results = await prisma
           .runAsTenant(companyId, async (tx) =>
             (tx as any).invoice.findMany({

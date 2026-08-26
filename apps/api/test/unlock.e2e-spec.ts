@@ -28,14 +28,14 @@ describe('Unlock Admin', () => {
 
     // Create throwaway admin
     const passwordHash = await bcrypt.hash('password123', 10);
-    const testUser = await prisma.user.create({
+    const testUser = await (prisma as any).user.create({
       data: {
         email: 'temp-admin-unlock@parilink.com',
         passwordHash,
         firstName: 'Temp',
         lastName: 'Admin',
         role: 'COMPANY_ADMIN',
-        companyId: company.id,
+        companyId: company?.id,
       },
     });
 
@@ -44,7 +44,7 @@ describe('Unlock Admin', () => {
       .post('/auth/login')
       .send({ email: 'temp-admin-unlock@parilink.com', password: 'password123' });
     
-    cookies = loginRes.get('Set-Cookie');
+    cookies = loginRes.get('Set-Cookie') || [];
     
     const csrfRes = await request(app.getHttpServer())
       .get('/auth/csrf')

@@ -19,6 +19,9 @@ echo "Running migrations and seeding on throwaway DB..."
 npx prisma migrate deploy > /dev/null
 npx prisma db seed > /dev/null
 
+echo "Flushing Redis..."
+redis-cli flushall || true
+
 echo "Running E2E Suites..."
 if [ $# -gt 0 ]; then
   NODE_ENV=test npx jest --runInBand --setupFiles dotenv/config --config ./test/jest-e2e.json "$@"

@@ -137,7 +137,7 @@ export const navigationConfig: NavGroup[] = [
     title: 'Operations',
     items: [
       {
-        title: 'Loads',
+        title: 'Bookings',
         href: '/loads',
         icon: Package,
       },
@@ -145,6 +145,11 @@ export const navigationConfig: NavGroup[] = [
         title: 'Trips',
         href: '/trips',
         icon: MapPin,
+      },
+      {
+        title: 'Bilty (LR)',
+        href: '/bilty',
+        icon: FileText,
       },
       {
         title: 'Dispatch',

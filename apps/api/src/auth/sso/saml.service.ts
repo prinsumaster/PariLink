@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { SAML } from 'passport-saml/lib/node-saml';
+import { SAML } from '@node-saml/node-saml';
 import type { Request } from 'express';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class SamlService {
       authnContext: idp.authnContext
         ? [idp.authnContext]
         : ['urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport'],
-    });
+    } as any);
   }
 
   async generateLoginUrl(idp: any, req: Request): Promise<string> {

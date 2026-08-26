@@ -75,7 +75,7 @@ describe('TripsService', () => {
       };
       mockTx.trip.create.mockResolvedValue(mockTrip);
 
-      const result = await service.create('company-1', dto);
+      const result = await service.create('company-1', dto as any);
 
       expect(result.tripNumber).toMatch(/TRP-/);
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
@@ -94,7 +94,7 @@ describe('TripsService', () => {
       };
       mockTx.trip.create.mockResolvedValue(mockTrip);
 
-      const result = await service.create('company-1', dto);
+      const result = await service.create('company-1', dto as any);
       expect(result.tripNumber).toBe('TRP-CUSTOM-001');
     });
 
@@ -107,7 +107,7 @@ describe('TripsService', () => {
       const mockTrip = { id: 'trip-1', tripNumber: 'TRP-001', loads: [] };
       mockTx.trip.create.mockResolvedValue(mockTrip);
 
-      await service.create('company-1', dto);
+      await service.create('company-1', dto as any);
 
       expect(mockTx.trip.create).toHaveBeenCalledWith(
         expect.objectContaining({

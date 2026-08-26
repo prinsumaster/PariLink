@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@parilink/plugin-sdk": ["../../packages/plugin-sdk/src/index.ts"]
+      "@parilink/plugin-sdk": ["../../packages/plugin-sdk/src/index.ts"],
+      "@deck.gl/*": ["./src/stubs/deck.gl.ts"]
     }
   },
   "include": [

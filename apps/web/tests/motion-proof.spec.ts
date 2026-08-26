@@ -15,7 +15,7 @@ test.describe('Action Motion Proofs', () => {
     await page.waitForURL('**/dashboard**');
   });
 
-  const captureFrames = async (page, prefix, actionFunc) => {
+  const captureFrames = async (page: any, prefix: string, actionFunc: any) => {
     await page.screenshot({ path: `/Users/vishalvirda/.gemini/antigravity-ide/brain/bd8875cf-b40d-487e-817e-01304edd682b/${prefix}-frame1.png` });
     const actionPromise = actionFunc();
     await page.waitForTimeout(50);

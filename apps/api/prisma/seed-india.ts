@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * prisma/seed.ts — Idempotent demo seed
  *
@@ -47,19 +46,19 @@ async function findOrCreate<T>(
 async function main() {
   console.log('🌱 Seeding database (idempotent run)...');
 
-  await prisma.$transaction(async (tx: any) => {
+  await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
 
     // ── 1. Company ─────────────────────────────────────────────────────────
     const primaryCompany = await findOrCreate(
-      () => tx.company.findFirst({ where: { email: 'billing@parilink.com' } }),
+      () => tx.company.findFirst({ where: { email: 'billing@bharatlogistics.in' } }),
       () => tx.company.create({
         data: {
-          name: 'PariLink Demo Logistics', taxId: 'US-987654321',
-          address: '1000 Transport Way', city: 'Atlanta', state: 'GA',
-          country: 'USA', postalCode: '30301',
-          email: 'billing@parilink.com', phone: '+1-800-555-0199',
-          website: 'www.parilink.com', status: 'ACTIVE',
+          name: 'Bharat Logistics Solutions', taxId: '27AAAAA0000A1Z5',
+          address: 'Andheri East', city: 'Mumbai', state: 'MH',
+          country: 'India', postalCode: '400069',
+          email: 'billing@bharatlogistics.in', phone: '+91-9876543210',
+          website: 'www.bharatlogistics.in', status: 'ACTIVE',
         },
       }),
     );
@@ -67,7 +66,7 @@ async function main() {
     await tx.tenantConfiguration.upsert({
       where:  { companyId: primaryCompany.id },
       update: {},
-      create: { companyId: primaryCompany.id, onboardingCompleted: true, timezone: 'UTC', currency: 'USD' },
+      create: { companyId: primaryCompany.id, onboardingCompleted: true, timezone: 'Asia/Kolkata', currency: 'INR' },
     });
 
     // ── 2. Role ────────────────────────────────────────────────────────────
@@ -82,11 +81,11 @@ async function main() {
     // ── 3. Admin User (@unique on email) ───────────────────────────────────
     const hashedPassword = await bcrypt.hash('password123', 10);
     await tx.user.upsert({
-      where:  { email: 'admin@parilink.com' },
+      where:  { email: 'admin@bharatlogistics.in' },
       update: { password: hashedPassword },
       create: {
-        email: 'admin@parilink.com', password: hashedPassword,
-        firstName: 'Demo', lastName: 'Administrator',
+        email: 'admin@bharatlogistics.in', password: hashedPassword,
+        firstName: 'Amit', lastName: 'Patel',
         roleId: adminRole.id, companyId: primaryCompany.id,
       },
     });
@@ -94,46 +93,46 @@ async function main() {
 
     // ── 4. Customers (no unique — findFirst by email + companyId) ──────────
     const customer1 = await findOrCreate(
-      () => tx.customer.findFirst({ where: { email: 'billing@acmeglobal.com', companyId: primaryCompany.id } }),
-      () => tx.customer.create({ data: { name: 'Acme Global Logistics', companyId: primaryCompany.id, email: 'billing@acmeglobal.com', phone: '+1234567890', status: 'ACTIVE' } }),
+      () => tx.customer.findFirst({ where: { email: 'accounts@tata-steel-demo.in', companyId: primaryCompany.id } }),
+      () => tx.customer.create({ data: { name: 'Tata Steel (Demo)', companyId: primaryCompany.id, email: 'accounts@tata-steel-demo.in', phone: '+919999999991', status: 'ACTIVE' } }),
     );
     const customer2 = await findOrCreate(
-      () => tx.customer.findFirst({ where: { email: 'ap@techtrans.net',        companyId: primaryCompany.id } }),
-      () => tx.customer.create({ data: { name: 'TechTrans Supply',      companyId: primaryCompany.id, email: 'ap@techtrans.net',       phone: '+1987654321', status: 'ACTIVE' } }),
+      () => tx.customer.findFirst({ where: { email: 'logistics@reliance-retail-demo.in', companyId: primaryCompany.id } }),
+      () => tx.customer.create({ data: { name: 'Reliance Retail (Demo)', companyId: primaryCompany.id, email: 'logistics@reliance-retail-demo.in', phone: '+919999999992', status: 'ACTIVE' } }),
     );
     await findOrCreate(
-      () => tx.customer.findFirst({ where: { email: 'finance@freshfoods.org', companyId: primaryCompany.id } }),
-      () => tx.customer.create({ data: { name: 'Fresh Foods Dist',      companyId: primaryCompany.id, email: 'finance@freshfoods.org', phone: '+1122334455', status: 'ACTIVE' } }),
+      () => tx.customer.findFirst({ where: { email: 'finance@maruti-suzuki-demo.in', companyId: primaryCompany.id } }),
+      () => tx.customer.create({ data: { name: 'Maruti Suzuki (Demo)', companyId: primaryCompany.id, email: 'finance@maruti-suzuki-demo.in', phone: '+919999999993', status: 'ACTIVE' } }),
     );
     console.log('✅ Customers');
 
     // ── 5. Drivers (no unique — findFirst by licenseNumber + companyId) ────
     const driver1 = await findOrCreate(
-      () => tx.driver.findFirst({ where: { licenseNumber: 'DL-987111', companyId: primaryCompany.id } }),
-      () => tx.driver.create({ data: { firstName: 'Sarah',   lastName: 'Connor', licenseNumber: 'DL-987111', status: 'ON_TRIP',   companyId: primaryCompany.id } }),
+      () => tx.driver.findFirst({ where: { licenseNumber: 'MH0420230000000', companyId: primaryCompany.id } }),
+      () => tx.driver.create({ data: { firstName: 'Raju', lastName: 'Kumar', licenseNumber: 'MH0420230000000', status: 'ON_TRIP', companyId: primaryCompany.id } }),
     );
     const driver2 = await findOrCreate(
-      () => tx.driver.findFirst({ where: { licenseNumber: 'DL-555222', companyId: primaryCompany.id } }),
-      () => tx.driver.create({ data: { firstName: 'Michael', lastName: 'Chang',  licenseNumber: 'DL-555222', status: 'AVAILABLE', companyId: primaryCompany.id } }),
+      () => tx.driver.findFirst({ where: { licenseNumber: 'GJ0120220000000', companyId: primaryCompany.id } }),
+      () => tx.driver.create({ data: { firstName: 'Suresh', lastName: 'Patel', licenseNumber: 'GJ0120220000000', status: 'AVAILABLE', companyId: primaryCompany.id } }),
     );
     await findOrCreate(
-      () => tx.driver.findFirst({ where: { licenseNumber: 'DL-444333', companyId: primaryCompany.id } }),
-      () => tx.driver.create({ data: { firstName: 'David',   lastName: 'Miller', licenseNumber: 'DL-444333', status: 'ON_REST',   companyId: primaryCompany.id } }),
+      () => tx.driver.findFirst({ where: { licenseNumber: 'KA0320210000000', companyId: primaryCompany.id } }),
+      () => tx.driver.create({ data: { firstName: 'Vinod', lastName: 'Reddy', licenseNumber: 'KA0320210000000', status: 'ON_REST', companyId: primaryCompany.id } }),
     );
     console.log('✅ Drivers');
 
     // ── 6. Vehicles (no unique — findFirst by vin + companyId) ─────────────
     const vehicle1 = await findOrCreate(
-      () => tx.vehicle.findFirst({ where: { vin: '1ZV900000000001', companyId: primaryCompany.id } }),
-      () => tx.vehicle.create({ data: { make: 'Volvo',       model: 'VNL',      year: 2023, vin: '1ZV900000000001', licensePlate: 'TX-12345', status: 'IN_SERVICE',  type: 'TRUCK', companyId: primaryCompany.id } }),
+      () => tx.vehicle.findFirst({ where: { vin: 'MHTA2023000001', companyId: primaryCompany.id } }),
+      () => tx.vehicle.create({ data: { make: 'Tata', model: 'Signa 4923.S', year: 2023, vin: 'MHTA2023000001', licensePlate: 'MH-04-AB-1234', status: 'IN_SERVICE', type: 'TRUCK', companyId: primaryCompany.id } }),
     );
     const vehicle2 = await findOrCreate(
-      () => tx.vehicle.findFirst({ where: { vin: '1ZV900000000002', companyId: primaryCompany.id } }),
-      () => tx.vehicle.create({ data: { make: 'Freightliner', model: 'Cascadia', year: 2022, vin: '1ZV900000000002', licensePlate: 'CA-99887', status: 'AVAILABLE',   type: 'TRUCK', companyId: primaryCompany.id } }),
+      () => tx.vehicle.findFirst({ where: { vin: 'ALB2022000002', companyId: primaryCompany.id } }),
+      () => tx.vehicle.create({ data: { make: 'Ashok Leyland', model: 'Boss 1215', year: 2022, vin: 'ALB2022000002', licensePlate: 'GJ-01-XX-9999', status: 'AVAILABLE', type: 'TRUCK', companyId: primaryCompany.id } }),
     );
     await findOrCreate(
-      () => tx.vehicle.findFirst({ where: { vin: '1ZV900000000003', companyId: primaryCompany.id } }),
-      () => tx.vehicle.create({ data: { make: 'Ford',         model: 'Transit',  year: 2024, vin: '1ZV900000000003', licensePlate: 'NY-44556', status: 'MAINTENANCE', type: 'VAN',   companyId: primaryCompany.id } }),
+      () => tx.vehicle.findFirst({ where: { vin: 'MML2024000003', companyId: primaryCompany.id } }),
+      () => tx.vehicle.create({ data: { make: 'Mahindra', model: 'Blazo X 49', year: 2024, vin: 'MML2024000003', licensePlate: 'KA-03-YZ-5555', status: 'MAINTENANCE', type: 'TRUCK', companyId: primaryCompany.id } }),
     );
     console.log('✅ Vehicles');
 
@@ -151,24 +150,24 @@ async function main() {
 
     // ── 8. Loads (no unique — findFirst by referenceNumber + companyId) ────
     const load1 = await findOrCreate(
-      () => tx.load.findFirst({ where: { referenceNumber: 'LOD-1001', companyId: primaryCompany.id } }),
+      () => tx.load.findFirst({ where: { referenceNumber: 'LOD-IND-1001', companyId: primaryCompany.id } }),
       () => tx.load.create({
         data: {
-          referenceNumber: 'LOD-1001', tripId: trip1.id, customerId: customer1.id, companyId: primaryCompany.id,
-          originAddress: '100 Main St', originCity: 'Dallas', originState: 'TX',
-          destinationAddress: '200 Oak St', destinationCity: 'Austin', destinationState: 'TX',
-          pickupDate: new Date(), deliveryDate: new Date(Date.now() + 86400000), rate: 850.50, status: 'IN_TRANSIT',
+          referenceNumber: 'LOD-IND-1001', tripId: trip1.id, customerId: customer1.id, companyId: primaryCompany.id,
+          originAddress: 'MIDC', originCity: 'Pune', originState: 'MH',
+          destinationAddress: 'Peenya Ind Estate', destinationCity: 'Bangalore', destinationState: 'KA',
+          pickupDate: new Date(), deliveryDate: new Date(Date.now() + 86400000), rate: 45000.00, status: 'IN_TRANSIT',
         },
       }),
     );
     const load2 = await findOrCreate(
-      () => tx.load.findFirst({ where: { referenceNumber: 'LOD-1002', companyId: primaryCompany.id } }),
+      () => tx.load.findFirst({ where: { referenceNumber: 'LOD-IND-1002', companyId: primaryCompany.id } }),
       () => tx.load.create({
         data: {
-          referenceNumber: 'LOD-1002', tripId: trip2.id, customerId: customer2.id, companyId: primaryCompany.id,
-          originAddress: '300 Pine St', originCity: 'Chicago', originState: 'IL',
-          destinationAddress: '400 Elm St', destinationCity: 'Detroit', destinationState: 'MI',
-          pickupDate: new Date(Date.now() - 172800000), deliveryDate: new Date(Date.now() - 86400000), rate: 1250.00, status: 'DELIVERED',
+          referenceNumber: 'LOD-IND-1002', tripId: trip2.id, customerId: customer2.id, companyId: primaryCompany.id,
+          originAddress: 'GIDC', originCity: 'Ahmedabad', originState: 'GJ',
+          destinationAddress: 'Okhla', destinationCity: 'New Delhi', destinationState: 'DL',
+          pickupDate: new Date(Date.now() - 172800000), deliveryDate: new Date(Date.now() - 86400000), rate: 65000.00, status: 'DELIVERED',
         },
       }),
     );
@@ -176,14 +175,14 @@ async function main() {
 
     // ── 9. Invoices (@@unique on [companyId, invoiceNumber]) ───────────────
     await tx.invoice.upsert({
-      where:  { companyId_invoiceNumber: { companyId: primaryCompany.id, invoiceNumber: 'INV-1001' } },
+      where:  { companyId_invoiceNumber: { companyId: primaryCompany.id, invoiceNumber: 'INV-IND-1001' } },
       update: {},
-      create: { invoiceNumber: 'INV-1001', amount: 850.50,  status: 'PAID',   dueDate: new Date(Date.now() - 5 * 86400000),  loadId: load1.id, customerId: customer1.id, companyId: primaryCompany.id },
+      create: { invoiceNumber: 'INV-IND-1001', amount: 45000.00,  status: 'PAID',   dueDate: new Date(Date.now() - 5 * 86400000),  loadId: load1.id, customerId: customer1.id, companyId: primaryCompany.id },
     });
     await tx.invoice.upsert({
-      where:  { companyId_invoiceNumber: { companyId: primaryCompany.id, invoiceNumber: 'INV-1002' } },
+      where:  { companyId_invoiceNumber: { companyId: primaryCompany.id, invoiceNumber: 'INV-IND-1002' } },
       update: {},
-      create: { invoiceNumber: 'INV-1002', amount: 1250.00, status: 'ISSUED', dueDate: new Date(Date.now() + 15 * 86400000), loadId: load2.id, customerId: customer2.id, companyId: primaryCompany.id },
+      create: { invoiceNumber: 'INV-IND-1002', amount: 65000.00, status: 'ISSUED', dueDate: new Date(Date.now() + 15 * 86400000), loadId: load2.id, customerId: customer2.id, companyId: primaryCompany.id },
     });
     console.log('✅ Invoices');
 
