@@ -33,12 +33,12 @@ export class LorryReceiptsService {
       // increment. The UPDATE ... increment holds a row lock, so concurrent
       // transactions serialize and can never produce a duplicate number.
       const year = financialYear(new Date());
-      await (tx as any).lrSequence.upsert({
+      await tx.lrSequence.upsert({
         where: { companyId_financialYear: { companyId, financialYear: year } },
         create: { companyId, financialYear: year, lastNumber: 0 },
         update: {},
       });
-      const seq = await (tx as any).lrSequence.update({
+      const seq = await tx.lrSequence.update({
         where: { companyId_financialYear: { companyId, financialYear: year } },
         data: { lastNumber: { increment: 1 } },
       });
@@ -58,7 +58,7 @@ export class LorryReceiptsService {
         vehicleNumber = v?.licensePlate ?? undefined;
       }
 
-      return (tx as any).lorryReceipt.create({
+      return tx.lorryReceipt.create({
         data: {
           companyId,
           loadId: load.id,
@@ -113,13 +113,13 @@ export class LorryReceiptsService {
       }
 
       const [data, total] = await Promise.all([
-        (tx as any).lorryReceipt.findMany({
+        tx.lorryReceipt.findMany({
           where,
           skip,
           take,
           orderBy: { createdAt: 'desc' },
         }),
-        (tx as any).lorryReceipt.count({ where }),
+        tx.lorryReceipt.count({ where }),
       ]);
 
       return createPaginationResponse(data, total, page, limit);
@@ -128,7 +128,7 @@ export class LorryReceiptsService {
 
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const lr = await (tx as any).lorryReceipt.findUnique({
+      const lr = await tx.lorryReceipt.findUnique({
         where: { id, companyId },
       });
       if (!lr) {
@@ -144,12 +144,12 @@ export class LorryReceiptsService {
     dto: UpdateLorryReceiptStatusDto,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const existing = await (tx as any).lorryReceipt.findUnique({
+      const existing = await tx.lorryReceipt.findUnique({
         where: { id, companyId },
       });
       if (!existing) throw new NotFoundException();
 
-      await (tx as any).lorryReceipt.update({
+      await tx.lorryReceipt.update({
         where: { id, companyId },
         data: {
           status: dto.status,
@@ -157,7 +157,7 @@ export class LorryReceiptsService {
         },
       });
 
-      const updated = await (tx as any).lorryReceipt.findFirst({
+      const updated = await tx.lorryReceipt.findFirst({
         where: { id, companyId },
       });
       if (!updated) throw new NotFoundException();
@@ -168,7 +168,7 @@ export class LorryReceiptsService {
   /** Print-friendly HTML for the LR — the browser's Print dialog gives a PDF. */
   async renderPrintable(companyId: string, id: string): Promise<string> {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const lr = await (tx as any).lorryReceipt.findFirst({
+      const lr = await tx.lorryReceipt.findFirst({
         where: { id, companyId },
       });
       if (!lr) {
