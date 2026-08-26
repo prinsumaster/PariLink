@@ -14,7 +14,7 @@ export class FeatureFlagAdminService {
   ) {}
 
   async getFlags(companyId: string) {
-    const flags = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const flags = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.findMany({
         where: {
           OR: [{ companyId }, { companyId: 'GLOBAL' }],
@@ -63,7 +63,7 @@ export class FeatureFlagAdminService {
       ],
     };
 
-    const flag = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const flag = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.upsert({
         where: { companyId_key: { companyId: targetCompanyId, key: dto.key } },
         update: {
@@ -101,7 +101,7 @@ export class FeatureFlagAdminService {
     dto: UpdateEnterpriseFlagDto,
     adminUserId: string,
   ) {
-    const flag = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const flag = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.findFirst({
         where: { id: flagId, OR: [{ companyId }, { companyId: 'GLOBAL' }] },
       }),
@@ -122,7 +122,7 @@ export class FeatureFlagAdminService {
         ],
     };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.update({
         where: { id: flagId },
         data: {

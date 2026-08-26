@@ -136,7 +136,7 @@ export class DashboardAdminService {
     securityScore = Math.max(0, Math.min(100, securityScore));
 
     // License & Quotas
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.findFirst({ where: whereTenant }),
     );
     const maxUsers = config?.maxUsers ?? 50;

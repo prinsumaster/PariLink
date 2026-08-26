@@ -24,19 +24,19 @@ export class OrgAdminService {
   async getOrgOverview(companyId: string) {
     const [branches, warehouses, departments, teams, costCenters] =
       await Promise.all([
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.branch.findMany({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.warehouse.findMany({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.department.findMany({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.team.findMany({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.costCenter.findMany({ where: { companyId } }),
         ),
       ]);
@@ -52,7 +52,7 @@ export class OrgAdminService {
   }
 
   async getDepartments(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.findMany({
         where: { companyId },
         include: { _count: { select: { users: true, teams: true } } },
@@ -66,7 +66,7 @@ export class OrgAdminService {
     dto: CreateDepartmentDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.findFirst({
         where: { companyId, name: dto.name },
       }),
@@ -76,7 +76,7 @@ export class OrgAdminService {
         `Department ${dto.name} already exists in tenant`,
       );
 
-    const dept = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const dept = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.create({
         data: {
           companyId,
@@ -106,7 +106,7 @@ export class OrgAdminService {
     dto: UpdateDepartmentDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.findFirst({
         where: { id: deptId, companyId },
       }),
@@ -114,7 +114,7 @@ export class OrgAdminService {
     if (!existing)
       throw new NotFoundException(`Department ${deptId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.update({
         where: { id: deptId },
         data: dto,
@@ -138,7 +138,7 @@ export class OrgAdminService {
     deptId: string,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.findFirst({
         where: { id: deptId, companyId },
       }),
@@ -146,7 +146,7 @@ export class OrgAdminService {
     if (!existing)
       throw new NotFoundException(`Department ${deptId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.department.delete({ where: { id: deptId } }),
     );
 
@@ -165,7 +165,7 @@ export class OrgAdminService {
   async getTeams(companyId: string, departmentId?: string) {
     const where: any = { companyId };
     if (departmentId) where.departmentId = departmentId;
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.findMany({
         where,
         include: {
@@ -178,7 +178,7 @@ export class OrgAdminService {
   }
 
   async createTeam(companyId: string, dto: CreateTeamDto, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.findFirst({
         where: { companyId, name: dto.name },
       }),
@@ -186,7 +186,7 @@ export class OrgAdminService {
     if (existing)
       throw new ConflictException(`Team ${dto.name} already exists in tenant`);
 
-    const team = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const team = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.create({
         data: {
           companyId,
@@ -216,14 +216,14 @@ export class OrgAdminService {
     dto: UpdateTeamDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.findFirst({
         where: { id: teamId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`Team ${teamId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.update({
         where: { id: teamId },
         data: dto,
@@ -243,14 +243,14 @@ export class OrgAdminService {
   }
 
   async deleteTeam(companyId: string, teamId: string, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.findFirst({
         where: { id: teamId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`Team ${teamId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.team.delete({ where: { id: teamId } }),
     );
 
@@ -267,7 +267,7 @@ export class OrgAdminService {
   }
 
   async getCostCenters(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.findMany({
         where: { companyId },
         include: { _count: { select: { users: true } } },
@@ -281,7 +281,7 @@ export class OrgAdminService {
     dto: CreateCostCenterDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.findFirst({
         where: { companyId, code: dto.code },
       }),
@@ -291,7 +291,7 @@ export class OrgAdminService {
         `Cost center with code ${dto.code} already exists`,
       );
 
-    const cc = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const cc = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.create({
         data: {
           companyId,
@@ -321,14 +321,14 @@ export class OrgAdminService {
     dto: UpdateCostCenterDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.findFirst({
         where: { id: ccId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`Cost center ${ccId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.update({
         where: { id: ccId },
         data: dto,
@@ -348,14 +348,14 @@ export class OrgAdminService {
   }
 
   async deleteCostCenter(companyId: string, ccId: string, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.findFirst({
         where: { id: ccId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`Cost center ${ccId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.costCenter.delete({ where: { id: ccId } }),
     );
 

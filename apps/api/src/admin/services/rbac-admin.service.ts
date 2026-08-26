@@ -131,7 +131,7 @@ export class RbacAdminService {
     dto: CreateRoleTemplateDto,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findFirst({
         where: { companyId, name: dto.name },
       }),
@@ -139,7 +139,7 @@ export class RbacAdminService {
     if (existing)
       throw new ConflictException(`Role ${dto.name} already exists`);
 
-    const role = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const role = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.create({
         data: {
           companyId,
@@ -164,7 +164,7 @@ export class RbacAdminService {
 
   // ── 3. Custom Roles CRUD
   async getRoles(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findMany({
         where: { companyId },
         include: { _count: { select: { users: true } } },
@@ -174,7 +174,7 @@ export class RbacAdminService {
   }
 
   async getRoleById(companyId: string, roleId: string) {
-    const role = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const role = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findFirst({
         where: { id: roleId, companyId },
         include: {
@@ -194,14 +194,14 @@ export class RbacAdminService {
     dto: Partial<CreateRoleTemplateDto>,
     adminUserId: string,
   ) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findFirst({
         where: { id: roleId, companyId },
       }),
     );
     if (!existing) throw new NotFoundException(`Role ${roleId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.update({
         where: { id: roleId },
         data: {
@@ -228,7 +228,7 @@ export class RbacAdminService {
   }
 
   async deleteRole(companyId: string, roleId: string, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findFirst({
         where: { id: roleId, companyId },
         include: { _count: { select: { users: true } } },
@@ -241,7 +241,7 @@ export class RbacAdminService {
       );
     }
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.update({
         where: { id: roleId },
         data: { deletedAt: new Date() },
@@ -267,7 +267,7 @@ export class RbacAdminService {
     delegatedScopes: Record<string, any>,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({ where: { id: userId, companyId } }),
     );
     if (!user) throw new NotFoundException(`User ${userId} not found`);
@@ -275,7 +275,7 @@ export class RbacAdminService {
     const currentPrefs = (user.preferences || {}) as Record<string, any>;
     const updatedPrefs = { ...currentPrefs, delegatedScopes };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: userId },
         data: { preferences: updatedPrefs },
@@ -301,7 +301,7 @@ export class RbacAdminService {
     expiresAtIso: string,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({ where: { id: userId, companyId } }),
     );
     if (!user) throw new NotFoundException(`User ${userId} not found`);
@@ -317,7 +317,7 @@ export class RbacAdminService {
       grantedAt: new Date().toISOString(),
     });
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: userId },
         data: { preferences: { ...currentPrefs, tempPermissions: tempPerms } },
@@ -338,7 +338,7 @@ export class RbacAdminService {
 
   // ── 6. Permission Simulator
   async simulatePermission(companyId: string, dto: SimulatePermissionDto) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: dto.userId, companyId },
         include: { role: true, department: true, team: true },

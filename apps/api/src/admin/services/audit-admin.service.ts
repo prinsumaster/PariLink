@@ -43,7 +43,7 @@ export class AuditAdminService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.findMany({
           where,
           orderBy: { createdAt: 'desc' },
@@ -61,7 +61,7 @@ export class AuditAdminService {
           },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -95,7 +95,7 @@ export class AuditAdminService {
     };
 
     const [data, total] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.findMany({
           where,
           orderBy: { createdAt: 'desc' },
@@ -113,7 +113,7 @@ export class AuditAdminService {
           },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -125,12 +125,12 @@ export class AuditAdminService {
 
     const [totalEvents, authFailures, adminMutations, securityChanges] =
       await Promise.all([
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.auditLog.count({
             where: { companyId, createdAt: { gte: thirtyDaysAgo } },
           }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.auditLog.count({
             where: {
               companyId,
@@ -143,7 +143,7 @@ export class AuditAdminService {
             },
           }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.auditLog.count({
             where: {
               companyId,
@@ -152,7 +152,7 @@ export class AuditAdminService {
             },
           }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.auditLog.count({
             where: {
               companyId,
@@ -163,7 +163,7 @@ export class AuditAdminService {
         ),
       ]);
 
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({ where: { companyId } }),
     );
     const policies = (config?.policies || {}) as Record<string, any>;
@@ -189,7 +189,7 @@ export class AuditAdminService {
   }
 
   async getRetentionPolicy(companyId: string) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({ where: { companyId } }),
     );
     const policies = (config?.policies || {}) as Record<string, any>;
@@ -205,7 +205,7 @@ export class AuditAdminService {
     dto: AuditRetentionPolicyDto,
     adminUserId: string,
   ) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({ where: { companyId } }),
     );
     if (!config)
@@ -219,7 +219,7 @@ export class AuditAdminService {
       auditRetentionDays: dto.auditRetentionDays,
     };
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { policies: updatedPolicies },
@@ -244,7 +244,7 @@ export class AuditAdminService {
       Date.now() - policy.auditRetentionDays * 24 * 60 * 60 * 1000,
     );
 
-    const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const result = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.auditLog.deleteMany({
         where: { companyId, createdAt: { lt: cutoffDate } },
       }),

@@ -41,28 +41,28 @@ export class LicenseAdminService {
       vehicleCount,
       driverCount,
     ] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.company.findUnique({
           where: { id: companyId },
           include: { subscriptionPlan: true },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.tenantConfiguration.findUnique({ where: { companyId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.tenantConfig.findUnique({ where: { companyId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({ where: { companyId, status: 'ACTIVE' } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({ where: { companyId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.vehicle.count({ where: { companyId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.driver.count({ where: { companyId } }),
       ),
     ]);
@@ -140,7 +140,7 @@ export class LicenseAdminService {
 
   // ─── Assign subscription plan ───────────────────────────────────────────────
   async assignPlan(companyId: string, dto: AssignPlanDto, adminUserId: string) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({
         where: { id: companyId },
         include: { subscriptionPlan: true },
@@ -149,21 +149,21 @@ export class LicenseAdminService {
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
     // Resolve capacity from plan defaults if not explicitly provided
-    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const plan = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.subscriptionPlan.findUnique({ where: { id: dto.subscriptionPlanId } }),
     );
 
     const planCode = plan?.planCode || 'STARTER';
     const planDefaults = PLAN_DEFAULTS[planCode] || PLAN_DEFAULTS['STARTER'];
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.update({
         where: { id: companyId },
         data: { subscriptionPlanId: dto.subscriptionPlanId },
       }),
     );
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.upsert({
         where: { companyId },
         update: {
@@ -204,12 +204,12 @@ export class LicenseAdminService {
     dto: SetTruckLimitDto,
     adminUserId: string,
   ) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.upsert({
         where: { companyId },
         update: { maxVehicles: dto.maxVehicles },
@@ -235,12 +235,12 @@ export class LicenseAdminService {
     dto: SetDriverLimitDto,
     adminUserId: string,
   ) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.upsert({
         where: { companyId },
         update: { maxDrivers: dto.maxDrivers },
@@ -262,14 +262,14 @@ export class LicenseAdminService {
 
   // ─── Set temporary capacity boost ──────────────────────────────────────────
   async setBoost(companyId: string, dto: SetBoostDto, adminUserId: string) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
     const boostExpiresAt = new Date(dto.boostExpiresAt);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.upsert({
         where: { companyId },
         update: { boostMaxVehicles: dto.boostMaxVehicles, boostExpiresAt },
@@ -303,12 +303,12 @@ export class LicenseAdminService {
     dto: SetUnlimitedModeDto,
     adminUserId: string,
   ) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfig.upsert({
         where: { companyId },
         update: { unlimitedMode: dto.unlimited },

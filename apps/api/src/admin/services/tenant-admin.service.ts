@@ -34,7 +34,7 @@ export class TenantAdminService {
   }
 
   async getTenantById(companyId: string) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({
         where: { id: companyId },
         include: {
@@ -62,12 +62,12 @@ export class TenantAdminService {
     dto: UpdateTenantStatusDto,
     adminUserId: string,
   ) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
     if (!company) throw new NotFoundException(`Tenant ${companyId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.update({
         where: { id: companyId },
         data: {
@@ -94,7 +94,7 @@ export class TenantAdminService {
     dto: UpdateTenantBrandingDto,
     adminUserId: string,
   ) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({
         where: { companyId },
       }),
@@ -107,7 +107,7 @@ export class TenantAdminService {
     const currentTheme = (config.theme || {}) as Record<string, any>;
     const updatedTheme = { ...currentTheme, ...dto };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { theme: updatedTheme },
@@ -131,7 +131,7 @@ export class TenantAdminService {
     dto: UpdateTenantRegionalDto,
     adminUserId: string,
   ) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({
         where: { companyId },
       }),
@@ -147,7 +147,7 @@ export class TenantAdminService {
       regional: { ...(currentSettings.regional || {}), ...dto },
     };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: updatedSettings },
@@ -171,7 +171,7 @@ export class TenantAdminService {
     dto: UpdateTenantBusinessHoursDto,
     adminUserId: string,
   ) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({
         where: { companyId },
       }),
@@ -187,7 +187,7 @@ export class TenantAdminService {
       businessHours: { ...(currentSettings.businessHours || {}), ...dto },
     };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { settings: updatedSettings },

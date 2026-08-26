@@ -89,7 +89,7 @@ export class AdminService {
   }
 
   async suspendTenant(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.company.update({
         where: { id: companyId },
         data: { status: 'SUSPENDED' },
@@ -122,10 +122,10 @@ export class AdminService {
 
   async getMarketplaceApps(companyId: string) {
     const [apps, installations] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.marketplaceApp.findMany({ orderBy: { name: 'asc' } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.appInstallation.findMany({ where: { companyId } }),
       ),
     ]);
@@ -144,13 +144,13 @@ export class AdminService {
     credentials: any = {},
     settings: any = {},
   ) {
-    const app = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const app = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.marketplaceApp.findUnique({
         where: { id: appId },
       }),
     );
     if (!app) throw new NotFoundException('App not found');
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.appInstallation.upsert({
         where: { companyId_appId: { companyId, appId } },
         update: {
@@ -172,7 +172,7 @@ export class AdminService {
   }
 
   async uninstallApp(companyId: string, appId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.appInstallation.updateMany({
         where: { companyId, appId },
         data: { status: 'UNINSTALLED' },
@@ -181,7 +181,7 @@ export class AdminService {
   }
 
   async updateAppSettings(companyId: string, appId: string, settings: any) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.appInstallation.update({
         where: { companyId_appId: { companyId, appId } },
         data: { settings },
@@ -194,7 +194,7 @@ export class AdminService {
   // ─────────────────────────────────────────────────────────────
 
   async getFeatureFlags(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.findMany({ where: { companyId } }),
     );
   }
@@ -205,7 +205,7 @@ export class AdminService {
     isEnabled: boolean,
     description?: string,
   ) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.upsert({
         where: { companyId_key: { companyId, key } },
         update: { isEnabled, description },
@@ -238,7 +238,7 @@ export class AdminService {
     if (entity) where.entity = entity;
     if (userId) where.userId = userId;
     const [data, total] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.findMany({
           where,
           orderBy: { createdAt: 'desc' },
@@ -249,7 +249,7 @@ export class AdminService {
           },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
     ]);
     return { data, total, page, limit };
   }
@@ -259,7 +259,7 @@ export class AdminService {
   // ─────────────────────────────────────────────────────────────
 
   async getAllUsers(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findMany({
         where: { companyId },
         select: {
@@ -278,7 +278,7 @@ export class AdminService {
   }
 
   async getAllRoles(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.role.findMany({
         where: { companyId },
         include: { _count: { select: { users: true } } },

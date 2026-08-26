@@ -11,7 +11,7 @@ export class SecurityPolicyAdminService {
   ) {}
 
   async getSecurityPolicies(companyId: string) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({
         where: { companyId },
       }),
@@ -49,7 +49,7 @@ export class SecurityPolicyAdminService {
     dto: UpdateSecurityPolicyDto,
     adminUserId: string,
   ) {
-    const config = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const config = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.findUnique({
         where: { companyId },
       }),
@@ -62,7 +62,7 @@ export class SecurityPolicyAdminService {
     const currentPolicies = (config.policies || {}) as Record<string, any>;
     const updatedPolicies = { ...currentPolicies, ...dto };
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { policies: updatedPolicies },

@@ -25,7 +25,7 @@ export class UserAdminService {
   async getUsers(companyId: string, status?: string) {
     const where: any = { companyId };
     if (status) where.status = status;
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findMany({
         where,
         take: 1000,
@@ -53,7 +53,7 @@ export class UserAdminService {
   }
 
   async inviteUser(companyId: string, dto: InviteUserDto, adminUserId: string) {
-    const existing = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existing = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findUnique({
         where: { email: dto.email },
       }),
@@ -66,7 +66,7 @@ export class UserAdminService {
     const tempPassword = crypto.randomBytes(16).toString('hex');
     const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.create({
         data: {
           companyId,
@@ -169,14 +169,14 @@ export class UserAdminService {
     dto: UserStatusActionDto,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
     );
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: targetUserId },
         data: { status: 'SUSPENDED' },
@@ -202,14 +202,14 @@ export class UserAdminService {
     targetUserId: string,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
     );
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: targetUserId },
         data: { status: 'ACTIVE' },
@@ -234,14 +234,14 @@ export class UserAdminService {
     dto: UserStatusActionDto,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
     );
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: targetUserId },
         data: { status: 'LOCKED' },
@@ -267,14 +267,14 @@ export class UserAdminService {
     targetUserId: string,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
     );
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
-    const updated = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: targetUserId },
         data: { status: 'ACTIVE' },
@@ -300,7 +300,7 @@ export class UserAdminService {
     targetUserId: string,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
@@ -308,10 +308,10 @@ export class UserAdminService {
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
     await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.refreshToken.deleteMany({ where: { userId: targetUserId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.trustedDevice.deleteMany({ where: { userId: targetUserId } }),
       ),
     ]);
@@ -336,7 +336,7 @@ export class UserAdminService {
     targetUserId: string,
     adminUserId: string,
   ) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
@@ -350,7 +350,7 @@ export class UserAdminService {
       forceResetAt: new Date().toISOString(),
     };
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.update({
         where: { id: targetUserId },
         data: { preferences: updatedPrefs },
@@ -375,7 +375,7 @@ export class UserAdminService {
   }
 
   async resetMfa(companyId: string, targetUserId: string, adminUserId: string) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.user.findFirst({
         where: { id: targetUserId, companyId },
       }),
@@ -383,13 +383,13 @@ export class UserAdminService {
     if (!user) throw new NotFoundException(`User ${targetUserId} not found`);
 
     await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.backupCode.deleteMany({ where: { userId: targetUserId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.webAuthnCredential.deleteMany({ where: { userId: targetUserId } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.update({
           where: { id: targetUserId },
           data: { mfaEnabled: false, totpSecret: null },
