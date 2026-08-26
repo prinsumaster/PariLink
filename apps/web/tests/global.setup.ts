@@ -11,6 +11,16 @@ async function globalSetup(config: FullConfig) {
       response.text().then(text => console.log('LOGIN RESPONSE BODY:', text)).catch(() => {});
     }
   });
+  
+  page.on('console', msg => {
+    if (msg.type() === 'error' || msg.type() === 'warning') {
+      console.log(`PAGE LOG [${msg.type()}]:`, msg.text());
+    }
+  });
+
+  page.on('pageerror', err => {
+    console.error('PAGE UNHANDLED ERROR:', err.message, err.stack);
+  });
 
   await page.goto('http://localhost:3000/login');
   
@@ -22,7 +32,7 @@ async function globalSetup(config: FullConfig) {
     throw e;
   }
   
-  await page.fill('input[type="email"]', 'admin@parilink.com');
+  await page.fill('input[type="email"]', 'admin@parilink.in');
   await page.fill('input[type="password"]', 'password123'); 
   await page.click('button[type="submit"]');
   
