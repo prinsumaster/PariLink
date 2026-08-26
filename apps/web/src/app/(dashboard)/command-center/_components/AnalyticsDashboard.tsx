@@ -38,7 +38,7 @@ export function AnalyticsDashboard() {
           <KpiCard title="On-Time Delivery" value="94.2%" trend="+2.1%" icon={<Clock className="h-5 w-5 text-emerald-500" />} />
           <KpiCard title="Vehicle Utilization" value="89.5%" trend="+5.4%" icon={<Truck className="h-5 w-5 text-indigo-500" />} />
           <KpiCard title="Driver Productivity" value="92%" trend="-1.2%" trendNegative icon={<Users className="h-5 w-5 text-blue-500" />} />
-          <KpiCard title="Today's Revenue" value="$142.5K" trend="+12.5%" icon={<TrendingUp className="h-5 w-5 text-purple-500" />} />
+          <KpiCard title="Today's Revenue" value="₹142.5K" trend="+12.5%" icon={<TrendingUp className="h-5 w-5 text-purple-500" />} />
         </div>
 
         {/* Charts Row 1 */}
@@ -56,7 +56,7 @@ export function AnalyticsDashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.2} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(val) => `$${val/1000}k`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(val) => `₹${val/1000}k`} />
                   <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                   <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                 </AreaChart>
@@ -83,7 +83,7 @@ export function AnalyticsDashboard() {
         {/* Secondary KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard title="Trip Completion Rate" value="98.1%" icon={<CheckCircle2 className="h-5 w-5 text-emerald-500" />} />
-          <KpiCard title="Avg Fuel Efficiency" value="6.8 MPG" icon={<Fuel className="h-5 w-5 text-slate-500" />} />
+          <KpiCard title="Avg Fuel Efficiency" value="6.8 kmpl" icon={<Fuel className="h-5 w-5 text-slate-500" />} />
           <KpiCard title="Customer Satisfaction" value="4.8/5.0" icon={<Star className="h-5 w-5 text-amber-500" />} />
           <KpiCard title="Active Anomalies" value="12" icon={<AlertTriangle className="h-5 w-5 text-rose-500" />} />
         </div>

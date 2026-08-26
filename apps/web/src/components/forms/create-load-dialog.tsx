@@ -441,7 +441,7 @@ export function CreateLoadDialog({ open, onOpenChange }: CreateLoadDialogProps) 
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
-                    <Field label="Rate (USD)" required error={errors.rate?.message}>
+                    <Field label="Rate (INR)" required error={errors.rate?.message}>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                         <Input
@@ -495,7 +495,7 @@ export function CreateLoadDialog({ open, onOpenChange }: CreateLoadDialogProps) 
                       </p>
                       <p className="font-semibold text-foreground">
                         // eslint-disable-next-line react-hooks/incompatible-library
-                        {watch('rate') ? `$${Number(watch('rate')).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
+                        {watch('rate') ? `₹${Number(watch('rate')).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
                       </p>
                     </div>
                   </div>

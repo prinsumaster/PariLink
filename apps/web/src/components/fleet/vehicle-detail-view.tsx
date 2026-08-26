@@ -46,7 +46,7 @@ export function VehicleDetailView({ vehicle }: VehicleDetailViewProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Gauge className="h-4 w-4"/> Odometer</div>
-                <div className="text-lg font-semibold">{vehicle.odometer?.toLocaleString() ?? '0'} mi</div>
+                <div className="text-lg font-semibold">{vehicle.odometer?.toLocaleString() ?? '0'} km</div>
               </div>
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Activity className="h-4 w-4"/> Engine Hrs</div>

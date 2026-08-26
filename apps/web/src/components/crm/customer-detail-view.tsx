@@ -139,12 +139,12 @@ export function CustomerDetailView({ customer }: CustomerDetailViewProps) {
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">Credit Limit</span>
-              <span className="font-medium">${(customer.billing?.creditLimit || 0).toLocaleString()} {customer.billing?.currency || 'USD'}</span>
+              <span className="font-medium">₹{(customer.billing?.creditLimit || 0).toLocaleString()} {customer.billing?.currency || 'INR'}</span>
             </div>
             <div className="pt-2">
               <div className="text-sm text-gray-500 mb-1">Outstanding Balance</div>
               <div className={`text-2xl font-bold ${(customer.billing?.outstandingBalance || 0) > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                ${(customer.billing?.outstandingBalance || 0).toLocaleString()} <span className="text-sm font-normal">{customer.billing?.currency || 'USD'}</span>
+                ${(customer.billing?.outstandingBalance || 0).toLocaleString()} <span className="text-sm font-normal">{customer.billing?.currency || 'INR'}</span>
               </div>
             </div>
             {customer.billing?.taxId && (
@@ -169,7 +169,7 @@ export function CustomerDetailView({ customer }: CustomerDetailViewProps) {
                 <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Total Orders</div>
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg text-center">
-                <div className="text-xl font-bold text-green-600 dark:text-green-400">${((customer.metrics?.totalRevenue || 0) / 1000).toFixed(1)}k</div>
+                <div className="text-xl font-bold text-green-600 dark:text-green-400">₹{((customer.metrics?.totalRevenue || 0) / 1000).toFixed(1)}k</div>
                 <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Lifetime Rev</div>
               </div>
             </div>

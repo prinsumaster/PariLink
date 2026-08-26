@@ -32,7 +32,7 @@ export default function MarketplacePage() {
         reviews: app.reviews || 0,
         installs: app.installs || 0,
         isVerified: app.developer?.isVerified,
-        price: app.price === 0 ? "Free" : `$${app.price}/mo`,
+        price: app.price === 0 ? "Free" : `₹${app.price}/mo`,
         licenseType: app.licenseType,
         logoUrl: app.logoUrl,
         installed: false, // Update with real status from /installed later

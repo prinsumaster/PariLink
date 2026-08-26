@@ -33,7 +33,7 @@ export function OrganizationSettingsForm() {
       supportEmail: '',
       supportPhone: '',
       address: { street: '', city: '', state: '', country: '', postalCode: '' },
-      localization: { timezone: 'UTC', currency: 'USD', dateFormat: 'MM/DD/YYYY', weightUnit: 'kg', distanceUnit: 'km' }
+      localization: { timezone: 'UTC', currency: 'INR', dateFormat: 'MM/DD/YYYY', weightUnit: 'kg', distanceUnit: 'km' }
     }
   });
 
@@ -98,7 +98,7 @@ export function OrganizationSettingsForm() {
             <Select value={currentCurrency} onValueChange={(v) => setValue('localization.currency', (v as string), { shouldDirty: true })}>
               <SelectTrigger className="focus-ring transition-all hover:border-slate-300 dark:hover:border-slate-700"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
+                <SelectItem value="INR">INR ($)</SelectItem>
                 <SelectItem value="EUR">EUR (€)</SelectItem>
                 <SelectItem value="GBP">GBP (£)</SelectItem>
               </SelectContent>

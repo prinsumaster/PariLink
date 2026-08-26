@@ -163,8 +163,8 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                         )}
                       </td>
                       <td className="py-4 text-right">1</td>
-                      <td className="py-4 text-right">${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td className="py-4 text-right font-medium text-slate-900 dark:text-white">${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="py-4 text-right">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="py-4 text-right font-medium text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -175,16 +175,16 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                 <div className="w-64 space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium text-slate-900 dark:text-white">${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span className="font-medium text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tax</span>
-                    <span className="font-medium text-slate-900 dark:text-white">$0.00</span>
+                    <span className="font-medium text-slate-900 dark:text-white">₹0.00</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="font-bold text-slate-900 dark:text-white">Total</span>
-                    <span className="font-bold text-slate-900 dark:text-white">${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                   </div>
                 </div>
               </div>

@@ -82,7 +82,7 @@ export function CustomerForm({ initialData, isEdit }: CustomerFormProps) {
       contacts: initialData.contacts,
     } : {
       type: 'SME',
-      billing: { currency: 'USD', paymentTerms: 'NET_30', creditLimit: 0 },
+      billing: { currency: 'INR', paymentTerms: 'NET_30', creditLimit: 0 },
       contacts: [{ name: '', role: '', email: '', phone: '', isPrimary: true }]
     }
   });
@@ -199,7 +199,7 @@ export function CustomerForm({ initialData, isEdit }: CustomerFormProps) {
               </div>
               <div className="space-y-2">
                 <Label>Currency</Label>
-                <Input {...register('billing.currency')} placeholder="USD" />
+                <Input {...register('billing.currency')} placeholder="INR" />
               </div>
               <div className="space-y-2 col-span-2">
                 <Label>Credit Limit ($)</Label>

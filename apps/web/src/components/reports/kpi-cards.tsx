@@ -38,7 +38,7 @@ export function KPICards({ kpis, isLoading }: KPICardsProps) {
         const isNeutral = kpi.change === 0;
         
         let formattedValue = kpi.value.toString();
-        if (kpi.format === 'currency') formattedValue = `$${Number(kpi.value).toLocaleString()}`;
+        if (kpi.format === 'currency') formattedValue = `₹${Number(kpi.value).toLocaleString()}`;
         if (kpi.format === 'percentage') formattedValue = `${kpi.value}%`;
 
         return (

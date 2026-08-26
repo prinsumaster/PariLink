@@ -73,7 +73,7 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
       })),
     } : {
       status: 'DRAFT',
-      currency: 'USD',
+      currency: 'INR',
       paymentTerms: 'NET_30',
       discountTotal: 0,
       issueDate: new Date().toISOString().slice(0, 10),
@@ -206,7 +206,7 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
                   <div className="space-y-2"><Label>Tax Rate (%)</Label><Input type="number" step="0.01" {...register(`lineItems.${index}.taxRate` as const, { valueAsNumber: true })} /></div>
                   <div className="space-y-2 text-right">
                     <Label>Line Total</Label>
-                    <div className="font-mono font-medium pt-2">${lineTotal.toFixed(2)}</div>
+                    <div className="font-mono font-medium pt-2">₹{lineTotal.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
@@ -231,11 +231,11 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
           <div className="space-y-4">
             <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
               <span>Subtotal</span>
-              <span className="font-mono">${subtotal.toFixed(2)}</span>
+              <span className="font-mono">₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-gray-600 dark:text-gray-400">
               <span>Tax Total</span>
-              <span className="font-mono">${taxTotal.toFixed(2)}</span>
+              <span className="font-mono">₹{taxTotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center text-green-600 dark:text-green-400">
               <span>Discount</span>
@@ -246,7 +246,7 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 flex justify-between items-center text-lg font-bold">
               <span>Grand Total</span>
               // eslint-disable-next-line react-hooks/incompatible-library
-              <span className="font-mono">${grandTotal.toFixed(2)} {watch('currency')}</span>
+              <span className="font-mono">₹{grandTotal.toFixed(2)} {watch('currency')}</span>
             </div>
           </div>
         </div>

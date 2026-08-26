@@ -47,26 +47,26 @@ export default function AiCostDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Total Spend</p>
-          <p className="text-3xl font-bold font-mono text-white">${stats.totalSpend.toLocaleString()}</p>
+          <p className="text-3xl font-bold font-mono text-white">₹{stats.totalSpend.toLocaleString()}</p>
           <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
             <TrendingUp className="h-3 w-3" /> +15% vs previous period
           </p>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Projected End of Month</p>
-          <p className="text-3xl font-bold font-mono text-slate-300">${stats.projectedSpend.toLocaleString()}</p>
+          <p className="text-3xl font-bold font-mono text-slate-300">₹{stats.projectedSpend.toLocaleString()}</p>
           <p className="text-xs text-slate-500 mt-2">Based on current run rate</p>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Budget Remaining</p>
-          <p className="text-3xl font-bold font-mono text-emerald-400">${stats.budgetRemaining.toLocaleString()}</p>
+          <p className="text-3xl font-bold font-mono text-emerald-400">₹{stats.budgetRemaining.toLocaleString()}</p>
           <div className="w-full h-1.5 bg-slate-800 rounded-full mt-3 overflow-hidden">
             <div className="h-full bg-emerald-500 rounded-full" style={{ width: '62%' }} />
           </div>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Avg Cost / Interaction</p>
-          <p className="text-3xl font-bold font-mono text-indigo-400">${stats.avgCostPerQuery.toFixed(4)}</p>
+          <p className="text-3xl font-bold font-mono text-indigo-400">₹{stats.avgCostPerQuery.toFixed(4)}</p>
           <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
             ↓ 8% via local LLM routing
           </p>
@@ -88,7 +88,7 @@ export default function AiCostDashboardPage() {
                     <p className="text-xs font-mono text-slate-500">{mc.model}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-mono text-white">${mc.spend.toLocaleString()}</p>
+                    <p className="text-sm font-mono text-white">₹{mc.spend.toLocaleString()}</p>
                     <p className="text-xs text-slate-500">{mc.pct}%</p>
                   </div>
                 </div>
@@ -113,7 +113,7 @@ export default function AiCostDashboardPage() {
               <h4 className="text-sm font-semibold text-slate-200 mb-1">Route simple tasks to Local LLMs</h4>
               <p className="text-xs text-slate-400 mb-3">15% of GPT-4o queries in dispatch had complexity scores under 0.2. Routing these to Llama-3 saves money.</p>
               <div className="flex justify-between items-center">
-                <span className="text-xs font-mono text-emerald-400">Est. Savings: $450/mo</span>
+                <span className="text-xs font-mono text-emerald-400">Est. Savings: ₹450/mo</span>
                 <Button size="sm" variant="outline" className="h-6 text-[10px] border-slate-700 hover:bg-slate-800">Apply Rule</Button>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default function AiCostDashboardPage() {
               <h4 className="text-sm font-semibold text-slate-200 mb-1">Enable Semantic Caching</h4>
               <p className="text-xs text-slate-400 mb-3">Many users query the same knowledge base documents repeatedly. Caching embeddings cuts API calls.</p>
               <div className="flex justify-between items-center">
-                <span className="text-xs font-mono text-emerald-400">Est. Savings: $120/mo</span>
+                <span className="text-xs font-mono text-emerald-400">Est. Savings: ₹120/mo</span>
                 <Button size="sm" variant="outline" className="h-6 text-[10px] border-slate-700 hover:bg-slate-800">Enable Cache</Button>
               </div>
             </div>

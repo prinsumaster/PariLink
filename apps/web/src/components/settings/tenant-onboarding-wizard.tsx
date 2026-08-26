@@ -14,7 +14,7 @@ export function TenantOnboardingWizard({ onComplete }: { onComplete: () => void 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     timezone: 'UTC',
-    currency: 'USD',
+    currency: 'INR',
     language: 'en',
     fiscalYearStartMonth: 1,
     logoUrl: '',
@@ -67,7 +67,7 @@ export function TenantOnboardingWizard({ onComplete }: { onComplete: () => void 
               </div>
               <div className="space-y-2">
                 <Label className="text-slate-600 dark:text-slate-400">Currency</Label>
-                <Input className="focus-ring transition-all hover:border-slate-300 dark:hover:border-slate-700" value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })} placeholder="e.g. USD, EUR, INR" />
+                <Input className="focus-ring transition-all hover:border-slate-300 dark:hover:border-slate-700" value={formData.currency} onChange={(e) => setFormData({ ...formData, currency: e.target.value })} placeholder="e.g. INR, EUR, INR" />
               </div>
             </div>
           </div>

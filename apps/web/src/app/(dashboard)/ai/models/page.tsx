@@ -89,7 +89,7 @@ export default function ModelRegistryPage() {
                         <Activity className="h-3 w-3" /> {model.latencyMs}ms avg latency
                       </span>
                       <span className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3" /> ${model.costPer1kTokens.toFixed(3)} / 1k tokens
+                        <DollarSign className="h-3 w-3" /> ₹{model.costPer1kTokens.toFixed(3)} / 1k tokens
                       </span>
                     </div>
                   </div>

@@ -172,7 +172,7 @@ function LoadCard({ load, index }: { load: Load; index: number }) {
         </div>
         <div className="flex items-center gap-1.5 text-xs text-foreground font-semibold">
           <DollarSign className="h-3 w-3 shrink-0 text-muted-foreground" />
-          <span>${load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          <span>₹{load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
         </div>
         {load.equipmentType && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

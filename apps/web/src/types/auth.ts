@@ -24,7 +24,7 @@ export interface User {
   lastName: string;
   avatarUrl?: string;
   role: Role;
-  permissions: Permission[];
+  permissions: (string | Permission)[];
   defaultTenantId?: string;
   tenants: Tenant[];
   mfaEnabled: boolean;

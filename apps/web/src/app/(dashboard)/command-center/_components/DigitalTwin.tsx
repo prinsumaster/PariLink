@@ -12,7 +12,7 @@ export function DigitalTwin() {
       <div className="absolute top-6 left-6 z-10 flex gap-4">
         <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-lg p-4 w-48 shadow-xl">
           <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Global Revenue</div>
-          <div className="text-2xl font-bold text-white">$142,500</div>
+          <div className="text-2xl font-bold text-white">₹142,500</div>
           <div className="text-emerald-400 text-xs mt-1">+12.5% today</div>
         </div>
         <div className="bg-slate-900/80 backdrop-blur border border-slate-800 rounded-lg p-4 w-48 shadow-xl">

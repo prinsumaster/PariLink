@@ -82,9 +82,9 @@ export function RecordPaymentDialog({ open, onOpenChange }: RecordPaymentDialogP
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label>Amount (USD) *</Label>
+              <Label>Amount (INR) *</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                 <Input type="number" step="0.01" className={`pl-7 ${errors.amount ? 'border-red-500' : ''}`} {...register('amount')} />
               </div>
               {errors.amount && <p className="text-xs text-red-500">{errors.amount.message}</p>}

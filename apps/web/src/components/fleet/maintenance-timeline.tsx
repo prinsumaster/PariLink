@@ -41,10 +41,10 @@ export function MaintenanceTimeline({ records }: MaintenanceTimelineProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-medium bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded inline-block">
-                      {record.odometerReading.toLocaleString()} mi
+                      {record.odometerReading.toLocaleString()} km
                     </p>
                     {record.cost && (
-                      <p className="text-xs text-gray-500 mt-1">${record.cost.toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">₹{record.cost.toLocaleString()}</p>
                     )}
                   </div>
                 </div>

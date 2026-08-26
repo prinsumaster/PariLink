@@ -21,7 +21,7 @@ const columns: ColumnDef<Invoice>[] = [
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) => <span className="font-semibold">${(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>,
+    cell: ({ row }) => <span className="font-semibold">₹{(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>,
   },
   { accessorKey: 'dueDate', header: 'Due Date', cell: ({ row }) => { const v = row.getValue('dueDate') as string; return v ? format(new Date(v), 'MMM d, yyyy') : '—'; } },
   { accessorKey: 'createdAt', header: 'Created', cell: ({ row }) => format(new Date(row.getValue('createdAt')), 'MMM d, yyyy') },

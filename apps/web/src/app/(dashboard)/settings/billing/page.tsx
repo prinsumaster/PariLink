@@ -58,7 +58,7 @@ export default function BillingPortalPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold tracking-tight">${billingInfo?.subscriptionPlan?.price || 0}</span>
+              <span className="text-4xl font-bold tracking-tight">₹{billingInfo?.subscriptionPlan?.price || 0}</span>
               <span className="text-muted-foreground mb-1">/ {billingInfo?.subscriptionPlan?.interval || 'month'}</span>
             </div>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -105,7 +105,7 @@ export default function BillingPortalPage() {
                 <Activity className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="text-sm font-semibold">Digital Workers</p>
-                  <p className="text-xs text-muted-foreground">+ $99/mo</p>
+                  <p className="text-xs text-muted-foreground">+ ₹99/mo</p>
                 </div>
               </div>
               <Button size="sm" variant="secondary">Add</Button>
@@ -162,9 +162,9 @@ export default function BillingPortalPage() {
       <Card className="border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
           {[
-            { id: 'INV-2026-004', date: 'Jul 1, 2026', amount: '$2,499.00', status: 'Paid' },
-            { id: 'INV-2026-003', date: 'Jun 1, 2026', amount: '$2,499.00', status: 'Paid' },
-            { id: 'INV-2026-002', date: 'May 1, 2026', amount: '$2,499.00', status: 'Paid' },
+            { id: 'INV-2026-004', date: 'Jul 1, 2026', amount: '₹2,499.00', status: 'Paid' },
+            { id: 'INV-2026-003', date: 'Jun 1, 2026', amount: '₹2,499.00', status: 'Paid' },
+            { id: 'INV-2026-002', date: 'May 1, 2026', amount: '₹2,499.00', status: 'Paid' },
           ].map((invoice) => (
             <div key={invoice.id} className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
               <div className="flex items-center gap-4">

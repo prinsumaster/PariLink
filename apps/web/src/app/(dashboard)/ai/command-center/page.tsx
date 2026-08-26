@@ -197,7 +197,7 @@ export default function AiCommandCenterPage() {
         />
         <MetricCard
           title="Total AI Cost"
-          value={`$${metrics.totalCostUsd.toFixed(2)}`}
+          value={`₹${metrics.totalCostUsd.toFixed(2)}`}
           subtitle="Across all providers"
           icon={DollarSign}
           color="green"
@@ -301,7 +301,7 @@ export default function AiCommandCenterPage() {
                     <div key={provider} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium ${colorMap[provider] || 'text-slate-300'}`}>{provider}</span>
-                        <Badge variant="outline" className="text-xs">${data.cost.toFixed(2)}</Badge>
+                        <Badge variant="outline" className="text-xs">₹{data.cost.toFixed(2)}</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-slate-500">
                         <span>{data.calls.toLocaleString()} calls</span>

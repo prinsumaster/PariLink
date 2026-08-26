@@ -23,7 +23,7 @@ export interface PredictiveInsight {
   description: string;
   confidenceScore: number; // 0-100
   timeframe: string; // e.g. "Next 48 Hours"
-  potentialCostImpact: number; // estimated USD savings if acted upon
+  potentialCostImpact: number; // estimated INR savings if acted upon
   actionRequired: boolean;
 }
 

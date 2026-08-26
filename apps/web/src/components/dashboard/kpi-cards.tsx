@@ -40,7 +40,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Daily Revenue',
-      value: `$${(data.revenue.value / 1000).toFixed(1)}k`,
+      value: `₹${(data.revenue.value / 1000).toFixed(1)}k`,
       change: `${data.revenue.change}%`,
       trend: data.revenue.trend,
       icon: DollarSign,
@@ -54,7 +54,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Fuel Efficiency',
-      value: `${data.fuelEfficiency.value} MPG`,
+      value: `${data.fuelEfficiency.value} kmpl`,
       change: `${data.fuelEfficiency.change}%`,
       trend: data.fuelEfficiency.trend,
       icon: Minus,
@@ -82,7 +82,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Revenue Today',
-      value: `$${data.revenueToday.value.toLocaleString()}`,
+      value: `₹${data.revenueToday.value.toLocaleString()}`,
       change: `${data.revenueToday.change}%`,
       trend: data.revenueToday.trend,
       icon: DollarSign,

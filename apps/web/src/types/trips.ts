@@ -10,18 +10,22 @@ export interface Location {
 
 export interface Trip {
   id: string;
+  tripNumber?: string;
   trackingNumber: string;
   status: TripStatus;
-  origin: Location;
-  destination: Location;
+  origin?: Location;
+  destination?: Location;
+  loads?: { originCity?: string; destinationCity?: string; }[];
   driverId?: string;
   vehicleId?: string;
   shipmentId?: string;
+  startDate?: string;
   plannedDeparture: string;
   plannedArrival: string;
   actualDeparture?: string;
   actualArrival?: string;
   distance: number;
+  estimatedDistance?: number;
   estimatedDuration: number;
   fuelEstimate: number;
   notes?: string;

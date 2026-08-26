@@ -73,16 +73,16 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                   <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
                   <div>
                     <div className="text-sm font-medium text-gray-500">Origin</div>
-                    <div className="text-base text-gray-900 dark:text-white font-medium">{trip.origin.name}</div>
-                    <div className="text-sm text-gray-500">{trip.origin.address}</div>
+                    <div className="text-base text-gray-900 dark:text-white font-medium">{trip.origin?.name || trip.loads?.[0]?.originCity || 'Unknown Origin'}</div>
+                    <div className="text-sm text-gray-500">{trip.origin?.address || '—'}</div>
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <MapPin className="h-5 w-5 text-blue-500 mt-0.5" />
                   <div>
                     <div className="text-sm font-medium text-gray-500">Destination</div>
-                    <div className="text-base text-gray-900 dark:text-white font-medium">{trip.destination.name}</div>
-                    <div className="text-sm text-gray-500">{trip.destination.address}</div>
+                    <div className="text-base text-gray-900 dark:text-white font-medium">{trip.destination?.name || trip.loads?.[0]?.destinationCity || 'Unknown Destination'}</div>
+                    <div className="text-sm text-gray-500">{trip.destination?.address || '—'}</div>
                   </div>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-500">Est. Distance</span>
-              <span className="text-sm font-medium">{trip.distance} miles</span>
+              <span className="text-sm font-medium">{trip.estimatedDistance || 0} km</span>
             </div>
             {(currentStatus === 'PLANNED' || currentStatus === 'DRAFT') && (
               <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700" onClick={handleDispatch} disabled={isPending}>

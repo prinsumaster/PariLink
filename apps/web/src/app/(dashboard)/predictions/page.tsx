@@ -28,7 +28,7 @@ export default function PredictionsPage() {
             <h2 className="text-lg font-semibold text-slate-200">Fuel Predictor</h2>
           </div>
           <p className="text-3xl font-mono text-white mb-2">94.7% Accuracy</p>
-          <p className="text-sm text-slate-500">Savings identified: $1.2M</p>
+          <p className="text-sm text-slate-500">Savings identified: ₹1.2M</p>
         </div>
       </div>
     </div>

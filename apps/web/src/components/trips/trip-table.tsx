@@ -44,11 +44,11 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
   const columns = useMemo<ColumnDef<Trip>[]>(
     () => [
       {
-        accessorKey: 'trackingNumber',
-        header: 'Tracking #',
+        accessorKey: 'tripNumber',
+        header: 'Trip #',
         cell: ({ row }) => (
           <div className="font-medium text-blue-600 dark:text-blue-400">
-            {row.getValue('trackingNumber')}
+            {row.getValue('tripNumber')}
           </div>
         ),
       },
@@ -60,34 +60,38 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
       {
         id: 'route',
         header: 'Route',
-        cell: ({ row }) => (
+        cell: ({ row }) => {
+          const load = row.original.loads?.[0];
+          return (
           <div className="flex flex-col text-sm">
             <div className="flex items-center gap-1">
               <MapPin className="h-3 w-3 text-gray-400" />
-              <span className="truncate max-w-[150px]" title={row.original.origin?.name || 'Unknown'}>{row.original.origin?.name || 'Unknown Origin'}</span>
+              <span className="truncate max-w-[150px]" title={load?.originCity || 'Unknown'}>{load?.originCity || 'Unknown Origin'}</span>
             </div>
             <div className="flex items-center gap-1 mt-1">
               <MapPin className="h-3 w-3 text-blue-500" />
-              <span className="truncate max-w-[150px]" title={row.original.destination?.name || 'Unknown'}>{row.original.destination?.name || 'Unknown Destination'}</span>
+              <span className="truncate max-w-[150px]" title={load?.destinationCity || 'Unknown'}>{load?.destinationCity || 'Unknown Destination'}</span>
             </div>
           </div>
-        ),
+        )},
       },
       {
-        accessorKey: 'plannedDeparture',
+        accessorKey: 'startDate',
         header: 'Departure',
-        cell: ({ row }) => (
+        cell: ({ row }) => {
+          const date = row.getValue('startDate');
+          return (
           <span className="text-sm text-gray-500">
-            {new Date(row.getValue('plannedDeparture')).toLocaleString()}
+            {date ? new Date(date as string).toLocaleDateString() : '—'}
           </span>
-        ),
+        )},
       },
       {
-        accessorKey: 'distance',
+        accessorKey: 'estimatedDistance',
         header: 'Distance',
         cell: ({ row }) => (
           <span className="text-sm text-gray-500">
-            {row.getValue<number>('distance')} mi
+            {row.getValue<number>('estimatedDistance') || 0} km
           </span>
         ),
       }

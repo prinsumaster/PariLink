@@ -107,7 +107,7 @@ export default function BackupDrPage() {
                   <div className="space-y-4">
                     {Object.entries(drReadiness.businessContinuitySettings ?? {}).map(([key, value]) => (
                       <div key={key} className="flex items-center justify-between py-2 border-b border-slate-700/30 last:border-0">
-                        <span className="text-sm text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                        <span className="text-sm text-slate-400 capitalize">{key.replace(/([A-Z])/g, ' ₹1').trim()}</span>
                         <span className="text-sm font-mono font-medium text-slate-200">
                           {typeof value === 'boolean' ? (value ? 'Enabled' : 'Disabled') : String(value)}
                         </span>

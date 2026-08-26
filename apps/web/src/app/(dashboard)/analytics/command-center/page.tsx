@@ -106,7 +106,7 @@ export default function CommandCenterPage() {
             </Badge>
           </div>
           <p className="text-sm font-medium text-slate-500 mb-1">30-Day Revenue</p>
-          <h3 className="text-2xl font-bold">${metrics?.revenue?.value?.toLocaleString() || '0'}</h3>
+          <h3 className="text-2xl font-bold">₹{metrics?.revenue?.value?.toLocaleString() || '0'}</h3>
         </Card>
 
         {/* Fleet Utilization */}

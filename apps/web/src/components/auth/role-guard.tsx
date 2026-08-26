@@ -33,7 +33,14 @@ export function RoleGuard({ children, allowedRoles, requiredPermissions, fallbac
   const hasRole = allowedRoles ? allowedRoles.includes(user.role) : true;
   
   const hasPermission = requiredPermissions 
-    ? requiredPermissions.every(p => user.permissions.some(up => up.action === p))
+    ? requiredPermissions.every(p => {
+        return user.permissions.some(up => {
+          if (typeof up === 'string') {
+            return up === '*' || up === p || up.startsWith(p.split(':')[0] + ':*');
+          }
+          return up && up.action === p;
+        });
+      })
     : true;
 
   if (hasRole && hasPermission) {

@@ -18,7 +18,7 @@ const methodLabel: Record<string, string> = {
 
 const columns: ColumnDef<Payment>[] = [
   { accessorKey: 'id', header: 'Payment ID', cell: ({ row }) => <span className="font-mono text-xs text-muted-foreground">{row.getValue<string>('id').slice(0, 8)}…</span> },
-  { accessorKey: 'amount', header: 'Amount', cell: ({ row }) => <span className="font-semibold text-emerald-600 dark:text-emerald-400">${(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+  { accessorKey: 'amount', header: 'Amount', cell: ({ row }) => <span className="font-semibold text-emerald-600 dark:text-emerald-400">₹{(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
   { accessorKey: 'method', header: 'Method', cell: ({ row }) => methodLabel[row.getValue('method') as string] ?? row.getValue('method') },
   { accessorKey: 'referenceNumber', header: 'Reference', cell: ({ row }) => row.getValue('referenceNumber') || '—' },
   { accessorKey: 'paymentDate', header: 'Payment Date', cell: ({ row }) => format(new Date(row.getValue('paymentDate')), 'MMM d, yyyy') },

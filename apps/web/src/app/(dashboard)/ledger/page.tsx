@@ -45,7 +45,7 @@ const ledgerService = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const fmtCurrency = (v: number) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(v);
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(v);
 
 const TYPE_COLOR: Record<string, string> = {
   ASSET: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',

@@ -450,7 +450,7 @@ export default function OperationsDashboardPage() {
                       <div className="space-y-2">
                         {Object.entries(drReadiness.businessContinuitySettings ?? {}).map(([k, v]) => (
                           <div key={k} className="flex justify-between text-xs">
-                            <span className="text-slate-400">{k.replace(/([A-Z])/g, ' $1').trim()}</span>
+                            <span className="text-slate-400">{k.replace(/([A-Z])/g, ' ₹1').trim()}</span>
                             <span className="font-mono text-slate-200">{String(v)}</span>
                           </div>
                         ))}

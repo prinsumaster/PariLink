@@ -115,9 +115,9 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
                           {item.orderId && <div className="text-xs text-blue-500 font-normal mt-0.5">Order: {item.orderId}</div>}
                         </td>
                         <td className="px-4 py-3 text-right">{item.quantity}</td>
-                        <td className="px-4 py-3 text-right">${item.unitPrice.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right">₹{item.unitPrice.toLocaleString()}</td>
                         <td className="px-4 py-3 text-right">{item.taxRate}%</td>
-                        <td className="px-4 py-3 text-right font-medium">${item.total.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right font-medium">₹{item.total.toLocaleString()}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -148,11 +148,11 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
             
             <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
               <span>Subtotal</span>
-              <span>${invoice.subtotal.toLocaleString()}</span>
+              <span>₹{invoice.subtotal.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
               <span>Tax</span>
-              <span>${invoice.taxTotal.toLocaleString()}</span>
+              <span>₹{invoice.taxTotal.toLocaleString()}</span>
             </div>
             {invoice.discountTotal > 0 && (
               <div className="flex justify-between items-center text-sm text-green-600">
@@ -164,7 +164,7 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-4">
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total</span>
-                <span>${invoice.grandTotal.toLocaleString()} {invoice.currency}</span>
+                <span>₹{invoice.grandTotal.toLocaleString()} {invoice.currency}</span>
               </div>
             </div>
 

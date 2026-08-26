@@ -86,7 +86,7 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
           const inv = row.original as any;
           const grandTotal = inv.grandTotal ?? inv.amount ?? 0;
           const balanceDue = inv.balanceDue ?? inv.amount ?? 0;
-          const currency = inv.currency || 'USD';
+          const currency = inv.currency || 'INR';
           
           return (
             <div className="flex flex-col items-end gap-1">

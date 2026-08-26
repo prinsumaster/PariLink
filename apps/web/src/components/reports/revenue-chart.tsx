@@ -66,12 +66,12 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
                 axisLine={false}
                 tickLine={false}
                 tick={{ fill: '#6b7280', fontSize: 12 }}
-                tickFormatter={(value) => `$${value / 1000}k`}
+                tickFormatter={(value) => `₹${value / 1000}k`}
                 dx={-10}
               />
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                formatter={(value: any) => [`$${value.toLocaleString()}`, undefined]}
+                formatter={(value: any) => [`₹${value.toLocaleString()}`, undefined]}
               />
               <Legend verticalAlign="top" height={36}/>
               <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#3b82f6" fillOpacity={1} fill="url(#colorRevenue)" />

@@ -336,12 +336,12 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                 </h3>
                 <dl className="divide-y dark:divide-gray-800">
                   {[
-                    { label: 'Rate', value: `$${load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true },
-                    { label: 'Cost', value: load.cost ? `$${load.cost.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
+                    { label: 'Rate', value: `₹${load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true },
+                    { label: 'Cost', value: load.cost ? `₹${load.cost.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
                     {
                       label: 'Margin',
                       value: load.cost
-                        ? `$${(load.rate - load.cost).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+                        ? `₹${(load.rate - load.cost).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                         : '—',
                     },
                   ].map((item) => (
@@ -361,7 +361,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                           <span className="text-sm font-mono text-blue-600">{inv.invoiceNumber}</span>
                           <div className="flex items-center gap-2">
                             <StatusBadge status={inv.status} />
-                            <span className="text-sm font-medium">${inv.amount.toFixed(2)}</span>
+                            <span className="text-sm font-medium">₹{inv.amount.toFixed(2)}</span>
                           </div>
                         </div>
                       ))}

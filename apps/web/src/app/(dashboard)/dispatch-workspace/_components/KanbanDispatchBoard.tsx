@@ -23,7 +23,7 @@ export const KanbanDispatchBoard: React.FC<KanbanDispatchBoardProps> = ({ onSele
     { 
       id: 'UNPLANNED', 
       title: 'Unplanned Loads', 
-      items: loads.filter(l => l.status === 'PENDING').map(l => ({ id: l.id, title: `${l.originCity || 'Unknown'} -> ${l.destinationCity || 'Unknown'}`, type: 'Load', weight: `${l.weight || 0}kg` })) 
+      items: loads.filter(l => l.status === 'PENDING').map(l => ({ id: l.id, title: `${l.originCity || 'Unknown'} -> ₹{l.destinationCity || 'Unknown'}`, type: 'Load', weight: `${l.weight || 0}kg` })) 
     },
     { 
       id: 'AWAITING_VEHICLE', 

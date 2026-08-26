@@ -34,7 +34,7 @@ export default function AppDetailsPage() {
         reviews: data.reviews || 0,
         installs: data.installs || 0,
         isVerified: data.developer?.isVerified,
-        price: data.price === 0 ? "Free" : `$${data.price}/mo`,
+        price: data.price === 0 ? "Free" : `₹${data.price}/mo`,
         licenseType: data.licenseType,
         logoUrl: data.logoUrl,
         bannerUrl: data.screenshots?.[0]?.url || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=400&fit=crop",
