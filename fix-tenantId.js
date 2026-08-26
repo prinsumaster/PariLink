@@ -8,18 +8,17 @@ function processFile(filePath) {
   const lines = content.split('\n');
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].includes("runAsSystem('System operation or legacy bypass'")) {
-      let usesCompanyId = false;
+      let usesTenantId = false;
       for (let j = i; j < Math.min(i + 30, lines.length); j++) {
-        // Regex to check for exact word 'companyId'
-        if (/\bcompanyId\b/.test(lines[j])) {
-          usesCompanyId = true;
+        if (/\btenantId\b/.test(lines[j])) {
+          usesTenantId = true;
           break;
         }
       }
       
-      if (usesCompanyId) {
-        lines[i] = lines[i].replace("runAsSystem('System operation or legacy bypass', async (tx) =>", "runAsTenant(companyId, async (tx) =>");
-        lines[i] = lines[i].replace("runAsSystem('System operation or legacy bypass', async (tx) => {", "runAsTenant(companyId, async (tx) => {");
+      if (usesTenantId) {
+        lines[i] = lines[i].replace("runAsSystem('System operation or legacy bypass', async (tx) =>", "runAsTenant(tenantId, async (tx) =>");
+        lines[i] = lines[i].replace("runAsSystem('System operation or legacy bypass', async (tx) => {", "runAsTenant(tenantId, async (tx) => {");
         changed = true;
       }
     }
