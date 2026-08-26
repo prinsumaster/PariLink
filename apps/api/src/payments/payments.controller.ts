@@ -25,6 +25,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get()
+  @RequirePermissions('finance:read')
   @ApiOperation({ summary: 'Get all payments' })
   getAllPayments(
     @GetUser() user: AuthenticatedUser,
@@ -39,6 +40,7 @@ export class PaymentsController {
   }
 
   @Get('invoices/:invoiceId')
+  @RequirePermissions('finance:read')
   @ApiOperation({ summary: 'Get payments for an invoice' })
   getInvoicePayments(
     @GetUser() user: AuthenticatedUser,
@@ -48,6 +50,7 @@ export class PaymentsController {
   }
 
   @Post()
+  @RequirePermissions('finance:write')
   @ApiOperation({ summary: 'Record a new payment' })
   recordPayment(
     @GetUser() user: AuthenticatedUser,

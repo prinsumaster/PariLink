@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
 import type { Response } from 'express';
@@ -21,6 +22,7 @@ import * as fs from 'fs';
 @Controller('storage')
 export class StorageController {
   @Get(':tenantId/:filename')
+  @RequirePermissions('documents:read')
   @ApiOperation({ summary: 'Securely download a file' })
   downloadFile(
     @GetUser() user: AuthenticatedUser,

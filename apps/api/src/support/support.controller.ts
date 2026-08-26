@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Logger, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 
 @ApiTags('Support')
 @Controller('support')
@@ -9,6 +10,7 @@ export class SupportController {
   private readonly logger = new Logger(SupportController.name);
 
   @Post('ticket')
+  @RequirePermissions('support:write')
   async createTicket(
     @Body() payload: { subject: string; description: string; priority: string },
   ) {
