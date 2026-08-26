@@ -14,7 +14,7 @@ export class GpsService {
 
   async ingestPing(companyId: string, ping: GpsPingDto) {
     // 1. Validate vehicle exists and belongs to company
-    const vehicle = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const vehicle = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.vehicle.findUnique({
         where: { id: ping.vehicleId },
         select: { id: true, companyId: true },
@@ -29,7 +29,7 @@ export class GpsService {
     const timestamp = new Date(ping.timestamp);
 
     // 2. Determine active trip for this vehicle (latest IN_PROGRESS trip)
-    const activeTrip = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const activeTrip = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.trip.findFirst({
         where: {
           vehicleId: ping.vehicleId,
@@ -42,7 +42,7 @@ export class GpsService {
 
     // 3. Persist Location History
     if (activeTrip && activeTrip.driverId) {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsTenant(companyId, async (tx) =>
         tx.locationHistory.create({
           data: {
             companyId,
@@ -62,7 +62,7 @@ export class GpsService {
     }
 
     // 4. Update Vehicle Telemetry (Latest State)
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.vehicleTelemetry.create({
         data: {
           companyId,

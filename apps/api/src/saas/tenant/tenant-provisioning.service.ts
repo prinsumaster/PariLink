@@ -12,7 +12,7 @@ export class TenantProvisioningService {
       `Provisioning default roles and seed data for ${companyId}`,
     );
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
+    await this.prisma.runAsTenant(companyId, async (tx) => {
       // Create default Admin role if it doesn't exist
       const existingAdmin = await tx.role.findFirst({
         where: { companyId, name: 'Admin' },

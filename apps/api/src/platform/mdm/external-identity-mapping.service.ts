@@ -16,7 +16,7 @@ export class ExternalIdentityMappingService {
     sourceSystem: string,
     externalId: string,
   ): Promise<string | null> {
-    const extRef = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const extRef = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.externalReference.findUnique({
         where: {
           masterRecordId_sourceSystem: {
@@ -27,7 +27,7 @@ export class ExternalIdentityMappingService {
       }),
     );
 
-    const ref = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const ref = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.externalReference.findFirst({
         where: { 
           sourceSystem, 
