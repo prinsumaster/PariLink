@@ -25,9 +25,12 @@ export class ProfitabilityController {
   @RequirePermissions('finance:read')
   async listTripPnl(
     @GetUser() user: AuthenticatedUser,
-    @Query() query: any,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
   ) {
-    return this.profitabilityService.listTripPnl(user.companyId, query);
+    const p = page ? parseInt(page, 10) : 1;
+    const l = limit ? parseInt(limit, 10) : 20;
+    return this.profitabilityService.listTripPnl(user.companyId, p, l);
   }
 
   @Get('trips/:id')

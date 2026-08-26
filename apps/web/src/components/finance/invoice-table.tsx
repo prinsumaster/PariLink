@@ -72,9 +72,9 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
         header: 'Timeline',
         cell: ({ row }) => (
           <div className="text-xs space-y-1">
-            <div className="text-gray-500">Issued: {new Date(row.original.issueDate).toLocaleDateString()}</div>
+            <div className="text-gray-500">Issued: {new Date(row.original.issueDate).toLocaleDateString('en-IN')}</div>
             <div className={`font-medium ${row.original.status === 'OVERDUE' ? 'text-red-500' : 'text-gray-900 dark:text-gray-100'}`}>
-              Due: {new Date(row.original.dueDate).toLocaleDateString()}
+              Due: {new Date(row.original.dueDate).toLocaleDateString('en-IN')}
             </div>
           </div>
         ),

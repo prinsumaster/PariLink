@@ -82,7 +82,7 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
           const date = row.getValue('startDate');
           return (
           <span className="text-sm text-gray-500">
-            {date ? new Date(date as string).toLocaleDateString() : '—'}
+            {date ? new Date(date as string).toLocaleDateString('en-IN') : '—'}
           </span>
         )},
       },

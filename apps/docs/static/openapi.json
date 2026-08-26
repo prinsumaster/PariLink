@@ -10162,6 +10162,114 @@
         ]
       }
     },
+    "/api/v1/profitability/summary": {
+      "get": {
+        "operationId": "ProfitabilityController_companySummary_v1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
+        ]
+      }
+    },
+    "/api/v1/profitability/trips": {
+      "get": {
+        "operationId": "ProfitabilityController_listTripPnl_v1",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
+        ]
+      }
+    },
+    "/api/v1/profitability/trips/{id}": {
+      "get": {
+        "operationId": "ProfitabilityController_tripPnl_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
+        ]
+      }
+    },
+    "/api/v1/profitability/vehicles/{id}": {
+      "get": {
+        "operationId": "ProfitabilityController_vehiclePnl_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
+        ]
+      }
+    },
     "/api/v1/workspace/snapshots": {
       "get": {
         "operationId": "WorkspaceController_getSnapshots_v1",

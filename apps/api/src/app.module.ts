@@ -56,6 +56,7 @@ import { VendorsModule } from './vendors/vendors.module';
 import { BillingModule } from './billing/billing.module';
 import { LedgerModule } from './ledger/ledger.module';
 import { FinanceModule } from './finance/finance.module';
+import { ProfitabilityModule } from './profitability/profitability.module';
 import { IntegrationsModule } from './integrations/integrations.module';
 import { CommunicationsModule } from './communications/communications.module';
 import { AdminModule } from './admin/admin.module';
@@ -267,6 +268,7 @@ import { ReportingModule } from './reporting/reporting.module';
     BillingModule,
     LedgerModule,
     FinanceModule,
+    ProfitabilityModule,
     IntegrationsModule,
     CommunicationsModule,
     WorkspaceModule,

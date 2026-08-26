@@ -2,7 +2,7 @@
 
 import { KPIData } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, DollarSign, Users } from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, IndianRupee, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface KPICardsProps {
@@ -40,10 +40,10 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Daily Revenue',
-      value: `₹${(data.revenue.value / 1000).toFixed(1)}k`,
+      value: `₹${(data.revenue.value / 1000).toLocaleString('en-IN', { maximumFractionDigits: 1 })}k`,
       change: `${data.revenue.change}%`,
       trend: data.revenue.trend,
-      icon: DollarSign,
+      icon: IndianRupee,
     },
     {
       title: 'Profit Margin',
@@ -61,14 +61,14 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Active Shipments',
-      value: data.activeShipments.value.toLocaleString(),
+      value: data.activeShipments.value.toLocaleString('en-IN'),
       change: `${data.activeShipments.change}%`,
       trend: data.activeShipments.trend,
       icon: Truck,
     },
     {
       title: 'Delayed Shipments',
-      value: data.delayedShipments.value.toLocaleString(),
+      value: data.delayedShipments.value.toLocaleString('en-IN'),
       change: `${data.delayedShipments.change}%`,
       trend: data.delayedShipments.trend, // If up, bad.
       icon: AlertTriangle,
@@ -82,10 +82,10 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Revenue Today',
-      value: `₹${data.revenueToday.value.toLocaleString()}`,
+      value: `₹${data.revenueToday.value.toLocaleString('en-IN')}`,
       change: `${data.revenueToday.change}%`,
       trend: data.revenueToday.trend,
-      icon: DollarSign,
+      icon: IndianRupee,
     },
   ];
 
