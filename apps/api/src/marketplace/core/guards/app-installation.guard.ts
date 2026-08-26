@@ -36,7 +36,7 @@ export class AppInstallationGuard implements CanActivate {
       throw new ForbiddenException('Missing App ID or Company Context');
     }
 
-    const installation = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const installation = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.appInstallation.findUnique({
         where: { companyId_appId: { companyId, appId } },
       }),

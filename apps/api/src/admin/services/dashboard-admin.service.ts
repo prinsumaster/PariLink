@@ -35,49 +35,49 @@ export class DashboardAdminService {
       apiKeysCount,
       activeRoles,
     ] = await Promise.all([
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.company.count({ where: whereCompany }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.company.count({ where: { ...whereCompany, status: 'ACTIVE' } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.company.count({ where: { ...whereCompany, status: 'SUSPENDED' } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({ where: { ...whereTenant } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({
           where: { ...whereTenant, status: 'ACTIVE' },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({
           where: { ...whereTenant, status: 'INVITED' },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({
           where: { ...whereTenant, status: 'SUSPENDED' },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({
           where: { ...whereTenant, status: 'LOCKED' },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.user.count({
           where: { ...whereTenant, mfaEnabled: true },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.count({
           where: { ...whereTenant, createdAt: { gte: twentyFourHoursAgo } },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.count({
           where: {
             ...whereTenant,
@@ -89,7 +89,7 @@ export class DashboardAdminService {
           },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.auditLog.count({
           where: {
             ...whereTenant,
@@ -101,10 +101,10 @@ export class DashboardAdminService {
           },
         }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.apiKey.count({ where: { ...whereTenant, isActive: true } }),
       ),
-      this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      this.prisma.runAsTenant(companyId, async (tx) =>
         tx.role.findMany({
           where: whereTenant,
           select: { id: true, name: true, permissions: true },

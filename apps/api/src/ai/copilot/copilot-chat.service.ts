@@ -51,7 +51,7 @@ export class AiCopilotChatService {
       throw new Error('Session not found or access denied');
     }
 
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.aiChatMessage.findMany({
         where: { sessionId },
         orderBy: { createdAt: 'asc' },

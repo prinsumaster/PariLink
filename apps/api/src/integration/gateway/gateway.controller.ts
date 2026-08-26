@@ -46,7 +46,7 @@ export class IntegrationGatewayController {
     }
 
     // 1. Verify HMAC signature
-    const connection = await this.prisma.runAsSystem('Webhook verification bypass', async (tx) => {
+    const connection = await this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.integrationConnection.findFirst({
         where: { companyId, connector: { provider: provider } },
       });

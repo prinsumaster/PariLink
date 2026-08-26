@@ -49,7 +49,7 @@ export class WebhookService {
 
     this.logger.log(`Dispatching event ${event} for company ${companyId}`);
 
-    const endpoints = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const endpoints = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.webhookEndpoint.findMany({
         where: {
           companyId,
