@@ -99,7 +99,7 @@ export class FeatureToggleService implements OnModuleInit {
     flagKey: string,
     updatedBy: string,
   ): Promise<void> {
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.featureFlag.upsert({
         where: { companyId_key: { companyId, key: flagKey } },
         create: {

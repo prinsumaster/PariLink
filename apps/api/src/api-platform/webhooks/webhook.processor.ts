@@ -135,7 +135,7 @@ export class WebhookProcessor extends WorkerHost {
     if (job.attemptsMade === 0) {
       // 1. Verify tenant ownership (IDOR protection for background workers)
       if (endpointId) {
-        const endpoint = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        const endpoint = await this.prisma.runAsTenant(companyId, async (tx) =>
           tx.webhookEndpoint.findFirst({
             where: { id: endpointId, companyId },
           }),

@@ -55,7 +55,7 @@ export class AiObservabilityService {
 
   async logMetrics(data: MetricsLogInput) {
     try {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsTenant(companyId, async (tx) =>
         tx.aiMetricsLog.create({
           data: {
             modelProvider: data.modelProvider,

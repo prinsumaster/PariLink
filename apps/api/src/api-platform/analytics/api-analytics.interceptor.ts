@@ -40,7 +40,7 @@ export class ApiAnalyticsInterceptor implements NestInterceptor {
         const statusCode = error ? error.status || 500 : res.statusCode;
         const user = req.user;
 
-        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        await this.prisma.runAsTenant(companyId, async (tx) =>
           tx.apiAnalyticsLog.create({
             data: {
               companyId: user?.companyId,

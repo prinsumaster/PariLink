@@ -130,7 +130,7 @@ export class WebhookService {
   }
 
   async getWebhooks(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.webhookEndpoint.findMany({
         where: { companyId },
       }),

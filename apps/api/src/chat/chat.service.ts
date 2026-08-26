@@ -159,7 +159,7 @@ export class ChatService {
 
     // Create notifications for mentioned users
     if (mentions.length > 0) {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsTenant(companyId, async (tx) =>
         tx.notification.createMany({
           data: mentions.map((mentionedUserId) => ({
             companyId,
