@@ -58,7 +58,7 @@ export class MockAIProvider implements IAIProvider {
       return parsed as T;
     } catch (e) {
       this.logger.error(
-        `Failed to parse structured AI output: ${e.message}`,
+        `Failed to parse structured AI output: ${(e as Error).message}`,
         responseText,
       );
       throw new InternalServerErrorException(

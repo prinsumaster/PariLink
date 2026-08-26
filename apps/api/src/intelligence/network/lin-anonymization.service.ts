@@ -80,7 +80,7 @@ export class LinAnonymizationService {
         `[LIN] Successfully archived anonymized event: ${eventType}`,
       );
     } catch (error) {
-      this.logger.error(`[LIN] Failed to archive event: ${error.message}`);
+      this.logger.error(`[LIN] Failed to archive event: ${(error as Error).message}`);
     }
   }
 

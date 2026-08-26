@@ -4,19 +4,19 @@ export class ExportDataDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })
-  modules: string[];
+  modules!: string[];
 
   @IsString()
   @IsNotEmpty()
-  format: string;
+  format!: string;
 }
 
 export class ImportDataDto {
   @IsString()
   @IsNotEmpty()
-  moduleType: string;
+  moduleType!: string;
 
   @IsArray()
   @ArrayNotEmpty()
-  data: any[];
+  data!: any[];
 }

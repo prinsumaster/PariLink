@@ -3,9 +3,9 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class OnboardVehicleDto {
   @IsString()
   @IsNotEmpty()
-  vin: string;
+  vin!: string;
 
   @IsString()
   @IsNotEmpty()
-  make: string;
+  make!: string;
 }

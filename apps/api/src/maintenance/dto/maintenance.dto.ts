@@ -4,27 +4,27 @@ import { Type } from 'class-transformer';
 export class WorkOrderItemDto {
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsNumber()
-  cost: number;
+  cost!: number;
 }
 
 export class CreateWorkOrderDto {
   @IsString()
   @IsNotEmpty()
-  vehicleId: string;
+  vehicleId!: string;
 
   @IsString()
   @IsNotEmpty()
-  type: string;
+  type!: string;
 
   @IsDateString()
-  scheduledDate: string;
+  scheduledDate!: string;
 
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => WorkOrderItemDto)
-  items: WorkOrderItemDto[];
+  items!: WorkOrderItemDto[];
 }

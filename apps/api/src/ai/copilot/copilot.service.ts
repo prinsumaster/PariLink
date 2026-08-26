@@ -146,7 +146,7 @@ export class CopilotService {
         data: sqlResult,
       };
     } catch (e) {
-      this.logger.error('Error executing AI SQL query: ' + e.message);
+      this.logger.error('Error executing AI SQL query: ' + (e as Error).message);
       throw e;
     }
   }

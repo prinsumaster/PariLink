@@ -88,7 +88,7 @@ export class WebhookProcessor extends WorkerHost {
       const duration = Date.now() - startTime;
 
       // Log the delivery attempt in the database
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsTenant(payload.companyId, async (tx) =>
         tx.marketplaceWebhookDelivery.create({
           data: {
             webhookId,
@@ -104,7 +104,7 @@ export class WebhookProcessor extends WorkerHost {
 
       // Update app usage stats (API calls metric)
       if (success) {
-        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        await this.prisma.runAsTenant(payload.companyId, async (tx) =>
           tx.marketplaceUsageStats.upsert({
             where: {
               appId_companyId_periodStart: {

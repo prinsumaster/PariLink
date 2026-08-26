@@ -4,23 +4,23 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 export class CreatePayrollDto {
   @ApiProperty()
   @IsString()
-  employeeId: string;
+  employeeId!: string;
 
   @ApiProperty()
   @IsDateString()
-  payPeriodStart: string;
+  payPeriodStart!: string;
 
   @ApiProperty()
   @IsDateString()
-  payPeriodEnd: string;
+  payPeriodEnd!: string;
 
   @ApiProperty()
   @IsNumber()
-  grossAmount: number;
+  grossAmount!: number;
 
   @ApiProperty()
   @IsNumber()
-  netAmount: number;
+  netAmount!: number;
 
   @ApiProperty({ required: false })
   @IsObject()

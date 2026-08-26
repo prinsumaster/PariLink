@@ -5,7 +5,7 @@ export class CreateWorkspaceDto {
   @ApiProperty()
   @IsObject()
   @IsNotEmptyObject()
-  payload: Record<string, any>;
+  payload!: Record<string, any>;
 }
 
 export class UpdateWorkspaceDto extends PartialType(CreateWorkspaceDto) {}

@@ -68,9 +68,9 @@ export class ExecutionService {
       });
     } catch (error) {
       this.logger.error(
-        `Execution failed for step ${step.nodeId}: ${error.message}`,
+        `Execution failed for step ${step.nodeId}: ${(error as Error).message}`,
       );
-      await this.handleStepFailure(step, error.message);
+      await this.handleStepFailure(step, (error as Error).message);
     }
   }
 
@@ -112,7 +112,7 @@ export class ExecutionService {
         this.logger.log(`Successfully rolled back step ${step.nodeId}`);
       } catch (rollbackError) {
         this.logger.error(
-          `CRITICAL: Rollback failed for ${step.nodeId}: ${rollbackError.message}`,
+          `CRITICAL: Rollback failed for ${step.nodeId}: ${(rollbackError as Error).message}`,
         );
       }
     }

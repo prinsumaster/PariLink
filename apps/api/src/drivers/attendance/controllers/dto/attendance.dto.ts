@@ -5,7 +5,7 @@ export class CreateAttendanceDto {
   @ApiProperty()
   @IsObject()
   @IsNotEmptyObject()
-  payload: Record<string, any>;
+  payload!: Record<string, any>;
 }
 
 export class UpdateAttendanceDto extends PartialType(CreateAttendanceDto) {}

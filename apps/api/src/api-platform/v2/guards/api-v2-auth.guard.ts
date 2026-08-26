@@ -86,7 +86,7 @@ export class ApiV2AuthGuard extends JwtAuthGuard {
       }
     } catch (err) {
       throw new UnauthorizedException(
-        err.message || 'Invalid API Key or Bearer Token',
+        (err as Error).message || 'Invalid API Key or Bearer Token',
       );
     }
   }

@@ -12,15 +12,15 @@ export class RegisterDto {
   @IsString()
   @MinLength(2)
   @MaxLength(100)
-  companyName: string;
+  companyName!: string;
 
   @ApiProperty({ example: 'admin@acmelogistics.com' })
   @IsEmail()
-  email: string;
+  email!: string;
 
   @ApiProperty({ example: 'password123' })
   @IsString()
   @MinLength(8)
   @MaxLength(100)
-  password: string;
+  password!: string;
 }

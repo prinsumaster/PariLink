@@ -4,13 +4,13 @@ import { Type } from 'class-transformer';
 export class JournalEntryLineDto {
   @IsString()
   @IsNotEmpty()
-  accountId: string;
+  accountId!: string;
 
   @IsNumber()
-  debit: number;
+  debit!: number;
 
   @IsNumber()
-  credit: number;
+  credit!: number;
 
   @IsString()
   @IsOptional()
@@ -20,11 +20,11 @@ export class JournalEntryLineDto {
 export class CreateJournalEntryDto {
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsString()
   @IsNotEmpty()
-  referenceType: string;
+  referenceType!: string;
 
   @IsString()
   @IsOptional()
@@ -33,5 +33,5 @@ export class CreateJournalEntryDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => JournalEntryLineDto)
-  lines: JournalEntryLineDto[];
+  lines!: JournalEntryLineDto[];
 }

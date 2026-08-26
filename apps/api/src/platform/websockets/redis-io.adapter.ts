@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 import { INestApplicationContext } from '@nestjs/common';
 
 export class RedisIoAdapter extends IoAdapter {
-  private adapterConstructor: ReturnType<typeof createAdapter>;
+  private adapterConstructor!: ReturnType<typeof createAdapter>;
   private readonly logger = new Logger(RedisIoAdapter.name);
 
   constructor(app: INestApplicationContext) {

@@ -20,12 +20,12 @@ export class CreateTripDto {
   @ApiProperty({ example: 'd123d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
   @IsNotEmpty()
-  driverId: string;
+  driverId!: string;
 
   @ApiProperty({ example: 'v123d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
   @IsNotEmpty()
-  vehicleId: string;
+  vehicleId!: string;
 
   @ApiPropertyOptional({ example: 'v456d2ca-1122-3344-5566-778899aabbcc' })
   @IsUUID()
@@ -38,7 +38,7 @@ export class CreateTripDto {
   })
   @IsIn(['PLANNED', 'DISPATCHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
   @IsNotEmpty()
-  status: string;
+  status!: string;
 
   @ApiPropertyOptional({ example: '2028-12-01T10:00:00Z' })
   @IsDateString()

@@ -3,13 +3,13 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
-  subject: string;
+  subject!: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @IsString()
   @IsNotEmpty()
-  priority: string;
+  priority!: string;
 }

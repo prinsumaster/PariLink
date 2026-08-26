@@ -41,7 +41,7 @@ export class RequireApprovalGuard implements CanActivate {
     const resourceType = request.url.split('/')[2] || 'unknown';
 
     // 1. Create the Maker/Checker Approval Request
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(payload.companyId, async (tx) =>
       tx.approvalRequest.create({
         data: {
           companyId: user.companyId,

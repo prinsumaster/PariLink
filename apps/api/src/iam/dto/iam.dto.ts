@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateApiKeyDto {
   @ApiProperty({ description: 'Name of the API key' })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({ description: 'List of granted scopes', required: false })
   @IsArray()
@@ -40,7 +40,7 @@ export class CreateApiKeyDto {
 export class CreateOAuthClientDto {
   @ApiProperty({ description: 'Name of the OAuth Client' })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     description: 'Description of the OAuth Client',
@@ -60,7 +60,7 @@ export class CreateOAuthClientDto {
 export class CreatePatDto {
   @ApiProperty({ description: 'Name of the Personal Access Token' })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({ description: 'List of granted scopes', required: false })
   @IsArray()

@@ -12,11 +12,13 @@ WORKDIR /app
 FROM base AS deps
 # Copy root workspace config
 COPY package.json package-lock.json ./
-# Copy workspace package.json files needed for resolution
+# Copy ALL workspace package.json files to maintain exactly the same tree structure as the host
 COPY apps/web/package.json ./apps/web/package.json
+COPY apps/api/package.json ./apps/api/package.json
+COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY packages/plugin-sdk/package.json ./packages/plugin-sdk/package.json
-# Install all workspace dependencies
-RUN npm ci --workspace=apps/web --workspace=packages/plugin-sdk --include-workspace-root || npm install --legacy-peer-deps
+# Install all workspace dependencies exactly as host
+RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
 # Builder Stage
 FROM base AS builder
@@ -36,6 +38,7 @@ ARG NEXT_PUBLIC_GIT_SHA
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_GIT_SHA=$NEXT_PUBLIC_GIT_SHA
 ENV NEXT_TELEMETRY_DISABLED=1
+RUN ls -la /app/node_modules/react || true
 RUN cd apps/web && npm run build
 
 # Runner Stage

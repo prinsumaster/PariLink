@@ -23,7 +23,7 @@ export interface RagResult {
 export class EnterpriseRagService {
   private readonly logger = new Logger(EnterpriseRagService.name);
 
-  private _embeddings: OpenAIEmbeddings;
+  private _embeddings!: OpenAIEmbeddings;
 
   private get embeddings(): OpenAIEmbeddings {
     if (!this._embeddings) {

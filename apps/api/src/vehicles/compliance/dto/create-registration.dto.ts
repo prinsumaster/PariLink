@@ -3,9 +3,9 @@ import { IsString, IsNotEmpty } from 'class-validator';
 export class CreateRegistrationDto {
   @IsString()
   @IsNotEmpty()
-  state: string;
+  state!: string;
 
   @IsString()
   @IsNotEmpty()
-  plateNumber: string;
+  plateNumber!: string;
 }

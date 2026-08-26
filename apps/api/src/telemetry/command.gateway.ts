@@ -17,7 +17,7 @@ import { ProcessEngine } from '../platform/bpm/process.engine'; // E.g., for com
 })
 export class CommandGateway {
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   private readonly logger = new Logger(CommandGateway.name);
 

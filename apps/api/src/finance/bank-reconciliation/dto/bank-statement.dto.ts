@@ -4,15 +4,15 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 export class CreateBankStatementDto {
   @ApiProperty()
   @IsString()
-  accountId: string;
+  accountId!: string;
 
   @ApiProperty()
   @IsDateString()
-  statementDate: string;
+  statementDate!: string;
 
   @ApiProperty()
   @IsNumber()
-  closingBalance: number;
+  closingBalance!: number;
 
   @ApiProperty({ required: false })
   @IsString()

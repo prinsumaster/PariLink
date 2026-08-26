@@ -51,13 +51,13 @@ export class PluginRuntimeManager {
       return true;
     } catch (error) {
       this.logger.error(
-        `[Runtime] Plugin ${manifest.id} failed validation: ${error.message}`,
+        `[Runtime] Plugin ${manifest.id} failed validation: ${(error as Error).message}`,
       );
       await this.updatePluginHealth(
         companyId,
         manifest.id,
         'FAILED',
-        error.message,
+        (error as Error).message,
       );
       return false; // Prevent loading
     }
@@ -92,7 +92,7 @@ export class PluginRuntimeManager {
       );
     } catch (error) {
       this.logger.error(
-        `[Runtime] CRITICAL: Plugin ${manifest.id} crashed during ${actionName}: ${error.message}`,
+        `[Runtime] CRITICAL: Plugin ${manifest.id} crashed during ${actionName}: ${(error as Error).message}`,
       );
 
       // Isolate the failure and protect the tenant
@@ -100,7 +100,7 @@ export class PluginRuntimeManager {
         companyId,
         manifest.id,
         'UNHEALTHY',
-        error.message,
+        (error as Error).message,
       );
 
       // Do NOT throw the error up to the global Node.js context.

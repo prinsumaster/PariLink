@@ -19,12 +19,12 @@ export class CreateVehicleDto {
   @ApiProperty({ example: 'Freightliner' })
   @IsString()
   @IsNotEmpty()
-  make: string;
+  make!: string;
 
   @ApiProperty({ example: 'Cascadia' })
   @IsString()
   @IsNotEmpty()
-  model: string;
+  model!: string;
 
   @ApiPropertyOptional({ example: 2022 })
   @IsOptional()
@@ -35,7 +35,7 @@ export class CreateVehicleDto {
   @ApiProperty({ example: 'TX-123456' })
   @IsString()
   @IsNotEmpty()
-  licensePlate: string;
+  licensePlate!: string;
 
   @ApiPropertyOptional({ example: '1FUJGHDBXKL123456' })
   @IsString()
@@ -45,7 +45,7 @@ export class CreateVehicleDto {
   @ApiProperty({ enum: ['TRUCK', 'TRAILER', 'VAN'], default: 'TRUCK' })
   @IsIn(['TRUCK', 'TRAILER', 'VAN'])
   @IsNotEmpty()
-  type: string;
+  type!: string;
 
   @ApiProperty({
     enum: ['IN_SERVICE', 'MAINTENANCE', 'OUT_OF_SERVICE'],
@@ -53,7 +53,7 @@ export class CreateVehicleDto {
   })
   @IsIn(['IN_SERVICE', 'MAINTENANCE', 'OUT_OF_SERVICE'])
   @IsNotEmpty()
-  status: string;
+  status!: string;
 
   @ApiPropertyOptional({ example: 40000 })
   @IsOptional()

@@ -11,7 +11,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class CreateDeveloperAppDto {
   @ApiProperty({ example: 'My Integration App' })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiPropertyOptional({ example: 'Fetches load data for logistics' })
   @IsString()

@@ -15,7 +15,7 @@ export class DriverScoringService {
 
     if (ruleType !== 'SPEEDING' && ruleType !== 'HARSH_BRAKING') return;
 
-    const alert = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const alert = await this.prisma.runAsTenant(payload.companyId, async (tx) =>
       tx.alert.findUnique({
         where: { id: alertId },
         include: { driver: true },

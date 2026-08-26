@@ -57,7 +57,7 @@ export class SqlGeneratorService {
       );
       return result;
     } catch (error) {
-      this.logger.error(`Failed to execute generated SQL: ${error.message}`);
+      this.logger.error(`Failed to execute generated SQL: ${(error as Error).message}`);
       throw new BadRequestException(
         'The generated query failed to execute safely.',
       );

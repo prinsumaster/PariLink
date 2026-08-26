@@ -32,7 +32,7 @@ export class BusinessHealthScheduler {
         await this.healthService.calculateHealthVitals(company.id);
       } catch (e) {
         this.logger.error(
-          `Failed to calculate health for company ${company.id}: ${e.message}`,
+          `Failed to calculate health for company ${company.id}: ${(e as Error).message}`,
         );
       }
     }

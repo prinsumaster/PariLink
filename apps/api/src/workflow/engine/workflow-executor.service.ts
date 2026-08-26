@@ -22,8 +22,8 @@ export class WorkflowExecutorService extends WorkerHost {
       }
     } catch (error) {
       this.logger.error(
-        `Workflow execution failed: ${error.message}`,
-        error.stack,
+        `Workflow execution failed: ${(error as Error).message}`,
+        (error as Error).stack,
       );
       throw error; // Will be sent to Dead Letter Queue (DLQ) automatically by BullMQ
     }

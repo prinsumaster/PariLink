@@ -57,7 +57,7 @@ export class CsvImportProcessor {
         successCount++;
       } catch (err) {
         this.logger.warn(
-          `Failed to import row: ${JSON.stringify(row)}. Error: ${err.message}`,
+          `Failed to import row: ${JSON.stringify(row)}. Error: ${(err as Error).message}`,
         );
         failCount++;
       }

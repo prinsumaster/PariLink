@@ -9,7 +9,7 @@ import { OpenAIEmbeddings } from '@langchain/openai';
 @Injectable()
 export class EmbeddingPipelineService {
   private readonly logger = new Logger(EmbeddingPipelineService.name);
-  private _embeddings: OpenAIEmbeddings;
+  private _embeddings!: OpenAIEmbeddings;
 
   private get embeddings(): OpenAIEmbeddings {
     if (!this._embeddings) {

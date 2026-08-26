@@ -5,7 +5,7 @@ export class CreateMobileDto {
   @ApiProperty()
   @IsObject()
   @IsNotEmptyObject()
-  payload: Record<string, any>;
+  payload!: Record<string, any>;
 }
 
 export class UpdateMobileDto extends PartialType(CreateMobileDto) {}

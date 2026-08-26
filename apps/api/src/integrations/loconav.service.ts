@@ -4,7 +4,7 @@ import { IGpsProvider } from './gps-adapter.interface';
 @Injectable()
 export class LocoNavService implements IGpsProvider {
   private readonly logger = new Logger(LocoNavService.name);
-  private apiKey: string;
+  private apiKey!: string;
   private baseUrl = 'https://api.loconav.com/v1';
 
   constructor() {

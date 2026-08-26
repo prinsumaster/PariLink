@@ -5,15 +5,15 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateRateCardDto {
   @ApiProperty()
   @IsString()
-  customerId: string;
+  customerId!: string;
 
   @ApiProperty()
   @IsString()
-  serviceType: string;
+  serviceType!: string;
 
   @ApiProperty()
   @IsNumber()
-  baseRate: number;
+  baseRate!: number;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -29,15 +29,15 @@ export class CreateRateCardDto {
 export class CreateQuotationDto {
   @ApiProperty()
   @IsString()
-  origin: string;
+  origin!: string;
 
   @ApiProperty()
   @IsString()
-  destination: string;
+  destination!: string;
 
   @ApiProperty()
   @IsString()
-  equipmentType: string;
+  equipmentType!: string;
 
   @ApiProperty({ required: false })
   @IsNumber()
@@ -53,19 +53,19 @@ export class CreateQuotationDto {
 export class CreateContractDto {
   @ApiProperty()
   @IsString()
-  partyId: string; // Customer or Vendor ID
+  partyId!: string; // Customer or Vendor ID
 
   @ApiProperty()
   @IsString()
-  type: string; // MSA, SLA, Carrier Agreement
+  type!: string; // MSA, SLA, Carrier Agreement
 
   @ApiProperty()
   @IsDateString()
-  startDate: string;
+  startDate!: string;
 
   @ApiProperty()
   @IsDateString()
-  endDate: string;
+  endDate!: string;
 
   @ApiProperty({ required: false })
   @IsObject()
@@ -76,11 +76,11 @@ export class CreateContractDto {
 export class CreateTenderDto {
   @ApiProperty()
   @IsString()
-  title: string;
+  title!: string;
 
   @ApiProperty()
   @IsDateString()
-  deadline: string;
+  deadline!: string;
 
   @ApiProperty({ required: false })
   @IsObject()
@@ -97,11 +97,11 @@ export class CreateTenderDto {
 export class SubmitBidDto {
   @ApiProperty()
   @IsString()
-  vendorId: string;
+  vendorId!: string;
 
   @ApiProperty()
   @IsNumber()
-  amount: number;
+  amount!: number;
 
   @ApiProperty({ required: false })
   @IsString()
