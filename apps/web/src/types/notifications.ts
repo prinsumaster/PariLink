@@ -4,11 +4,11 @@ export type NotificationChannel = 'IN_APP' | 'EMAIL' | 'SMS' | 'WHATSAPP' | 'PUS
 export interface Notification {
   id: string;
   title: string;
-  message: string;
-  severity: NotificationSeverity;
-  channels: NotificationChannel[];
+  body: string;
+  priority: string;
+  type: string;
   isRead: boolean;
-  link?: string; // Optional URL to navigate to when clicked
+  actionUrl?: string; // Optional URL to navigate to when clicked
   createdAt: string;
   metadata?: Record<string, any>; // e.g. { orderId: '123' }
 }

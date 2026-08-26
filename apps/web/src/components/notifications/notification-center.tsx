@@ -6,7 +6,7 @@ import { NotificationFilters } from '@/types/notifications';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, AlertTriangle, CheckCircle2, Info, Mail, MessageSquare, Smartphone, Trash2, Check, AlertCircle } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle2, Info, Trash2, Check, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -14,23 +14,14 @@ interface NotificationCenterProps {
   filters: NotificationFilters;
 }
 
-const getSeverityIcon = (severity: string) => {
-  switch (severity) {
-    case 'CRITICAL': return <AlertTriangle className="h-5 w-5 text-red-500" />;
-    case 'WARNING': return <AlertCircle className="h-5 w-5 text-orange-500" />;
-    case 'SUCCESS': return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-    case 'INFO':
-    default: return <Info className="h-5 w-5 text-blue-500" />;
-  }
-};
-
-const getChannelIcon = (channel: string) => {
-  switch (channel) {
-    case 'EMAIL': return <Mail className="h-3 w-3" />;
-    case 'SMS': return <Smartphone className="h-3 w-3" />;
-    case 'WHATSAPP': return <MessageSquare className="h-3 w-3 text-green-500" />;
-    case 'PUSH': return <Bell className="h-3 w-3" />;
-    default: return null;
+// Map Notification.priority (LOW/NORMAL/HIGH/URGENT) to severity icon
+const getPriorityIcon = (priority: string) => {
+  switch ((priority || '').toUpperCase()) {
+    case 'URGENT':  return <AlertTriangle className="h-5 w-5 text-red-500" />;
+    case 'HIGH':    return <AlertCircle className="h-5 w-5 text-orange-500" />;
+    case 'NORMAL':  return <Info className="h-5 w-5 text-blue-500" />;
+    case 'LOW':
+    default:        return <CheckCircle2 className="h-5 w-5 text-green-500" />;
   }
 };
 
@@ -114,7 +105,7 @@ export function NotificationCenter({ filters }: NotificationCenterProps) {
               }`}
             >
               <div className="mt-1 flex-shrink-0">
-                {getSeverityIcon(notif.severity)}
+                {getPriorityIcon(notif.priority)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start mb-1">
@@ -126,19 +117,17 @@ export function NotificationCenter({ filters }: NotificationCenterProps) {
                   </div>
                 </div>
                 <p className={`text-sm mb-3 ${notif.isRead ? 'text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}>
-                  {notif.message}
+                  {notif.body}
                 </p>
                 <div className="flex justify-between items-center mt-2">
                   <div className="flex items-center gap-2">
-                    {notif.channels.map(ch => (
-                      <Badge key={ch} variant="secondary" className="text-[10px] px-1.5 py-0 flex items-center gap-1">
-                        {getChannelIcon(ch)} {ch}
-                      </Badge>
-                    ))}
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {notif.type || 'SYSTEM'}
+                    </Badge>
                   </div>
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-100">
-                    {notif.link && (
-                      <Button size="sm" variant="ghost" className="h-7 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => router.push(notif.link!)}>
+                    {notif.actionUrl && (
+                      <Button size="sm" variant="ghost" className="h-7 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50" onClick={() => router.push(notif.actionUrl!)}>
                         View Action
                       </Button>
                     )}
