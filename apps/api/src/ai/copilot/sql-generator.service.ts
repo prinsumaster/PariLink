@@ -52,7 +52,7 @@ export class SqlGeneratorService {
     // 3. Execute
     try {
       const sanitizedQuery = this.injectCompanyId(sqlQuery);
-      const result = await this.prisma.runAsTenant(companyId, async (tx) =>
+      const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         tx.$queryRawUnsafe(sanitizedQuery, companyId),
       );
       return result;

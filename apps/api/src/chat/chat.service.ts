@@ -119,7 +119,7 @@ export class ChatService {
     );
 
     // Update last read
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.chatChannelMember.upsert({
         where: { channelId_userId: { channelId, userId } },
         update: { lastReadAt: new Date() },

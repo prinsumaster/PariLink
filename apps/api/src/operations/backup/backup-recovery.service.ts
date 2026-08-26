@@ -132,7 +132,7 @@ export class BackupRecoveryService {
       });
     } catch (e: any) {
       this.logger.error(`Backup execution failed: ${e.message}`);
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsTenant(companyId, async (tx) =>
         tx.backupJob.update({
           where: { id: jobId },
           data: { status: 'FAILED' },

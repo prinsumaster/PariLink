@@ -173,7 +173,7 @@ export class AuditService {
     broken: number;
     firstBrokenId: string | null;
   }> {
-    const records = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const records = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.auditLog.findMany({
         where: { companyId },
         orderBy: { createdAt: 'asc' },
@@ -263,7 +263,7 @@ export class AuditService {
     };
     if (userId) where.userId = userId;
 
-    const records = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const records = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.auditLog.findMany({
         where,
         orderBy: { createdAt: 'asc' },

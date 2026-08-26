@@ -46,7 +46,7 @@ export class TenantOnboardingService {
   }
 
   async uploadLogo(companyId: string, logoUrl: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+    return this.prisma.runAsTenant(companyId, (tx) =>
       tx.tenantConfiguration.update({
         where: { companyId },
         data: { logoUrl },

@@ -51,7 +51,7 @@ export class CsvImportProcessor {
           throw new Error('Missing required mapped fields');
         }
 
-        await this.prisma.runAsTenant(companyId, async (tx) =>
+        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
           tx.driver.create({ data: driverData }),
         );
         successCount++;

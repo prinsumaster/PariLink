@@ -15,7 +15,7 @@ export class CustomerPromiseService {
     pickupAt: Date,
     deliveryAt: Date,
   ): Promise<void> {
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.customerPromise.upsert({
         where: { loadId },
         create: {

@@ -21,7 +21,7 @@ export class BillingService {
   }
 
   async getCompanyBillingInfo(companyId: string) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, (tx) =>
       tx.company.findUnique({
         where: { id: companyId },
         include: { subscriptionPlan: true },
@@ -39,13 +39,13 @@ export class BillingService {
     successUrl: string,
     cancelUrl: string,
   ) {
-    const company = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+    const company = await this.prisma.runAsTenant(companyId, (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),
     );
 
     if (!company) throw new NotFoundException('Company not found');
 
-    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+    const plan = await this.prisma.runAsTenant(companyId, (tx) =>
       tx.subscriptionPlan.findUnique({ where: { id: planId } }),
     );
 
@@ -58,7 +58,7 @@ export class BillingService {
     let customerId = company.stripeCustomerId;
     if (!customerId) {
       customerId = 'mock_stripe_cus_' + companyId;
-      await this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+      await this.prisma.runAsTenant(companyId, (tx) =>
         tx.company.update({
           where: { id: companyId },
           data: { stripeCustomerId: customerId },

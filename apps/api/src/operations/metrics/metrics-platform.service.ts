@@ -43,7 +43,7 @@ export class MetricsPlatformService {
     metricValue: number,
     dimensions: Record<string, unknown> = {},
   ): Promise<unknown> {
-    const record = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const record = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.platformMetric.create({
         data: {
           companyId,
@@ -281,13 +281,13 @@ export class MetricsPlatformService {
   async getTenantMetrics(companyId: string): Promise<Record<string, unknown>> {
     try {
       const [users, apiCalls, trips] = await Promise.all([
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.user.count({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.apiAnalyticsLog.count({ where: { companyId } }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsTenant(companyId, async (tx) =>
           tx.trip.count({ where: { companyId } }),
         ),
       ]);

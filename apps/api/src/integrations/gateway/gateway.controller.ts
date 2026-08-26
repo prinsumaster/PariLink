@@ -101,7 +101,7 @@ export class GatewayController {
   @ApiOperation({ summary: 'Get loads via API Gateway' })
   async getLoads(@Req() req: any) {
     // This is scoped by ApiKeyAuthGuard's attached companyId
-    const loads = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const loads = await this.prisma.runAsTenant(req.user.companyId, async (tx) =>
       tx.load.findMany({
         where: { companyId: req.companyId },
         take: 50,

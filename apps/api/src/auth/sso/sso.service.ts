@@ -31,7 +31,7 @@ export class SsoService {
   // ---------------------------------------------------------
 
   async listProviders(companyId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsTenant(companyId, async (tx) =>
       tx.identityProvider.findMany({
         where: { companyId },
       }),
@@ -39,7 +39,7 @@ export class SsoService {
   }
 
   async createProvider(companyId: string, payload: any, adminUserId?: string) {
-    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const idp = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.identityProvider.create({
         data: {
           ...payload,
@@ -67,7 +67,7 @@ export class SsoService {
     payload: any,
     adminUserId?: string,
   ) {
-    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const idp = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.identityProvider.update({
         where: { id: idpId, companyId },
         data: payload,
@@ -88,7 +88,7 @@ export class SsoService {
   }
 
   async deleteProvider(companyId: string, idpId: string, adminUserId?: string) {
-    const idp = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const idp = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.identityProvider.update({
         where: { id: idpId, companyId },
         data: { status: 'INACTIVE', deletedAt: new Date() },
@@ -330,7 +330,7 @@ export class SsoService {
     details: any,
   ) {
     await this.prisma
-      .runAsSystem('System operation or legacy bypass', async (tx) =>
+      .runAsTenant(companyId, async (tx) =>
         this.auditService.logEvent(
           {
             companyId,

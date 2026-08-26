@@ -25,7 +25,7 @@ export class DlpGuard implements CanActivate {
     const fiveMinutesAgo = new Date();
     fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
 
-    const recentExports = await this.prisma.runAsTenant(companyId, async (tx) =>
+    const recentExports = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.auditLog.count({
         where: {
           companyId: user.companyId,
@@ -40,7 +40,7 @@ export class DlpGuard implements CanActivate {
 
     if (recentExports > 3) {
       // Log DLP alert
-      await this.prisma.runAsTenant(companyId, async (tx) =>
+      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
         this.auditService.logEvent(
           {
             companyId: user.companyId,
