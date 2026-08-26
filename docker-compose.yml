@@ -23,6 +23,7 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./infra/initdb:/docker-entrypoint-initdb.d
     networks:
       - parilink_net
     #secrets:
