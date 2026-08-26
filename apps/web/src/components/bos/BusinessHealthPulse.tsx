@@ -19,14 +19,6 @@ export function BusinessHealthPulse() {
   useEffect(() => {
     // In a real implementation, we connect to EventSource at /api/v1/health/pulse
     // or /api/v1/events/stream and listen for 'BusinessHealth.Updated'.
-    // Here we simulate live pulses for the demo.
-    const interval = setInterval(() => {
-      setOperationalScore((prev) => {
-        const jump = Math.random() > 0.5 ? 1 : -1;
-        return Math.min(100, Math.max(0, prev + jump));
-      });
-    }, 8000);
-    return () => clearInterval(interval);
   }, []);
 
   const getScoreColor = (score: number) => {
