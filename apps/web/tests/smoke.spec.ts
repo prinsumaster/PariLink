@@ -108,7 +108,7 @@ test('Smoke test all core routes', async ({ page }) => {
   // Already logged in via globalSetup
 
   for (const route of ROUTES) {
-    const response = await page.goto(route);
+    const response = await page.goto('http://localhost:3000' + route);
     
     // Fail on 4xx / 5xx
     expect(response?.ok(), `Route ${route} returned status ${response?.status()}`).toBeTruthy();

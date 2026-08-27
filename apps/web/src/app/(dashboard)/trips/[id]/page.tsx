@@ -52,7 +52,7 @@ export default function TripDetailPage() {
           </Link>
           <div className="flex items-center justify-between">
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Trip {trip.trackingNumber}
+              Trip {trip.tripNumber}
             </h1>
           </div>
         </div>

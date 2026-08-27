@@ -19164,6 +19164,222 @@
           "fleet/iot"
         ]
       }
+    },
+    "/api/v1/lorry-receipts": {
+      "post": {
+        "operationId": "LorryReceiptsController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLorryReceiptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a Lorry Receipt (LR / Bilty) from a booking",
+        "tags": [
+          "lorry-receipts"
+        ]
+      },
+      "get": {
+        "operationId": "LorryReceiptsController_findAll_v1",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Global search string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "default": "createdAt",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order (asc/desc)",
+            "schema": {
+              "default": "desc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ISSUED",
+                "IN_TRANSIT",
+                "DELIVERED",
+                "CANCELLED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List Lorry Receipts for current company",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/lorry-receipts/{id}": {
+      "get": {
+        "operationId": "LorryReceiptsController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a Lorry Receipt by ID",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/lorry-receipts/{id}/print": {
+      "get": {
+        "operationId": "LorryReceiptsController_print_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Printable LR (HTML → browser Print gives a PDF)",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/lorry-receipts/{id}/status": {
+      "patch": {
+        "operationId": "LorryReceiptsController_updateStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLorryReceiptStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update LR status (ISSUED→IN_TRANSIT→DELIVERED)",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
     }
   },
   "info": {
@@ -22591,6 +22807,130 @@
       "SubmitExpenseDto": {
         "type": "object",
         "properties": {}
+      },
+      "CreateLorryReceiptDto": {
+        "type": "object",
+        "properties": {
+          "loadId": {
+            "type": "string",
+            "example": "b567d2ca-1122-3344-5566-778899aabbcc"
+          },
+          "consignorName": {
+            "type": "string",
+            "example": "Bhonsle Transport"
+          },
+          "consignorGstin": {
+            "type": "string",
+            "example": "27ABCDE1234F1Z5"
+          },
+          "consignorAddress": {
+            "type": "string"
+          },
+          "consigneeName": {
+            "type": "string",
+            "example": "Gupta Roadways"
+          },
+          "consigneeGstin": {
+            "type": "string",
+            "example": "07ABCDE1234F1Z5"
+          },
+          "consigneeAddress": {
+            "type": "string"
+          },
+          "fromStation": {
+            "type": "string",
+            "example": "Mumbai"
+          },
+          "toStation": {
+            "type": "string",
+            "example": "Delhi"
+          },
+          "vehicleId": {
+            "type": "string",
+            "example": "a1b2c3d4-1122-3344-5566-778899aabbcc"
+          },
+          "vehicleNumber": {
+            "type": "string",
+            "example": "MH-12-CD-5678"
+          },
+          "goodsDescription": {
+            "type": "string",
+            "example": "Steel Coils"
+          },
+          "packagesCount": {
+            "type": "number",
+            "example": 10
+          },
+          "packingType": {
+            "type": "string",
+            "example": "Bundles"
+          },
+          "actualWeightKg": {
+            "type": "number",
+            "example": 12000
+          },
+          "chargedWeightKg": {
+            "type": "number",
+            "example": 12000
+          },
+          "invoiceValue": {
+            "type": "number",
+            "example": 500000
+          },
+          "freightAmount": {
+            "type": "number",
+            "example": 25000
+          },
+          "hamaliCharges": {
+            "type": "number",
+            "example": 1000
+          },
+          "otherCharges": {
+            "type": "number",
+            "example": 500
+          },
+          "gstAmount": {
+            "type": "number",
+            "example": 0
+          },
+          "paymentType": {
+            "type": "string",
+            "enum": [
+              "PAID",
+              "TOPAY",
+              "TBB"
+            ],
+            "default": "TOPAY"
+          },
+          "ewayBillNumber": {
+            "type": "string",
+            "example": "1234-5678-9012"
+          }
+        },
+        "required": [
+          "loadId"
+        ]
+      },
+      "UpdateLorryReceiptStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ISSUED",
+              "IN_TRANSIT",
+              "DELIVERED",
+              "CANCELLED"
+            ]
+          },
+          "podDocumentId": {
+            "type": "string",
+            "description": "POD document id, set on delivery"
+          }
+        },
+        "required": [
+          "status"
+        ]
       }
     }
   }

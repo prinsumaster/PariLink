@@ -121,7 +121,7 @@ export default function AgentConsolePage() {
                 </div>
                 <div className="bg-slate-950 rounded-lg p-3 border border-slate-800">
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Tasks Done</p>
-                  <p className="text-lg font-mono text-indigo-400">{agent.tasksCompleted.toLocaleString()}</p>
+                  <p className="text-lg font-mono text-indigo-400">{(agent.tasksCompleted ?? 0).toLocaleString()}</p>
                 </div>
               </div>
 

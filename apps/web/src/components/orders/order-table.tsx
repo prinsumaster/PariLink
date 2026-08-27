@@ -97,7 +97,7 @@ export function OrderTable({ orders, total, isLoading, filters, onFiltersChange 
         header: 'Freight',
         cell: ({ row }) => (
           <div className="text-sm text-gray-500 flex items-center gap-1">
-            <Box className="h-3 w-3" /> {row.original.totalWeight.toLocaleString()} kg
+            <Box className="h-3 w-3" /> {(row.original.totalWeight ?? 0).toLocaleString()} kg
           </div>
         )
       }

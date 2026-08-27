@@ -55,7 +55,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
               
               <div className="flex flex-col items-center flex-1">
                 <ArrowRight className="h-8 w-8 text-gray-300 dark:text-gray-600 hidden md:block" />
-                <Badge variant="secondary" className="mt-2">{order.totalWeight.toLocaleString()} kg</Badge>
+                <Badge variant="secondary" className="mt-2">{(order.totalWeight ?? 0).toLocaleString()} kg</Badge>
               </div>
 
               <div className="text-center md:text-right flex-1">
@@ -89,7 +89,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                         <td className="px-4 py-3 font-medium">{item.description}</td>
                         <td className="px-4 py-3">{item.quantity}</td>
                         <td className="px-4 py-3">{item.weight} kg</td>
-                        <td className="px-4 py-3">₹{item.value.toLocaleString()}</td>
+                        <td className="px-4 py-3">₹{(item.value ?? 0).toLocaleString()}</td>
                         <td className="px-4 py-3 flex gap-1">
                           {item.isHazardous && <Badge variant="destructive" className="text-[10px] px-1 py-0">HAZMAT</Badge>}
                           {item.temperatureControlled && <Badge className="bg-blue-100 text-blue-800 text-[10px] px-1 py-0">REEFER</Badge>}
@@ -144,7 +144,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-gray-500">Declared Value</span>
-              <span className="font-medium">₹{order.totalValue.toLocaleString()}</span>
+              <span className="font-medium">₹{(order.totalValue ?? 0).toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center text-lg font-bold">
               <span>Status</span>

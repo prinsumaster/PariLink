@@ -96,13 +96,13 @@ export function ControlTowerCanvas() {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <p className="text-sm text-slate-400 mb-1">Business Health</p>
-                  <div className="text-3xl font-bold text-emerald-400">{metrics.businessHealth.toFixed(1)}%</div>
+                  <div className="text-3xl font-bold text-emerald-400">{(metrics.businessHealth ?? 0).toFixed(1)}%</div>
                 </CardContent>
               </Card>
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <p className="text-sm text-slate-400 mb-1">Predicted SLA</p>
-                  <div className="text-3xl font-bold text-white">{metrics.predictedSla.toFixed(1)}%</div>
+                  <div className="text-3xl font-bold text-white">{(metrics.predictedSla ?? 0).toFixed(1)}%</div>
                 </CardContent>
               </Card>
               <Card className="bg-slate-800/50 border-slate-700">

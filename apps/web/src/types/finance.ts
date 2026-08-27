@@ -17,16 +17,17 @@ export interface Invoice {
   customerId: string;
   customerName: string;
   status: InvoiceStatus;
-  issueDate: string;
+  amount: number;
+  issueDate?: string;
   dueDate: string;
-  paymentTerms: string; // e.g. NET_30
-  currency: string;
-  subtotal: number;
-  taxTotal: number;
-  discountTotal: number;
-  grandTotal: number;
-  amountPaid: number;
-  balanceDue: number;
+  paymentTerms?: string; // e.g. NET_30
+  currency?: string;
+  subtotal?: number;
+  taxTotal?: number;
+  discountTotal?: number;
+  grandTotal?: number;
+  amountPaid?: number;
+  balanceDue?: number;
   lineItems: InvoiceLineItem[];
   notes?: string;
   createdAt: string;

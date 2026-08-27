@@ -92,10 +92,10 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                   <div>
                     <div className="text-sm font-medium text-gray-500">Planned Schedule</div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Dep: {new Date(trip.plannedDeparture).toLocaleString()}
+                      Dep: {trip.startDate ? new Date(trip.startDate).toLocaleString() : 'Not Set'}
                     </div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Arr: {new Date(trip.plannedArrival).toLocaleString()}
+                      Arr: {trip.endDate ? new Date(trip.endDate).toLocaleString() : 'Not Set'}
                     </div>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">SLA</span>
               <Badge variant={trip.slaStatus === 'MET' ? 'default' : 'destructive'} className="text-sm">
-                {trip.slaStatus.replace('_', ' ')}
+                {(trip.slaStatus || 'UNKNOWN').replace('_', ' ')}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
@@ -169,7 +169,7 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                 <div className="relative pl-6">
                   <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-green-500 border-2 border-white dark:border-gray-900" />
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Dispatched</p>
-                  <p className="text-xs text-gray-500">{trip.actualDeparture ? new Date(trip.actualDeparture).toLocaleString() : 'Just now'}</p>
+                  <p className="text-xs text-gray-500">{trip.startDate ? new Date(trip.startDate).toLocaleString() : 'Just now'}</p>
                 </div>
               )}
             </div>

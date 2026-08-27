@@ -237,7 +237,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
                   {[
                     { label: 'Equipment', value: load.equipmentType.replace(/_/g, ' ') },
-                    { label: 'Weight', value: load.weight ? `${load.weight.toLocaleString()} lbs` : '—' },
+                    { label: 'Weight', value: load.weight ? `${load.weight.toLocaleString()} kg` : '—' },
                     { label: 'Volume', value: load.volume ? `${load.volume} cu ft` : '—' },
                     { label: 'Consignor', value: load.consignor || '—' },
                     { label: 'Consignee', value: load.consignee || '—' },
@@ -361,7 +361,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                           <span className="text-sm font-mono text-blue-600">{inv.invoiceNumber}</span>
                           <div className="flex items-center gap-2">
                             <StatusBadge status={inv.status} />
-                            <span className="text-sm font-medium">₹{inv.amount.toFixed(2)}</span>
+                            <span className="text-sm font-medium">₹{(inv.amount ?? 0).toFixed(2)}</span>
                           </div>
                         </div>
                       ))}

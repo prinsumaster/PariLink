@@ -126,15 +126,15 @@ export function WarehouseDetailView({ warehouse }: WarehouseDetailViewProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Available Pallets</span>
-                <span className="font-medium">{warehouse.capacity.availablePallets.toLocaleString()}</span>
+                <span className="font-medium">{(warehouse.capacity?.availablePallets ?? 0).toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Total Pallet Positions</span>
-                <span className="font-medium">{warehouse.capacity.totalPallets.toLocaleString()}</span>
+                <span className="font-medium">{(warehouse.capacity?.totalPallets ?? 0).toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Footprint (Sq Ft)</span>
-                <span className="font-medium">{warehouse.capacity.totalSquareFeet.toLocaleString()}</span>
+                <span className="font-medium">{(warehouse.capacity?.totalSquareFeet ?? 0).toLocaleString()}</span>
               </div>
             </div>
             

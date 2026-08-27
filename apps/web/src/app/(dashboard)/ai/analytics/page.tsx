@@ -48,7 +48,7 @@ export default function AiAnalyticsPage() {
             <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400"><Brain className="h-4 w-4" /></div>
             <p className="text-sm font-semibold text-slate-300">Total Interactions</p>
           </div>
-          <p className="text-3xl font-bold font-mono">{metrics.totalInteractions.toLocaleString()}</p>
+          <p className="text-3xl font-bold font-mono">{(metrics.totalInteractions ?? 0).toLocaleString()}</p>
           <p className="text-xs text-emerald-400 mt-1">↑ 12% vs last week</p>
         </div>
 

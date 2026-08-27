@@ -20,16 +20,16 @@ export interface Trip {
   vehicleId?: string;
   shipmentId?: string;
   startDate?: string;
-  plannedDeparture: string;
-  plannedArrival: string;
-  actualDeparture?: string;
-  actualArrival?: string;
-  distance: number;
+  endDate?: string;
+  eta?: string;
+  startOdometer?: number;
+  endOdometer?: number;
   estimatedDistance?: number;
-  estimatedDuration: number;
-  fuelEstimate: number;
+  actualDistance?: number;
+  fuelExpenses?: number;
+  otherExpenses?: number;
   notes?: string;
-  slaStatus: 'MET' | 'BREACHED' | 'AT_RISK';
+  slaStatus?: 'MET' | 'BREACHED' | 'AT_RISK';
   createdAt: string;
   updatedAt: string;
 }

@@ -168,7 +168,7 @@ export default function TrailersPage() {
                   {trailer.capacityWeight && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Weight className="h-3 w-3 flex-shrink-0" />
-                      <span>Capacity: {trailer.capacityWeight.toLocaleString()} kg</span>
+                      <span>Capacity: {(trailer.capacityWeight ?? 0).toLocaleString()} kg</span>
                     </div>
                   )}
                   {trailer.vin && (

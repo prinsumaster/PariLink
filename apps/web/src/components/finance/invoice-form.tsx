@@ -57,7 +57,7 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
     defaultValues: initialData ? {
       customerId: initialData.customerId,
       customerName: initialData.customerName,
-      issueDate: initialData.issueDate.slice(0, 10),
+      issueDate: (initialData.issueDate || initialData.createdAt).slice(0, 10),
       dueDate: initialData.dueDate.slice(0, 10),
       paymentTerms: initialData.paymentTerms,
       currency: initialData.currency,
@@ -108,8 +108,8 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
           ...item,
           total: (item.quantity * item.unitPrice) * (1 + item.taxRate / 100)
         })),
-        amountPaid: initialData ? initialData.amountPaid : 0,
-        balanceDue: initialData ? (grandTotal - initialData.amountPaid) : grandTotal
+        amountPaid: initialData ? (initialData.amountPaid || 0) : 0,
+        balanceDue: initialData ? (grandTotal - (initialData.amountPaid || 0)) : grandTotal
       };
 
       const submissionData = {

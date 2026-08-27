@@ -25,12 +25,11 @@ const tripFormSchema = z.object({
   trackingNumber: z.string().min(1, 'Tracking number is required'),
   origin: locationSchema,
   destination: locationSchema,
-  plannedDeparture: z.string().min(1, 'Departure time is required'),
-  plannedArrival: z.string().min(1, 'Arrival time is required'),
+  startDate: z.string().min(1, 'Departure time is required'),
+  endDate: z.string().min(1, 'Arrival time is required'),
   driverId: z.string().optional(),
   vehicleId: z.string().optional(),
-  distance: z.number().min(0),
-  estimatedDuration: z.number().min(0),
+  estimatedDistance: z.number().min(0),
 });
 
 export type TripFormValues = z.infer<typeof tripFormSchema>;
@@ -50,15 +49,13 @@ export function TripForm({ initialData, isEdit }: TripFormProps) {
       trackingNumber: initialData.trackingNumber,
       origin: initialData.origin,
       destination: initialData.destination,
-      plannedDeparture: initialData.plannedDeparture.slice(0, 16),
-      plannedArrival: initialData.plannedArrival.slice(0, 16),
+      startDate: initialData.startDate ? initialData.startDate.slice(0, 16) : '',
+      endDate: initialData.endDate ? initialData.endDate.slice(0, 16) : '',
       driverId: initialData.driverId || '',
       vehicleId: initialData.vehicleId || '',
-      distance: initialData.distance,
-      estimatedDuration: initialData.estimatedDuration,
+      estimatedDistance: initialData.estimatedDistance || 0,
     } : {
-      distance: 0,
-      estimatedDuration: 0,
+      estimatedDistance: 0,
     }
   });
 
@@ -155,11 +152,11 @@ export function TripForm({ initialData, isEdit }: TripFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <Label>Planned Departure</Label>
-              <Input type="datetime-local" {...register('plannedDeparture')} />
+              <Input type="datetime-local" {...register('startDate')} />
             </div>
             <div>
               <Label>Planned Arrival</Label>
-              <Input type="datetime-local" {...register('plannedArrival')} />
+              <Input type="datetime-local" {...register('endDate')} />
             </div>
             <div>
               <Label>Driver ID</Label>
@@ -170,12 +167,8 @@ export function TripForm({ initialData, isEdit }: TripFormProps) {
               <Input {...register('vehicleId')} placeholder="Optional" />
             </div>
             <div>
-              <Label>Distance (miles)</Label>
-              <Input type="number" {...register('distance', { valueAsNumber: true })} />
-            </div>
-            <div>
-              <Label>Est. Duration (mins)</Label>
-              <Input type="number" {...register('estimatedDuration', { valueAsNumber: true })} />
+              <Label>Est. Distance (miles)</Label>
+              <Input type="number" {...register('estimatedDistance', { valueAsNumber: true })} />
             </div>
           </div>
         </div>

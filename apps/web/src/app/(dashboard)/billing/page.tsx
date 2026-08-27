@@ -40,7 +40,6 @@ const columns: ColumnDef<Invoice>[] = [
             <span className="sr-only">Open menu</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => router.push(`/billing/${invoice.id}`)}>
                 View Invoice
@@ -57,7 +56,6 @@ const columns: ColumnDef<Invoice>[] = [
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem className="text-red-600">Void Invoice</DropdownMenuItem>
-            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -115,6 +115,7 @@ import { FleetIntelligenceModule } from './intelligence/fleet/fleet-intelligence
 import { EtaIntelligenceModule } from './intelligence/eta/eta-intelligence.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { PortalsModule } from './portals/portals.module';
+import { LorryReceiptsModule } from './lorry-receipts/lorry-receipts.module';
 
 // Phase 3 AI Intelligence Modules
 import { PredictionEngineModule } from './intelligence/prediction/prediction.module';
@@ -313,6 +314,7 @@ import { ReportingModule } from './reporting/reporting.module';
     SaasBillingModule,
     TelemetryModule,
     FleetModule,
+    LorryReceiptsModule,
   ],
   providers: [
     ApiRateLimiterMiddleware,

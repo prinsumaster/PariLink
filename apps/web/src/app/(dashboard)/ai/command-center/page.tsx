@@ -189,7 +189,7 @@ export default function AiCommandCenterPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
         <MetricCard
           title="Total Interactions"
-          value={metrics.totalInteractions.toLocaleString()}
+          value={(metrics.totalInteractions ?? 0).toLocaleString()}
           subtitle="All-time AI calls"
           icon={MessageSquare}
           color="blue"
@@ -197,7 +197,7 @@ export default function AiCommandCenterPage() {
         />
         <MetricCard
           title="Total AI Cost"
-          value={`₹${metrics.totalCostUsd.toFixed(2)}`}
+          value={`₹${(metrics.totalCostUsd ?? 0).toFixed(2)}`}
           subtitle="Across all providers"
           icon={DollarSign}
           color="green"
@@ -301,10 +301,10 @@ export default function AiCommandCenterPage() {
                     <div key={provider} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium ${colorMap[provider] || 'text-slate-300'}`}>{provider}</span>
-                        <Badge variant="outline" className="text-xs">₹{data.cost.toFixed(2)}</Badge>
+                        <Badge variant="outline" className="text-xs">₹{(data.cost ?? 0).toFixed(2)}</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <span>{data.calls.toLocaleString()} calls</span>
+                        <span>{(data.calls ?? 0).toLocaleString()} calls</span>
                         <span>·</span>
                         <span>{Math.round(data.avgLatency)}ms avg</span>
                       </div>
@@ -317,11 +317,11 @@ export default function AiCommandCenterPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Prompt tokens</span>
-                      <span className="text-slate-300">{(metrics.totalPromptTokens / 1000).toFixed(0)}K</span>
+                      <span className="text-slate-300">{((metrics.totalPromptTokens ?? 0) / 1000).toFixed(0)}K</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Completion tokens</span>
-                      <span className="text-slate-300">{(metrics.totalCompletionTokens / 1000).toFixed(0)}K</span>
+                      <span className="text-slate-300">{((metrics.totalCompletionTokens ?? 0) / 1000).toFixed(0)}K</span>
                     </div>
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export default function AiCommandCenterPage() {
                 <div className="text-center mb-4">
                   <div className="text-4xl font-bold text-white">{metrics.feedbackSummary.averageRating}</div>
                   <div className="text-sm text-slate-400">Average rating</div>
-                  <div className="text-xs text-slate-500">{metrics.feedbackSummary.totalRatings.toLocaleString()} ratings</div>
+                  <div className="text-xs text-slate-500">{(metrics.feedbackSummary?.totalRatings ?? 0).toLocaleString()} ratings</div>
                 </div>
                 <div className="space-y-1.5">
                   {[5, 4, 3, 2, 1].map((star) => {
