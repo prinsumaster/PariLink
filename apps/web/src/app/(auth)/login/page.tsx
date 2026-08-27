@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Hexagon, Loader2, Eye, EyeOff, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Loader2, Navigation, Hexagon, Eye, EyeOff } from 'lucide-react';
+import { BrandSplash } from '@/components/brand-splash';
 
 function getValidatedCallbackUrl(url: string | null): string | null {
   if (!url) return null;
@@ -115,8 +116,10 @@ function LoginContent() {
   };
 
   return (
-    <div className="flex flex-col min-h-[500px]">
-      <div className="flex justify-center mb-8">
+    <>
+      <BrandSplash />
+      <div className="flex flex-col min-h-[500px]">
+        <div className="flex justify-center mb-8">
         <img src="/brand/parilink-logo-full.png" alt="PariLink" className="h-12 w-auto object-contain" />
       </div>
 
