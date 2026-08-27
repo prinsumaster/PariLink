@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useMemo } from 'react';
 import { useLoads, useDeleteLoad } from '@/hooks/use-loads';
@@ -19,6 +20,7 @@ import Link from 'next/link';
 import { api } from '@/services/api';
 import type { Load, LoadStatus } from '@/types';
 import { toast } from 'sonner';
+
 
 // ─── Status Config ────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<LoadStatus, {
@@ -172,7 +174,7 @@ function LoadCard({ load, index }: { load: Load; index: number }) {
         </div>
         <div className="flex items-center gap-1.5 text-xs text-foreground font-semibold">
           <DollarSign className="h-3 w-3 shrink-0 text-muted-foreground" />
-          <span>₹{load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+          <span>{money(load.rate)}</span>
         </div>
         {load.equipmentType && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

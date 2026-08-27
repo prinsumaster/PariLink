@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Warehouse } from '@/types/wms';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Building2, MapPin, Box, User, Clock, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
+
 
 interface WarehouseDetailViewProps {
   warehouse: Warehouse;
@@ -126,15 +128,15 @@ export function WarehouseDetailView({ warehouse }: WarehouseDetailViewProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Available Pallets</span>
-                <span className="font-medium">{(warehouse.capacity?.availablePallets ?? 0).toLocaleString()}</span>
+                <span className="font-medium">{num(warehouse.capacity?.availablePallets)}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Total Pallet Positions</span>
-                <span className="font-medium">{(warehouse.capacity?.totalPallets ?? 0).toLocaleString()}</span>
+                <span className="font-medium">{num(warehouse.capacity?.totalPallets)}</span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-gray-800">
                 <span className="text-sm text-gray-500">Footprint (Sq Ft)</span>
-                <span className="font-medium">{(warehouse.capacity?.totalSquareFeet ?? 0).toLocaleString()}</span>
+                <span className="font-medium">{num(warehouse.capacity?.totalSquareFeet)}</span>
               </div>
             </div>
             

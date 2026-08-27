@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, AlertTriangle, Wrench, CheckCircle2 } from 'lucide-react';
+
 
 interface VehicleTableProps {
   vehicles: Vehicle[];
@@ -66,7 +68,7 @@ export function VehicleTable({ vehicles, total, isLoading, filters, onFiltersCha
       {
         accessorKey: 'odometer',
         header: 'Odometer (mi)',
-        cell: ({ row }) => <span className="text-sm text-gray-500">{row.getValue<number>('odometer')?.toLocaleString() ?? '0'}</span>,
+        cell: ({ row }) => <span className="text-sm text-gray-500">{num(row.getValue<number>('odometer'))}</span>,
       },
       {
         accessorKey: 'fuelLevel',

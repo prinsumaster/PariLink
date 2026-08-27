@@ -1,10 +1,12 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Megaphone, Calendar, Users, Eye } from 'lucide-react';
+
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -55,7 +57,7 @@ export default function AnnouncementsPage() {
                     {ann.priority}
                   </span>
                   <span className="text-xs text-slate-500 flex items-center gap-1">
-                    <Calendar className="h-3 w-3" /> {new Date(ann.createdAt).toLocaleDateString()}
+                    <Calendar className="h-3 w-3" /> {dateIN(ann.createdAt)}
                   </span>
                 </div>
                 {ann.requireAck && (

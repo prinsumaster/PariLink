@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Order } from '@/types/orders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Package, MapPin, Calendar, CreditCard, Box, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
+
 
 interface OrderDetailViewProps {
   order: Order;
@@ -49,13 +51,13 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                 <div className="text-sm text-slate-500 mt-1">{order.origin.street}<br/>{order.origin.postalCode}</div>
                 <div className="text-sm text-blue-600 mt-3 font-medium flex items-center gap-1 justify-center md:justify-start">
                   <Calendar className="h-4 w-4"/> 
-                  {new Date(order.estimatedPickupDate).toLocaleDateString()}
+                  {dateIN(order.estimatedPickupDate)}
                 </div>
               </div>
               
               <div className="flex flex-col items-center flex-1">
                 <ArrowRight className="h-8 w-8 text-gray-300 dark:text-gray-600 hidden md:block" />
-                <Badge variant="secondary" className="mt-2">{(order.totalWeight ?? 0).toLocaleString()} kg</Badge>
+                <Badge variant="secondary" className="mt-2">{num(order.totalWeight)} kg</Badge>
               </div>
 
               <div className="text-center md:text-right flex-1">
@@ -64,7 +66,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                 <div className="text-sm text-slate-500 mt-1">{order.destination.street}<br/>{order.destination.postalCode}</div>
                 <div className="text-sm text-green-600 mt-3 font-medium flex items-center gap-1 justify-center md:justify-end">
                   <Calendar className="h-4 w-4"/> 
-                  {new Date(order.estimatedDeliveryDate).toLocaleDateString()}
+                  {dateIN(order.estimatedDeliveryDate)}
                 </div>
               </div>
             </div>
@@ -89,7 +91,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
                         <td className="px-4 py-3 font-medium">{item.description}</td>
                         <td className="px-4 py-3">{item.quantity}</td>
                         <td className="px-4 py-3">{item.weight} kg</td>
-                        <td className="px-4 py-3">₹{(item.value ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3">{money(item.value)}</td>
                         <td className="px-4 py-3 flex gap-1">
                           {item.isHazardous && <Badge variant="destructive" className="text-[10px] px-1 py-0">HAZMAT</Badge>}
                           {item.temperatureControlled && <Badge className="bg-blue-100 text-blue-800 text-[10px] px-1 py-0">REEFER</Badge>}
@@ -144,7 +146,7 @@ export function OrderDetailView({ order }: OrderDetailViewProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-gray-500">Declared Value</span>
-              <span className="font-medium">₹{(order.totalValue ?? 0).toLocaleString()}</span>
+              <span className="font-medium">{money(order.totalValue)}</span>
             </div>
             <div className="flex justify-between items-center text-lg font-bold">
               <span>Status</span>

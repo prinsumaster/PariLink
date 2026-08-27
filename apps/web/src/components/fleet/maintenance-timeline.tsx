@@ -1,8 +1,10 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { MaintenanceRecord } from '@/types/fleet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wrench, CheckCircle2, AlertTriangle, Calendar } from 'lucide-react';
+
 
 interface MaintenanceTimelineProps {
   records: MaintenanceRecord[];
@@ -41,20 +43,20 @@ export function MaintenanceTimeline({ records }: MaintenanceTimelineProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-medium bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded inline-block">
-                      {(record.odometerReading ?? 0).toLocaleString()} km
+                      {num(record.odometerReading)} km
                     </p>
                     {record.cost && (
-                      <p className="text-xs text-gray-500 mt-1">₹{(record.cost ?? 0).toLocaleString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">{money(record.cost)}</p>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
                   <Calendar className="h-3 w-3" />
-                  <span>Sch: {new Date(record.scheduledDate).toLocaleDateString()}</span>
+                  <span>Sch: {dateIN(record.scheduledDate)}</span>
                   {record.completedDate && (
                     <>
                       <span>•</span>
-                      <span>Done: {new Date(record.completedDate).toLocaleDateString()}</span>
+                      <span>Done: {dateIN(record.completedDate)}</span>
                     </>
                   )}
                 </div>

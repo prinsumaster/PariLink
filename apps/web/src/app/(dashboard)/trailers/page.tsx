@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import {
+
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -168,7 +170,7 @@ export default function TrailersPage() {
                   {trailer.capacityWeight && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Weight className="h-3 w-3 flex-shrink-0" />
-                      <span>Capacity: {(trailer.capacityWeight ?? 0).toLocaleString()} kg</span>
+                      <span>Capacity: {num(trailer.capacityWeight)} kg</span>
                     </div>
                   )}
                   {trailer.vin && (

@@ -1,8 +1,10 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
+
   BarChart3, Brain, Activity, Clock, FileText, 
   ThumbsUp, ShieldAlert, Zap
 } from 'lucide-react';
@@ -48,7 +50,7 @@ export default function AiAnalyticsPage() {
             <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-400"><Brain className="h-4 w-4" /></div>
             <p className="text-sm font-semibold text-slate-300">Total Interactions</p>
           </div>
-          <p className="text-3xl font-bold font-mono">{(metrics.totalInteractions ?? 0).toLocaleString()}</p>
+          <p className="text-3xl font-bold font-mono">{num(metrics.totalInteractions)}</p>
           <p className="text-xs text-emerald-400 mt-1">↑ 12% vs last week</p>
         </div>
 
@@ -66,7 +68,7 @@ export default function AiAnalyticsPage() {
             <div className="p-2 bg-amber-500/10 rounded-lg text-amber-400"><FileText className="h-4 w-4" /></div>
             <p className="text-sm font-semibold text-slate-300">Total Tokens</p>
           </div>
-          <p className="text-3xl font-bold font-mono">{(((metrics.totalPromptTokens || 0) + (metrics.totalCompletionTokens || 0)) / 1000000).toFixed(1)}M</p>
+          <p className="text-3xl font-bold font-mono">{num(((metrics.totalPromptTokens || 0) + (metrics.totalCompletionTokens || 0)) / 1000000)}M</p>
           <p className="text-xs text-slate-500 mt-1">Across all models</p>
         </div>
 
@@ -75,7 +77,7 @@ export default function AiAnalyticsPage() {
             <div className="p-2 bg-red-500/10 rounded-lg text-red-400"><ShieldAlert className="h-4 w-4" /></div>
             <p className="text-sm font-semibold text-slate-300">Hallucination Rate</p>
           </div>
-          <p className="text-3xl font-bold font-mono">{((metrics.hallucinationReports || 0) / Math.max(1, metrics.totalInteractions || 1) * 100).toFixed(2)}%</p>
+          <p className="text-3xl font-bold font-mono">{num((metrics.hallucinationReports || 0) / Math.max(1, metrics.totalInteractions || 1) * 100)}%</p>
           <p className="text-xs text-emerald-400 mt-1">Target &lt; 0.5%</p>
         </div>
       </div>
@@ -110,7 +112,7 @@ export default function AiAnalyticsPage() {
             <h3 className="font-bold flex items-center gap-2"><ThumbsUp className="h-4 w-4 text-emerald-400" /> Quality & User Feedback</h3>
           </div>
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="text-6xl font-bold text-white mb-2">{(metrics.feedbackSummary?.averageRating || 0).toFixed(1)}</div>
+            <div className="text-6xl font-bold text-white mb-2">{num(metrics.feedbackSummary?.averageRating)}</div>
             <div className="flex gap-1 mb-4">
               {[1, 2, 3, 4, 5].map(star => (
                 <svg key={star} className={`w-6 h-6 ${star <= Math.round(metrics.feedbackSummary?.averageRating || 0) ? 'text-amber-400' : 'text-slate-700'}`} fill="currentColor" viewBox="0 0 20 20">

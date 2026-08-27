@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
@@ -7,6 +8,7 @@ import {
   Workflow, Database, Cpu, Search, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 interface AiAgent {
   name: string;
@@ -121,7 +123,7 @@ export default function AgentConsolePage() {
                 </div>
                 <div className="bg-slate-950 rounded-lg p-3 border border-slate-800">
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Tasks Done</p>
-                  <p className="text-lg font-mono text-indigo-400">{(agent.tasksCompleted ?? 0).toLocaleString()}</p>
+                  <p className="text-lg font-mono text-indigo-400">{num(agent.tasksCompleted)}</p>
                 </div>
               </div>
 

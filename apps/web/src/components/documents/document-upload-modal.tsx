@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,6 +25,7 @@ import { UploadCloud, X, Loader2, File as FileIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { FlyTo } from '@/components/motion';
 import { Document, PaginatedDocuments } from '@/types/documents';
+
 
 interface DocumentUploadModalProps {
   isOpen: boolean;
@@ -123,7 +125,7 @@ export function DocumentUploadModal({ isOpen, onClose }: DocumentUploadModalProp
                   <div className="text-center">
                     <FileIcon className="mx-auto h-10 w-10 text-blue-500 mb-3" />
                     <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">{file.name}</p>
-                    <p className="text-xs text-gray-500 mb-4">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <p className="text-xs text-gray-500 mb-4">{num(file.size / 1024 / 1024)} MB</p>
                     <Button size="sm" variant="outline" onClick={() => setFile(null)}>
                       <X className="h-4 w-4 mr-2" /> Remove
                     </Button>

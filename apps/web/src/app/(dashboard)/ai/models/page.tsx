@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
@@ -7,6 +8,7 @@ import {
   Settings, CheckCircle2, AlertTriangle, Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 interface ModelConfig {
   provider: string;
@@ -89,7 +91,7 @@ export default function ModelRegistryPage() {
                         <Activity className="h-3 w-3" /> {model.latencyMs}ms avg latency
                       </span>
                       <span className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3" /> ₹{(model.costPer1kTokens ?? 0).toFixed(3)} / 1k tokens
+                        <DollarSign className="h-3 w-3" /> ₹{num(model.costPer1kTokens)} / 1k tokens
                       </span>
                     </div>
                   </div>

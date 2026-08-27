@@ -1,7 +1,9 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useEffect, useState, useCallback } from 'react';
 import { operationsApi } from '@/services/operations';
+
 
 // ─── Status helpers ───────────────────────────────────────────────────────────
 function StatusDot({ status }: { status: string }) {
@@ -319,7 +321,7 @@ export default function OperationsDashboardPage() {
               <h2 className="text-base font-semibold text-white mb-2">Global Health Report</h2>
               <p className="text-sm text-slate-400 mb-6">
                 Overall: <span className={`font-bold ${overallStatus === 'HEALTHY' ? 'text-emerald-400' : 'text-amber-400'}`}>{overallStatus}</span>
-                {health?.timestamp && <span className="ml-2 text-slate-500">at {new Date(health.timestamp).toLocaleString()}</span>}
+                {health?.timestamp && <span className="ml-2 text-slate-500">at {dateIN(health.timestamp)}</span>}
               </p>
               {health?.components ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">

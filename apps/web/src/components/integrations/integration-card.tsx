@@ -1,9 +1,11 @@
+import { money, num, dateIN } from '@/lib/format';
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Settings, RefreshCw, AlertCircle, CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+
 
 export interface IntegrationCardProps {
   id: string;
@@ -42,7 +44,7 @@ export function IntegrationCard({
         {status === 'CONNECTED' && lastSync && (
           <div className="text-xs text-slate-500 mt-4 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-md">
             <RefreshCw className="h-3 w-3" />
-            Last synced: {new Date(lastSync).toLocaleString()}
+            Last synced: {dateIN(lastSync)}
           </div>
         )}
       </div>

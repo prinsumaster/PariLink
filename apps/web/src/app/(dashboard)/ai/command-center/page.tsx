@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import {
@@ -30,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/ui/page-header';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
+
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -189,7 +191,7 @@ export default function AiCommandCenterPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-4">
         <MetricCard
           title="Total Interactions"
-          value={(metrics.totalInteractions ?? 0).toLocaleString()}
+          value={num(metrics.totalInteractions)}
           subtitle="All-time AI calls"
           icon={MessageSquare}
           color="blue"
@@ -197,7 +199,7 @@ export default function AiCommandCenterPage() {
         />
         <MetricCard
           title="Total AI Cost"
-          value={`₹${(metrics.totalCostUsd ?? 0).toFixed(2)}`}
+          value={money(metrics.totalCostUsd)}
           subtitle="Across all providers"
           icon={DollarSign}
           color="green"
@@ -261,7 +263,7 @@ export default function AiCommandCenterPage() {
                   <Activity className="h-4 w-4 text-blue-400" />
                   Agent Activity
                   <Badge variant="secondary" className="ml-auto text-xs">
-                    {totalAgentCalls.toLocaleString()} total calls
+                    {num(totalAgentCalls)} total calls
                   </Badge>
                 </CardTitle>
               </CardHeader>
@@ -270,7 +272,7 @@ export default function AiCommandCenterPage() {
                   <div key={agentName} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-slate-300">{agentName.replace('Agent', '')}</span>
-                      <span className="text-slate-400 text-xs">{calls.toLocaleString()} calls</span>
+                      <span className="text-slate-400 text-xs">{num(calls)} calls</span>
                     </div>
                     <Progress
                       value={(calls / (topAgents[0]?.[1] || 1)) * 100}
@@ -301,10 +303,10 @@ export default function AiCommandCenterPage() {
                     <div key={provider} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium ${colorMap[provider] || 'text-slate-300'}`}>{provider}</span>
-                        <Badge variant="outline" className="text-xs">₹{(data.cost ?? 0).toFixed(2)}</Badge>
+                        <Badge variant="outline" className="text-xs">₹{money(data.cost, "")}</Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <span>{(data.calls ?? 0).toLocaleString()} calls</span>
+                        <span>{num(data.calls)} calls</span>
                         <span>·</span>
                         <span>{Math.round(data.avgLatency)}ms avg</span>
                       </div>
@@ -317,11 +319,11 @@ export default function AiCommandCenterPage() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Prompt tokens</span>
-                      <span className="text-slate-300">{((metrics.totalPromptTokens ?? 0) / 1000).toFixed(0)}K</span>
+                      <span className="text-slate-300">{num((metrics.totalPromptTokens ?? 0) / 1000)}K</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-slate-400">Completion tokens</span>
-                      <span className="text-slate-300">{((metrics.totalCompletionTokens ?? 0) / 1000).toFixed(0)}K</span>
+                      <span className="text-slate-300">{num((metrics.totalCompletionTokens ?? 0) / 1000)}K</span>
                     </div>
                   </div>
                 </div>
@@ -369,7 +371,7 @@ export default function AiCommandCenterPage() {
                 <div className="text-center mb-4">
                   <div className="text-4xl font-bold text-white">{metrics.feedbackSummary.averageRating}</div>
                   <div className="text-sm text-slate-400">Average rating</div>
-                  <div className="text-xs text-slate-500">{(metrics.feedbackSummary?.totalRatings ?? 0).toLocaleString()} ratings</div>
+                  <div className="text-xs text-slate-500">{num(metrics.feedbackSummary?.totalRatings)} ratings</div>
                 </div>
                 <div className="space-y-1.5">
                   {[5, 4, 3, 2, 1].map((star) => {
@@ -412,7 +414,7 @@ export default function AiCommandCenterPage() {
                     <p className="text-xs text-slate-400 mb-3 line-clamp-2">{agent.description}</p>
                     <div className="flex items-center justify-between pt-3 border-t border-slate-700/50">
                       <span className="text-xs text-slate-500">Total calls</span>
-                      <span className="text-sm font-bold text-slate-200">{callCount.toLocaleString()}</span>
+                      <span className="text-sm font-bold text-slate-200">{num(callCount)}</span>
                     </div>
                     <div className="mt-2">
                       <Progress

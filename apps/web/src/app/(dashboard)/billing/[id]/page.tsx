@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import React from 'react';
 
@@ -12,6 +13,7 @@ import { ArrowLeft, CheckCircle, FileText, Download, Mail, AlertTriangle, Buildi
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import Link from 'next/link';
+
 
 interface InvoiceDetailPageProps {
   params: Promise<{ id: string }>;
@@ -163,8 +165,8 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                         )}
                       </td>
                       <td className="py-4 text-right">1</td>
-                      <td className="py-4 text-right">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td className="py-4 text-right font-medium text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td className="py-4 text-right">{money(invoice.amount)}</td>
+                      <td className="py-4 text-right font-medium text-slate-900 dark:text-white">{money(invoice.amount)}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -175,7 +177,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                 <div className="w-64 space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span className="font-medium text-slate-900 dark:text-white">{money(invoice.amount)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tax</span>
@@ -184,7 +186,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="font-bold text-slate-900 dark:text-white">Total</span>
-                    <span className="font-bold text-slate-900 dark:text-white">₹{invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{money(invoice.amount)}</span>
                   </div>
                 </div>
               </div>
@@ -207,7 +209,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-sm">Amount Due</span>
                 <span className="font-bold text-lg text-blue-600 dark:text-blue-400">
-                  ${invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  {money(invoice.amount)}
                 </span>
               </div>
               

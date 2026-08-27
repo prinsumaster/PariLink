@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ import {
   Box
 } from 'lucide-react';
 import { ContextPanel } from './ContextPanel';
+
 
 type ViewMode = 'EXECUTIVE' | 'OPERATIONS';
 
@@ -96,13 +98,13 @@ export function ControlTowerCanvas() {
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <p className="text-sm text-slate-400 mb-1">Business Health</p>
-                  <div className="text-3xl font-bold text-emerald-400">{(metrics.businessHealth ?? 0).toFixed(1)}%</div>
+                  <div className="text-3xl font-bold text-emerald-400">{num(metrics.businessHealth)}%</div>
                 </CardContent>
               </Card>
               <Card className="bg-slate-800/50 border-slate-700">
                 <CardContent className="p-4">
                   <p className="text-sm text-slate-400 mb-1">Predicted SLA</p>
-                  <div className="text-3xl font-bold text-white">{(metrics.predictedSla ?? 0).toFixed(1)}%</div>
+                  <div className="text-3xl font-bold text-white">{num(metrics.predictedSla)}%</div>
                 </CardContent>
               </Card>
               <Card className="bg-slate-800/50 border-slate-700">

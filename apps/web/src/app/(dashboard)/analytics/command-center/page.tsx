@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
@@ -10,6 +11,7 @@ import {
   TrendingUp, TrendingDown, DollarSign, Truck, Users, Activity, Download, BrainCircuit, RefreshCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
+
 
 export default function CommandCenterPage() {
   const [metrics, setMetrics] = useState<any>(null);
@@ -106,7 +108,7 @@ export default function CommandCenterPage() {
             </Badge>
           </div>
           <p className="text-sm font-medium text-slate-500 mb-1">30-Day Revenue</p>
-          <h3 className="text-2xl font-bold">₹{metrics?.revenue?.value?.toLocaleString() || '0'}</h3>
+          <h3 className="text-2xl font-bold">{money(metrics?.revenue?.value)}</h3>
         </Card>
 
         {/* Fleet Utilization */}
@@ -120,7 +122,7 @@ export default function CommandCenterPage() {
             </Badge>
           </div>
           <p className="text-sm font-medium text-slate-500 mb-1">Fleet Utilization</p>
-          <h3 className="text-2xl font-bold">{metrics?.fleetUtilization?.percentage?.toFixed(1) || '0'}%</h3>
+          <h3 className="text-2xl font-bold">{num(metrics?.fleetUtilization?.percentage)}%</h3>
         </Card>
 
         {/* Trips */}

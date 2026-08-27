@@ -1,10 +1,12 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { DriverDocument } from '@/types/drivers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileCheck, AlertCircle, CheckCircle2, Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 interface DriverComplianceProps {
   documents: DriverDocument[];
@@ -58,7 +60,7 @@ export function DriverCompliance({ documents }: DriverComplianceProps) {
                     </p>
                     <p className="text-xs text-gray-500">#{doc.documentNumber}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400">Exp: {new Date(doc.expiryDate).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-400">Exp: {dateIN(doc.expiryDate)}</span>
                     </div>
                   </div>
                 </div>

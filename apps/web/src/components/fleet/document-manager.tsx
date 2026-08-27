@@ -1,10 +1,12 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { VehicleDocument } from '@/types/fleet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileText, AlertCircle, CheckCircle2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
 
 interface DocumentManagerProps {
   documents: VehicleDocument[];
@@ -45,7 +47,7 @@ export function DocumentManager({ documents }: DocumentManagerProps) {
                     </p>
                     <p className="text-xs text-gray-500">#{doc.documentNumber}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400">Exp: {new Date(doc.expiryDate).toLocaleDateString()}</span>
+                      <span className="text-xs text-gray-400">Exp: {dateIN(doc.expiryDate)}</span>
                       {doc.isExpired && <Badge variant="destructive" className="text-[10px] h-4 px-1 py-0">Expired</Badge>}
                       {doc.isExpiringSoon && !doc.isExpired && <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-[10px] h-4 px-1 py-0">Expiring Soon</Badge>}
                     </div>

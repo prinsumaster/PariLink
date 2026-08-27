@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus, CreditCard } from 'lucide-react';
@@ -12,13 +13,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { Payment } from '@/types';
 
+
 const methodLabel: Record<string, string> = {
   CHECK: 'Check', ACH: 'ACH', WIRE: 'Wire Transfer', CREDIT_CARD: 'Credit Card', CASH: 'Cash',
 };
 
 const columns: ColumnDef<Payment>[] = [
   { accessorKey: 'id', header: 'Payment ID', cell: ({ row }) => <span className="font-mono text-xs text-muted-foreground">{row.getValue<string>('id').slice(0, 8)}…</span> },
-  { accessorKey: 'amount', header: 'Amount', cell: ({ row }) => <span className="font-semibold text-emerald-600 dark:text-emerald-400">₹{(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> },
+  { accessorKey: 'amount', header: 'Amount', cell: ({ row }) => <span className="font-semibold text-emerald-600 dark:text-emerald-400">{money(row.getValue("amount"))}</span> },
   { accessorKey: 'method', header: 'Method', cell: ({ row }) => methodLabel[row.getValue('method') as string] ?? row.getValue('method') },
   { accessorKey: 'referenceNumber', header: 'Reference', cell: ({ row }) => row.getValue('referenceNumber') || '—' },
   { accessorKey: 'paymentDate', header: 'Payment Date', cell: ({ row }) => format(new Date(row.getValue('paymentDate')), 'MMM d, yyyy') },
@@ -49,7 +51,7 @@ export default function PaymentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
-          <p className="text-muted-foreground mt-1">{isLoading ? 'Loading...' : `${((data as any)?.meta?.total ?? (data as any)?.total ?? 0).toLocaleString()} payments recorded`}</p>
+          <p className="text-muted-foreground mt-1">{isLoading ? 'Loading...' : `${num((data as any)?.meta?.total ?? (data as any)?.total)} payments recorded`}</p>
         </div>
         <Button 
           className="bg-blue-600 hover:bg-blue-700 gap-2"

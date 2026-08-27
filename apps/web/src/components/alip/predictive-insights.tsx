@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { alipService } from '@/services/alip';
@@ -8,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, CheckCircle2, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
+
 
 interface PredictiveInsightsProps {
   insights: PredictiveInsight[];
@@ -61,7 +63,7 @@ export function PredictiveInsights({ insights, isLoading }: PredictiveInsightsPr
                   <span className="text-[10px] uppercase text-gray-400 font-semibold tracking-wider">Est. Impact</span>
                   <span className="text-xs font-bold text-green-600 flex items-center">
                     <TrendingUp className="h-3 w-3 mr-1" />
-                    +${(insight.potentialCostImpact ?? 0).toLocaleString()}
+                    +${num(insight.potentialCostImpact)}
                   </span>
                 </div>
                 

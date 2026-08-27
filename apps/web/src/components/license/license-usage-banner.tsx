@@ -1,10 +1,12 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import { Truck, Infinity, Zap, AlertTriangle, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+
 
 interface LicenseUsage {
   capacity: {
@@ -148,7 +150,7 @@ export function LicenseUsageBanner() {
           {v.boost && (
             <div className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 font-medium">
               <Zap className="w-3 h-3" />
-              Boost active until {new Date(v.boost.boostExpiresAt).toLocaleDateString()}
+              Boost active until {dateIN(v.boost.boostExpiresAt)}
             </div>
           )}
 

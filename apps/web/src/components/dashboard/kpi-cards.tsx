@@ -1,9 +1,11 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { KPIData } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, IndianRupee, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
 
 interface KPICardsProps {
   data?: KPIData;
@@ -40,7 +42,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Daily Revenue',
-      value: `₹${(data.revenue.value / 1000).toLocaleString('en-IN', { maximumFractionDigits: 1 })}k`,
+      value: `${money(data.revenue.value / 1000)}k`,
       change: `${data.revenue.change}%`,
       trend: data.revenue.trend,
       icon: IndianRupee,
@@ -61,14 +63,14 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Active Shipments',
-      value: data.activeShipments.value.toLocaleString('en-IN'),
+      value: num(data.activeShipments.value),
       change: `${data.activeShipments.change}%`,
       trend: data.activeShipments.trend,
       icon: Truck,
     },
     {
       title: 'Delayed Shipments',
-      value: data.delayedShipments.value.toLocaleString('en-IN'),
+      value: num(data.delayedShipments.value),
       change: `${data.delayedShipments.change}%`,
       trend: data.delayedShipments.trend, // If up, bad.
       icon: AlertTriangle,
@@ -82,7 +84,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
     },
     {
       title: 'Revenue Today',
-      value: `₹${data.revenueToday.value.toLocaleString('en-IN')}`,
+      value: money(data.revenueToday.value),
       change: `${data.revenueToday.change}%`,
       trend: data.revenueToday.trend,
       icon: IndianRupee,

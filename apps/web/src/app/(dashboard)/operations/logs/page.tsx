@@ -1,7 +1,9 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useCallback } from 'react';
 import { operationsApi } from '@/services/operations';
+
 
 type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | 'FATAL';
 
@@ -262,7 +264,7 @@ export default function LogExplorerPage() {
                     </div>
                     {group.firstSeen && (
                       <p className="text-xs text-slate-500 mt-2">
-                        First: {new Date(group.firstSeen).toLocaleString()} · Last: {group.lastSeen ? new Date(group.lastSeen).toLocaleString() : '—'}
+                        First: {dateIN(group.firstSeen)} · Last: {group.lastSeen ? dateIN(group.lastSeen) : '—'}
                       </p>
                     )}
                   </div>

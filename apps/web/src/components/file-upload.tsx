@@ -1,9 +1,11 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useCallback } from 'react';
 import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+
 
 interface UploadedFile {
   name: string;
@@ -25,8 +27,8 @@ interface FileUploadProps {
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  if (bytes < 1024 * 1024) return `${num(bytes / 1024)} KB`;
+  return `${num(bytes / (1024 * 1024))} MB`;
 }
 
 export function FileUpload({

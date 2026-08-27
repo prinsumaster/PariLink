@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo, useState } from 'react';
 import { Document, DocumentFilters } from '@/types/documents';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, FileImage, File, Trash2, Download, Eye, Clock, AlertTriangle } from 'lucide-react';
 import { RowCollapse, FlyTo } from '@/components/motion';
+
 
 interface DocumentLibraryProps {
   documents: Document[];
@@ -35,7 +37,7 @@ const formatBytes = (bytes: number) => {
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  return parseFloat(num(bytes / Math.pow(k, i))) + ' ' + sizes[i];
 };
 
 export function DocumentLibrary({ documents, total, isLoading, filters, onFiltersChange, onViewDocument, onDeleteDocument, optimisticDeletedIds = new Set() }: DocumentLibraryProps) {
@@ -93,7 +95,7 @@ export function DocumentLibrary({ documents, total, isLoading, filters, onFilter
             : 'Unknown';
           return (
             <div className="text-sm">
-              <div className="text-gray-900 dark:text-white">{new Date(row.original.createdAt).toLocaleDateString()}</div>
+              <div className="text-gray-900 dark:text-white">{dateIN(row.original.createdAt)}</div>
               <div className="text-xs text-gray-500">by {uploaderName}</div>
             </div>
           );

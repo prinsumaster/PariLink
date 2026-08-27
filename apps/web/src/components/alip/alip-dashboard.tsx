@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useQuery } from '@tanstack/react-query';
 import { alipService } from '@/services/alip';
@@ -6,6 +7,7 @@ import { AnomalyLog } from './anomaly-log';
 import { PredictiveInsights } from './predictive-insights';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Activity, Cpu, Network, ShieldAlert } from 'lucide-react';
+
 
 export function ALIPDashboard() {
   const { data, isLoading } = useQuery({
@@ -43,7 +45,7 @@ export function ALIPDashboard() {
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Streams</p>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{isLoading ? '...' : data?.health.activeDataStreams.toLocaleString()}</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{isLoading ? '...' : num(data?.health.activeDataStreams)}</h3>
             </div>
             <Network className="h-8 w-8 text-purple-500" />
           </CardContent>

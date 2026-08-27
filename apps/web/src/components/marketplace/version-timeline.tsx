@@ -1,7 +1,9 @@
+import { money, num, dateIN } from '@/lib/format';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { GitCommit, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+
 
 export interface AppVersion {
   id: string;
@@ -42,7 +44,7 @@ export function VersionTimeline({ versions, className, ...props }: VersionTimeli
                 Version {ver.version}
               </h4>
               <span className="text-xs text-muted-foreground">
-                {ver.releaseDate.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                {dateIN(ver.releaseDate)}
               </span>
               {ver.isLatest && (
                 <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">Latest</Badge>

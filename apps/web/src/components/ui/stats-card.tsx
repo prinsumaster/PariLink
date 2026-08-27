@@ -1,9 +1,11 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingDown, TrendingUp, Minus, LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+
 
 interface StatsCardProps {
   title: string;
@@ -83,7 +85,7 @@ export function StatsCard({
             )}
           >
             <TrendIcon className="h-3 w-3" />
-            {Math.abs(trend!).toFixed(1)}%
+            {num(Math.abs(trend!))}%
           </div>
         )}
       </div>

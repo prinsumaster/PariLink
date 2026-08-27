@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus } from 'lucide-react';
@@ -10,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { Vendor } from '@/types';
 import Link from 'next/link';
+
 
 const columns: ColumnDef<Vendor>[] = [
   { accessorKey: 'name', header: 'Vendor', cell: ({ row }) => <span className="font-medium">{row.getValue('name')}</span> },
@@ -43,7 +45,7 @@ export default function VendorsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Vendors</h1>
-          <p className="text-muted-foreground mt-1">{data ? `${(((data as any).meta?.total) ?? 0).toLocaleString()} vendors` : 'Loading...'}</p>
+          <p className="text-muted-foreground mt-1">{data ? `${num((data as any).meta?.total)} vendors` : 'Loading...'}</p>
         </div>
         <Link href="/vendors/new" className="inline-flex items-center gap-2 h-8 px-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"><Plus className="h-4 w-4" />Add Vendor</Link>
       </div>

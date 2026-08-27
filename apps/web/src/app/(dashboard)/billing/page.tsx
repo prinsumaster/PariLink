@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus, FileText, CheckCircle } from 'lucide-react';
@@ -14,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import type { Invoice } from '@/types';
 
+
 const columns: ColumnDef<Invoice>[] = [
   { accessorKey: 'invoiceNumber', header: 'Invoice #', cell: ({ row }) => <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{row.getValue('invoiceNumber')}</span> },
   { accessorKey: 'status', header: 'Status', cell: ({ row }) => <StatusBadge status={row.getValue('status')} /> },
@@ -21,7 +23,7 @@ const columns: ColumnDef<Invoice>[] = [
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) => <span className="font-semibold">₹{(row.getValue('amount') as number).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>,
+    cell: ({ row }) => <span className="font-semibold">{money(row.getValue("amount"))}</span>,
   },
   { accessorKey: 'dueDate', header: 'Due Date', cell: ({ row }) => { const v = row.getValue('dueDate') as string; return v ? format(new Date(v), 'MMM d, yyyy') : '—'; } },
   { accessorKey: 'createdAt', header: 'Created', cell: ({ row }) => format(new Date(row.getValue('createdAt')), 'MMM d, yyyy') },
@@ -70,7 +72,7 @@ export default function BillingPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Billing & Invoices</h1>
-          <p className="text-muted-foreground mt-1">{isLoading ? 'Loading...' : `${((data as any)?.meta?.total ?? (data as any)?.total ?? 0).toLocaleString()} invoices`}</p>
+          <p className="text-muted-foreground mt-1">{isLoading ? 'Loading...' : `${num(((data as any)?.meta?.total ?? (data as any)?.total))} invoices`}</p>
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700 gap-2"><Plus className="h-4 w-4" />Generate Invoice</Button>
       </div>

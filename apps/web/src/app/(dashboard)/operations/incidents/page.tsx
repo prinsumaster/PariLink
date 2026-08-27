@@ -1,7 +1,9 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useCallback, useEffect } from 'react';
 import { operationsApi } from '@/services/operations';
+
 
 const SEVERITY_STYLES: Record<string, string> = {
   SEV1: 'bg-red-500/20 text-red-300 border-red-500/30',
@@ -151,7 +153,7 @@ export default function IncidentsPage() {
                   </div>
                   <p className="text-sm font-semibold text-slate-200 truncate">{inc.title}</p>
                   <p className="text-xs text-slate-500 mt-1">
-                    {new Date(inc.createdAt).toLocaleString()}
+                    {dateIN(inc.createdAt)}
                   </p>
                 </button>
               ))}

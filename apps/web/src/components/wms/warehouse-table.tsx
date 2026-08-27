@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Building, CheckCircle2, AlertTriangle, AlertCircle, XCircle } from 'lucide-react';
+
 
 interface WarehouseTableProps {
   warehouses: Warehouse[];
@@ -81,7 +83,7 @@ export function WarehouseTable({ warehouses, total, isLoading, filters, onFilter
           return (
             <div className="flex flex-col gap-1 w-32">
               <div className="flex justify-between text-xs">
-                <span className="font-medium text-gray-700 dark:text-gray-300">{available.toLocaleString()} free</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{num(available)} free</span>
                 <span className="text-gray-500">{util}%</span>
               </div>
               <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">

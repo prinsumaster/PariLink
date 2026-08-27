@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { api } from '@/services/api';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { MessageSquare, Send, Paperclip, MoreVertical, Search, CheckCheck } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
+
 
 export default function InboxPage() {
   const [threads, setThreads] = useState<any[]>([]);
@@ -83,7 +85,7 @@ export default function InboxPage() {
             >
               <div className="flex justify-between items-start mb-1">
                 <span className="font-semibold text-sm truncate">{thread.subject || 'Direct Message'}</span>
-                <span className="text-xs text-slate-400">{new Date(thread.updatedAt).toLocaleDateString()}</span>
+                <span className="text-xs text-slate-400">{dateIN(thread.updatedAt)}</span>
               </div>
               <p className="text-xs text-slate-500 line-clamp-1">{thread.messages?.[0]?.content || 'Start a conversation'}</p>
             </div>

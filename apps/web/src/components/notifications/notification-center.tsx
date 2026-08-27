@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationService } from '@/services/notifications';
@@ -9,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Bell, AlertTriangle, CheckCircle2, Info, Trash2, Check, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+
 
 interface NotificationCenterProps {
   filters: NotificationFilters;
@@ -113,7 +115,7 @@ export function NotificationCenter({ filters }: NotificationCenterProps) {
                     {notif.title}
                   </h4>
                   <div className="text-xs text-gray-500 whitespace-nowrap">
-                    {new Date(notif.createdAt).toLocaleDateString()} {new Date(notif.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    {dateIN(notif.createdAt)} {dateIN(notif.createdAt)}
                   </div>
                 </div>
                 <p className={`text-sm mb-3 ${notif.isRead ? 'text-gray-500' : 'text-gray-700 dark:text-gray-300'}`}>

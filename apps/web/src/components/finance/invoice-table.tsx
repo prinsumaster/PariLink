@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, CheckCircle2, AlertTriangle, AlertCircle, XCircle, Clock } from 'lucide-react';
+
 
 interface InvoiceTableProps {
   invoices: Invoice[];
@@ -72,9 +74,9 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
         header: 'Timeline',
         cell: ({ row }) => (
           <div className="text-xs space-y-1">
-            <div className="text-gray-500">Issued: {new Date(row.original.issueDate || row.original.createdAt).toLocaleDateString('en-IN')}</div>
+            <div className="text-gray-500">Issued: {dateIN(row.original.issueDate || row.original.createdAt)}</div>
             <div className={`font-medium ${row.original.status === 'OVERDUE' ? 'text-red-500' : 'text-gray-900 dark:text-gray-100'}`}>
-              Due: {new Date(row.original.dueDate).toLocaleDateString('en-IN')}
+              Due: {dateIN(row.original.dueDate)}
             </div>
           </div>
         ),
@@ -91,10 +93,10 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
           return (
             <div className="flex flex-col items-end gap-1">
               <span className="font-semibold text-gray-900 dark:text-white">
-                ${grandTotal.toLocaleString()} <span className="text-xs font-normal text-gray-500">{currency}</span>
+                {money(grandTotal, "$")} <span className="text-xs font-normal text-gray-500">{currency}</span>
               </span>
               {balanceDue > 0 && inv.status !== 'DRAFT' && (
-                <span className="text-xs font-medium text-red-500">Balance: ${balanceDue.toLocaleString()}</span>
+                <span className="text-xs font-medium text-red-500">Balance: {money(balanceDue, "$")}</span>
               )}
             </div>
           );

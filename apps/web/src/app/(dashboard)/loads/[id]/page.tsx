@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useLoad, useUpdateLoad, useDeleteLoad } from '@/hooks/use-loads';
 import { useCustomers, useDrivers, useVehicles } from '@/hooks';
@@ -23,6 +24,7 @@ import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import type { LoadStatus } from '@/types';
 import { StatusFlip } from '@/components/motion';
+
 
 const LOAD_STATUS_FLOW: LoadStatus[] = ['PENDING', 'ASSIGNED', 'IN_TRANSIT', 'DELIVERED'];
 
@@ -237,7 +239,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                 <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
                   {[
                     { label: 'Equipment', value: load.equipmentType.replace(/_/g, ' ') },
-                    { label: 'Weight', value: load.weight ? `${load.weight.toLocaleString()} kg` : '—' },
+                    { label: 'Weight', value: load.weight ? `${num(load.weight)} kg` : '—' },
                     { label: 'Volume', value: load.volume ? `${load.volume} cu ft` : '—' },
                     { label: 'Consignor', value: load.consignor || '—' },
                     { label: 'Consignee', value: load.consignee || '—' },
@@ -336,8 +338,8 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                 </h3>
                 <dl className="divide-y dark:divide-gray-800">
                   {[
-                    { label: 'Rate', value: `₹${load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, bold: true },
-                    { label: 'Cost', value: load.cost ? `₹${load.cost.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—' },
+                    { label: 'Rate', value: money(load.rate), bold: true },
+                    { label: 'Cost', value: load.cost ? money(load.cost) : '—' },
                     {
                       label: 'Margin',
                       value: load.cost
@@ -361,7 +363,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
                           <span className="text-sm font-mono text-blue-600">{inv.invoiceNumber}</span>
                           <div className="flex items-center gap-2">
                             <StatusBadge status={inv.status} />
-                            <span className="text-sm font-medium">₹{(inv.amount ?? 0).toFixed(2)}</span>
+                            <span className="text-sm font-medium">₹{money(inv.amount, "")}</span>
                           </div>
                         </div>
                       ))}
@@ -411,7 +413,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
           <div className="rounded-xl border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-100 dark:border-blue-800 p-5 shadow-sm">
             <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Load Rate</p>
             <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-              ${load.rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {money(load.rate, "$")}
             </p>
           </div>
 

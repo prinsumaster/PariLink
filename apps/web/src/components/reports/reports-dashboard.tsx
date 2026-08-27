@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useQuery } from '@tanstack/react-query';
 import { reportsService } from '@/services/reports';
@@ -27,6 +28,7 @@ const FleetUtilizationChart = dynamic(() => import('./fleet-utilization-chart').
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, AlertTriangle, Clock } from 'lucide-react';
+
 
 interface ReportsDashboardProps {
   filters: ReportFilters;
@@ -77,14 +79,14 @@ export function ReportsDashboard({ filters }: ReportsDashboardProps) {
                     (data?.regionalData || []).map((row, i) => (
                       <tr key={i}>
                         <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{row.region}</td>
-                        <td className="px-4 py-3 text-right">{(row.deliveries ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right">{num(row.deliveries)}</td>
                         <td className="px-4 py-3 text-right">
                           <Badge variant={row.onTimePercentage > 95 ? 'outline' : 'destructive'}
                                  className={row.onTimePercentage > 95 ? 'bg-green-50 text-green-700 border-green-200' : ''}>
                             {row.onTimePercentage}%
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right font-medium">₹{(row.revenue ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right font-medium">{money(row.revenue)}</td>
                       </tr>
                     ))
                   )}

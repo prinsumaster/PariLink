@@ -1,8 +1,10 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RevenueDataPoint } from '@/types/reports';
 import { 
+
   AreaChart, 
   Area, 
   XAxis, 
@@ -71,7 +73,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
               />
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                formatter={(value: any) => [`₹${value.toLocaleString()}`, undefined]}
+                formatter={(value: any) => [money(value), undefined]}
               />
               <Legend verticalAlign="top" height={36}/>
               <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#3b82f6" fillOpacity={1} fill="url(#colorRevenue)" />

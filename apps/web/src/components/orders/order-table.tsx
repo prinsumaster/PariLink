@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Package, Truck, CheckCircle2, Clock, AlertTriangle, XCircle, CreditCard, Box } from 'lucide-react';
+
 
 interface OrderTableProps {
   orders: Order[];
@@ -97,7 +99,7 @@ export function OrderTable({ orders, total, isLoading, filters, onFiltersChange 
         header: 'Freight',
         cell: ({ row }) => (
           <div className="text-sm text-gray-500 flex items-center gap-1">
-            <Box className="h-3 w-3" /> {(row.original.totalWeight ?? 0).toLocaleString()} kg
+            <Box className="h-3 w-3" /> {num(row.original.totalWeight)} kg
           </div>
         )
       }

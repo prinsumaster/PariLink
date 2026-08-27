@@ -1,8 +1,10 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { KPI } from '@/types/reports';
 import { TrendingUp, TrendingDown, Minus, DollarSign, Package, Truck, Clock } from 'lucide-react';
+
 
 interface KPICardsProps {
   kpis: KPI[];
@@ -38,7 +40,7 @@ export function KPICards({ kpis, isLoading }: KPICardsProps) {
         const isNeutral = kpi.change === 0;
         
         let formattedValue = kpi.value.toString();
-        if (kpi.format === 'currency') formattedValue = `₹${Number(kpi.value).toLocaleString()}`;
+        if (kpi.format === 'currency') formattedValue = money(kpi.value);
         if (kpi.format === 'percentage') formattedValue = `${kpi.value}%`;
 
         return (

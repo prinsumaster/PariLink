@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { api } from '@/services/api';
 
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { useAuthStore } from '@/store/auth';
+
 
 export default function crmPage() {
   const [data, setData] = useState([]);
@@ -62,7 +64,7 @@ export default function crmPage() {
                     <TableCell>{String(item.firstName || '-')}</TableCell>
                     <TableCell>{String(item.status || '-')}</TableCell>
                     <TableCell>{String(item.source || '-')}</TableCell>
-                    <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{dateIN(item.createdAt)}</TableCell>
                   </TableRow>
                 ))}
                 {data.length === 0 && (

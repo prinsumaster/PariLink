@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { api } from '@/services/api';
 import { ShieldAlert, RefreshCcw } from 'lucide-react';
 import { toast } from 'sonner';
+
 
 export default function AuditLogsPage() {
   const [data, setData] = useState<any[]>([]);
@@ -84,7 +86,7 @@ export default function AuditLogsPage() {
                   data.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell className="text-xs whitespace-nowrap">
-                        {new Date(log.createdAt).toLocaleString()}
+                        {dateIN(log.createdAt)}
                       </TableCell>
                       <TableCell>
                         <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${

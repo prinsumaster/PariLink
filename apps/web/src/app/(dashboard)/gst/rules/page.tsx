@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { api } from '@/services/api';
 
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { useAuthStore } from '@/store/auth';
+
 
 export default function gstPage() {
   const [data, setData] = useState([]);
@@ -62,7 +64,7 @@ export default function gstPage() {
                     <TableCell>{String(item.hsnSacCode || '-')}</TableCell>
                     <TableCell>{String(item.cgstRate || '-')}</TableCell>
                     <TableCell>{String(item.sgstRate || '-')}</TableCell>
-                    <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{dateIN(item.createdAt)}</TableCell>
                   </TableRow>
                 ))}
                 {data.length === 0 && (

@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, MapPin, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
 
 interface TripTableProps {
   trips: Trip[];
@@ -82,7 +84,7 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
           const date = row.getValue('startDate');
           return (
           <span className="text-sm text-gray-500">
-            {date ? new Date(date as string).toLocaleDateString('en-IN') : '—'}
+            {date ? dateIN(date) : '—'}
           </span>
         )},
       },

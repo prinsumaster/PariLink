@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Vehicle } from '@/types/fleet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { MaintenanceTimeline } from './maintenance-timeline';
 import { DocumentManager } from './document-manager';
 import { FleetMap } from './fleet-map';
+
 
 interface VehicleDetailViewProps {
   vehicle: Vehicle;
@@ -46,11 +48,11 @@ export function VehicleDetailView({ vehicle }: VehicleDetailViewProps) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Gauge className="h-4 w-4"/> Odometer</div>
-                <div className="text-lg font-semibold">{vehicle.odometer?.toLocaleString() ?? '0'} km</div>
+                <div className="text-lg font-semibold">{num(vehicle.odometer)} km</div>
               </div>
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Activity className="h-4 w-4"/> Engine Hrs</div>
-                <div className="text-lg font-semibold">{vehicle.engineHours?.toLocaleString() ?? '0'}</div>
+                <div className="text-lg font-semibold">{num(vehicle.engineHours)}</div>
               </div>
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Battery className="h-4 w-4"/> Fuel/Bat</div>
@@ -58,7 +60,7 @@ export function VehicleDetailView({ vehicle }: VehicleDetailViewProps) {
               </div>
               <div>
                 <div className="flex items-center gap-1 text-sm text-gray-500 mb-1"><Truck className="h-4 w-4"/> Capacity</div>
-                <div className="text-lg font-semibold">{(vehicle.capacity || 0).toLocaleString()} kg</div>
+                <div className="text-lg font-semibold">{num(vehicle.capacity)} kg</div>
               </div>
             </div>
           </CardContent>

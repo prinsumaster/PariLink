@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState } from 'react';
 import { Invoice } from '@/types/finance';
@@ -11,6 +12,7 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { CountUp, StatusFlip } from '@/components/motion';
 import { financeService } from '@/services/finance';
 import { toast } from 'sonner';
+
 
 interface InvoiceDetailViewProps {
   invoice: Invoice;
@@ -85,11 +87,11 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
               <div className="grid grid-cols-2 gap-8">
                 <div className="space-y-1">
                   <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2"><Calendar className="h-4 w-4" /> Issued</div>
-                  <div className="font-medium">{new Date(invoice.issueDate || invoice.createdAt).toLocaleDateString()}</div>
+                  <div className="font-medium">{dateIN(invoice.issueDate || invoice.createdAt)}</div>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2"><Calendar className="h-4 w-4 text-red-400" /> Due Date</div>
-                  <div className={`font-medium ${currentStatus === 'OVERDUE' ? 'text-red-500' : ''}`}>{new Date(invoice.dueDate).toLocaleDateString()}</div>
+                  <div className={`font-medium ${currentStatus === 'OVERDUE' ? 'text-red-500' : ''}`}>{dateIN(invoice.dueDate)}</div>
                 </div>
               </div>
             </div>
@@ -115,9 +117,9 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
                           {item.orderId && <div className="text-xs text-blue-500 font-normal mt-0.5">Order: {item.orderId}</div>}
                         </td>
                         <td className="px-4 py-3 text-right">{item.quantity}</td>
-                        <td className="px-4 py-3 text-right">₹{(item.unitPrice ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right">{money(item.unitPrice)}</td>
                         <td className="px-4 py-3 text-right">{item.taxRate}%</td>
-                        <td className="px-4 py-3 text-right font-medium">₹{(item.total ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right font-medium">{money(item.total)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -148,23 +150,23 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
             
             <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
               <span>Subtotal</span>
-              <span>₹{(invoice.subtotal ?? 0).toLocaleString()}</span>
+              <span>{money(invoice.subtotal)}</span>
             </div>
             <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
               <span>Tax</span>
-              <span>₹{(invoice.taxTotal ?? 0).toLocaleString()}</span>
+              <span>{money(invoice.taxTotal)}</span>
             </div>
             {(invoice.discountTotal ?? 0) > 0 && (
               <div className="flex justify-between items-center text-sm text-green-600">
                 <span>Discount</span>
-                <span>-${(invoice.discountTotal ?? 0).toLocaleString()}</span>
+                <span>-{money(invoice.discountTotal, "$")}</span>
               </div>
             )}
             
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-4">
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total</span>
-                <span>₹{(invoice.grandTotal ?? invoice.amount ?? 0).toLocaleString()} {invoice.currency || 'INR'}</span>
+                <span>{money(invoice.grandTotal ?? invoice.amount)} {invoice.currency || 'INR'}</span>
               </div>
             </div>
 

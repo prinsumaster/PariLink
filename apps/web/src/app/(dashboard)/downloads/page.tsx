@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FileDown, RefreshCw, CheckCircle2, XCircle, Clock, Loader2 } from 'lucide-react';
 import { api } from '@/services/api';
 import { format } from 'date-fns';
+
 
 interface ExportJob {
   id: string;
@@ -64,7 +66,7 @@ export default function DownloadCenterPage() {
     const dm = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    return `${parseFloat(num(bytes / Math.pow(k, i)))} ${sizes[i]}`;
   };
 
   const getStatusIcon = (status: string) => {

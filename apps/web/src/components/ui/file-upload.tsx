@@ -1,6 +1,8 @@
+import { money, num, dateIN } from '@/lib/format';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { UploadCloud, File, X, FileText, Image as ImageIcon, FileArchive, Loader2 } from 'lucide-react';
+
 
 interface FileUploadProps extends React.HTMLAttributes<HTMLDivElement> {
   onFilesSelected: (files: File[]) => void;
@@ -124,7 +126,7 @@ export function FilePreview({ files, onRemove, className, ...props }: FilePrevie
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    return parseFloat(num(bytes / Math.pow(k, i))) + ' ' + sizes[i];
   };
 
   return (

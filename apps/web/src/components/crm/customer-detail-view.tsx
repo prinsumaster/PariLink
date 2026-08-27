@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { Customer } from '@/types/crm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { Building2, MapPin, CreditCard, Users, Briefcase, Globe, Mail, Phone, Ba
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface CustomerDetailViewProps {
   customer: Customer;
@@ -139,12 +141,12 @@ export function CustomerDetailView({ customer }: CustomerDetailViewProps) {
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">Credit Limit</span>
-              <span className="font-medium">₹{(customer.billing?.creditLimit || 0).toLocaleString()} {customer.billing?.currency || 'INR'}</span>
+              <span className="font-medium">{money(customer.billing?.creditLimit)} {customer.billing?.currency || 'INR'}</span>
             </div>
             <div className="pt-2">
               <div className="text-sm text-gray-500 mb-1">Outstanding Balance</div>
               <div className={`text-2xl font-bold ${(customer.billing?.outstandingBalance || 0) > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                ${(customer.billing?.outstandingBalance || 0).toLocaleString()} <span className="text-sm font-normal">{customer.billing?.currency || 'INR'}</span>
+                {money(customer.billing?.outstandingBalance, "$")} <span className="text-sm font-normal">{customer.billing?.currency || 'INR'}</span>
               </div>
             </div>
             {customer.billing?.taxId && (
@@ -169,13 +171,13 @@ export function CustomerDetailView({ customer }: CustomerDetailViewProps) {
                 <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Total Orders</div>
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg text-center">
-                <div className="text-xl font-bold text-green-600 dark:text-green-400">₹{((customer.metrics?.totalRevenue || 0) / 1000).toFixed(1)}k</div>
+                <div className="text-xl font-bold text-green-600 dark:text-green-400">{money((customer.metrics?.totalRevenue || 0) / 1000)}k</div>
                 <div className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Lifetime Rev</div>
               </div>
             </div>
             {customer.metrics?.lastOrderDate && (
               <div className="text-center text-sm text-gray-500 pt-2">
-                Last order placed on {new Date(customer.metrics.lastOrderDate).toLocaleDateString()}
+                Last order placed on {dateIN(customer.metrics.lastOrderDate)}
               </div>
             )}
           </CardContent>

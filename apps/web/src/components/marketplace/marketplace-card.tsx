@@ -1,3 +1,4 @@
+import { money, num, dateIN } from '@/lib/format';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, CheckCircle, Download } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 export interface AppData {
   id: string;
@@ -69,7 +71,7 @@ export function MarketplaceCard({ app, onInstall, onConfigure, className, ...pro
       <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-          <span className="font-medium text-foreground">{app.rating?.toFixed(1) || 'New'}</span>
+          <span className="font-medium text-foreground">{num(app.rating) || "New"}</span>
           {app.reviews && <span>({app.reviews})</span>}
         </div>
         <div className="flex items-center gap-1">

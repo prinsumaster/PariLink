@@ -1,9 +1,11 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { ShipmentSummary } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Package, Clock, CheckCircle2, AlertTriangle, AlertOctagon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
 
 interface ShipmentPanelProps {
   shipments?: ShipmentSummary[];
@@ -97,9 +99,7 @@ export function ShipmentPanel({ shipments, isLoading }: ShipmentPanelProps) {
                       </div>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(shipment.eta).toLocaleString(undefined, { 
-                        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                      })}
+                      {dateIN(shipment.eta)}
                     </td>
                     <td className="px-4 py-3">
                       {getSlaBadge(shipment.slaStatus)}

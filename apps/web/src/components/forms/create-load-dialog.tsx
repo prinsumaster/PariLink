@@ -1,4 +1,5 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+
   Building2, ArrowRight, DollarSign, ChevronRight,
   ChevronLeft, Check, Package, MapPin, Truck,
 } from 'lucide-react';
@@ -495,7 +497,7 @@ export function CreateLoadDialog({ open, onOpenChange }: CreateLoadDialogProps) 
                       </p>
                       <p className="font-semibold text-foreground">
                         // eslint-disable-next-line react-hooks/incompatible-library
-                        {watch('rate') ? `₹${Number(watch('rate')).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
+                        {watch('rate') ? money(watch("rate")) : '—'}
                       </p>
                     </div>
                   </div>

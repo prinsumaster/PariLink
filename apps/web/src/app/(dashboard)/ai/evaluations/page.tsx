@@ -1,8 +1,10 @@
 'use client';
+import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
+
   ShieldCheck, AlertOctagon, CheckSquare, XSquare, 
   Search, Filter, ShieldAlert
 } from 'lucide-react';
@@ -91,7 +93,7 @@ export default function AiEvaluationDashboardPage() {
           <tbody className="divide-y divide-slate-800">
             {reports.map(r => (
               <tr key={r.id} className="hover:bg-slate-800/40 transition-colors">
-                <td className="px-4 py-3 text-slate-400 font-mono text-xs">{new Date(r.date).toLocaleString()}</td>
+                <td className="px-4 py-3 text-slate-400 font-mono text-xs">{dateIN(r.date)}</td>
                 <td className="px-4 py-3 font-semibold text-slate-200">{r.type}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
