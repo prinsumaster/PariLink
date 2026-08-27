@@ -211,8 +211,8 @@ export function Sidebar({ onClose }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center justify-between h-14 px-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <div className="bg-blue-600 p-1.5 rounded-md">
-            <Navigation className="h-4 w-4 text-white" />
+          <div className="h-7 w-7 flex items-center justify-center">
+            <img src="/brand/parilink-mark.png" alt="PariLink" className="h-full w-full object-contain" />
           </div>
           <span className="text-lg font-bold text-gray-900 dark:text-white">PariLink</span>
         </div>

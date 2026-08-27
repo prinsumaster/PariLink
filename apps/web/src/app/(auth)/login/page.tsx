@@ -50,6 +50,7 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [capsLockOn, setCapsLockOn] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { isMfaRequired, verifyMfa, mfaToken, setMfaRequired } = useMfa();
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
@@ -57,6 +58,7 @@ function LoginContent() {
   });
 
   useEffect(() => {
+    setIsMounted(true);
     const handleKeyDown = (e: KeyboardEvent) => {
       if (typeof e.getModifierState === 'function' && e.getModifierState('CapsLock')) {
         setCapsLockOn(true);
@@ -114,11 +116,8 @@ function LoginContent() {
 
   return (
     <div className="flex flex-col min-h-[500px]">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="bg-[#FF4500] p-2.5 rounded-sm shadow-lg border border-[#FF4500]/50">
-          <Hexagon className="h-6 w-6 text-white fill-white/20" strokeWidth={2} />
-        </div>
-        <span className="text-2xl font-black text-white tracking-tighter">PariLink</span>
+      <div className="flex justify-center mb-8">
+        <img src="/brand/parilink-logo-full.png" alt="PariLink" className="h-12 w-auto object-contain" />
       </div>
 
       <h2 className="text-3xl font-medium tracking-tight text-white">
@@ -160,7 +159,7 @@ function LoginContent() {
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} action="javascript:void(0);" className="space-y-5">
           {error && (
             <div className="p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg animate-shake flex items-center gap-2 dark:bg-red-950/50 dark:border-red-900/50 dark:text-red-400">
               <AlertTriangle className="h-4 w-4" />

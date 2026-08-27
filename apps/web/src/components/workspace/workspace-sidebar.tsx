@@ -79,8 +79,8 @@ export function WorkspaceSidebar() {
           'h-14 flex items-center border-b border-sidebar-border shrink-0',
           sidebarCollapsed ? 'justify-center px-0' : 'px-4 gap-3',
         )}>
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <span className="text-primary-foreground font-bold text-sm">P</span>
+          <div className="h-8 w-8 shrink-0 flex items-center justify-center">
+            <img src="/brand/parilink-mark.png" alt="PariLink" className="h-full w-full object-contain" />
           </div>
           {!sidebarCollapsed && (
             <span className="font-semibold text-sm text-sidebar-foreground truncate">
