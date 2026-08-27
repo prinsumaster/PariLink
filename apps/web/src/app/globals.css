@@ -89,18 +89,18 @@
   --card-foreground:               #111111;
   --popover:                       #FFFFFF;
   --popover-foreground:            #111111;
-  --primary:                       #CC3700;
+  --primary:                       #E4002B;
   --primary-foreground:            #FFFFFF;
   --secondary:                     #F4F4F5;
   --secondary-foreground:          #27272A;
   --muted:                         #F4F4F5;
   --muted-foreground:              #71717A;
   --accent:                        #FFF3ED;
-  --accent-foreground:             #CC3700;
+  --accent-foreground:             #E4002B;
   --destructive:                   #D92D20;
   --border:                        #E4E4E7;
   --input:                         #E4E4E7;
-  --ring:                          #CC3700;
+  --ring:                          #E4002B;
   --radius:                        2px;
 }
 
@@ -112,18 +112,18 @@
   --card-foreground:               #FAFAFA;
   --popover:                       #111111;
   --popover-foreground:            #FAFAFA;
-  --primary:                       #FF4500;
+  --primary:                       #E4002B;
   --primary-foreground:            #FFFFFF;
   --secondary:                     #27272A;
   --secondary-foreground:          #FAFAFA;
   --muted:                         #27272A;
   --muted-foreground:              #A1A1AA;
   --accent:                        #3F0600;
-  --accent-foreground:             #FF4500;
+  --accent-foreground:             #E4002B;
   --destructive:                   #D92D20;
   --border:                        #27272A;
   --input:                         #27272A;
-  --ring:                          #FF4500;
+  --ring:                          #E4002B;
 }
 
 /* ─── Base Layer ──────────────────────────────────────────── */

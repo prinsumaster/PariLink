@@ -55,7 +55,7 @@ export function ContextPanel({ selectedEntityId }: ContextPanelProps) {
   if (loading) {
     return (
       <div className="w-96 border-l border-slate-800 bg-slate-950 flex flex-col shrink-0 text-slate-100 h-full items-center justify-center">
-        <Activity className="h-8 w-8 animate-spin text-indigo-500" />
+        <Activity className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -71,7 +71,7 @@ export function ContextPanel({ selectedEntityId }: ContextPanelProps) {
           <span className="text-xs text-slate-500">ID: {selectedEntityId}</span>
         </div>
         <h2 className="text-2xl font-bold tracking-tight mb-1 flex items-center gap-2">
-          {isTrip ? <AlertTriangle className="text-amber-500 h-6 w-6" /> : isVehicle ? <Truck className="text-emerald-500 h-6 w-6" /> : <Building2 className="text-blue-500 h-6 w-6" />}
+          {isTrip ? <AlertTriangle className="text-amber-500 h-6 w-6" /> : isVehicle ? <Truck className="text-emerald-500 h-6 w-6" /> : <Building2 className="text-primary h-6 w-6" />}
           {entityData?.name || selectedEntityId}
         </h2>
         <p className="text-sm text-slate-400">

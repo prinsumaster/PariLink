@@ -86,7 +86,7 @@ export function CustomerTable({ customers, total, isLoading, filters, onFiltersC
             <div className="flex flex-col items-start gap-1">
               <Badge variant="outline" className="text-xs font-mono">{billing.paymentTerms || 'NET_30'}</Badge>
               {bal > 0 ? (
-                <span className="text-xs font-semibold text-red-600">Arrears: {money(bal, "$")}</span>
+                <span className="text-xs font-semibold text-red-600">Arrears: {money(bal)}</span>
               ) : (
                 <span className="text-xs text-gray-500">Good Standing</span>
               )}
@@ -100,7 +100,7 @@ export function CustomerTable({ customers, total, isLoading, filters, onFiltersC
         cell: ({ row }) => (
           <div className="text-sm font-semibold flex items-center gap-1">
             <BarChart3 className="h-4 w-4 text-green-500" />
-            {money(row.original.metrics?.totalRevenue, "$")}
+            {money(row.original.metrics?.totalRevenue)}
           </div>
         ),
       }

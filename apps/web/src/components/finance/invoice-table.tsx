@@ -93,10 +93,10 @@ export function InvoiceTable({ invoices, total, isLoading, filters, onFiltersCha
           return (
             <div className="flex flex-col items-end gap-1">
               <span className="font-semibold text-gray-900 dark:text-white">
-                {money(grandTotal, "$")} <span className="text-xs font-normal text-gray-500">{currency}</span>
+                {money(grandTotal)} <span className="text-xs font-normal text-gray-500">{currency}</span>
               </span>
               {balanceDue > 0 && inv.status !== 'DRAFT' && (
-                <span className="text-xs font-medium text-red-500">Balance: {money(balanceDue, "$")}</span>
+                <span className="text-xs font-medium text-red-500">Balance: {money(balanceDue)}</span>
               )}
             </div>
           );

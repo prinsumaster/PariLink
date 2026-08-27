@@ -27,7 +27,7 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
               <Avatar className="h-16 w-16 shadow-sm border border-gray-100 dark:border-gray-800">
                 <AvatarImage src={driver.photoUrl} alt={driver.name} />
                 <AvatarFallback className="bg-blue-100 text-blue-700 text-xl font-bold">
-                  {driver.name.charAt(0)}
+                  {driver?.name?.charAt(0) || 'D'}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -39,7 +39,7 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
                     driver.status === 'ONLINE' || driver.status === 'AVAILABLE' ? 'default' :
                     driver.status === 'DRIVING' || driver.status === 'IN_TRIP' ? 'secondary' : 'outline'
                   }>
-                    {driver.status.replace('_', ' ')}
+                    {driver.status?.replace('_', ' ') || 'UNKNOWN'}
                   </Badge>
                 </div>
               </div>
@@ -66,7 +66,7 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Hash className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">Nat ID: {driver.nationalIdMasked}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Nat ID: {driver.nationalIdMasked || 'N/A'}</span>
                   </div>
                 </div>
               </div>
@@ -76,15 +76,15 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 text-sm">
                     <User className="h-4 w-4 text-gray-400" />
-                    <span className="font-medium text-gray-900 dark:text-gray-100">{driver.emergencyContact.name} ({driver.emergencyContact.relation})</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{driver.emergencyContact?.name || 'N/A'} ({driver.emergencyContact?.relation || 'N/A'})</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Phone className="h-4 w-4 text-red-400" />
-                    <span className="text-gray-600 dark:text-gray-400">{driver.emergencyContact.phone}</span>
+                    <span className="text-gray-600 dark:text-gray-400">{driver.emergencyContact?.phone || 'N/A'}</span>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Activity className="h-4 w-4 text-red-500" />
-                    <span className="text-gray-600 dark:text-gray-400">Blood Group: <strong className="text-red-500">{driver.bloodGroup}</strong></span>
+                    <span className="text-gray-600 dark:text-gray-400">Blood Group: <strong className="text-red-500">{driver.bloodGroup || 'N/A'}</strong></span>
                   </div>
                 </div>
               </div>
@@ -93,7 +93,7 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
               <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-lg flex items-center gap-4">
-                <Truck className="h-8 w-8 text-blue-500" />
+                <Truck className="h-8 w-8 text-primary" />
                 <div>
                   <div className="text-sm text-gray-500">Current Asset</div>
                   <div className="font-semibold text-gray-900 dark:text-white">

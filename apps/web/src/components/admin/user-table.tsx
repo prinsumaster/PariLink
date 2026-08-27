@@ -52,7 +52,7 @@ export function UserTable({ users, total, isLoading, filters, onFiltersChange, o
         cell: ({ row }) => (
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center font-semibold text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
-              {row.original.firstName.charAt(0)}{row.original.lastName.charAt(0)}
+              {(row.original.firstName || '').charAt(0)}{(row.original.lastName || '').charAt(0)}
             </div>
             <div>
               <div className="font-medium text-gray-900 dark:text-white">

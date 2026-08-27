@@ -118,7 +118,7 @@ export function FileUpload({
                 <p className="text-xs text-muted-foreground">{formatBytes(file.size)}</p>
               </div>
               {file.status === 'uploading' && (
-                <div className="h-4 w-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+                <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               )}
               {file.status === 'done' && <CheckCircle className="h-4 w-4 text-emerald-500" />}
               {file.status === 'error' && <AlertCircle className="h-4 w-4 text-red-500" />}

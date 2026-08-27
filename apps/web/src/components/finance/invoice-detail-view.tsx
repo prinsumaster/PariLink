@@ -159,7 +159,7 @@ export function InvoiceDetailView({ invoice }: InvoiceDetailViewProps) {
             {(invoice.discountTotal ?? 0) > 0 && (
               <div className="flex justify-between items-center text-sm text-green-600">
                 <span>Discount</span>
-                <span>-{money(invoice.discountTotal, "$")}</span>
+                <span>-{money(invoice.discountTotal)}</span>
               </div>
             )}
             

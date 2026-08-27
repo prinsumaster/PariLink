@@ -33,7 +33,7 @@ export function ShipmentPanel({ shipments, isLoading }: ShipmentPanelProps) {
 
   const getStatusIcon = (status: ShipmentSummary['status']) => {
     switch (status) {
-      case 'IN_TRANSIT': return <TruckIcon className="text-blue-500" />;
+      case 'IN_TRANSIT': return <TruckIcon className="text-primary" />;
       case 'DELIVERED': return <CheckCircle2 className="text-green-500" />;
       case 'DELAYED': return <AlertTriangle className="text-orange-500" />;
       case 'EXCEPTION': return <AlertOctagon className="text-red-500" />;

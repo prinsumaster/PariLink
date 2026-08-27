@@ -31,7 +31,7 @@ export function IntegrationCard({
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 bg-slate-100 dark:bg-slate-900 rounded-lg flex items-center justify-center text-lg font-bold text-slate-400">
-              {name.charAt(0)}
+              {(name || '').charAt(0) || 'I'}
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 dark:text-slate-100">{name}</h3>

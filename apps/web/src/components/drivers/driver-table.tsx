@@ -66,7 +66,7 @@ export function DriverTable({ drivers, total, isLoading, filters, onFiltersChang
               <Avatar className="h-8 w-8">
                 <AvatarImage src={row.original.photoUrl} alt={name} />
                 <AvatarFallback className="bg-blue-100 text-blue-700">
-                  {name.charAt(0)}
+                  {(name || '').charAt(0) || 'D'}
                 </AvatarFallback>
               </Avatar>
               <div>

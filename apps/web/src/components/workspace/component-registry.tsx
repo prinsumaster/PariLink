@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
 
-const Fallback = () => <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-indigo-500" /></div>;
+const Fallback = () => <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
 
 // Lazily load all major pages to avoid massive initial bundle
 export const ComponentRegistry: Record<string, React.ComponentType<any>> = {

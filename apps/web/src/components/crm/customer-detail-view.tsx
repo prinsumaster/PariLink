@@ -146,7 +146,7 @@ export function CustomerDetailView({ customer }: CustomerDetailViewProps) {
             <div className="pt-2">
               <div className="text-sm text-gray-500 mb-1">Outstanding Balance</div>
               <div className={`text-2xl font-bold ${(customer.billing?.outstandingBalance || 0) > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                {money(customer.billing?.outstandingBalance, "$")} <span className="text-sm font-normal">{customer.billing?.currency || 'INR'}</span>
+                {money(customer.billing?.outstandingBalance)} <span className="text-sm font-normal">{customer.billing?.currency || 'INR'}</span>
               </div>
             </div>
             {customer.billing?.taxId && (

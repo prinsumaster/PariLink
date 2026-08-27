@@ -88,7 +88,7 @@ export function LicenseUsageBanner() {
           ) : v.boost ? (
             <Zap className="w-3.5 h-3.5 text-amber-500" />
           ) : (
-            <Truck className="w-3.5 h-3.5 text-indigo-500" />
+            <Truck className="w-3.5 h-3.5 text-primary" />
           )}
           <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
             Fleet Capacity
