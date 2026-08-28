@@ -5,12 +5,19 @@ import { KanbanDispatchBoard } from './_components/KanbanDispatchBoard';
 import { UniversalSearch } from './_components/UniversalSearch';
 import { TripWorkspacePanel } from './_components/TripWorkspacePanel';
 import { AiAssistantPanel } from './_components/AiAssistantPanel';
+import { DispatchFleetMap } from './_components/DispatchFleetMap';
 import { Map, ListTodo, Activity, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function DispatchWorkspacePage() {
   const [selectedTrip, setSelectedTrip] = useState<string | null>(null);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'KANBAN' | 'MAP' | 'TIMELINE'>('KANBAN');
+
+  const handleSelectVehicle = (vehicleId: string | null, tripId: string | null) => {
+    setSelectedVehicleId(vehicleId);
+    setSelectedTrip(tripId);
+  };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30">
@@ -69,9 +76,12 @@ export default function DispatchWorkspacePage() {
         <div className="flex-1 overflow-x-auto overflow-y-hidden relative bg-slate-950/80">
           {activeTab === 'KANBAN' && <KanbanDispatchBoard onSelectTrip={setSelectedTrip} />}
           {activeTab === 'MAP' && (
-             <div className="h-full w-full flex items-center justify-center text-slate-500">
-               Live Fleet Map View (Shared with Command Center)
-             </div>
+            <div className="h-full w-full relative">
+              <DispatchFleetMap
+                selectedVehicleId={selectedVehicleId}
+                onSelectVehicle={handleSelectVehicle}
+              />
+            </div>
           )}
         </div>
       </div>

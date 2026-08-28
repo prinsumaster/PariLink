@@ -53,9 +53,13 @@ export class LiveFleetService {
 
     // Map trips to locations based on vehicle ID mapping (assuming providerVehicleId = vehicle.registrationNumber for simplicity)
     const mapData = activeTrips.map((trip) => {
+      // Match by vehicleId or licensePlate
       const loc = locations.find(
-        (l) => l.providerVehicleId === trip.vehicle?.licensePlate,
+        (l) =>
+          (l.vehicleId && l.vehicleId === trip.vehicleId) ||
+          l.providerVehicleId === trip.vehicle?.licensePlate,
       );
+      const isSimulated = loc?.provider === 'DEMO_TELEMETRY';
       return {
         tripId: trip.id,
         vehicleId: trip.vehicleId,
@@ -71,12 +75,48 @@ export class LiveFleetService {
         heading: loc?.heading || 0,
         lastUpdate: loc?.gpsTimestamp || trip.startDate,
         status: trip.status,
+        isSimulated,
       };
     });
 
     await this.cache.set(cacheKey, mapData, 2); // 2 second cache TTL to meet GPS refresh < 2 sec target
 
     return mapData;
+  }
+
+  /**
+   * Returns the last N fixes for a vehicle (for polyline rendering and 10× replay).
+   */
+  async getVehicleTrail(
+    companyId: string,
+    vehicleId: string,
+    maxPoints = 90,
+  ) {
+    const locations = await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.vehicleLocation.findMany({
+        where: {
+          companyId,
+          OR: [
+            { vehicleId },
+            // also match by providerVehicleId = licensePlate (backwards compat)
+            { vehicleId: null, providerVehicleId: vehicleId },
+          ],
+        },
+        orderBy: { gpsTimestamp: 'asc' },
+        take: maxPoints,
+        select: {
+          latitude: true,
+          longitude: true,
+          speed: true,
+          heading: true,
+          gpsTimestamp: true,
+          provider: true,
+        },
+      }),
+    );
+
+    const isSimulated = locations.some((l) => l.provider === 'DEMO_TELEMETRY');
+    return { vehicleId, isSimulated, trail: locations };
   }
 
   /**

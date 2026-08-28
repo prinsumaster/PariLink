@@ -43,6 +43,16 @@ export class DispatchOperationsController {
     return this.liveFleetService.getLiveMap(user.companyId);
   }
 
+  @Get('live-fleet/trail/:vehicleId')
+  @RequirePermissions('dispatch:read')
+  @ApiOperation({ summary: 'Get vehicle GPS trail (last 90 fixes) for polyline + replay' })
+  async getVehicleTrail(
+    @GetUser() user: AuthenticatedUser,
+    @Param('vehicleId') vehicleId: string,
+  ) {
+    return this.liveFleetService.getVehicleTrail(user.companyId, vehicleId);
+  }
+
   @Get('ai/trip/:tripId/predict-eta')
   @RequirePermissions('dispatch:execute')
   @ApiOperation({ summary: 'Predict Trip ETA via AI' })
