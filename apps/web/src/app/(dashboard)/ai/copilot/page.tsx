@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Send, Bot, User, Loader2 } from 'lucide-react';
-import { api } from '@/services/api';
+import { api, API_URL } from '@/services/api';
+import { useAuthStore } from '@/store/auth';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -32,6 +33,7 @@ const SUGGESTION_CHIPS = [
 ];
 
 export default function CopilotPage() {
+  const authToken = useAuthStore((s) => s.token);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSession, setActiveSession] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -110,10 +112,15 @@ export default function CopilotPage() {
     }]);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!baseUrl) throw new Error('NEXT_PUBLIC_API_URL missing');
-      const url = new URL(`${baseUrl}/ai/copilot/sessions/${activeSession}/chat/stream`);
+      const baseUrl = API_URL;
+      if (!baseUrl) throw new Error('API_URL missing');
+      
+      const url = new URL(`${baseUrl}/ai/copilot/sessions/${activeSession}/chat/stream`, window.location.origin);
       url.searchParams.append('message', trimmed);
+
+      // EventSource can't send headers — pass JWT as ?token= (backend jwt.strategy reads it)
+      const token = authToken || '';
+      url.searchParams.append('token', token);
 
       const eventSource = new EventSource(url.toString());
 
@@ -127,9 +134,10 @@ export default function CopilotPage() {
           } else if (data.chunk) {
             setMessages(prev => {
               const newMessages = [...prev];
-              const last = newMessages[newMessages.length - 1];
+              const last = { ...newMessages[newMessages.length - 1] };
               if (last.role === 'ASSISTANT') {
                 last.content += data.chunk;
+                newMessages[newMessages.length - 1] = last;
               }
               return newMessages;
             });
