@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { rasterStyle } from '@/lib/map-style';
 
 const Map = dynamic(() => import('react-map-gl/maplibre'), {
   ssr: false,
@@ -48,9 +49,7 @@ export function FleetMap({ vehicles, isLoading }: FleetMapProps) {
     };
   }, [vehicles]);
 
-  const mapStyle = resolvedTheme === 'dark' 
-    ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
-    : 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+  const mapStyle = rasterStyle(resolvedTheme === 'dark');
 
   const vehiclesWithLocation = vehicles.filter(v => v.location);
 

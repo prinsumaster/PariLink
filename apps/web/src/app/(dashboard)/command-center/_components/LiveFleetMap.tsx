@@ -9,6 +9,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { api } from '@/services/api';
 import { Loader2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { rasterStyle } from '@/lib/map-style';
 
 const INITIAL_VIEW_STATE = {
   longitude: -98.5795,
@@ -61,15 +62,13 @@ export function LiveFleetMap({ selectedTrip }: { selectedTrip: string | null }) 
     ];
   }, [mapData]);
 
-  const mapStyle = theme === 'dark' 
-    ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
-    : 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+  const mapStyle = rasterStyle(theme === 'dark');
 
   return (
     <div className="relative w-full h-full bg-slate-100 dark:bg-slate-900">
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
       

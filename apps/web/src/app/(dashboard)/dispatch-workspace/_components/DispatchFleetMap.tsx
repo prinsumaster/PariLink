@@ -22,6 +22,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { api } from '@/services/api';
 import { Loader2, Wifi, WifiOff, AlertTriangle } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { rasterStyle } from '@/lib/map-style';
 
 // ── India-centered initial view (no hardcoded coordinates) ────────────────────
 const INDIA_VIEW_STATE = {
@@ -133,6 +134,10 @@ export function DispatchFleetMap({
     refetchInterval: 5000,
   });
 
+  if (typeof window !== 'undefined') {
+    (window as any).__TEST_FLEET_DATA__ = fleetData;
+  }
+
   // ── 2. Fetch trail for selected vehicle ──────────────────────────────────
   const { data: trailData } = useQuery<{ vehicleId: string; isSimulated: boolean; trail: TrailFix[] }>({
     queryKey: ['dispatch', 'trail', selectedVehicleId],
@@ -210,6 +215,10 @@ export function DispatchFleetMap({
     setInterpolated(next);
   }, [virtualTimeMs, fleetData, trailData, selectedVehicleId]);
 
+  if (typeof window !== 'undefined') {
+    (window as any).__TEST_FLEET_POSITIONS__ = interpolated;
+  }
+
   // ── 5. Build deck.gl layers ──────────────────────────────────────────────
   const layers = useMemo(() => {
     if (!fleetData) return [];
@@ -271,10 +280,7 @@ export function DispatchFleetMap({
     return [routeLayer, scatterLayer].filter(Boolean);
   }, [fleetData, interpolated, selectedVehicleId, trailData, onSelectVehicle]);
 
-  const mapStyle =
-    theme === 'dark'
-      ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
-      : 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+  const mapStyle = rasterStyle(theme === 'dark');
 
   return (
     <div className="relative w-full h-full">

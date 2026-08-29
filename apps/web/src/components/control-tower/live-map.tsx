@@ -6,6 +6,7 @@ import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, IconLayer } from '@deck.gl/layers';
 import { useControlTowerStore } from '../../store/control-tower.store';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { rasterStyle } from '@/lib/map-style';
 
 const INITIAL_VIEW_STATE = {
   longitude: 78.9629, // Center of India
@@ -53,7 +54,7 @@ export const LiveMap = () => {
         getTooltip={({ object }: any) => object && `Vehicle: ${object.id}\nSpeed: ${object.speed} km/h\nStatus: ${object.status}`}
       >
         <Map
-          mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+          mapStyle={rasterStyle(true)}
           attributionControl={false}
         />
       </DeckGL>
