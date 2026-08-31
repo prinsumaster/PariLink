@@ -1,3 +1,4 @@
+import { CreateCopilotSessionDto, CopilotChatDto } from './dto/copilot.dto';
 import {
   Controller,
   Get,
@@ -30,6 +31,8 @@ import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { Observable } from 'rxjs';
+import { ChatMessageDto } from './dto/chat-message.dto';
+import { ExecuteWorkflowDto } from './dto/execute-workflow.dto';
 
 @ApiTags('AI')
 @ApiBearerAuth()
@@ -146,13 +149,13 @@ export class AiController {
   async chat(
     @GetUser() user: AuthenticatedUser,
     @Param('sessionId') sessionId: string,
-    @Body('message') message: string,
+    @Body() body: ChatMessageDto,
   ) {
     return this.copilotChat.chat(
       user.companyId,
       user.userId,
       sessionId,
-      message,
+      body.message,
     );
   }
 
@@ -281,13 +284,12 @@ export class AiController {
   })
   async executeWorkflow(
     @GetUser() user: AuthenticatedUser,
-    @Body('workflowName') workflowName: string,
-    @Body('input') input: Record<string, any>,
+    @Body() body: ExecuteWorkflowDto,
   ) {
     return this.workflowExecution.executeWorkflow(
-      workflowName,
+      body.workflowName,
       user.companyId,
-      input || {},
+      body.input || {},
       user.userId,
     );
   }
