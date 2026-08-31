@@ -100,12 +100,12 @@ export class IncidentManagementService {
   async updateIncidentStatus(
     input: UpdateIncidentStatusInput,
   ): Promise<unknown> {
-    const incident = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
-      tx.incident.findUnique({ where: { id: input.incidentId } }),
-    );
-    if (!incident || incident.companyId !== input.companyId) {
-      throw new NotFoundException(`Incident ${input.incidentId} not found`);
-    }
+    const incident = await this.prisma.runAsTenantById<{
+      id: string;
+      companyId: string;
+      status: string;
+      resolvedAt: Date | null;
+    }>('incident', input.incidentId, input.companyId);
 
     const data: Record<string, unknown> = { status: input.status };
     if (input.rootCause) data.rootCause = input.rootCause;

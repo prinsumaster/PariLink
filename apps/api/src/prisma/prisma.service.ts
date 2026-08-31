@@ -280,6 +280,18 @@ export class PrismaService
    * Executes a callback within a Prisma transaction that bypasses RLS policies
    * for system/admin operations across all companies.
    * A valid reason MUST be provided for security auditing.
+   *
+   * REASON STRING, HONESTLY: this only enforces length (>=5 chars), not
+   * content. ~74 of the ~230 call sites in this codebase currently pass the
+   * literal string 'System operation or legacy bypass', which satisfies the
+   * length check but is not a real audit trail -- it can't tell you *why*
+   * RLS was bypassed for a given call. Rejecting that placeholder outright
+   * was considered and deliberately NOT done here: it would break ~74 call
+   * sites at once, and reviewing/rewriting each one's actual reason is real
+   * work that deserves its own change, not something to fold into this
+   * security pass. New code added in this pass (runAsTenantById below)
+   * passes a real, dynamic, per-call reason. Backfilling the other 74 is
+   * flagged as follow-up work, not silently dropped.
    */
   async runAsSystem<T>(
     reason: string,
@@ -309,6 +321,55 @@ export class PrismaService
       // Execute the business logic
       return callback(tx);
     });
+  }
+
+  /**
+   * Fetches a single record by id while RLS is bypassed (a system-level
+   * lookup), then structurally re-checks that the fetched record's
+   * companyId matches the caller's companyId before returning it.
+   *
+   * This replaces the "runAsSystem + manually recheck companyId" pattern
+   * used at 15+ call sites in this codebase. That pattern is correct at
+   * every site sampled during audit, but nothing enforces the recheck --
+   * it's just a convention every call site has to remember to write, and
+   * one missed recheck is a full tenant leak (fetch someone else's record
+   * by guessing/enumerating an id). Using this helper instead makes the
+   * recheck structurally unskippable: there is no code path here that
+   * returns a record without it.
+   *
+   * Throws NotFoundException -- not ForbiddenException -- on both "no such
+   * record" and "record exists but belongs to another company", on
+   * purpose: a 403 would confirm to the caller that a record with that id
+   * exists in some other tenant, which is itself a (small) information
+   * leak. 404 for both cases tells an attacker nothing more than "you
+   * don't have this".
+   */
+  async runAsTenantById<T extends { companyId: string | null }>(
+    model: string,
+    id: string,
+    companyId: string,
+  ): Promise<T> {
+    if (!companyId) {
+      throw new NotFoundException(`${model} not found.`);
+    }
+
+    const record = await this.runAsSystem<T | null>(
+      `runAsTenantById: fetch ${model} ${id} for tenant-scope recheck (caller company ${companyId})`,
+      async (tx) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const delegate = (tx as any)[model];
+        if (!delegate || typeof delegate.findUnique !== 'function') {
+          throw new Error(`runAsTenantById: unknown Prisma model "${model}".`);
+        }
+        return delegate.findUnique({ where: { id } });
+      },
+    );
+
+    if (!record || record.companyId !== companyId) {
+      throw new NotFoundException(`${model} not found.`);
+    }
+
+    return record;
   }
 
   /**

@@ -10,6 +10,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -50,7 +51,7 @@ export class CompaniesController {
   findOne(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     // In a multi-tenant system, users can only access their own company
     if (id !== user.companyId) {
-      throw new Error('Unauthorized cross-tenant access');
+      throw new ForbiddenException('Unauthorized cross-tenant access');
     }
     return this.companiesService.findOne(id);
   }
@@ -64,7 +65,7 @@ export class CompaniesController {
     @Body() updateCompanyDto: UpdateCompanyDto,
   ) {
     if (id !== user.companyId) {
-      throw new Error('Unauthorized cross-tenant access');
+      throw new ForbiddenException('Unauthorized cross-tenant access');
     }
     return this.companiesService.update(id, updateCompanyDto, user.id);
   }
@@ -74,12 +75,12 @@ export class CompaniesController {
   @ApiOperation({ summary: 'Soft delete a company' })
   remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     if (id !== user.companyId) {
-      throw new Error('Unauthorized cross-tenant access');
+      throw new ForbiddenException('Unauthorized cross-tenant access');
     }
-    
+
     // AV2: Extreme risk operation. Require platform-admin.
     if (!user.roles?.includes('SUPER_ADMIN')) {
-      throw new Error('Company deletion requires platform-admin privileges (SUPER_ADMIN).');
+      throw new ForbiddenException('Company deletion requires platform-admin privileges (SUPER_ADMIN).');
     }
 
     return this.companiesService.remove(id, user.id);

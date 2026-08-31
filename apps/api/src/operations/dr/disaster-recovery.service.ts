@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -65,11 +65,12 @@ export class DisasterRecoveryService {
   }
 
   async startDrill(input: StartDrillInput): Promise<unknown> {
-    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
-      tx.disasterRecoveryPlan.findUnique({ where: { id: input.planId } }),
-    );
-    if (!plan || plan.companyId !== input.companyId)
-      throw new NotFoundException(`DR Plan ${input.planId} not found`);
+    const plan = await this.prisma.runAsTenantById<{
+      id: string;
+      companyId: string;
+      rtoTargetMinutes: number;
+      rpoTargetMinutes: number;
+    }>('disasterRecoveryPlan', input.planId, input.companyId);
 
     const drill = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
       tx.disasterRecoveryDrill.create({
