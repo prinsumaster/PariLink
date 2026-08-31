@@ -10,6 +10,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { Prisma } from '@prisma/client';
+import { validateGeneratedSql } from './sql-validator';
 
 @Injectable()
 export class SqlGeneratorService {
@@ -17,6 +18,7 @@ export class SqlGeneratorService {
   private model: ChatOpenAI;
 
   // Define allowed tables to prevent accidental or malicious queries against sensitive data like users/passwords.
+  // Enforced structurally in sql-validator.ts, not just referenced in the prompt text below.
   private readonly ALLOWED_TABLES = [
     'Trip',
     'Load',
@@ -46,13 +48,16 @@ export class SqlGeneratorService {
     // 1. Generate SQL
     const sqlQuery = await this.generateSql(prompt);
 
-    // 2. Validate Safety (ABAC & SQL Injection Protection)
+    // 2. Validate Safety (ABAC & SQL Injection Protection) — structural, not
+    // a substring scan. See sql-validator.ts for what "structural" means here.
     this.validateSqlSafety(sqlQuery, companyId);
 
-    // 3. Execute
+    // 3. Execute. This runs under runAsTenant, NOT runAsSystem: RLS stays
+    // active as a backstop even if the validation above has a gap. If a
+    // query genuinely needs RLS off, it should not be an LLM-generated one.
     try {
       const sanitizedQuery = this.injectCompanyId(sqlQuery);
-      const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const result = await this.prisma.runAsTenant(companyId, async (tx) =>
         tx.$queryRawUnsafe(sanitizedQuery, companyId),
       );
       return result;
@@ -68,7 +73,7 @@ export class SqlGeneratorService {
     const template = `
     You are an expert PostgreSQL data analyst for a logistics operating system.
     Generate a highly optimized, read-only (SELECT) PostgreSQL query to answer the user's question.
-    
+
     CRITICAL RULES:
     1. Only return the raw SQL query string. Do not include markdown formatting like \`\`\`sql.
     2. You MUST include a WHERE clause that filters by "companyId" = '{{COMPANY_ID_PLACEHOLDER}}' in every query.
@@ -93,31 +98,29 @@ export class SqlGeneratorService {
       : JSON.stringify(response.content).trim();
   }
 
+  /**
+   * Structural validation, delegated to sql-validator.ts so it can be unit
+   * tested without spinning up this service (which touches the OpenAI
+   * client in its constructor). The prompt above tells the model what to
+   * do; this function is what actually enforces it. Any query that reaches
+   * step 3 above already passed:
+   *   - no semicolons / comments / UNION
+   *   - SELECT-only, no write verbs
+   *   - every FROM/JOIN target is in ALLOWED_TABLES (checked against the
+   *     actual parsed table list, not the prompt text)
+   *   - a companyId predicate structurally inside the WHERE clause, for
+   *     every distinct table/alias referenced (not just present somewhere
+   *     in the query string)
+   * See sql-validator.ts for the exact rules and why each exists.
+   */
   private validateSqlSafety(query: string, companyId: string): void {
-    const upperQuery = query.toUpperCase();
-
-    // Check for destructive operations
-    if (
-      upperQuery.includes('UPDATE ') ||
-      upperQuery.includes('DELETE ') ||
-      upperQuery.includes('INSERT ') ||
-      upperQuery.includes('DROP ') ||
-      upperQuery.includes('ALTER ') ||
-      upperQuery.includes('TRUNCATE ')
-    ) {
-      throw new ForbiddenException('Only SELECT queries are allowed.');
+    const result = validateGeneratedSql(query, this.ALLOWED_TABLES);
+    if (!result.ok) {
+      this.logger.warn(
+        `[SQL_GENERATOR] Rejected generated query for company ${companyId}: ${result.reason} | query: ${query}`,
+      );
+      throw new ForbiddenException(`Generated query rejected: ${result.reason}`);
     }
-
-    // Ensure companyId isolation is injected or present.
-    // In a robust implementation, we would parse the AST or use parameterized queries.
-    // For this sprint implementation, we replace the placeholder.
-    if (!query.includes('{{COMPANY_ID_PLACEHOLDER}}')) {
-      // Just as an extra precaution if the LLM failed to include it.
-      throw new ForbiddenException('Tenant isolation validation failed.');
-    }
-
-    // Replace the placeholder with the actual companyId (parameterization is better, but this works for demo)
-    // Note: We use string replacement here, but ideally we extract the query structure and pass companyId as a param to prisma.$queryRaw.
   }
 
   // Helper method to prepare parameterized query
