@@ -1,3 +1,5 @@
+import { RemoveTyreDto } from './dto/remove-tyre.dto';
+import { FitTyreDto } from './dto/fit-tyre.dto';
 import {
   Controller,
   Get,
@@ -28,7 +30,7 @@ export class TyreController {
   async fitTyre(
     @GetUser() user: AuthenticatedUser,
     @Param('id') vehicleId: string,
-    @Body() data: any,
+    @Body() data: FitTyreDto,
   ) {
     return this.tyreService.fitTyre(user.companyId, vehicleId, data);
   }
@@ -39,7 +41,7 @@ export class TyreController {
   async removeTyre(
     @GetUser() user: AuthenticatedUser,
     @Param('id') tyreId: string,
-    @Body() data: any,
+    @Body() data: RemoveTyreDto,
   ) {
     return this.tyreService.removeTyre(user.companyId, tyreId, data);
   }

@@ -14,6 +14,9 @@ import { RequirePermissions } from '../../auth/decorators/permissions.decorator'
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { CreateFuelCardDto } from './dto/create-fuel-card.dto';
+import { CreateFuelStationDto } from './dto/create-fuel-station.dto';
+import { CreateFuelTransactionDto } from './dto/create-fuel-transaction.dto';
 
 @ApiTags('fuel')
 @ApiBearerAuth()
@@ -25,7 +28,10 @@ export class FuelController {
   @Post('cards')
   @RequirePermissions('vehicles:write')
   @ApiOperation({ summary: 'Create Fuel Card' })
-  async createFuelCard(@GetUser() user: AuthenticatedUser, @Body() data: any) {
+  async createFuelCard(
+    @GetUser() user: AuthenticatedUser,
+    @Body() data: CreateFuelCardDto,
+  ) {
     return this.fuel.createFuelCard(user.companyId, data, user.id);
   }
 
@@ -41,7 +47,7 @@ export class FuelController {
   @ApiOperation({ summary: 'Create Fuel Station' })
   async createFuelStation(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: any,
+    @Body() data: CreateFuelStationDto,
   ) {
     return this.fuel.createFuelStation(user.companyId, data, user.id);
   }
@@ -58,7 +64,7 @@ export class FuelController {
   @ApiOperation({ summary: 'Log Fuel Transaction' })
   async logFuelTransaction(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: any,
+    @Body() data: CreateFuelTransactionDto,
   ) {
     return this.fuel.logFuelTransaction(user.companyId, data, user.id);
   }
