@@ -50,3 +50,8 @@ apps/web/tests/.auth/
 .env.bak
 token.json
 apps/web/tests/.auth/
+
+# ── Android build cache (mobile) ────────────────────────────────────────
+apps/mobile/android/.gradle/
+apps/mobile/android/build/
+apps/mobile/android/app/build/
