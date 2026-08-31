@@ -37,6 +37,19 @@ echo "Switching connection to non-superuser — RLS will now apply for all subse
 export DATABASE_URL="postgresql://parilink_test:testpass@localhost:5434/postgres"
 export APP_DATABASE_URL="postgresql://parilink_test:testpass@localhost:5434/postgres"
 
+echo "Verifying RLS is actually live before running anything else..."
+docker exec parilink-test-db psql -U parilink_test -d postgres -c \
+  "SELECT current_user, usesuper FROM pg_user WHERE usename = current_user;"
+RLS_CHECK=$(docker exec parilink-test-db psql -U parilink_test -d postgres -t -c \
+  "SELECT bool_and(relrowsecurity) AND bool_and(relforcerowsecurity) FROM pg_class WHERE relname IN ('Trip','Invoice','Vehicle') AND relkind = 'r';" | tr -d '[:space:]')
+if [ "$RLS_CHECK" != "t" ]; then
+  echo "FATAL: RLS is not enabled+forced on Trip/Invoice/Vehicle. Refusing to run tests against a role that could silently bypass RLS." >&2
+  docker exec parilink-test-db psql -U parilink_test -d postgres -c \
+    "SELECT relname, relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname IN ('Trip','Invoice','Vehicle');"
+  exit 1
+fi
+echo "RLS confirmed live and forced on sentinel tables (Trip, Invoice, Vehicle)."
+
 echo "Seeding test DB as non-superuser (seed uses runAsSystem internally)..."
 npx prisma db seed > /dev/null
 
