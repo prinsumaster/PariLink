@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { EnvelopeEncryptionService } from '../encryption/envelope/envelope-encryption.service';
 import * as crypto from 'crypto';
 
@@ -90,28 +91,45 @@ export class AuditService {
     });
 
     try {
-      const dbClient = txClient || this.prisma;
-      // eslint-disable-next-line no-restricted-syntax
-      await dbClient.auditLog.create({
-        data: {
-          action: event.action,
-          entity: event.entity,
-          entityType: event.entityType ?? event.entity,
-          entityId: event.entityId,
-          details: sanitizedDetails,
-          beforeValue: event.beforeValue
-            ? this.sanitizeForAudit(event.beforeValue)
-            : undefined,
-          afterValue: event.afterValue
-            ? this.sanitizeForAudit(event.afterValue)
-            : undefined,
-          reason: event.reason,
-          correlationId: event.correlationId,
-          source: event.source ?? 'API',
-          userId: event.userId,
-          companyId: event.companyId,
-        },
-      });
+      const auditData = {
+        action: event.action,
+        entity: event.entity,
+        entityType: event.entityType ?? event.entity,
+        entityId: event.entityId,
+        // sanitizeForAudit is typed `unknown` in, `unknown` out (it has to
+        // accept literally anything for redaction), but it always returns a
+        // JSON-safe shape -- it only walks plain objects/arrays and leaves
+        // primitives alone. The `unknown` return type doesn't structurally
+        // satisfy Prisma's InputJsonValue even though the actual value is
+        // fine at runtime (this is a TS-only gap, not a schema/migration
+        // one -- AuditLog.details/beforeValue/afterValue are Json? in the
+        // schema and always have been). Asserting here, not casting away a
+        // real problem.
+        details: sanitizedDetails as Prisma.InputJsonValue,
+        beforeValue: event.beforeValue
+          ? (this.sanitizeForAudit(event.beforeValue) as Prisma.InputJsonValue)
+          : undefined,
+        afterValue: event.afterValue
+          ? (this.sanitizeForAudit(event.afterValue) as Prisma.InputJsonValue)
+          : undefined,
+        reason: event.reason,
+        correlationId: event.correlationId,
+        source: event.source ?? 'API',
+        userId: event.userId,
+        companyId: event.companyId,
+      };
+
+      if (txClient) {
+        // Already inside a runAsSystem/runAsTenant transaction — RLS context is set
+        // eslint-disable-next-line no-restricted-syntax
+        await txClient.auditLog.create({ data: auditData });
+      } else {
+        // Standalone write: must set the tenant context so the AuditLog RLS policy allows it
+        await this.prisma.runAsTenant(event.companyId, async (tx) => {
+          // eslint-disable-next-line no-restricted-syntax
+          await tx.auditLog.create({ data: auditData });
+        });
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       const errorStack = err instanceof Error ? err.stack : undefined;

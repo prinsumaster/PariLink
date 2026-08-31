@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 
 export interface StandardCloudEvent {
   id: string; // UUID
@@ -60,26 +61,37 @@ export class EventService {
       `[EventBus/Outbox] Storing event ${event.type} for tenant ${event.tenantId}`,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const db = (prismaTx as any) || this.prisma;
-
-    return db.domainEvent.create({
-      data: {
-        id: event.id,
-        eventType: event.type,
-        streamId: event.source,
-        streamType: 'System',
-        companyId: event.tenantId,
-        userId: event.userId,
-        correlationId: event.correlationId,
-        version: 1, // Will be managed via optimistic concurrency in future iterations
-        payload: event.data,
-        metadata: {
-          specversion: event.specversion,
-          datacontenttype: event.datacontenttype,
-          time: event.time,
-        },
+    const eventData = {
+      id: event.id,
+      eventType: event.type,
+      streamId: event.source,
+      streamType: 'System',
+      companyId: event.tenantId,
+      userId: event.userId,
+      correlationId: event.correlationId,
+      version: 1, // Will be managed via optimistic concurrency in future iterations
+      // event.data is `unknown` by design (StandardCloudEvent.data covers
+      // arbitrary event payloads); DomainEvent.payload is Json in the
+      // schema and always has been -- same TS-only unknown-vs-InputJsonValue
+      // gap as audit.service.ts, not a schema/migration mismatch.
+      payload: event.data as any,
+      metadata: {
+        specversion: event.specversion,
+        datacontenttype: event.datacontenttype,
+        time: event.time,
       },
+    };
+
+    if (prismaTx) {
+      // Already inside a transaction with RLS context set
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return (prismaTx as any).domainEvent.create({ data: eventData });
+    }
+
+    // Standalone: set tenant context so DomainEvent RLS policy allows the insert
+    return this.prisma.runAsTenant(event.tenantId, async (tx) => {
+      // eslint-disable-next-line no-restricted-syntax
+      return tx.domainEvent.create({ data: eventData });
     });
   }
 }

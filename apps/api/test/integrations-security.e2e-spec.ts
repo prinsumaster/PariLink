@@ -62,6 +62,7 @@ describe('Integrations Security Regression (e2e)', () => {
       await tx.integrationConnection.deleteMany({ where: { id: { in: [CONN_A_ID, CONN_B_ID] } } });
       await tx.integrationConnector.deleteMany({ where: { id: CONNECTOR_ID } });
       await tx.user.deleteMany({ where: { id: { in: [USER_A_ID, USER_B_ID] } } });
+      await tx.role.deleteMany({ where: { companyId: { in: [COMPANY_A_ID, COMPANY_B_ID] } } });
       await tx.company.deleteMany({ where: { id: { in: [COMPANY_A_ID, COMPANY_B_ID] } } });
     });
 
@@ -76,13 +77,34 @@ describe('Integrations Security Regression (e2e)', () => {
       });
     });
 
-    // Roles — reuse existing
-    const role = await prisma.runAsSystem('e2e test seed', async (tx) =>
-      tx.role.findFirst(),
-    );
-    const roleId = role!.id;
+    // Roles — create per-company ADMIN roles with wildcard permissions.
+    // Under non-superuser RLS the IAM engine does runAsTenant(companyId) when
+    // loading permissions, so the role MUST belong to the same company as the
+    // user. Reusing a role from a different company would return null and cause
+    // 403 for every protected endpoint.
+    const ROLE_A_ID = `e2e-role-a-${uuid}`;
+    const ROLE_B_ID = `e2e-role-b-${uuid}`;
+    await prisma.runAsSystem('e2e test seed: roles', async (tx) => {
+      await tx.role.createMany({
+        data: [
+          {
+            id: ROLE_A_ID,
+            name: 'E2E Admin A',
+            companyId: COMPANY_A_ID,
+            permissions: ['*'],
+          },
+          {
+            id: ROLE_B_ID,
+            name: 'E2E Admin B',
+            companyId: COMPANY_B_ID,
+            permissions: ['*'],
+          },
+        ],
+        skipDuplicates: true,
+      });
+    });
 
-    // Users
+    // Users — assign each user the role for their own company
     await prisma.runAsSystem('e2e test seed', async (tx) => {
       await tx.user.createMany({
         data: [
@@ -93,7 +115,7 @@ describe('Integrations Security Regression (e2e)', () => {
             firstName: 'IntegA',
             lastName: 'User',
             companyId: COMPANY_A_ID,
-            roleId,
+            roleId: ROLE_A_ID,
             status: 'ACTIVE',
           },
           {
@@ -103,7 +125,7 @@ describe('Integrations Security Regression (e2e)', () => {
             firstName: 'IntegB',
             lastName: 'User',
             companyId: COMPANY_B_ID,
-            roleId,
+            roleId: ROLE_B_ID,
             status: 'ACTIVE',
           },
         ],
@@ -182,11 +204,16 @@ describe('Integrations Security Regression (e2e)', () => {
       await tx.user.deleteMany({
         where: { id: { in: [USER_A_ID, USER_B_ID] } },
       });
+      // Delete roles
+      await tx.role.deleteMany({
+        where: { companyId: { in: [COMPANY_A_ID, COMPANY_B_ID] } },
+      });
       // Delete companies
       await tx.company.deleteMany({
         where: { id: { in: [COMPANY_A_ID, COMPANY_B_ID] } },
       });
     });
+
 
     if (app) {
       await app.close();

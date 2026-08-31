@@ -34,7 +34,7 @@ export class EventStoreService {
       correlationId,
     } = params;
 
-    return await this.prisma.$transaction(async (tx) => {
+    return await this.prisma.runAsTenant(tenantId ?? 'SYSTEM', async (tx) => {
       // 1. Get current version of the stream
       const lastEvent = await tx.domainEvent.findFirst({
         where: { streamId, companyId: tenantId },
