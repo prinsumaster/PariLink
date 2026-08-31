@@ -1,4 +1,3 @@
-import { CreateCopilotSessionDto, CopilotChatDto } from './dto/copilot.dto';
 import {
   Controller,
   Get,
@@ -33,6 +32,13 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { Observable } from 'rxjs';
 import { ChatMessageDto } from './dto/chat-message.dto';
 import { ExecuteWorkflowDto } from './dto/execute-workflow.dto';
+import { PromptDto } from './dto/prompt.dto';
+import { InteractDto, ReportHallucinationDto } from './dto/ai.dto';
+import { CreateSessionDto } from './dto/create-session.dto';
+import { PredictDispatchDto } from './dto/predict-dispatch.dto';
+import { RejectWorkflowStepDto } from './dto/reject-workflow-step.dto';
+import { SetWorkspaceMemoryDto } from './dto/set-workspace-memory.dto';
+import { SubmitFeedbackDto } from './dto/submit-feedback.dto';
 
 @ApiTags('AI')
 @ApiBearerAuth()
@@ -57,8 +63,8 @@ export class AiController {
   @Post('workflow/generate')
   @RequirePermissions('ai:read') // Reusing read/write permissions
   @ApiOperation({ summary: 'Generate a workflow graph using AI' })
-  async generateWorkflow(@Body('prompt') prompt: string) {
-    return this.workflowGenerator.generateWorkflowGraph(prompt);
+  async generateWorkflow(@Body() body: PromptDto) {
+    return this.workflowGenerator.generateWorkflowGraph(body.prompt);
   }
 
   @Post('recommend/:domain/:id')
@@ -68,13 +74,13 @@ export class AiController {
     @GetUser() user: AuthenticatedUser,
     @Param('domain') domain: string,
     @Param('id') id: string,
-    @Body('prompt') prompt: string,
+    @Body() body: PromptDto,
   ) {
     return this.recommendation.generateRecommendation(
       user.companyId,
       domain,
       id,
-      prompt,
+      body.prompt,
     );
   }
 
@@ -83,15 +89,13 @@ export class AiController {
   @ApiOperation({ summary: 'Interact with AI agent' })
   async interactWithAgent(
     @GetUser() user: AuthenticatedUser,
-    @Body('intent') intent: string,
-    @Body('domain') domain: string,
-    @Body('id') id: string,
+    @Body() body: InteractDto,
   ) {
     return this.orchestrator.routeIntent(
       user.companyId,
-      intent,
-      domain,
-      id,
+      body.intent,
+      body.domain,
+      body.id,
       user.userId,
     );
   }
@@ -128,9 +132,9 @@ export class AiController {
   @ApiOperation({ summary: 'Create a new AI chat session' })
   async createSession(
     @GetUser() user: AuthenticatedUser,
-    @Body('title') title?: string,
+    @Body() body: CreateSessionDto,
   ) {
-    return this.copilotChat.createSession(user.companyId, user.userId, title);
+    return this.copilotChat.createSession(user.companyId, user.userId, body.title);
   }
 
   @Get('copilot/sessions/:sessionId/messages')
@@ -243,7 +247,7 @@ export class AiController {
   })
   async predictDispatch(
     @GetUser() user: AuthenticatedUser,
-    @Body() dto: { origin: string; destination: string; loadWeight: number },
+    @Body() dto: PredictDispatchDto,
   ) {
     const prompt = `Analyze this dispatch route. Origin: ${dto.origin}, Destination: ${dto.destination}, Weight: ${dto.loadWeight} lbs.
     Recommend an ETA (in hours), optimal route summary, and 2 potential risk factors (e.g., weather, traffic).
@@ -316,13 +320,13 @@ export class AiController {
     @GetUser() user: AuthenticatedUser,
     @Param('executionId') executionId: string,
     @Param('stepId') stepId: string,
-    @Body('reason') reason: string,
+    @Body() body: RejectWorkflowStepDto,
   ) {
     return this.workflowExecution.rejectWorkflow(
       executionId,
       stepId,
       user.userId,
-      reason,
+      body.reason,
     );
   }
 
@@ -372,10 +376,9 @@ export class AiController {
   @ApiOperation({ summary: 'Set a workspace memory entry' })
   async setWorkspaceMemory(
     @GetUser() user: AuthenticatedUser,
-    @Body('key') key: string,
-    @Body('value') value: any,
+    @Body() body: SetWorkspaceMemoryDto,
   ) {
-    await this.memory.setMemory('WORKSPACE', user.companyId, key, value);
+    await this.memory.setMemory('WORKSPACE', user.companyId, body.key, body.value);
     return { success: true };
   }
 
@@ -395,14 +398,12 @@ export class AiController {
   @ApiOperation({ summary: 'Submit feedback on an AI interaction' })
   async submitFeedback(
     @GetUser() user: AuthenticatedUser,
-    @Body('interactionId') interactionId: string,
-    @Body('rating') rating: 1 | 2 | 3 | 4 | 5,
-    @Body('comment') comment?: string,
+    @Body() body: SubmitFeedbackDto,
   ) {
     await this.observability.submitFeedback({
-      interactionId,
-      rating,
-      comment,
+      interactionId: body.interactionId,
+      rating: body.rating as 1 | 2 | 3 | 4 | 5,
+      comment: body.comment,
       userId: user.userId,
       companyId: user.companyId,
     });
@@ -414,15 +415,13 @@ export class AiController {
   @ApiOperation({ summary: 'Report an AI hallucination or factual error' })
   async reportHallucination(
     @GetUser() user: AuthenticatedUser,
-    @Body('interactionId') interactionId: string,
-    @Body('description') description: string,
-    @Body('severity') severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
+    @Body() body: ReportHallucinationDto,
   ) {
     await this.observability.logHallucination({
-      interactionId,
+      interactionId: body.interactionId,
       reportedBy: user.userId,
-      description,
-      severity,
+      description: body.description,
+      severity: body.severity,
       companyId: user.companyId,
     });
     return {
