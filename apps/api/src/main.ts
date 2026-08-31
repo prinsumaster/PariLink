@@ -176,7 +176,7 @@ async function bootstrap() {
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
       // Allow same-origin (no origin header) and listed origins
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.trycloudflare.com')) {
+      if (!origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV !== 'production' && origin.endsWith('.trycloudflare.com'))) {
         callback(null, true);
       } else {
         appLogger.warn(
@@ -222,12 +222,6 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
-  });
-
-  app.enableCors({
-    origin: '*', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
   });
 
   // Hardcoded health check for scripts
