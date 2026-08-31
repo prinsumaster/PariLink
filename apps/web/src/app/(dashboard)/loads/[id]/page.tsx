@@ -264,7 +264,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
               {/* Assignment */}
               <div className="rounded-xl border bg-white dark:bg-gray-950 p-5 shadow-sm">
                 <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <Truck className="h-4 w-4 text-blue-500" />
+                  <Truck className="h-4 w-4 text-primary" />
                   Assignment
                 </h3>
                 <div className="space-y-3">
@@ -413,7 +413,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
           <div className="rounded-xl border bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-100 dark:border-blue-800 p-5 shadow-sm">
             <p className="text-xs font-medium uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-1">Load Rate</p>
             <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
-              {money(load.rate, "$")}
+              {money(load.rate)}
             </p>
           </div>
 

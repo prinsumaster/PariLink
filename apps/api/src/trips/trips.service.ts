@@ -109,6 +109,19 @@ export class TripsService {
         include: { driver: true, vehicle: true, trailer: true, loads: true },
       });
 
+      // Auto-create the 5 mandatory TripDesks
+      const defaultDesks = ['DISPATCH', 'DIESEL', 'FASTAG', 'WORKSHOP', 'DOCS'];
+      for (const desk of defaultDesks) {
+        await tx.tripDesk.create({
+          data: {
+            companyId,
+            tripId: trip.id,
+            desk,
+            status: 'PENDING',
+          }
+        });
+      }
+
       // Rule Engine Integration
       const ruleResult = await this.workflow.evaluateRules(companyId, {
         entityType: 'TRIP',
@@ -573,6 +586,103 @@ export class TripsService {
       });
 
       return deletedTrip;
+    });
+  }
+
+  async closeTrip(companyId: string, id: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const existingTrip = await tx.trip.findFirst({
+        where: { id, companyId },
+        include: { TripDesk: true },
+      });
+      if (!existingTrip) throw new NotFoundException('Trip not found');
+
+      if (existingTrip.status === 'COMPLETED') {
+        throw new BadRequestException('Trip is already completed');
+      }
+
+      const pendingDesks = existingTrip.TripDesk?.filter(d => d.status === 'PENDING') || [];
+      if (pendingDesks.length > 0) {
+        const deskNames = pendingDesks.map(d => d.desk).join(', ');
+        throw new BadRequestException(`Cannot close trip. Pending desks: ${deskNames}`);
+      }
+
+      const updatedTrip = await tx.trip.update({
+        where: { id, companyId },
+        data: { status: 'COMPLETED', endDate: new Date() },
+      });
+
+      // Free up resources
+      if (updatedTrip.driverId) {
+        await tx.driver.updateMany({
+          where: { id: updatedTrip.driverId, companyId },
+          data: { status: 'AVAILABLE' },
+        });
+      }
+      if (updatedTrip.vehicleId) {
+        await tx.vehicle.updateMany({
+          where: { id: updatedTrip.vehicleId, companyId },
+          data: { status: 'IN_SERVICE' },
+        });
+      }
+      if (updatedTrip.trailerId) {
+        await tx.vehicle.updateMany({
+          where: { id: updatedTrip.trailerId, companyId },
+          data: { status: 'IN_SERVICE' },
+        });
+      }
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Trip',
+          entityType: 'Trip',
+          entityId: id,
+          action: 'UPDATE',
+          details: { status: 'COMPLETED' },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      return updatedTrip;
+    });
+  }
+
+  async submitDriverScore(companyId: string, id: string, data: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }, ratedBy: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const trip = await tx.trip.findFirst({ where: { id, companyId } });
+      if (!trip) throw new NotFoundException('Trip not found');
+      if (!trip.driverId) throw new BadRequestException('Trip has no driver assigned');
+      
+      // Calculate weighted total (0-100)
+      // onTime (20), podUploaded (10), fuelScore (30), damageScore (20), behaviourScore (20)
+      const onTimeVal = data.onTime ? 20 : 0;
+      const podVal = data.podUploaded ? 10 : 0;
+      // Convert fuel/damage/behaviour out of 10 or 100 to the weight
+      // Assume inputs are 0-100 scales for fuel, damage, behaviour
+      const fuelVal = (Math.max(0, Math.min(100, data.fuelScore)) / 100) * 30;
+      const damageVal = (Math.max(0, Math.min(100, data.damageScore)) / 100) * 20;
+      const behaviourVal = (Math.max(0, Math.min(100, data.behaviourScore)) / 100) * 20;
+      
+      const total = onTimeVal + podVal + fuelVal + damageVal + behaviourVal;
+
+      return tx.driverScore.create({
+        data: {
+          companyId,
+          driverId: trip.driverId,
+          tripId: trip.id,
+          onTime: data.onTime,
+          podUploaded: data.podUploaded,
+          fuelScore: data.fuelScore,
+          damageScore: data.damageScore,
+          behaviourScore: data.behaviourScore,
+          total,
+          ratedBy,
+          ratedAt: new Date()
+        }
+      });
     });
   }
 }

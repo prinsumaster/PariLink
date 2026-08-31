@@ -49,19 +49,19 @@ export default function AiCostDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Total Spend</p>
-          <p className="text-3xl font-bold font-mono text-white">₹{money(stats.totalSpend)}</p>
+          <p className="text-3xl font-bold font-mono text-white">{money(stats.totalSpend)}</p>
           <p className="text-xs text-red-400 mt-2 flex items-center gap-1">
             <TrendingUp className="h-3 w-3" /> +15% vs previous period
           </p>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Projected End of Month</p>
-          <p className="text-3xl font-bold font-mono text-slate-300">₹{money(stats.projectedSpend)}</p>
+          <p className="text-3xl font-bold font-mono text-slate-300">{money(stats.projectedSpend)}</p>
           <p className="text-xs text-slate-500 mt-2">Based on current run rate</p>
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
           <p className="text-sm font-semibold text-slate-400 mb-1">Budget Remaining</p>
-          <p className="text-3xl font-bold font-mono text-emerald-400">₹{money(stats.budgetRemaining)}</p>
+          <p className="text-3xl font-bold font-mono text-emerald-400">{money(stats.budgetRemaining)}</p>
           <div className="w-full h-1.5 bg-slate-800 rounded-full mt-3 overflow-hidden">
             <div className="h-full bg-emerald-500 rounded-full" style={{ width: '62%' }} />
           </div>
@@ -90,7 +90,7 @@ export default function AiCostDashboardPage() {
                     <p className="text-xs font-mono text-slate-500">{mc.model}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-mono text-white">₹{money(mc.spend)}</p>
+                    <p className="text-sm font-mono text-white">{money(mc.spend)}</p>
                     <p className="text-xs text-slate-500">{mc.pct}%</p>
                   </div>
                 </div>

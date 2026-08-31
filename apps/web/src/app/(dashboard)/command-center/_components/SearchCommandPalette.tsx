@@ -42,7 +42,7 @@ export const SearchCommandPalette: React.FC = () => {
             <h4 className="text-xs font-semibold text-slate-500 uppercase px-3 py-2">Quick Actions</h4>
             <div className="space-y-1">
               <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg">
-                <span className="flex items-center"><Truck className="h-4 w-4 mr-2 text-blue-400" /> Assign Vehicle to Trip</span>
+                <span className="flex items-center"><Truck className="h-4 w-4 mr-2 text-primary" /> Assign Vehicle to Trip</span>
                 <ChevronRight className="h-4 w-4 text-slate-500" />
               </button>
               <button className="w-full flex items-center justify-between px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg">

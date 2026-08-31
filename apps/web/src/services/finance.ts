@@ -30,5 +30,14 @@ export const financeService = {
   recordPayment: async (id: string, amount: number, method: string): Promise<Invoice> => {
     const { data } = await api.post(`/invoices/${id}/payments`, { amount, method });
     return data;
+  },
+
+  listVehiclePnl: async (filters?: { from?: string; to?: string }) => {
+    const params = new URLSearchParams();
+    if (filters?.from) params.append('from', filters.from);
+    if (filters?.to) params.append('to', filters.to);
+    
+    const { data } = await api.get(`/profitability/vehicles?${params.toString()}`);
+    return data;
   }
 };

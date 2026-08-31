@@ -32,7 +32,7 @@ export function FleetTreePanel() {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center p-4">
-        <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+        <Loader2 className="h-5 w-5 animate-spin text-primary" />
       </div>
     );
   }
@@ -69,7 +69,7 @@ export function FleetTreePanel() {
             className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded cursor-pointer text-slate-700 dark:text-slate-200 font-medium"
           >
             {expandedNodes['vehicles'] ? <ChevronDown className="h-3.5 w-3.5 text-slate-400" /> : <ChevronRight className="h-3.5 w-3.5 text-slate-400" />}
-            <Truck className="h-4 w-4 text-indigo-500" />
+            <Truck className="h-4 w-4 text-primary" />
             <span>Vehicles ({vehicles.length})</span>
           </div>
           {expandedNodes['vehicles'] && (

@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { DriversService } from './drivers.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
@@ -61,6 +62,15 @@ export class DriversController {
     @Body() updateDriverDto: UpdateDriverDto,
   ) {
     return this.driversService.update(user.companyId, id, updateDriverDto);
+  }
+
+  @Get(':id/score')
+  @RequirePermissions('drivers:read')
+  @ApiOperation({ summary: 'Get a driver running score' })
+  async getDriverScore(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    const driver = await this.driversService.findOne(user.companyId, id).catch(() => null);
+    if (!driver) throw new NotFoundException('Driver not found');
+    return this.driversService.getDriverScore(user.companyId, id);
   }
 
   @Delete(':id')

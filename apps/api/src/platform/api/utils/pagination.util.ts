@@ -6,6 +6,7 @@ export function createPaginationResponse<T>(
 ) {
   return {
     data,
+    total,
     meta: {
       total,
       page,

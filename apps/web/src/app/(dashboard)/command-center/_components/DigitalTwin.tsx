@@ -122,7 +122,7 @@ export function DigitalTwin() {
       {/* Moving Entity: Truck 1 */}
       <div className="absolute top-[280px] left-[320px] transform -translate-x-1/2 -translate-y-1/2 z-20 group">
         <div className="h-8 w-8 bg-slate-800 border-2 border-indigo-400 rounded-full flex items-center justify-center shadow-lg">
-          <Truck className="h-4 w-4 text-indigo-400" />
+          <Truck className="h-4 w-4 text-primary" />
         </div>
         <div className="absolute bottom-full mb-2 bg-slate-900 border border-slate-700 px-2 py-1 rounded text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
           V-1042 · In Transit

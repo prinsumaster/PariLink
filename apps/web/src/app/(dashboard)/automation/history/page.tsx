@@ -34,13 +34,13 @@ export default function WorkflowHistoryPage() {
     switch (status) {
       case 'COMPLETED': return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
       case 'FAILED': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'RUNNING': return <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" />;
+      case 'RUNNING': return <Loader2 className="h-5 w-5 text-primary animate-spin" />;
       case 'WAITING_APPROVAL': return <Clock className="h-5 w-5 text-amber-500" />;
       default: return <AlertCircle className="h-5 w-5 text-slate-500" />;
     }
   };
 
-  if (loading) return <div className="flex justify-center p-20"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>;
+  if (loading) return <div className="flex justify-center p-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <div className="space-y-6">

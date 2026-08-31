@@ -76,4 +76,20 @@ export class InvoicesController {
       user.id,
     );
   }
+
+  @Post(':id/payments')
+  @RequirePermissions('invoices:write')
+  @ApiOperation({ summary: 'Record payment against an invoice' })
+  recordPayment(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: { amount: number; method?: string; referenceNumber?: string; paymentDate?: string; notes?: string },
+  ) {
+    return this.invoicesService.recordPayment(
+      user.companyId,
+      id,
+      body,
+      user.id,
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -10,6 +10,24 @@ import { ProfitabilityService } from './profitability.service';
 @Controller('profitability')
 export class ProfitabilityController {
   constructor(private readonly profitabilityService: ProfitabilityService) {}
+
+  @Get('vehicles')
+  @RequirePermissions('finance:read')
+  async listVehiclePnl(
+    @GetUser() user: AuthenticatedUser,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    return this.profitabilityService.listVehiclePnl(user.companyId, from, to);
+  }
+
+  @Post('cron/aggregate-vehicles')
+  @RequirePermissions('finance:write')
+  async aggregateVehicles(
+    @GetUser() user: AuthenticatedUser,
+  ) {
+    return this.profitabilityService.aggregateVehicles(user.companyId);
+  }
 
   @Get('summary')
   @RequirePermissions('finance:read')

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { TripDetailView } from '@/components/trips/trip-detail-view';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { FuelEntriesPanel } from '@/components/trips/fuel-entries-panel';
 
 export default function TripDetailPage() {
   const { id } = useParams();
@@ -58,6 +59,7 @@ export default function TripDetailPage() {
         </div>
 
         <TripDetailView trip={trip} />
+        <FuelEntriesPanel tripId={id as string} />
       </div>
     </RoleGuard>
   );

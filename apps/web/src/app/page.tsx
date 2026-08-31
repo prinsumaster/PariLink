@@ -166,7 +166,7 @@ export default function Home() {
       <footer className="py-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <Truck className="w-6 h-6 text-blue-600" />
+            <Truck className="w-6 h-6 text-primary" />
             <span className="text-lg font-bold">PariLink</span>
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm">

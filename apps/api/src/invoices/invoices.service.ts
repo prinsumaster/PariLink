@@ -41,8 +41,13 @@ export class InvoicesService {
         tx.invoice.count({ where }),
       ]);
 
+      const mappedData = data.map((inv: any) => ({
+        ...inv,
+        customerName: inv.customer?.name,
+      }));
+
       return {
-        data,
+        data: mappedData,
         total,
         meta: {
           total,
@@ -62,10 +67,108 @@ export class InvoicesService {
           customer: true,
           load: true,
           lineItems: true,
+          payments: { orderBy: { paymentDate: 'desc' } },
         },
       });
       if (!invoice) throw new NotFoundException('Invoice not found');
-      return invoice;
+
+      const totalPaid = invoice.payments?.reduce((sum, p) => sum + p.amount, 0) || (invoice.status === 'PAID' ? invoice.amount : 0);
+      const subtotal = invoice.lineItems?.filter(i => i.type !== 'TAX').reduce((sum, i) => sum + i.amount, 0) || Math.round(invoice.amount / 1.05);
+      const taxTotal = invoice.lineItems?.filter(i => i.type === 'TAX').reduce((sum, i) => sum + i.amount, 0) || (invoice.amount - subtotal);
+      const balanceDue = invoice.status === 'PAID' ? 0 : Math.max(0, invoice.amount - totalPaid);
+
+      return {
+        ...invoice,
+        customerName: invoice.customer?.name,
+        subtotal,
+        taxTotal,
+        grandTotal: invoice.amount,
+        amountPaid: totalPaid,
+        balanceDue,
+      };
+    });
+  }
+
+  async recordPayment(
+    companyId: string,
+    invoiceId: string,
+    payload: { amount: number; method?: string; referenceNumber?: string; paymentDate?: string; notes?: string },
+    userId?: string,
+  ) {
+    const { amount, method = 'NEFT', referenceNumber, paymentDate = new Date().toISOString(), notes } = payload;
+    if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+      throw new BadRequestException('Payment amount must be a positive number');
+    }
+
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const invoice = await tx.invoice.findFirst({
+        where: { id: invoiceId, companyId },
+        include: { payments: true },
+      });
+      if (!invoice) throw new NotFoundException('Invoice not found');
+
+      const existingPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
+      const newTotalPaid = existingPaid + amount;
+      const newStatus = newTotalPaid >= invoice.amount ? 'PAID' : 'PARTIAL';
+
+      const payment = await tx.payment.create({
+        data: {
+          companyId,
+          invoiceId,
+          amount,
+          method,
+          referenceNumber: referenceNumber || `PAY-${Date.now()}`,
+          paymentDate: new Date(paymentDate),
+          notes,
+        },
+      });
+
+      await tx.invoice.update({
+        where: { id: invoiceId },
+        data: { status: newStatus },
+      });
+
+      // Post double entry journal
+      let bankAcct = await tx.account.findFirst({ where: { companyId, code: '1000' } });
+      if (!bankAcct) {
+        bankAcct = await tx.account.create({ data: { companyId, code: '1000', name: 'HDFC Current Account', type: 'ASSET' } });
+      }
+      let arAcct = await tx.account.findFirst({ where: { companyId, code: '1200' } });
+      if (!arAcct) {
+        arAcct = await tx.account.create({ data: { companyId, code: '1200', name: 'Accounts Receivable', type: 'ASSET' } });
+      }
+
+      await tx.journalEntry.create({
+        data: {
+          companyId,
+          referenceType: 'PAYMENT',
+          referenceId: payment.id,
+          description: `Payment of Rs.${amount} received for Invoice ${invoice.invoiceNumber}`,
+          status: 'POSTED',
+          lines: {
+            create: [
+              { companyId, accountId: bankAcct.id, debit: amount, credit: 0, description: 'Bank receipt' },
+              { companyId, accountId: arAcct.id, debit: 0, credit: amount, description: 'AR reduction' },
+            ],
+          },
+        },
+      });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Invoice',
+          entityType: 'Invoice',
+          entityId: invoiceId,
+          action: 'RECORD_PAYMENT',
+          details: { amount, method, status: newStatus },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      return this.getInvoiceById(companyId, invoiceId);
     });
   }
 

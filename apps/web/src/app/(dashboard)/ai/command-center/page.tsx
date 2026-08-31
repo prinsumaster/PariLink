@@ -148,7 +148,7 @@ export default function AiCommandCenterPage() {
   if (!metrics) {
     return (
       <div className="flex h-screen items-center justify-center bg-slate-950 text-slate-400">
-        <RefreshCw className="mr-3 h-6 w-6 animate-spin text-indigo-500" />
+        <RefreshCw className="mr-3 h-6 w-6 animate-spin text-primary" />
         Loading AI Platform Metrics...
       </div>
     );

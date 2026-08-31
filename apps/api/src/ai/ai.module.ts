@@ -49,6 +49,7 @@ import { EnterpriseMemoryService } from './memory/memory.service';
 import { WorkflowExecutionService } from './workflow/workflow-execution.service';
 // ─── Platform Modules ────────────────────────────────────────────────────────
 import { PlatformModule } from '../platform/platform.module';
+import { FuelIntelligenceModule } from '../intelligence/fuel/fuel-intelligence.module';
 
 const ALL_AGENTS = [
   DispatcherAgent,
@@ -74,7 +75,7 @@ const ALL_AGENTS = [
 ];
 
 @Module({
-  imports: [PlatformModule],
+  imports: [PlatformModule, FuelIntelligenceModule],
   controllers: [AiController],
   providers: [
     // ─── Platform ───────────────────────────────────────────────

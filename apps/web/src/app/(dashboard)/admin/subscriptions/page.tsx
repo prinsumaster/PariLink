@@ -333,7 +333,7 @@ export default function SubscriptionCenterPage() {
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Truck className="w-5 h-5 text-indigo-500" /> Set Truck Limit
+                <Truck className="w-5 h-5 text-primary" /> Set Truck Limit
               </DialogTitle>
               <DialogDescription>
                 Override the truck/vehicle capacity for <strong>{selectedTenant?.name}</strong>.

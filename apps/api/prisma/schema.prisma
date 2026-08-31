@@ -148,7 +148,7 @@ model Company {
   DriverScore         DriverScore[]
   FleetKpiSnapshot    FleetKpiSnapshot[]
   Claim               Claim[]
-  WorkOrder           WorkOrder[]
+  MaintenanceJob      MaintenanceJob[]
   EmergencyAlert      EmergencyAlert[]
   Workshop            Workshop[]
   Mechanic            Mechanic[]
@@ -173,6 +173,12 @@ model Company {
   KpiDefinition       KpiDefinition[]
   CustomMetric        CustomMetric[]
   TrendReport         TrendReport[]
+  TripDesk            TripDesk[]
+  FuelEntry           FuelEntry[]
+  LoadingEvent        LoadingEvent[]
+  JobPart             JobPart[]
+  TruckProfitability  TruckProfitability[]
+  TripExpense         TripExpense[]
 
   @@index([status])
   @@index([subscriptionPlanId])
@@ -200,7 +206,7 @@ model Trip {
   otherExpenses     Float?
   notes             String?
   settlementId      String?
-  settlement        Settlement? @relation(fields: [settlementId], references: [id])
+  settlement        Settlement?       @relation(fields: [settlementId], references: [id])
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   deletedAt         DateTime?
@@ -214,6 +220,12 @@ model Trip {
 
   tollTransactions TollTransaction[]
   EmergencyAlert   EmergencyAlert[]
+  TripDesk         TripDesk[]
+  FuelEntry        FuelEntry[]
+  LoadingEvent     LoadingEvent[]
+  MaintenanceJob   MaintenanceJob[]
+  DriverScore      DriverScore[]
+  TripExpense      TripExpense[]
 
   @@index([companyId, status])
   @@index([driverId])
@@ -282,6 +294,7 @@ model Load {
   OutboundOrder      OutboundOrder?
   DockAppointment    DockAppointment?
   Claim              Claim[]
+  LoadingEvent       LoadingEvent[]
 
   @@index([companyId, status])
   @@index([customerId])
@@ -391,6 +404,11 @@ model Invoice {
   loadId        String?
   invoiceNumber String
   amount        Float
+  subtotal      Float             @default(0)
+  tax           Float             @default(0)
+  grandTotal    Float             @default(0)
+  amountPaid    Float             @default(0)
+  balanceDue    Float             @default(0)
   status        String            @default("DRAFT")
   dueDate       DateTime?
   notes         String?
@@ -497,8 +515,10 @@ model Vendor {
   users          User[]
 
   masterRecordId String?
-  masterRecord   MasterRecord?   @relation(fields: [masterRecordId], references: [id])
+  masterRecord   MasterRecord?    @relation(fields: [masterRecordId], references: [id])
   PurchaseOrder  PurchaseOrder[]
+  JobPart        JobPart[]
+  MaintenanceJob MaintenanceJob[]
 
   @@index([companyId, status])
   @@index([masterRecordId])
@@ -536,8 +556,9 @@ model Driver {
   payrollStructures PayrollStructure[]
   payslips          Payslip[]
   attendances       DriverAttendance[]
-  driverScore       DriverScore?
+  driverScore       DriverScore[]
   EmergencyAlert    EmergencyAlert[]
+  FuelEntry         FuelEntry[]
 
   @@index([companyId, status])
   @@index([masterRecordId])
@@ -574,10 +595,13 @@ model Vehicle {
   masterRecordId String?
   masterRecord   MasterRecord? @relation(fields: [masterRecordId], references: [id])
 
-  tollTransactions TollTransaction[]
-  permits          VehiclePermit[]
-  WorkOrder        WorkOrder[]
-  lorryReceipts    LorryReceipt[]
+  tollTransactions   TollTransaction[]
+  permits            VehiclePermit[]
+  MaintenanceJob     MaintenanceJob[]
+  lorryReceipts      LorryReceipt[]
+  FuelEntry          FuelEntry[]
+  TruckProfitability TruckProfitability[]
+  Tyre               Tyre[]
 
   @@index([companyId, status])
   @@index([masterRecordId])
@@ -3901,22 +3925,6 @@ model DriverAttendance {
   @@index([companyId, driverId])
 }
 
-model DriverScore {
-  id              String   @id @default(uuid())
-  driverId        String   @unique
-  companyId       String
-  safetyScore     Float
-  efficiencyScore Float
-  onTimePercent   Float
-  healthScore     Float
-  updatedAt       DateTime @updatedAt
-
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  driver  Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
-
-  @@index([companyId])
-}
-
 model FleetKpiSnapshot {
   id              String   @id @default(uuid())
   companyId       String
@@ -3950,36 +3958,6 @@ model Claim {
 
   @@index([companyId])
   @@index([customerId])
-}
-
-model WorkOrder {
-  id            String          @id @default(uuid())
-  companyId     String
-  vehicleId     String
-  type          String // PREVENTIVE, BREAKDOWN
-  status        String          @default("SCHEDULED")
-  scheduledDate DateTime
-  completedDate DateTime?
-  totalCost     Float           @default(0)
-  items         WorkOrderItem[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  company       Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  vehicle       Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-
-  @@index([companyId])
-  @@index([vehicleId])
-}
-
-model WorkOrderItem {
-  id          String    @id @default(uuid())
-  workOrderId String
-  description String
-  cost        Float
-  createdAt   DateTime  @default(now())
-  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
-
-  @@index([workOrderId])
 }
 
 // -----------------------------------------
@@ -4140,6 +4118,7 @@ model JobCard {
   parts         JobCardPart[]
   mechanic      Mechanic?     @relation(fields: [mechanicId], references: [id])
   workshop      Workshop      @relation(fields: [workshopId], references: [id])
+  JobPart       JobPart[]
 
   @@index([companyId, vehicleId])
   @@index([companyId, status])
@@ -4220,29 +4199,6 @@ model FuelTransaction {
   company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId, vehicleId])
-}
-
-model Tyre {
-  id               String    @id @default(uuid())
-  companyId        String
-  brand            String
-  modelName        String?
-  serialNumber     String    @unique
-  size             String?
-  type             String?
-  status           String    @default("IN_STOCK")
-  purchaseDate     DateTime?
-  purchaseCost     Float?
-  currentVehicleId String?
-  currentPosition  String?
-  installedOdo     Float?
-  removedOdo       Float?
-  scrapValue       Float?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  @@index([companyId, currentVehicleId])
 }
 
 model TyreLog {
@@ -4503,7 +4459,6 @@ model TrendReport {
   @@index([companyId])
 }
 
-
 model LorryReceipt {
   id               String    @id @default(cuid())
   companyId        String
@@ -4553,4 +4508,201 @@ model LrSequence {
   company Company @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, financialYear])
+}
+
+// ── Phase 2 Models ────────────────────────────────────────────────────────
+
+model TruckProfitability {
+  id         String   @id @default(uuid())
+  companyId  String
+  vehicleId  String
+  month      DateTime
+  revenue    Float    @default(0)
+  fuelCost   Float    @default(0)
+  tollCost   Float    @default(0)
+  maintCost  Float    @default(0)
+  driverCost Float    @default(0)
+  otherCost  Float    @default(0)
+  netProfit  Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, vehicleId, month])
+  @@index([companyId, vehicleId])
+}
+
+model MaintenanceJob {
+  id         String    @id @default(uuid())
+  companyId  String
+  vehicleId  String
+  tripId     String?
+  type       String // PREVENTIVE, BREAKDOWN
+  vendorId   String?
+  labourCost Float     @default(0)
+  odometer   Float?
+  openedAt   DateTime  @default(now())
+  closedAt   DateTime?
+  status     String    @default("OPEN")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicle    Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  trip       Trip?     @relation(fields: [tripId], references: [id])
+  vendor     Vendor?   @relation(fields: [vendorId], references: [id])
+  parts      JobPart[]
+
+  @@index([companyId])
+  @@index([vehicleId])
+  @@index([tripId])
+}
+
+model JobPart {
+  id               String         @id @default(uuid())
+  companyId        String
+  maintenanceJobId String
+  name             String
+  qty              Float          @default(1)
+  unitCost         Float
+  amount           Float
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  company          Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  maintenanceJob   MaintenanceJob @relation(fields: [maintenanceJobId], references: [id], onDelete: Cascade)
+  Vendor           Vendor?        @relation(fields: [vendorId], references: [id])
+  vendorId         String?
+  JobCard          JobCard?       @relation(fields: [jobCardId], references: [id])
+  jobCardId        String?
+
+  @@index([companyId, maintenanceJobId])
+}
+
+model DriverScore {
+  id             String    @id @default(uuid())
+  companyId      String
+  driverId       String
+  tripId         String
+  onTime         Boolean   @default(true)
+  podUploaded    Boolean   @default(true)
+  fuelScore      Float     @default(0)
+  damageScore    Float     @default(0)
+  behaviourScore Float     @default(0)
+  total          Float     @default(0)
+  ratedBy        String?
+  ratedAt        DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driver  Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, driverId])
+  @@index([companyId, tripId])
+}
+
+model Tyre {
+  id             String   @id @default(uuid())
+  companyId      String
+  vehicleId      String
+  position       String
+  serialNo       String   @unique
+  brand          String
+  fittedAtKm     Float
+  expectedLifeKm Float
+  cost           Float
+  status         String   @default("ACTIVE") // ACTIVE, REMOVED
+  removedAtKm    Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, vehicleId])
+}
+
+model TripDesk {
+  id          String    @id @default(uuid())
+  companyId   String
+  tripId      String
+  desk        String // DISPATCH, DIESEL, FASTAG, WORKSHOP, DOCS
+  status      String    @default("PENDING") // PENDING, DONE
+  completedBy String?
+  completedAt DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, tripId])
+  @@index([companyId, desk])
+}
+
+model FuelEntry {
+  id             String   @id @default(uuid())
+  companyId      String
+  tripId         String
+  vehicleId      String
+  driverId       String
+  litres         Float
+  amount         Float
+  pump           String?
+  slipNo         String?
+  expectedLitres Float?
+  variancePct    Float?
+  filledAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver  Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, tripId])
+  @@index([companyId, vehicleId])
+}
+
+model LoadingEvent {
+  id              String    @id @default(uuid())
+  companyId       String
+  tripId          String
+  type            String // LOAD, UNLOAD
+  point           String
+  timeIn          DateTime?
+  timeOut         DateTime?
+  weightIn        Float?
+  weightOut       Float?
+  hamaliCost      Float     @default(0)
+  detentionHrs    Float     @default(0)
+  detentionCharge Float     @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  Load    Load?   @relation(fields: [loadId], references: [id])
+  loadId  String?
+
+  @@index([companyId, tripId])
+}
+
+model TripExpense {
+  id        String   @id @default(uuid())
+  companyId String
+  tripId    String
+  category  String // BHATTA, TOLL, MISC
+  amount    Float
+  note      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, tripId])
 }

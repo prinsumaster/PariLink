@@ -29,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} font-sans antialiased`}>
+      <body suppressHydrationWarning className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} font-sans antialiased`}>
         <WebVitals />
         <Providers>
           <AppShell>

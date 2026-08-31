@@ -108,21 +108,22 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
               {/* Invoice Header */}
               <div className="flex justify-between items-start">
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Invoice</h2>
+                  <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white uppercase">Tax Invoice</h2>
                   <p className="text-sm text-muted-foreground mt-1 font-mono">{invoice.invoiceNumber}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">GSTIN: 27AADCB2230M1Z2 | SAC: 9965 (Goods Transport Agency)</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-slate-900 dark:text-white">PariLink Logistics</p>
-                  <p className="text-sm text-muted-foreground mt-1">123 Transport Way<br />Dallas, TX 75001</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">PariLink India Logistics</p>
+                  <p className="text-sm text-muted-foreground mt-1">Bandra Kurla Complex<br />Mumbai, Maharashtra 400051</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-8 mt-12">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Billed To</p>
-                  <p className="font-semibold text-slate-900 dark:text-white">{invoice.customer?.name}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{invoice.customer?.name || 'Customer'}</p>
                   <p className="text-sm text-muted-foreground mt-1 whitespace-pre-line">
-                    {invoice.customer?.billingAddress || 'No address on file'}
+                    {invoice.customer?.billingAddress || invoice.customer?.address || 'Mumbai Logistics Hub, Maharashtra'}
                   </p>
                 </div>
                 <div className="space-y-2 text-sm text-right">
@@ -139,7 +140,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                   <div className="flex justify-end gap-4">
                     <span className="text-muted-foreground">Terms:</span>
                     <span className="font-medium text-slate-900 dark:text-white">
-                      {invoice.customer?.paymentTerms?.replace('_', ' ') ?? '—'}
+                      {invoice.customer?.paymentTerms?.replace('_', ' ') ?? 'NET 30'}
                     </span>
                   </div>
                 </div>
@@ -153,40 +154,50 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                       <th className="pb-3 font-semibold text-muted-foreground">Description</th>
                       <th className="pb-3 font-semibold text-muted-foreground text-right">Qty</th>
                       <th className="pb-3 font-semibold text-muted-foreground text-right">Rate</th>
+                      <th className="pb-3 font-semibold text-muted-foreground text-right">GST</th>
                       <th className="pb-3 font-semibold text-muted-foreground text-right">Amount</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y dark:divide-gray-800">
-                    <tr>
-                      <td className="py-4">
-                        <p className="font-medium text-slate-900 dark:text-white">Freight Haulage</p>
-                        {invoice.loadId && (
-                          <p className="text-xs text-muted-foreground mt-1">Ref: {invoice.loadId.slice(0,8)}</p>
-                        )}
-                      </td>
-                      <td className="py-4 text-right">1</td>
-                      <td className="py-4 text-right">{money(invoice.amount)}</td>
-                      <td className="py-4 text-right font-medium text-slate-900 dark:text-white">{money(invoice.amount)}</td>
-                    </tr>
+                    {(invoice.lineItems && invoice.lineItems.length > 0 ? invoice.lineItems : [
+                      { id: '1', description: 'Primary Freight Haulage (SAC 9965)', quantity: 1, unitPrice: invoice.subtotal || Math.round(invoice.amount / 1.05), amount: invoice.subtotal || Math.round(invoice.amount / 1.05) }
+                    ]).map((item: any, idx: number) => (
+                      <tr key={item.id || idx}>
+                        <td className="py-4">
+                          <p className="font-medium text-slate-900 dark:text-white">{item.description}</p>
+                          {invoice.loadId && (
+                            <p className="text-xs text-muted-foreground mt-0.5 font-mono">Load Ref: {invoice.loadId.slice(0, 8)}</p>
+                          )}
+                        </td>
+                        <td className="py-4 text-right">{item.quantity || 1}</td>
+                        <td className="py-4 text-right">{money(item.unitPrice || item.rate || item.amount || 0)}</td>
+                        <td className="py-4 text-right">5%</td>
+                        <td className="py-4 text-right font-medium text-slate-900 dark:text-white">{money(item.amount || item.total || 0)}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
 
               {/* Totals */}
               <div className="flex justify-end mt-8">
-                <div className="w-64 space-y-3 text-sm">
+                <div className="w-72 space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-medium text-slate-900 dark:text-white">{money(invoice.amount)}</span>
+                    <span className="text-muted-foreground">Taxable Value (Subtotal)</span>
+                    <span className="font-medium text-slate-900 dark:text-white">{money(invoice.subtotal || Math.round(invoice.amount / 1.05))}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tax</span>
-                    <span className="font-medium text-slate-900 dark:text-white">₹0.00</span>
+                    <span className="text-muted-foreground">CGST (2.5%)</span>
+                    <span className="font-medium text-slate-900 dark:text-white">{money(Math.round((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) / 2))}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">SGST (2.5%)</span>
+                    <span className="font-medium text-slate-900 dark:text-white">{money((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) - Math.round((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) / 2))}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-base">
-                    <span className="font-bold text-slate-900 dark:text-white">Total</span>
-                    <span className="font-bold text-slate-900 dark:text-white">{money(invoice.amount)}</span>
+                    <span className="font-bold text-slate-900 dark:text-white">Grand Total</span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400">{money(invoice.grandTotal || invoice.amount)}</span>
                   </div>
                 </div>
               </div>
@@ -194,8 +205,8 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
             <div className="p-8 sm:p-12 bg-slate-50 dark:bg-slate-900/50">
               <p className="text-sm text-muted-foreground text-center">
-                Please include Invoice {invoice.invoiceNumber} on all checks and correspondence.
-                <br />Thank you for your business.
+                Please quote Tax Invoice {invoice.invoiceNumber} on all RTGS/NEFT payment remittances.
+                <br />Thank you for partnering with PariLink India Logistics.
               </p>
             </div>
           </div>

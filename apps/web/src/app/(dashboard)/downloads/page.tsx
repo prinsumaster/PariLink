@@ -73,7 +73,7 @@ export default function DownloadCenterPage() {
     switch (status) {
       case 'COMPLETED': return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
       case 'FAILED': return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'PROCESSING': return <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" />;
+      case 'PROCESSING': return <Loader2 className="h-5 w-5 text-primary animate-spin" />;
       default: return <Clock className="h-5 w-5 text-amber-500" />;
     }
   };
@@ -93,7 +93,7 @@ export default function DownloadCenterPage() {
       <Card className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl border-slate-200/50 dark:border-slate-800/50 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : exports.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">

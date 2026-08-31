@@ -32,6 +32,21 @@ export function FleetUtilizationChart({ data, isLoading }: FleetUtilizationChart
     );
   }
 
+  if (!data?.length) {
+    return (
+      <Card className="col-span-1 xl:col-span-2">
+        <CardHeader>
+          <CardTitle>Fleet Utilization (7 Days)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[350px] flex items-center justify-center text-muted-foreground text-sm">
+            No data for this period
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="col-span-1 xl:col-span-2">
       <CardHeader>

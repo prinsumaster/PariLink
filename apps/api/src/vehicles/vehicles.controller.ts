@@ -51,6 +51,16 @@ export class VehiclesController {
     return this.vehiclesService.findAll(user.companyId, query);
   }
 
+  @Get(':id/mileage')
+  @RequirePermissions('fleet:read')
+  @ApiOperation({ summary: 'Get km/L trend for a vehicle' })
+  getMileageTrend(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ) {
+    return this.vehiclesService.getMileageTrend(user.companyId, id);
+  }
+
   @Get(':id')
   @RequirePermissions('vehicles:read')
   @ApiOperation({ summary: 'Get a vehicle by ID' })

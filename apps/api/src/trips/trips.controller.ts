@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -84,5 +85,23 @@ export class TripsController {
   @ApiOperation({ summary: 'Cancel/Delete a trip' })
   remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.tripsService.remove(user.companyId, id);
+  }
+
+  @Post(':id/close')
+  @RequirePermissions('trips:update')
+  @ApiOperation({ summary: 'Close a trip (requires all desks to be DONE)' })
+  closeTrip(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.tripsService.closeTrip(user.companyId, id);
+  }
+
+  @Post(':id/driver-score')
+  @RequirePermissions('trips:update')
+  @ApiOperation({ summary: 'Submit driver score for a trip' })
+  submitDriverScore(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }
+  ) {
+    return this.tripsService.submitDriverScore(user.companyId, id, body, user.id);
   }
 }

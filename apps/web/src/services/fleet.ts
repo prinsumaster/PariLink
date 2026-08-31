@@ -80,5 +80,48 @@ export const fleetService = {
   getLocations: async (): Promise<any[]> => {
     const { data } = await api.get('/fleet/lifecycle/locations');
     return data;
+  },
+
+  getMileageTrend: async (id: string) => {
+    const { data } = await api.get(`/vehicles/${id}/mileage`);
+    return data;
+  },
+
+  // Workshop / Jobs
+  getJobs: async (vehicleId: string) => {
+    const { data } = await api.get(`/vehicles/${vehicleId}/jobs`);
+    return data;
+  },
+
+  createJob: async (vehicleId: string, payload: any) => {
+    const { data } = await api.post(`/vehicles/${vehicleId}/jobs`, payload);
+    return data;
+  },
+
+  addJobPart: async (jobId: string, payload: any) => {
+    const { data } = await api.post(`/jobs/${jobId}/parts`, payload);
+    return data;
+  },
+
+  closeJob: async (jobId: string) => {
+    const { data } = await api.post(`/jobs/${jobId}/close`);
+    return data;
+  },
+
+  // Tyres
+  getTyres: async (vehicleId: string, currentKm?: number) => {
+    const url = currentKm ? `/vehicles/${vehicleId}/tyres?currentKm=${currentKm}` : `/vehicles/${vehicleId}/tyres`;
+    const { data } = await api.get(url);
+    return data;
+  },
+
+  fitTyre: async (vehicleId: string, payload: any) => {
+    const { data } = await api.post(`/vehicles/${vehicleId}/tyres`, payload);
+    return data;
+  },
+
+  removeTyre: async (tyreId: string, payload: any) => {
+    const { data } = await api.post(`/tyres/${tyreId}/remove`, payload);
+    return data;
   }
 };

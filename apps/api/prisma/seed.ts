@@ -227,13 +227,116 @@ async function main() {
         () => tx.load.create({ data: { referenceNumber: 'LOD-IND-1008', tripId: trip8.id, customerId: cust3.id, companyId: co.id, consignor: 'Amul Rajkot', consignee: 'Amul Jaipur', originAddress: 'Rajkot Gujarat', originCity: 'Rajkot', originState: 'Gujarat', destinationAddress: 'Jaipur Rajasthan', destinationCity: 'Jaipur', destinationState: 'Rajasthan', pickupDate: d(-1), deliveryDate: d(2), rate: 42000, status: 'IN_TRANSIT', weight: 16000 } }),
       );
 
-      // ── 10. Invoices (6) ────────────────────────────────────────────────────
-      const inv1 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1001' } }, update: {}, create: { invoiceNumber: 'INV-IND-1001', amount: 45000, status: 'PAID', dueDate: d(-20), loadId: load1.id, customerId: cust1.id, companyId: co.id } });
-      const inv2 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1002' } }, update: {}, create: { invoiceNumber: 'INV-IND-1002', amount: 72000, status: 'PAID', dueDate: d(-15), loadId: load2.id, customerId: cust2.id, companyId: co.id } });
-      const inv3 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1003' } }, update: {}, create: { invoiceNumber: 'INV-IND-1003', amount: 55000, status: 'ISSUED', dueDate: d(15), loadId: load3.id, customerId: cust3.id, companyId: co.id } });
-      const inv4 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1004' } }, update: {}, create: { invoiceNumber: 'INV-IND-1004', amount: 38000, status: 'OVERDUE', dueDate: d(-5), loadId: load4.id, customerId: cust4.id, companyId: co.id } });
-      const inv5 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1005' } }, update: {}, create: { invoiceNumber: 'INV-IND-1005', amount: 18000, status: 'ISSUED', dueDate: d(10), loadId: load5.id, customerId: cust5.id, companyId: co.id } });
-      const inv6 = await tx.invoice.upsert({ where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1006' } }, update: {}, create: { invoiceNumber: 'INV-IND-1006', amount: 85000, status: 'PAID', dueDate: d(-10), loadId: load7.id, customerId: cust2.id, companyId: co.id } });
+      // ── 10. Invoices (6) & Line Items ──────────────────────────────────────
+      const inv1 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1001' } },
+        update: { amount: 45000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable' },
+        create: { invoiceNumber: 'INV-IND-1001', amount: 45000, status: 'PAID', dueDate: d(-20), loadId: load1.id, customerId: cust1.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable' },
+      });
+      const inv2 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1002' } },
+        update: { amount: 72000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965)' },
+        create: { invoiceNumber: 'INV-IND-1002', amount: 72000, status: 'PAID', dueDate: d(-15), loadId: load2.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965)' },
+      });
+      const inv3 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1003' } },
+        update: { amount: 55000, status: 'ISSUED', notes: 'GST 5% GTA Cold Chain Services (SAC 9965)' },
+        create: { invoiceNumber: 'INV-IND-1003', amount: 55000, status: 'ISSUED', dueDate: d(15), loadId: load3.id, customerId: cust3.id, companyId: co.id, notes: 'GST 5% GTA Cold Chain Services (SAC 9965)' },
+      });
+      const inv4 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1004' } },
+        update: { amount: 38000, status: 'OVERDUE', notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)' },
+        create: { invoiceNumber: 'INV-IND-1004', amount: 38000, status: 'OVERDUE', dueDate: d(-5), loadId: load4.id, customerId: cust4.id, companyId: co.id, notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)' },
+      });
+      const inv5 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1005' } },
+        update: { amount: 18000, status: 'ISSUED', notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)' },
+        create: { invoiceNumber: 'INV-IND-1005', amount: 18000, status: 'ISSUED', dueDate: d(10), loadId: load5.id, customerId: cust5.id, companyId: co.id, notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)' },
+      });
+      const inv6 = await tx.invoice.upsert({
+        where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1006' } },
+        update: { amount: 85000, status: 'PAID', notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)' },
+        create: { invoiceNumber: 'INV-IND-1006', amount: 85000, status: 'PAID', dueDate: d(-10), loadId: load7.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)' },
+      });
+
+      // Line Items per invoice
+      const invoiceLineItemsMap = [
+        { inv: inv1, items: [
+          { description: 'Primary Freight Haulage: Pune to Delhi (18 MT)', quantity: 1, unitPrice: 40000, amount: 40000, type: 'LINE_HAUL' },
+          { description: 'Loading & Hamali Charges at Origin MIDC', quantity: 1, unitPrice: 2000, amount: 2000, type: 'HANDLING' },
+          { description: 'Transit Toll Surcharge (NH-48)', quantity: 1, unitPrice: 857, amount: 857, type: 'SURCHARGE' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 2143, amount: 2143, type: 'TAX' },
+        ]},
+        { inv: inv2, items: [
+          { description: 'Primary Freight Haulage: Mumbai to Bengaluru (22 MT)', quantity: 1, unitPrice: 64000, amount: 64000, type: 'LINE_HAUL' },
+          { description: 'Cross-docking & Warehousing at Hub', quantity: 1, unitPrice: 3000, amount: 3000, type: 'STORAGE' },
+          { description: 'FASTag Toll & Green Tax Surcharge', quantity: 1, unitPrice: 1571, amount: 1571, type: 'SURCHARGE' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 3429, amount: 3429, type: 'TAX' },
+        ]},
+        { inv: inv3, items: [
+          { description: 'Reefer Freight Haulage: Anand to Delhi (20 MT)', quantity: 1, unitPrice: 49000, amount: 49000, type: 'LINE_HAUL' },
+          { description: 'Cold Chain Temperature Monitoring (-18°C)', quantity: 1, unitPrice: 2500, amount: 2500, type: 'VALUE_ADD' },
+          { description: 'Chilled Loading & Pallet Strapping', quantity: 1, unitPrice: 881, amount: 881, type: 'HANDLING' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 2619, amount: 2619, type: 'TAX' },
+        ]},
+        { inv: inv4, items: [
+          { description: 'Primary Freight Haulage: Jaipur to Delhi (15 MT)', quantity: 1, unitPrice: 34000, amount: 34000, type: 'LINE_HAUL' },
+          { description: 'Specialized Industrial Cargo Packaging', quantity: 1, unitPrice: 1500, amount: 1500, type: 'PACKAGING' },
+          { description: 'Toll & Green Corridor Surcharge', quantity: 1, unitPrice: 690, amount: 690, type: 'SURCHARGE' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 1810, amount: 1810, type: 'TAX' },
+        ]},
+        { inv: inv5, items: [
+          { description: 'Primary Freight Haulage: Pune to Nagpur (12 MT)', quantity: 1, unitPrice: 16000, amount: 16000, type: 'LINE_HAUL' },
+          { description: 'Loading & Switchgear Securing Charges', quantity: 1, unitPrice: 1143, amount: 1143, type: 'HANDLING' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 857, amount: 857, type: 'TAX' },
+        ]},
+        { inv: inv6, items: [
+          { description: 'Primary Freight Haulage: Ahmedabad to Surat (30 MT)', quantity: 1, unitPrice: 76000, amount: 76000, type: 'LINE_HAUL' },
+          { description: 'Multi-axle Heavy Transport Permit Fee', quantity: 1, unitPrice: 3500, amount: 3500, type: 'PERMIT' },
+          { description: 'Port Delivery & Yard Staging', quantity: 1, unitPrice: 1452, amount: 1452, type: 'VALUE_ADD' },
+          { description: 'Goods & Services Tax (5% GTA SAC 9965)', quantity: 1, unitPrice: 4048, amount: 4048, type: 'TAX' },
+        ]},
+      ];
+
+      for (const { inv, items } of invoiceLineItemsMap) {
+        const existingLines = await tx.invoiceLineItem.findMany({ where: { invoiceId: inv.id } });
+        if (existingLines.length === 0) {
+          for (const item of items) {
+            await tx.invoiceLineItem.create({
+              data: {
+                invoiceId: inv.id,
+                description: item.description,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                amount: item.amount,
+                type: item.type,
+              },
+            });
+          }
+        }
+        
+        let subtotal = 0;
+        let tax = 0;
+        for (const item of items) {
+          if (item.type === 'TAX') tax += item.amount;
+          else subtotal += item.amount;
+        }
+        const grandTotal = subtotal + tax;
+        const amountPaid = inv.status === 'PAID' ? grandTotal : 0;
+        const balanceDue = grandTotal - amountPaid;
+
+        await tx.invoice.update({
+          where: { id: inv.id },
+          data: {
+            subtotal,
+            tax,
+            grandTotal,
+            amountPaid,
+            balanceDue,
+            amount: grandTotal,
+          }
+        });
+      }
 
       // ── 11. Payments for PAID invoices ──────────────────────────────────────
       for (const [invObj, amt, method, ref, daysAgo] of [
@@ -323,19 +426,64 @@ async function main() {
         }
       }
 
-      // ── 16. Maintenance Work Orders ─────────────────────────────────────────
-      const woData = [
-        { vehicleId: veh1.id, type: 'PREVENTIVE', status: 'COMPLETED', scheduledDate: d(-30), completedDate: d(-28), totalCost: 8500, itemDesc: 'Oil change + filter + brake check' },
-        { vehicleId: veh2.id, type: 'PREVENTIVE', status: 'SCHEDULED', scheduledDate: d(5), completedDate: null, totalCost: 6000, itemDesc: 'Periodic maintenance service' },
-        { vehicleId: veh5.id, type: 'BREAKDOWN', status: 'COMPLETED', scheduledDate: d(-9), completedDate: d(-9), totalCost: 18500, itemDesc: 'Emergency tyre replacement + brake repair' },
-        { vehicleId: veh3.id, type: 'PREVENTIVE', status: 'SCHEDULED', scheduledDate: d(10), completedDate: null, totalCost: 7200, itemDesc: 'Engine check + coolant flush' },
+      // ── 16. Maintenance & Tyres (Phase 2) ─────────────────────────────────────────
+      const maintJobs = [
+        { vehicleId: veh1.id, type: 'PREVENTIVE', status: 'COMPLETED', openedAt: d(-30), closedAt: d(-28), labourCost: 2500, odometer: 42000, itemDesc: 'Oil change + filter', itemCost: 6000 },
+        { vehicleId: veh5.id, type: 'BREAKDOWN', status: 'COMPLETED', openedAt: d(-9), closedAt: d(-9), labourCost: 4000, odometer: 29500, itemDesc: 'Emergency brake repair', itemCost: 14500 },
       ];
-      for (const wo of woData) {
-        const existing = await tx.workOrder.findFirst({ where: { vehicleId: wo.vehicleId, type: wo.type, companyId: co.id } });
+      for (const mj of maintJobs) {
+        const existing = await tx.maintenanceJob.findFirst({ where: { vehicleId: mj.vehicleId, type: mj.type, companyId: co.id } });
         if (!existing) {
-          const newWo = await tx.workOrder.create({ data: { companyId: co.id, vehicleId: wo.vehicleId, type: wo.type, status: wo.status, scheduledDate: wo.scheduledDate, completedDate: wo.completedDate, totalCost: wo.totalCost } });
-          await tx.workOrderItem.create({ data: { workOrderId: newWo.id, description: wo.itemDesc, cost: wo.totalCost } });
+          const newMj = await tx.maintenanceJob.create({ data: { companyId: co.id, vehicleId: mj.vehicleId, type: mj.type, status: mj.status, openedAt: mj.openedAt, closedAt: mj.closedAt, labourCost: mj.labourCost, odometer: mj.odometer } });
+          await tx.jobPart.create({ data: { companyId: co.id, maintenanceJobId: newMj.id, name: mj.itemDesc, qty: 1, unitCost: mj.itemCost, amount: mj.itemCost } });
         }
+      }
+
+      const tyres = [
+        { vehicleId: veh1.id, position: 'FL', serialNo: 'TYR-MRF-1001', brand: 'MRF', fittedAtKm: 10000, expectedLifeKm: 80000, cost: 15000 },
+        { vehicleId: veh1.id, position: 'FR', serialNo: 'TYR-APL-1002', brand: 'Apollo', fittedAtKm: 12000, expectedLifeKm: 80000, cost: 14500 },
+        { vehicleId: veh2.id, position: 'RL1', serialNo: 'TYR-CEAT-2001', brand: 'CEAT', fittedAtKm: 5000, expectedLifeKm: 75000, cost: 16000 },
+      ];
+      for (const tyr of tyres) {
+        await tx.tyre.upsert({
+          where: { serialNo: tyr.serialNo },
+          update: { companyId: co.id, vehicleId: tyr.vehicleId, position: tyr.position, brand: tyr.brand, fittedAtKm: tyr.fittedAtKm, expectedLifeKm: tyr.expectedLifeKm, cost: tyr.cost },
+          create: { companyId: co.id, vehicleId: tyr.vehicleId, position: tyr.position, serialNo: tyr.serialNo, brand: tyr.brand, fittedAtKm: tyr.fittedAtKm, expectedLifeKm: tyr.expectedLifeKm, cost: tyr.cost }
+        });
+      }
+
+      // ── 16.5 Phase 2 Module Seed (TripDesk, FuelEntry, LoadingEvent, TripExpense) ─
+      const tripDesks = [
+        { tripId: trip1.id, desk: 'DISPATCH', status: 'DONE', notes: 'Dispatched on time' },
+        { tripId: trip2.id, desk: 'DOCS', status: 'DONE', notes: 'POD received and verified' },
+        { tripId: trip3.id, desk: 'FASTAG', status: 'PENDING', notes: 'Toll top-up required' },
+      ];
+      for (const td of tripDesks) {
+        await tx.tripDesk.create({ data: { companyId: co.id, tripId: td.tripId, desk: td.desk, status: td.status, notes: td.notes } });
+      }
+
+      const fuelEntries = [
+        { tripId: trip1.id, vehicleId: veh1.id, driverId: drv1.id, litres: 150, amount: 13500, pump: 'BPCL Pune Bypass', expectedLitres: 145, variancePct: 3.4 },
+        { tripId: trip2.id, vehicleId: veh2.id, driverId: drv2.id, litres: 130, amount: 11700, pump: 'HP Nashik Highway', expectedLitres: 130, variancePct: 0 },
+      ];
+      for (const fe of fuelEntries) {
+        await tx.fuelEntry.create({ data: { companyId: co.id, tripId: fe.tripId, vehicleId: fe.vehicleId, driverId: fe.driverId, litres: fe.litres, amount: fe.amount, pump: fe.pump, expectedLitres: fe.expectedLitres, variancePct: fe.variancePct } });
+      }
+
+      const loadEvents = [
+        { tripId: trip1.id, type: 'LOAD', point: 'Tata Motors Pune', timeIn: d(-1), timeOut: d(-1), weightIn: 18.5, weightOut: 18.5, hamaliCost: 500, detentionHrs: 1.5, detentionCharge: 0 },
+        { tripId: trip2.id, type: 'UNLOAD', point: 'Reliance BLR', timeIn: d(-3), timeOut: d(-3), weightIn: 14.0, weightOut: 14.0, hamaliCost: 800, detentionHrs: 2, detentionCharge: 1500 },
+      ];
+      for (const le of loadEvents) {
+        await tx.loadingEvent.create({ data: { companyId: co.id, tripId: le.tripId, type: le.type, point: le.point, timeIn: le.timeIn, timeOut: le.timeOut, weightIn: le.weightIn, weightOut: le.weightOut, hamaliCost: le.hamaliCost, detentionHrs: le.detentionHrs, detentionCharge: le.detentionCharge } });
+      }
+
+      const tripExpenses = [
+        { tripId: trip1.id, category: 'BHATTA', amount: 2000, note: 'Driver daily allowance' },
+        { tripId: trip2.id, category: 'TOLL', amount: 1800, note: 'FASTag toll charges' },
+      ];
+      for (const te of tripExpenses) {
+        await tx.tripExpense.create({ data: { companyId: co.id, tripId: te.tripId, category: te.category, amount: te.amount, note: te.note } });
       }
 
       // ── 17. Vehicle Permits ─────────────────────────────────────────────────
@@ -503,6 +651,212 @@ async function main() {
           redirectUris: [], grantTypes: ['client_credentials'], isActive: true,
         },
       });
+
+      // ── 28. Chart of Accounts & General Ledger Journal Entries ───────────────
+      const accountsDef = [
+        { code: '1000', name: 'HDFC Current Account (Bank)', type: 'ASSET' },
+        { code: '1010', name: 'Petty Cash & Driver Imprest', type: 'ASSET' },
+        { code: '1200', name: 'Accounts Receivable (Trade Debtors)', type: 'ASSET' },
+        { code: '2000', name: 'Accounts Payable (Trade Creditors)', type: 'LIABILITY' },
+        { code: '2100', name: 'GST Output Liability (5% GTA Payable)', type: 'LIABILITY' },
+        { code: '3000', name: 'Retained Earnings & Owner Equity', type: 'EQUITY' },
+        { code: '4000', name: 'Freight Haulage Revenue', type: 'REVENUE' },
+        { code: '4100', name: 'Handling & Value-Add Revenue', type: 'REVENUE' },
+        { code: '5000', name: 'Diesel & Fuel Expenses', type: 'EXPENSE' },
+        { code: '5100', name: 'NHAI FASTag Toll Expenses', type: 'EXPENSE' },
+        { code: '5200', name: 'Fleet Maintenance & Repairs', type: 'EXPENSE' },
+        { code: '5300', name: 'Driver Trip Allowance & Bata', type: 'EXPENSE' },
+      ];
+
+      const acctMap: Record<string, any> = {};
+      for (const a of accountsDef) {
+        acctMap[a.code] = await tx.account.upsert({
+          where: { companyId_code: { companyId: co.id, code: a.code } },
+          update: { name: a.name, type: a.type },
+          create: { companyId: co.id, code: a.code, name: a.name, type: a.type },
+        });
+      }
+
+      // Initial Balance: Capital / Cash Injection
+      const existingCap = await tx.journalEntry.findFirst({ where: { companyId: co.id, referenceType: 'CAPITAL' } });
+      if (!existingCap) {
+        await tx.journalEntry.create({
+          data: {
+            companyId: co.id,
+            description: 'Opening Capital & Working Capital Reserve',
+            referenceType: 'CAPITAL',
+            date: d(-60),
+            status: 'POSTED',
+            lines: {
+              create: [
+                { companyId: co.id, accountId: acctMap['1000'].id, debit: 500000, credit: 0, description: 'Bank Opening Balance' },
+                { companyId: co.id, accountId: acctMap['3000'].id, debit: 0, credit: 500000, description: 'Shareholders Equity' },
+              ],
+            },
+          },
+        });
+      }
+
+      // Post Invoices to General Ledger
+      const invoiceJournals = [
+        { inv: inv1, subtotal: 42857, tax: 2143, date: d(-20) },
+        { inv: inv2, subtotal: 68571, tax: 3429, date: d(-15) },
+        { inv: inv3, subtotal: 52381, tax: 2619, date: d(-5) },
+        { inv: inv4, subtotal: 36190, tax: 1810, date: d(-12) },
+        { inv: inv5, subtotal: 17143, tax: 857, date: d(-10) },
+        { inv: inv6, subtotal: 80952, tax: 4048, date: d(-14) },
+      ];
+
+      for (const ij of invoiceJournals) {
+        const existingJ = await tx.journalEntry.findFirst({ where: { companyId: co.id, referenceType: 'INVOICE', referenceId: ij.inv.id } });
+        if (!existingJ) {
+          await tx.journalEntry.create({
+            data: {
+              companyId: co.id,
+              referenceType: 'INVOICE',
+              referenceId: ij.inv.id,
+              description: `Sales Invoice ${ij.inv.invoiceNumber} freight billing`,
+              date: ij.date,
+              status: 'POSTED',
+              lines: {
+                create: [
+                  { companyId: co.id, accountId: acctMap['1200'].id, debit: ij.inv.amount, credit: 0, description: 'Trade Debtors' },
+                  { companyId: co.id, accountId: acctMap['4000'].id, debit: 0, credit: ij.subtotal, description: 'Freight Haulage Revenue' },
+                  { companyId: co.id, accountId: acctMap['2100'].id, debit: 0, credit: ij.tax, description: 'GST 5% GTA Output Payable' },
+                ],
+              },
+            },
+          });
+        }
+      }
+
+      // Post Payment Receipts to General Ledger
+      const paymentJournals = [
+        { inv: inv1, amount: 45000, date: d(-18), ref: 'NEFT2024101001' },
+        { inv: inv2, amount: 72000, date: d(-14), ref: 'RTGS2024092501' },
+        { inv: inv6, amount: 85000, date: d(-8), ref: 'RTGS2024091801' },
+      ];
+
+      for (const pj of paymentJournals) {
+        const existingP = await tx.journalEntry.findFirst({ where: { companyId: co.id, referenceType: 'PAYMENT', description: { contains: pj.inv.invoiceNumber } } });
+        if (!existingP) {
+          await tx.journalEntry.create({
+            data: {
+              companyId: co.id,
+              referenceType: 'PAYMENT',
+              referenceId: pj.inv.id,
+              description: `Payment clearance for ${pj.inv.invoiceNumber} (Ref: ${pj.ref})`,
+              date: pj.date,
+              status: 'POSTED',
+              lines: {
+                create: [
+                  { companyId: co.id, accountId: acctMap['1000'].id, debit: pj.amount, credit: 0, description: 'HDFC Bank Receipt' },
+                  { companyId: co.id, accountId: acctMap['1200'].id, debit: 0, credit: pj.amount, description: 'AR Account Clearance' },
+                ],
+              },
+            },
+          });
+        }
+      }
+
+      // Post Operational Expenses to General Ledger
+      const glExpenses = [
+        { code: '5000', amount: 8500, desc: 'Trip 1001 BPCL Diesel', date: d(-1) },
+        { code: '5100', amount: 1200, desc: 'Trip 1001 FASTag Toll', date: d(-1) },
+        { code: '5000', amount: 7200, desc: 'Trip 1002 HPCL Diesel', date: d(-5) },
+        { code: '5100', amount: 2400, desc: 'Trip 1002 FASTag Toll', date: d(-5) },
+        { code: '5000', amount: 12000, desc: 'Trip 1003 IOCL Diesel', date: d(-2) },
+        { code: '5100', amount: 1800, desc: 'Trip 1003 FASTag Toll', date: d(-2) },
+        { code: '5000', amount: 16000, desc: 'Trip 1005 Express Diesel', date: d(-10) },
+        { code: '5200', amount: 8500, desc: 'Trip 1005 Emergency Brake & Tyre Repair', date: d(-9) },
+        { code: '5300', amount: 3500, desc: 'Trip 1005 Driver Bata & Night Halt', date: d(-9) },
+        { code: '5000', amount: 9800, desc: 'Trip 1007 Diesel Ahmedabad-Surat', date: d(-15) },
+        { code: '5100', amount: 3200, desc: 'Trip 1007 Express Toll', date: d(-15) },
+        { code: '5000', amount: 6500, desc: 'Trip 1008 Fuel Rajkot-Jaipur', date: d(-1) },
+      ];
+
+      for (const [idx, ge] of glExpenses.entries()) {
+        const existingExpJ = await tx.journalEntry.findFirst({ where: { companyId: co.id, referenceType: 'EXPENSE', description: ge.desc } });
+        if (!existingExpJ) {
+          await tx.journalEntry.create({
+            data: {
+              companyId: co.id,
+              referenceType: 'EXPENSE',
+              referenceId: `EXP-SEED-${idx + 1}`,
+              description: ge.desc,
+              date: ge.date,
+              status: 'POSTED',
+              lines: {
+                create: [
+                  { companyId: co.id, accountId: acctMap[ge.code].id, debit: ge.amount, credit: 0, description: ge.desc },
+                  { companyId: co.id, accountId: acctMap['1000'].id, debit: 0, credit: ge.amount, description: 'Bank Settlement' },
+                ],
+              },
+            },
+          });
+        }
+      }
+
+      // ── 29. Driver Scores ───────────────────────────────────────────────────
+      const driverScores = [
+        { driverId: drv1.id, tripId: trip2.id, onTime: true, podUploaded: true, fuelScore: 95, damageScore: 100, behaviourScore: 90, total: 95 },
+        { driverId: drv2.id, tripId: trip4.id, onTime: false, podUploaded: true, fuelScore: 88, damageScore: 95, behaviourScore: 85, total: 89 },
+        { driverId: drv4.id, tripId: trip5.id, onTime: true, podUploaded: false, fuelScore: 92, damageScore: 90, behaviourScore: 88, total: 90 },
+      ];
+      for (const ds of driverScores) {
+        await tx.driverScore.create({ data: { companyId: co.id, driverId: ds.driverId, tripId: ds.tripId, onTime: ds.onTime, podUploaded: ds.podUploaded, fuelScore: ds.fuelScore, damageScore: ds.damageScore, behaviourScore: ds.behaviourScore, total: ds.total } });
+      }
+
+      // ── 30. Vehicle Telemetry & Live Locations ──────────────────────────────
+      const vehicleTelemetryData = [
+        { veh: veh1, lat: 28.5355, lng: 77.3910, speed: 58, heading: 350, odo: 452800, fuel: 72, engHrs: 6850, battery: 13.6, temp: 84 },
+        { veh: veh2, lat: 13.0827, lng: 77.5877, speed: 0, heading: 180, odo: 389400, fuel: 84, engHrs: 5420, battery: 13.4, temp: 78 },
+        { veh: veh3, lat: 26.9124, lng: 75.7873, speed: 64, heading: 45, odo: 621500, fuel: 61, engHrs: 9200, battery: 13.8, temp: 86 },
+        { veh: veh4, lat: 28.6139, lng: 77.2090, speed: 0, heading: 90, odo: 512300, fuel: 78, engHrs: 7100, battery: 13.5, temp: 80 },
+        { veh: veh5, lat: 21.1458, lng: 79.0882, speed: 0, heading: 270, odo: 298900, fuel: 52, engHrs: 3980, battery: 13.2, temp: 79 },
+        { veh: veh6, lat: 12.9716, lng: 77.5946, speed: 48, heading: 220, odo: 245100, fuel: 88, engHrs: 2840, battery: 13.7, temp: 82 },
+      ];
+
+      for (const vt of vehicleTelemetryData) {
+        // VehicleLocation
+        const existingLoc = await tx.vehicleLocation.findFirst({ where: { vehicleId: vt.veh.id, companyId: co.id } });
+        if (!existingLoc) {
+          await tx.vehicleLocation.create({
+            data: {
+              companyId: co.id,
+              vehicleId: vt.veh.id,
+              provider: 'TELTONIKA_FMB',
+              providerVehicleId: vt.veh.licensePlate,
+              latitude: vt.lat,
+              longitude: vt.lng,
+              speed: vt.speed,
+              heading: vt.heading,
+              odometer: vt.odo,
+              fuel: vt.fuel,
+              engineHours: vt.engHrs,
+              ignition: vt.speed > 0,
+              gpsTimestamp: new Date(),
+            },
+          });
+        }
+        // VehicleTelemetry
+        const existingTelem = await tx.vehicleTelemetry.findFirst({ where: { vehicleId: vt.veh.id, companyId: co.id } });
+        if (!existingTelem) {
+          await tx.vehicleTelemetry.create({
+            data: {
+              companyId: co.id,
+              vehicleId: vt.veh.id,
+              odometer: vt.odo,
+              fuelLevel: vt.fuel,
+              engineHours: vt.engHrs,
+              batteryVolts: vt.battery,
+              coolantTemp: vt.temp,
+              ignition: vt.speed > 0,
+              timestamp: new Date(),
+            },
+          });
+        }
+      }
 
       console.log(`
 ✅ SEEDED SUCCESSFULLY:

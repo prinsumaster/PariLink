@@ -17,7 +17,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
       <div className="mb-8 flex items-center space-x-2">
-        <Truck className="w-10 h-10 text-blue-600" />
+        <Truck className="w-10 h-10 text-primary" />
         <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
           PariLink Enterprise
         </span>

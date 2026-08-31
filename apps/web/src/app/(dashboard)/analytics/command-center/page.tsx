@@ -11,12 +11,33 @@ import {
   TrendingUp, TrendingDown, DollarSign, Truck, Users, Activity, Download, BrainCircuit, RefreshCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { RevenueChart } from '@/components/reports/revenue-chart';
+import { FleetUtilizationChart } from '@/components/reports/fleet-utilization-chart';
 
 
 export default function CommandCenterPage() {
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [liveStream, setLiveStream] = useState<any>(null);
+
+  const revenueForecastData = metrics?.revenueForecast || [
+    { month: 'May', revenue: 210000, expenses: 145000 },
+    { month: 'Jun', revenue: 245000, expenses: 160000 },
+    { month: 'Jul', revenue: 280000, expenses: 175000 },
+    { month: 'Aug', revenue: 310000, expenses: 190000 },
+    { month: 'Sep', revenue: 345000, expenses: 205000 },
+    { month: 'Oct (Proj)', revenue: 390000, expenses: 220000 },
+  ];
+
+  const fleetUtilizationData = metrics?.fleetPerformance || [
+    { date: 'Mon', active: 4, idle: 1, maintenance: 1 },
+    { date: 'Tue', active: 5, idle: 1, maintenance: 0 },
+    { date: 'Wed', active: 5, idle: 0, maintenance: 1 },
+    { date: 'Thu', active: 4, idle: 2, maintenance: 0 },
+    { date: 'Fri', active: 6, idle: 0, maintenance: 0 },
+    { date: 'Sat', active: 4, idle: 1, maintenance: 1 },
+    { date: 'Sun', active: 3, idle: 2, maintenance: 1 },
+  ];
 
   // Phase 8: Role-based filtering simulation
   const userRole = typeof window !== 'undefined' ? localStorage.getItem('role') || 'CEO' : 'CEO';
@@ -67,7 +88,7 @@ export default function CommandCenterPage() {
 
 
 
-  if (loading) return <div className="p-10 flex justify-center"><RefreshCcw className="animate-spin text-indigo-500 h-8 w-8" /></div>;
+  if (loading) return <div className="p-10 flex justify-center"><RefreshCcw className="animate-spin text-primary h-8 w-8" /></div>;
 
   return (
     <div className="space-y-6">
@@ -115,7 +136,7 @@ export default function CommandCenterPage() {
         <Card className="p-5 bg-white dark:bg-slate-950">
           <div className="flex justify-between items-start mb-4">
             <div className="h-10 w-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-              <Truck className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <Truck className="h-5 w-5 text-primary dark:text-primary" />
             </div>
             <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-0">
               <TrendingUp className="h-3 w-3 mr-1" /> +5.1%
@@ -150,13 +171,8 @@ export default function CommandCenterPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <Card className="p-6 bg-white dark:bg-slate-950 flex flex-col items-center justify-center min-h-[300px]">
-           <p className="text-slate-500 mb-2">Revenue Forecast Chart (Integration ready)</p>
-           {/* Chart.js or Recharts will mount here */}
-        </Card>
-        <Card className="p-6 bg-white dark:bg-slate-950 flex flex-col items-center justify-center min-h-[300px]">
-           <p className="text-slate-500 mb-2">Fleet Performance Heatmap (Integration ready)</p>
-        </Card>
+        <RevenueChart data={revenueForecastData} />
+        <FleetUtilizationChart data={fleetUtilizationData} />
       </div>
 
     </div>

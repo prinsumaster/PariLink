@@ -9,6 +9,7 @@ const withSerwist = withSerwistInit({
 });
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['algorithms-corporation-symbol-dvd.trycloudflare.com', 'localhost:3000'],
   reactStrictMode: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {

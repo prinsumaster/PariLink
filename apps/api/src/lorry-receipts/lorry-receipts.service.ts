@@ -138,6 +138,23 @@ export class LorryReceiptsService {
     });
   }
 
+  async findOnePopulated(companyId: string, id: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const lr = await tx.lorryReceipt.findUnique({
+        where: { id, companyId },
+        include: {
+          company: true,
+          load: true,
+          vehicle: true
+        }
+      });
+      if (!lr) {
+        throw new NotFoundException(`Lorry Receipt with ID ${id} not found`);
+      }
+      return lr;
+    });
+  }
+
   async updateStatus(
     companyId: string,
     id: string,

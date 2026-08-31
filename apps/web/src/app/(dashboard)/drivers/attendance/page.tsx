@@ -148,7 +148,7 @@ export default function DriverAttendancePage() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center text-slate-500">
-                      <RefreshCw className="h-8 w-8 animate-spin mb-4 text-indigo-500" />
+                      <RefreshCw className="h-8 w-8 animate-spin mb-4 text-primary" />
                       <p>Syncing telematics data...</p>
                     </div>
                   </td>

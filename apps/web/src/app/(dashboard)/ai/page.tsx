@@ -231,7 +231,7 @@ export default function AiCopilotPage() {
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {loadingMessages && <div className="flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-indigo-500" /></div>}
+              {loadingMessages && <div className="flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>}
               {messages.map(msg => (
                 <div key={msg.id} className={`flex gap-3 ${msg.role === 'USER' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${

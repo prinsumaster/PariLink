@@ -67,7 +67,7 @@ export class LedgerService {
 
       const revAgg = await tx.journalLine.aggregate({
         _sum: { debit: true, credit: true },
-        where: { account: { type: 'REVENUE' }, entry: whereClause },
+        where: { account: { type: { in: ['REVENUE', 'INCOME'] } }, entry: whereClause },
       });
 
       const expAgg = await tx.journalLine.aggregate({
@@ -79,6 +79,8 @@ export class LedgerService {
       const totalExpense = (expAgg._sum.debit || 0) - (expAgg._sum.credit || 0);
 
       return {
+        revenue: totalRevenue,
+        expenses: totalExpense,
         totalRevenue,
         totalExpense,
         netIncome: totalRevenue - totalExpense,

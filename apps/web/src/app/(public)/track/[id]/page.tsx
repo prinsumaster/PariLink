@@ -85,7 +85,7 @@ export default function CustomerTrackingPortal({ params }: { params: { id: strin
 
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-              <Truck className="h-5 w-5 text-indigo-500" /> 
+              <Truck className="h-5 w-5 text-primary" /> 
               Driver & Vehicle
             </h3>
             <div className="space-y-4">

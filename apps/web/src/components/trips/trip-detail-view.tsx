@@ -25,6 +25,12 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { StatusFlip } from '@/components/motion';
 import { tripService } from '@/services/trips';
 import { toast } from 'sonner';
+import { TripDesksPanel } from './trip-desks-panel';
+import { LoadingEventsPanel } from './loading-events-panel';
+import { useQueryClient } from '@tanstack/react-query';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 
 
 interface TripDetailViewProps {
@@ -34,6 +40,14 @@ interface TripDetailViewProps {
 export function TripDetailView({ trip }: TripDetailViewProps) {
   const [optimisticStatus, setOptimisticStatus] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const [scoreData, setScoreData] = useState({
+    onTime: true,
+    podUploaded: true,
+    fuelScore: 80,
+    damageScore: 100,
+    behaviourScore: 90
+  });
 
   const handleDispatch = async () => {
     setIsPending(true);
@@ -44,6 +58,29 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
     } catch (err) {
       setOptimisticStatus(null);
       toast.error('Failed to dispatch trip');
+    } finally {
+      setIsPending(false);
+    }
+  };
+
+  const handleClose = async () => {
+    setIsPending(true);
+    try {
+      // 1. Submit driver score
+      await tripService.submitDriverScore(trip.id, {
+        onTime: scoreData.onTime,
+        podUploaded: scoreData.podUploaded,
+        fuelScore: scoreData.fuelScore,
+        damageScore: scoreData.damageScore,
+        behaviourScore: scoreData.behaviourScore
+      });
+      // 2. Close trip
+      await tripService.closeTrip(trip.id);
+      setOptimisticStatus('COMPLETED');
+      setIsRatingModalOpen(false);
+      toast.success('Trip closed and driver rated successfully');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to close trip');
     } finally {
       setIsPending(false);
     }
@@ -151,8 +188,102 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                 <Send className="mr-2 h-4 w-4" /> Dispatch Trip
               </Button>
             )}
+            {currentStatus === 'IN_TRANSIT' && (
+              <Button 
+                className="w-full mt-4" 
+                variant="outline"
+                onClick={() => setIsRatingModalOpen(true)}
+                disabled={isPending}
+                title="All desks must be DONE to close the trip"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" /> Close Trip
+              </Button>
+            )}
           </CardContent>
         </Card>
+
+        {/* Rating Modal */}
+        <Dialog open={isRatingModalOpen} onOpenChange={setIsRatingModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Rate Driver & Close Trip</DialogTitle>
+              <DialogDescription>
+                Provide a quick rating for the driver to build their scorecard before closing the trip.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              <div className="flex items-center justify-between">
+                <Label className="flex flex-col">
+                  <span>On-time Delivery</span>
+                  <span className="font-normal text-xs text-slate-500">Delivered within SLA window</span>
+                </Label>
+                <Switch 
+                  checked={scoreData.onTime} 
+                  onCheckedChange={(c) => setScoreData(prev => ({...prev, onTime: c}))} 
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label className="flex flex-col">
+                  <span>POD Uploaded</span>
+                  <span className="font-normal text-xs text-slate-500">Clean POD uploaded promptly</span>
+                </Label>
+                <Switch 
+                  checked={scoreData.podUploaded} 
+                  onCheckedChange={(c) => setScoreData(prev => ({...prev, podUploaded: c}))} 
+                />
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <Label>Fuel Efficiency</Label>
+                  <span className="text-sm font-medium">{scoreData.fuelScore}/100</span>
+                </div>
+                <input 
+                  type="range"
+                  value={scoreData.fuelScore}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setScoreData(prev => ({...prev, fuelScore: Number(e.target.value)}))} 
+                  min={0} max={100} step={5}
+                  className="w-full accent-blue-600"
+                />
+                <p className="text-xs text-slate-500">Based on expected vs actual consumption.</p>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <Label>Cargo Safety / No Damage</Label>
+                  <span className="text-sm font-medium">{scoreData.damageScore}/100</span>
+                </div>
+                <input 
+                  type="range"
+                  value={scoreData.damageScore}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setScoreData(prev => ({...prev, damageScore: Number(e.target.value)}))} 
+                  min={0} max={100} step={5} 
+                  className="w-full accent-blue-600"
+                />
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <Label>Driver Behaviour</Label>
+                  <span className="text-sm font-medium">{scoreData.behaviourScore}/100</span>
+                </div>
+                <input 
+                  type="range"
+                  value={scoreData.behaviourScore}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setScoreData(prev => ({...prev, behaviourScore: Number(e.target.value)}))} 
+                  min={0} max={100} step={5} 
+                  className="w-full accent-blue-600"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsRatingModalOpen(false)}>Cancel</Button>
+              <Button onClick={handleClose} disabled={isPending}>
+                Submit & Close Trip
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <TripDesksPanel tripId={trip.id} />
+        <LoadingEventsPanel tripId={trip.id} />
 
         <Card>
           <CardHeader>

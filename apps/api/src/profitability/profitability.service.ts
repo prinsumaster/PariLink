@@ -195,6 +195,9 @@ export class ProfitabilityService {
 
   async vehiclePnl(companyId: string, vehicleId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId, companyId } });
+      if (!vehicle) throw new NotFoundException('Vehicle not found');
+      
       const trips = await tx.trip.findMany({
         where: { companyId, vehicleId },
         select: {
@@ -389,6 +392,157 @@ export class ProfitabilityService {
         bestLane,
         worstLane,
       };
+    });
+  }
+
+  async aggregateVehicles(companyId: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // For this step, we'll implement a simple snapshot aggregation 
+      // of all closed trips in the current month to feed TruckProfitability.
+      // In a real production system, this would iterate over months and all expenses.
+      
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const trips = await tx.trip.findMany({
+        where: { companyId, status: 'COMPLETED', endDate: { gte: startOfMonth } },
+        select: { id: true, vehicleId: true, fuelExpenses: true, otherExpenses: true }
+      });
+
+      const vehicleStats: Record<string, any> = {};
+
+      for (const trip of trips) {
+        if (!trip.vehicleId) continue;
+        if (!vehicleStats[trip.vehicleId]) {
+          vehicleStats[trip.vehicleId] = { revenue: 0, fuelCost: 0, tollCost: 0, maintCost: 0, driverCost: 0, otherCost: 0 };
+        }
+
+        const loadsAggr = await tx.load.aggregate({
+          _sum: { rate: true },
+          where: { tripId: trip.id, deletedAt: null },
+        });
+        vehicleStats[trip.vehicleId].revenue += loadsAggr._sum.rate ?? 0;
+
+        const tollAggr = await tx.tollTransaction.aggregate({
+          _sum: { amount: true },
+          where: { tripId: trip.id },
+        });
+        vehicleStats[trip.vehicleId].tollCost += tollAggr._sum.amount ?? 0;
+
+        vehicleStats[trip.vehicleId].fuelCost += trip.fuelExpenses ?? 0;
+        
+        // Driver cost (bhatta)
+        const driverExpAggr = await tx.expense.aggregate({
+          _sum: { amount: true },
+          where: { tripId: trip.id, type: { in: ['BHATTA', 'DRIVER_ALLOWANCE', 'bhatta'] } },
+        });
+        vehicleStats[trip.vehicleId].driverCost += driverExpAggr._sum.amount ?? 0;
+        
+        // Other cost
+        const otherExpAggr = await tx.expense.aggregate({
+          _sum: { amount: true },
+          where: { tripId: trip.id, type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'BHATTA', 'DRIVER_ALLOWANCE', 'bhatta'] } },
+        });
+        vehicleStats[trip.vehicleId].otherCost += (otherExpAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
+      }
+
+      for (const [vehicleId, stats] of Object.entries(vehicleStats)) {
+        // We do not overwrite maintCost here since it is updated directly when Jobs are closed.
+        const netProfit = stats.revenue - (stats.fuelCost + stats.tollCost + stats.driverCost + stats.otherCost);
+        
+        await tx.truckProfitability.upsert({
+          where: {
+            companyId_vehicleId_month: { companyId, vehicleId, month: startOfMonth }
+          },
+          update: {
+            revenue: stats.revenue,
+            fuelCost: stats.fuelCost,
+            tollCost: stats.tollCost,
+            driverCost: stats.driverCost,
+            otherCost: stats.otherCost,
+            // netProfit is calculated by triggers or on-the-fly, but we'll store a baseline
+            netProfit: netProfit
+          },
+          create: {
+            companyId,
+            vehicleId,
+            month: startOfMonth,
+            revenue: stats.revenue,
+            fuelCost: stats.fuelCost,
+            tollCost: stats.tollCost,
+            driverCost: stats.driverCost,
+            otherCost: stats.otherCost,
+            netProfit: netProfit,
+            maintCost: 0
+          }
+        });
+      }
+
+      return { success: true, aggregatedVehicles: Object.keys(vehicleStats).length };
+    });
+  }
+
+  async listVehiclePnl(companyId: string, from?: string, to?: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // Aggregate the TruckProfitability records
+      const whereClause: any = { companyId };
+      if (from || to) {
+        whereClause.month = {};
+        if (from) whereClause.month.gte = new Date(from);
+        if (to) whereClause.month.lte = new Date(to);
+      }
+
+      const records = await tx.truckProfitability.findMany({
+        where: whereClause,
+        include: {
+          vehicle: { select: { id: true, licensePlate: true, status: true, type: true } }
+        }
+      });
+
+      // Group by vehicleId across all matching months
+      const grouped: Record<string, any> = {};
+      
+      for (const r of records) {
+        if (!grouped[r.vehicleId]) {
+          grouped[r.vehicleId] = {
+            vehicle: r.vehicle,
+            revenue: 0,
+            fuelCost: 0,
+            tollCost: 0,
+            maintCost: 0,
+            driverCost: 0,
+            otherCost: 0,
+            netProfit: 0,
+            distance: 0 // Mock distance for Rs/km
+          };
+        }
+        grouped[r.vehicleId].revenue += r.revenue;
+        grouped[r.vehicleId].fuelCost += r.fuelCost;
+        grouped[r.vehicleId].tollCost += r.tollCost;
+        grouped[r.vehicleId].maintCost += r.maintCost;
+        grouped[r.vehicleId].driverCost += r.driverCost;
+        grouped[r.vehicleId].otherCost += r.otherCost;
+        
+        // Re-calculate net profit accurately including maintCost
+        grouped[r.vehicleId].netProfit += r.revenue - (r.fuelCost + r.tollCost + r.driverCost + r.otherCost + r.maintCost);
+        
+        // Rough estimate of km driven for Rs/km metric
+        grouped[r.vehicleId].distance += (r.fuelCost / 80) * 4; // Assume Rs 80/L and 4km/L
+      }
+
+      const results = Object.values(grouped).map((v: any) => {
+        return {
+          ...v,
+          profitPerKm: v.distance > 0 ? v.netProfit / v.distance : 0,
+          marginPct: v.revenue > 0 ? (v.netProfit / v.revenue) * 100 : 0
+        };
+      });
+
+      // Sort by netProfit descending
+      results.sort((a, b) => b.netProfit - a.netProfit);
+
+      return results;
     });
   }
 }

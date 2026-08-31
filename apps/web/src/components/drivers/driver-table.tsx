@@ -92,13 +92,13 @@ export function DriverTable({ drivers, total, isLoading, filters, onFiltersChang
         header: 'Safety Score',
         cell: ({ row }) => {
           const score = row.original.safetyAnalytics?.driverScore;
-          return score !== undefined ? (
+          return score !== undefined && score > 0 ? (
             <div className="flex items-center gap-2">
               <span className={`font-medium ${score >= 80 ? 'text-green-600' : score >= 60 ? 'text-orange-500' : 'text-red-500'}`}>
                 {score}/100
               </span>
             </div>
-          ) : <span className="text-gray-400">N/A</span>;
+          ) : <span className="text-gray-400 text-sm">N/A</span>;
         },
       },
       {

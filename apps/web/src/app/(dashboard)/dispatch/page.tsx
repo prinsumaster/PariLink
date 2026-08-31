@@ -6,6 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { Navigation, Search, Filter, X, ChevronRight, Activity, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fleetService } from '@/services/fleet';
+import { rasterStyle } from '@/lib/map-style';
 
 export default function DispatchPage() {
   const mapRef = useRef<MapRef>(null);
@@ -78,7 +79,8 @@ export default function DispatchPage() {
           latitude: 30.2672,
           zoom: 7
         }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle={rasterStyle(true)}
+        style={{ width: '100%', height: '100%' }}
         interactiveLayerIds={['markers']}
       >
         {vehicles.map((v, i) => {

@@ -233,7 +233,7 @@ export default function AdminCenterPage() {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users..." className="w-full max-w-sm pl-9 pr-4 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             </div>
-            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div> : (
+            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : (
               <Card className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -280,7 +280,7 @@ export default function AdminCenterPage() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Roles & Permissions</h2>
               <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8"><Shield className="h-3.5 w-3.5 mr-1.5" />Create Role</Button>
             </div>
-            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div> : (
+            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : (
               <div className="grid gap-4">
                 {roles.map(role => (
                   <Card key={role.id} className="p-5 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
@@ -314,7 +314,7 @@ export default function AdminCenterPage() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Feature Flags</h2>
               <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-8"><Key className="h-3.5 w-3.5 mr-1.5" />Add Flag</Button>
             </div>
-            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div> : (
+            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : (
               flags.length === 0 ? (
                 <div className="text-center py-16">
                   <ToggleLeft className="h-10 w-10 text-slate-300 mx-auto mb-3" />
@@ -353,7 +353,7 @@ export default function AdminCenterPage() {
         {tab === 'audit-logs' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Audit Log</h2>
-            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div> : (
+            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : (
               <Card className="bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -391,7 +391,7 @@ export default function AdminCenterPage() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">System Health</h2>
               <Button variant="outline" size="sm" onClick={fetchHealth} className="h-8 text-xs gap-1.5"><Activity className="h-3.5 w-3.5" />Refresh</Button>
             </div>
-            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-indigo-600" /></div> : !health ? (
+            {loading ? <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div> : !health ? (
               <div className="text-center py-12">
                 <Server className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                 <p className="text-slate-500 text-sm">Health data unavailable</p>

@@ -800,6 +800,35 @@
         ]
       }
     },
+    "/api/v1/invoices/{id}/payments": {
+      "post": {
+        "operationId": "InvoicesController_recordPayment_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Record payment against an invoice",
+        "tags": [
+          "invoices"
+        ]
+      }
+    },
     "/api/v1/intelligence/dispatch/{loadId}/recommend": {
       "post": {
         "operationId": "DispatchAiController_requestRecommendation_v1",
@@ -880,6 +909,46 @@
         },
         "tags": [
           "EtaIntelligence"
+        ]
+      }
+    },
+    "/api/v1/intelligence/fuel/anomalies": {
+      "get": {
+        "operationId": "FuelIntelligenceController_getAnomalies_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get fuel anomalies feed",
+        "tags": [
+          "intelligence/fuel"
+        ]
+      }
+    },
+    "/api/v1/intelligence/fuel/summary": {
+      "get": {
+        "operationId": "FuelIntelligenceController_getSummary_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get fuel anomalies summary",
+        "tags": [
+          "intelligence/fuel"
         ]
       }
     },
@@ -2862,10 +2931,19 @@
         ]
       }
     },
-    "/api/v1/vehicles/tyres": {
+    "/api/v1/vehicles/{id}/tyres": {
       "post": {
-        "operationId": "TyreController_createTyre_v1",
-        "parameters": [],
+        "operationId": "TyreController_fitTyre_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -2876,16 +2954,24 @@
             "bearer": []
           }
         ],
-        "summary": "Create a new tyre",
+        "summary": "Fit a tyre on a vehicle",
         "tags": [
           "tyres"
         ]
       },
       "get": {
-        "operationId": "TyreController_getTyres_v1",
+        "operationId": "TyreController_getVehicleTyres_v1",
         "parameters": [
           {
-            "name": "status",
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "currentKm",
             "required": true,
             "in": "query",
             "schema": {
@@ -2903,15 +2989,15 @@
             "bearer": []
           }
         ],
-        "summary": "List tyres",
+        "summary": "Get active tyres for a vehicle",
         "tags": [
           "tyres"
         ]
       }
     },
-    "/api/v1/vehicles/tyres/{id}/install": {
-      "put": {
-        "operationId": "TyreController_installTyre_v1",
+    "/api/v1/tyres/{id}/remove": {
+      "post": {
+        "operationId": "TyreController_removeTyre_v1",
         "parameters": [
           {
             "name": "id",
@@ -2923,7 +3009,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": ""
           }
         },
@@ -2932,65 +3018,7 @@
             "bearer": []
           }
         ],
-        "summary": "Install tyre on a vehicle",
-        "tags": [
-          "tyres"
-        ]
-      }
-    },
-    "/api/v1/vehicles/tyres/{id}/rotate": {
-      "put": {
-        "operationId": "TyreController_rotateTyre_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Rotate tyre to a new position",
-        "tags": [
-          "tyres"
-        ]
-      }
-    },
-    "/api/v1/vehicles/tyres/{id}/scrap": {
-      "put": {
-        "operationId": "TyreController_scrapTyre_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Scrap a tyre",
+        "summary": "Remove a tyre",
         "tags": [
           "tyres"
         ]
@@ -3279,6 +3307,35 @@
         ]
       }
     },
+    "/api/v1/vehicles/{id}/mileage": {
+      "get": {
+        "operationId": "VehiclesController_getMileageTrend_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get km/L trend for a vehicle",
+        "tags": [
+          "vehicles"
+        ]
+      }
+    },
     "/api/v1/vehicles/{id}": {
       "get": {
         "operationId": "VehiclesController_findOne_v1",
@@ -3473,6 +3530,14 @@
                 "TERMINATED"
               ]
             }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3579,6 +3644,35 @@
           }
         ],
         "summary": "Soft delete a driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/drivers/{id}/score": {
+      "get": {
+        "operationId": "DriversController_getDriverScore_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a driver running score",
         "tags": [
           "drivers"
         ]
@@ -5548,6 +5642,262 @@
         ]
       }
     },
+    "/api/v1/trips/{id}/close": {
+      "post": {
+        "operationId": "TripsController_closeTrip_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Close a trip (requires all desks to be DONE)",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/driver-score": {
+      "post": {
+        "operationId": "TripsController_submitDriverScore_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit driver score for a trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
+    "/api/v1/desks/my": {
+      "get": {
+        "operationId": "TripDesksController_getMyPendingDesks_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pending desks for the current user",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/desks": {
+      "get": {
+        "operationId": "TripDesksController_getTripDesks_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all desks for a trip",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/desks/{desk}/complete": {
+      "post": {
+        "operationId": "TripDesksController_completeDesk_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "desk",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a desk as complete for a trip",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/loading": {
+      "get": {
+        "operationId": "LoadingEventsController_getEvents_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all loading events for a trip",
+        "tags": [
+          "loading-events"
+        ]
+      },
+      "post": {
+        "operationId": "LoadingEventsController_addEvent_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a loading/unloading event to a trip",
+        "tags": [
+          "loading-events"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/fuel": {
+      "post": {
+        "operationId": "FuelEntriesController_addFuel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a fuel entry to a trip",
+        "tags": [
+          "trips-fuel"
+        ]
+      },
+      "get": {
+        "operationId": "FuelEntriesController_getFuel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get fuel entries for a trip",
+        "tags": [
+          "trips-fuel"
+        ]
+      }
+    },
     "/api/v1/dispatch/board": {
       "get": {
         "operationId": "DispatchController_getBoardData_v1",
@@ -5885,6 +6235,35 @@
           }
         ],
         "summary": "Get Live Fleet Map for Control Tower",
+        "tags": [
+          "dispatch-operations"
+        ]
+      }
+    },
+    "/api/v1/dispatch/operations/live-fleet/trail/{vehicleId}": {
+      "get": {
+        "operationId": "DispatchOperationsController_getVehicleTrail_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vehicle GPS trail (last 90 fixes) for polyline + replay",
         "tags": [
           "dispatch-operations"
         ]
@@ -10159,6 +10538,51 @@
         },
         "tags": [
           "Payroll"
+        ]
+      }
+    },
+    "/api/v1/profitability/vehicles": {
+      "get": {
+        "operationId": "ProfitabilityController_listVehiclePnl_v1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
+        ]
+      }
+    },
+    "/api/v1/profitability/cron/aggregate-vehicles": {
+      "post": {
+        "operationId": "ProfitabilityController_aggregateVehicles_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profitability"
         ]
       }
     },
@@ -15521,6 +15945,78 @@
         ]
       }
     },
+    "/api/v1/import/{type}/template": {
+      "get": {
+        "operationId": "BulkImportController_downloadTemplate_v1",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "tags": [
+          "Bulk Import"
+        ]
+      }
+    },
+    "/api/v1/import/{type}": {
+      "post": {
+        "operationId": "BulkImportController_importFile_v1",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "tags": [
+          "Bulk Import"
+        ]
+      }
+    },
     "/api/v1/comments/{entityType}/{entityId}": {
       "get": {
         "operationId": "CommentsController_getComments_v1",
@@ -18179,6 +18675,140 @@
         ]
       }
     },
+    "/api/v1/vehicles/{id}/jobs": {
+      "post": {
+        "operationId": "JobsController_createJob_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Open a maintenance job for a vehicle",
+        "tags": [
+          "workshop-jobs"
+        ]
+      },
+      "get": {
+        "operationId": "JobsController_getJobsByVehicle_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all jobs for a vehicle",
+        "tags": [
+          "workshop-jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{id}/parts": {
+      "post": {
+        "operationId": "JobsController_addPart_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a part to a maintenance job",
+        "tags": [
+          "workshop-jobs"
+        ]
+      }
+    },
+    "/api/v1/jobs/{id}/close": {
+      "post": {
+        "operationId": "JobsController_closeJob_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Close a maintenance job",
+        "tags": [
+          "workshop-jobs"
+        ]
+      }
+    },
     "/api/v1/portals/support-tickets": {
       "post": {
         "operationId": "PortalsController_createSupportTicket_v1",
@@ -19342,6 +19972,43 @@
         ]
       }
     },
+    "/api/v1/lorry-receipts/{id}/pdf": {
+      "get": {
+        "operationId": "LorryReceiptsController_generatePdf_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "copy",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a proper A4 PDF for a Bilty/LR",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
     "/api/v1/lorry-receipts/{id}/status": {
       "patch": {
         "operationId": "LorryReceiptsController_updateStatus_v1",
@@ -19378,6 +20045,43 @@
         "summary": "Update LR status (ISSUED→IN_TRANSIT→DELIVERED)",
         "tags": [
           "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/bilty/{id}/pdf": {
+      "get": {
+        "operationId": "BiltyController_generatePdf_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "copy",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a proper A4 PDF for a Bilty",
+        "tags": [
+          "bilty"
         ]
       }
     }
@@ -22747,6 +23451,10 @@
         "properties": {}
       },
       "UpdateTollAccountDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateJobDto": {
         "type": "object",
         "properties": {}
       },

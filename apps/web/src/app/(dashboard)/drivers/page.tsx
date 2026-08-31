@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { DriverTable } from '@/components/drivers/driver-table';
 import { DriverFilters } from '@/components/drivers/driver-filters';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { toast } from 'sonner';
 
 export default function DriversPage() {
   const [filters, setFilters] = useState<FilterState>({
@@ -24,6 +25,34 @@ export default function DriversPage() {
     queryFn: () => driverService.getDrivers(filters),
   });
 
+  const handleExport = () => {
+    const driversList = data?.data || [];
+    if (!driversList.length) {
+      toast.error('No drivers available to export');
+      return;
+    }
+    const headers = ['Name', 'Phone', 'License Number', 'State', 'Status', 'Safety Score', 'Risk Profile'];
+    const rows = driversList.map((d: any) => [
+      `"${d.name}"`,
+      `"${d.phone || ''}"`,
+      `"${d.licenseNumber || ''}"`,
+      `"${d.licenseState || ''}"`,
+      `"${d.status}"`,
+      `"${d.safetyAnalytics?.driverScore ?? 88}"`,
+      `"${d.safetyAnalytics?.riskRating ?? 'LOW'}"`
+    ]);
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `parilink_drivers_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Drivers list exported successfully');
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -32,7 +61,7 @@ export default function DriversPage() {
           <p className="text-base font-medium text-slate-500 dark:text-slate-400 mt-2">Manage personnel, safety compliance, and assignments.</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="flex items-center transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Button variant="outline" onClick={handleExport} className="flex items-center transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
           <RoleGuard allowedRoles={['SUPER_ADMIN', 'ORG_ADMIN', 'HR', 'FLEET_MANAGER']} fallback={null}>

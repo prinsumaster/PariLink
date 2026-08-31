@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Body,
   Param,
   Query,
@@ -19,57 +18,40 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 @ApiTags('tyres')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Controller('vehicles/tyres')
+@Controller()
 export class TyreController {
   constructor(private readonly tyreService: TyreService) {}
 
-  @Post()
-  @RequirePermissions('vehicles:write')
-  @ApiOperation({ summary: 'Create a new tyre' })
-  async createTyre(@GetUser() user: AuthenticatedUser, @Body() data: any) {
-    return this.tyreService.createTyre(user.companyId, data, user.id);
-  }
-
-  @Get()
-  @RequirePermissions('vehicles:read')
-  @ApiOperation({ summary: 'List tyres' })
-  async getTyres(
+  @Post('vehicles/:id/tyres')
+  @RequirePermissions('fleet:write')
+  @ApiOperation({ summary: 'Fit a tyre on a vehicle' })
+  async fitTyre(
     @GetUser() user: AuthenticatedUser,
-    @Query('status') status?: string,
-  ) {
-    return this.tyreService.getTyres(user.companyId, status);
-  }
-
-  @Put(':id/install')
-  @RequirePermissions('vehicles:write')
-  @ApiOperation({ summary: 'Install tyre on a vehicle' })
-  async installTyre(
-    @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
+    @Param('id') vehicleId: string,
     @Body() data: any,
   ) {
-    return this.tyreService.installTyre(user.companyId, id, data, user.id);
+    return this.tyreService.fitTyre(user.companyId, vehicleId, data);
   }
 
-  @Put(':id/rotate')
-  @RequirePermissions('vehicles:write')
-  @ApiOperation({ summary: 'Rotate tyre to a new position' })
-  async rotateTyre(
+  @Post('tyres/:id/remove')
+  @RequirePermissions('fleet:write')
+  @ApiOperation({ summary: 'Remove a tyre' })
+  async removeTyre(
     @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
+    @Param('id') tyreId: string,
     @Body() data: any,
   ) {
-    return this.tyreService.rotateTyre(user.companyId, id, data, user.id);
+    return this.tyreService.removeTyre(user.companyId, tyreId, data);
   }
 
-  @Put(':id/scrap')
-  @RequirePermissions('vehicles:write')
-  @ApiOperation({ summary: 'Scrap a tyre' })
-  async scrapTyre(
+  @Get('vehicles/:id/tyres')
+  @RequirePermissions('fleet:read')
+  @ApiOperation({ summary: 'Get active tyres for a vehicle' })
+  async getVehicleTyres(
     @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-    @Body() data: any,
+    @Param('id') vehicleId: string,
+    @Query('currentKm') currentKm?: string,
   ) {
-    return this.tyreService.scrapTyre(user.companyId, id, data, user.id);
+    return this.tyreService.getVehicleTyres(user.companyId, vehicleId, currentKm ? Number(currentKm) : 0);
   }
 }

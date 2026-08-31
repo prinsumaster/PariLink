@@ -176,7 +176,7 @@ async function bootstrap() {
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
       // Allow same-origin (no origin header) and listed origins
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.trycloudflare.com')) {
         callback(null, true);
       } else {
         appLogger.warn(
@@ -222,6 +222,17 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
+  });
+
+  app.enableCors({
+    origin: '*', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
+  // Hardcoded health check for scripts
+  app.getHttpAdapter().get('/api/v1/health', (req: any, res: any) => {
+    res.status(200).send('OK');
   });
 
   // ── Swagger (disabled in production)

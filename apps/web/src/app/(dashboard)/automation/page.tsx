@@ -196,7 +196,7 @@ export default function AutomationPage() {
 
       {activeTab === 'automations' && (
         loading ? (
-          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-indigo-600" /></div>
+          <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
         ) : workflows.length === 0 ? (
           <div className="text-center py-24">
             <div className="h-16 w-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto mb-4">

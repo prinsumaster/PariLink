@@ -173,6 +173,7 @@ export interface Customer {
   email?: string;
   phone?: string;
   billingAddress?: string;
+  address?: string;
   taxId?: string;
   paymentTerms: PaymentTerms;
   creditLimit?: number;
@@ -197,6 +198,12 @@ export interface Invoice {
   notes?: string;
   customer?: Customer;
   payments?: Payment[];
+  lineItems?: any[];
+  subtotal?: number;
+  taxTotal?: number;
+  grandTotal?: number;
+  amountPaid?: number;
+  balanceDue?: number;
   createdAt: string;
   updatedAt: string;
 }

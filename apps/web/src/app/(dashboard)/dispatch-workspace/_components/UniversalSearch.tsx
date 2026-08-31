@@ -71,7 +71,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({ onSelectTrip }
              <h4 className="text-xs font-semibold text-slate-500 uppercase px-3 py-2">Quick Actions</h4>
              <div className="space-y-0.5">
                 <button className="w-full flex items-center justify-between px-3 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg focus:outline-none focus:bg-slate-800">
-                  <span className="flex items-center"><Truck className="h-4 w-4 mr-3 text-blue-400" /> Create New Trip</span>
+                  <span className="flex items-center"><Truck className="h-4 w-4 mr-3 text-primary" /> Create New Trip</span>
                   <span className="text-[10px] font-mono text-slate-500 bg-slate-800 px-2 py-0.5 rounded">T</span>
                 </button>
                 <button className="w-full flex items-center justify-between px-3 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg focus:outline-none focus:bg-slate-800">
@@ -99,7 +99,7 @@ export const UniversalSearch: React.FC<UniversalSearchProps> = ({ onSelectTrip }
                        }}
                        className="w-full flex items-center px-3 py-2.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg group"
                      >
-                       {r.type === 'TRIP' ? <Truck className="h-4 w-4 mr-3 text-indigo-400" /> : 
+                       {r.type === 'TRIP' ? <Truck className="h-4 w-4 mr-3 text-primary" /> : 
                         r.type === 'LOAD' ? <Package className="h-4 w-4 mr-3 text-emerald-400" /> : 
                         <Search className="h-4 w-4 mr-3 text-slate-500 group-hover:text-white" />}
                        <div className="flex flex-col items-start">

@@ -8,7 +8,7 @@ import { Loader2 } from 'lucide-react';
 
 const LoadingFallback = ({ text }: { text: string }) => (
   <div className="h-full w-full flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-400 gap-4">
-    <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
     <p className="text-sm font-medium">{text}</p>
   </div>
 );

@@ -269,12 +269,12 @@ export default function OperationsDashboardPage() {
               </h2>
               {metrics ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                  <MetricTile label="Heap Used" value={`${metrics.heapUsedMb} MB`} warn={metrics.heapUsedMb > 600} />
-                  <MetricTile label="Heap Total" value={`${metrics.heapTotalMb} MB`} />
-                  <MetricTile label="RSS" value={`${metrics.rssMb} MB`} />
-                  <MetricTile label="CPU Usage" value={`${metrics.cpuUsagePct}%`} warn={metrics.cpuUsagePct > 70} />
-                  <MetricTile label="Event Loop" value={`${metrics.eventLoopLagMs}ms`} warn={metrics.eventLoopLagMs > 100} />
-                  <MetricTile label="Uptime" value={formatUptime(metrics.uptimeSeconds)} />
+                  <MetricTile label="Heap Used" value={metrics?.heapUsedMb ? `${metrics.heapUsedMb} MB` : '—'} warn={(metrics?.heapUsedMb ?? 0) > 600} />
+                  <MetricTile label="Heap Total" value={metrics?.heapTotalMb ? `${metrics.heapTotalMb} MB` : '—'} />
+                  <MetricTile label="RSS" value={metrics?.rssMb ? `${metrics.rssMb} MB` : '—'} />
+                  <MetricTile label="CPU Usage" value={metrics?.cpuUsagePct ? `${metrics.cpuUsagePct}%` : '—'} warn={(metrics?.cpuUsagePct ?? 0) > 70} />
+                  <MetricTile label="Event Loop" value={metrics?.eventLoopLagMs ? `${metrics.eventLoopLagMs}ms` : '—'} warn={(metrics?.eventLoopLagMs ?? 0) > 100} />
+                  <MetricTile label="Uptime" value={metrics?.uptimeSeconds ? formatUptime(metrics.uptimeSeconds) : '—'} />
                 </div>
               ) : (
                 <LoadingPlaceholder rows={1} />

@@ -30,7 +30,7 @@ export default function AiAnalyticsPage() {
 
   if (loading) {
     return <div className="min-h-screen bg-slate-950 p-6 flex items-center justify-center">
-      <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full" />
+      <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
     </div>;
   }
 

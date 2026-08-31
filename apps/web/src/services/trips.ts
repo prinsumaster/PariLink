@@ -35,5 +35,50 @@ export const tripService = {
   assignDriver: async (id: string, driverId: string): Promise<Trip> => {
     const { data } = await api.patch(`/trips/${id}`, { driverId });
     return data;
+  },
+
+  getTripDesks: async (id: string): Promise<any[]> => {
+    const { data } = await api.get(`/trips/${id}/desks`);
+    return data;
+  },
+
+  completeDesk: async (id: string, desk: string, notes?: string): Promise<any> => {
+    const { data } = await api.post(`/trips/${id}/desks/${desk}/complete`, { notes });
+    return data;
+  },
+
+  getMyDesks: async (): Promise<any[]> => {
+    const { data } = await api.get(`/desks/my`);
+    return data;
+  },
+
+  closeTrip: async (id: string): Promise<Trip> => {
+    const { data } = await api.post(`/trips/${id}/close`);
+    return data;
+  },
+
+  submitDriverScore: async (id: string, scoreData: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }) => {
+    const { data } = await api.post(`/trips/${id}/driver-score`, scoreData);
+    return data;
+  },
+
+  getLoadingEvents: async (id: string): Promise<any[]> => {
+    const { data } = await api.get(`/trips/${id}/loading`);
+    return data;
+  },
+
+  addLoadingEvent: async (id: string, eventData: any): Promise<any> => {
+    const { data } = await api.post(`/trips/${id}/loading`, eventData);
+    return data;
+  },
+
+  getFuel: async (tripId: string) => {
+    const { data } = await api.get(`/trips/${tripId}/fuel`);
+    return data;
+  },
+
+  addFuel: async (tripId: string, payload: any) => {
+    const { data } = await api.post(`/trips/${tripId}/fuel`, payload);
+    return data;
   }
 };

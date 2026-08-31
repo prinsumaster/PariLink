@@ -63,6 +63,7 @@ export function FleetMap({ vehicles, isLoading }: FleetMapProps) {
             zoom: 3.5
           }}
           mapStyle={mapStyle}
+          style={{ width: '100%', height: '100%' }}
           interactive={true}
         >
           <Source id="fleet-data" type="geojson" data={geoJsonData as any}>

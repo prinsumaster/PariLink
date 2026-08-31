@@ -34,6 +34,21 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
     );
   }
 
+  if (!data?.length) {
+    return (
+      <Card className="col-span-2 xl:col-span-3">
+        <CardHeader>
+          <CardTitle>Revenue vs Expenses (YTD)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[350px] flex items-center justify-center text-muted-foreground text-sm">
+            No data for this period
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="col-span-2 xl:col-span-3">
       <CardHeader>

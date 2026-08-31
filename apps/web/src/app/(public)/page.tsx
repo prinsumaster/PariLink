@@ -36,7 +36,7 @@ export default function HomePage() {
           <div className="container px-4 mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center text-center p-6">
               <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                <Truck className="h-8 w-8 text-blue-600" />
+                <Truck className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-3">Live Control Tower</h3>
               <p className="text-slate-600">Track every vehicle and trip in real-time on a single unified map interface.</p>

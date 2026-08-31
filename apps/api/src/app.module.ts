@@ -87,6 +87,7 @@ import { FleetModule } from './fleet/fleet.module';
 import { ElomModule } from './integration/elom/elom.module';
 import { SearchModule } from './search/search.module';
 import { ExportsModule } from './exports/exports.module';
+import { BulkImportModule } from './bulk-import/bulk-import.module';
 import { CommentsModule } from './comments/comments.module';
 import { ChatModule } from './chat/chat.module';
 import { BrokerModule } from './broker/broker.module';
@@ -113,6 +114,7 @@ import { DispatchAiModule } from './intelligence/dispatch/dispatch-ai.module';
 import { DriverIntelligenceModule } from './intelligence/drivers/driver-intelligence.module';
 import { FleetIntelligenceModule } from './intelligence/fleet/fleet-intelligence.module';
 import { EtaIntelligenceModule } from './intelligence/eta/eta-intelligence.module';
+import { FuelIntelligenceModule } from './intelligence/fuel/fuel-intelligence.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { PortalsModule } from './portals/portals.module';
 import { LorryReceiptsModule } from './lorry-receipts/lorry-receipts.module';
@@ -134,6 +136,7 @@ import { ReportingModule } from './reporting/reporting.module';
     DriverIntelligenceModule,
     FleetIntelligenceModule,
     EtaIntelligenceModule,
+    FuelIntelligenceModule,
     PredictionEngineModule,
     RiskEngineModule,
     RecommendationEngineModule,
@@ -293,6 +296,7 @@ import { ReportingModule } from './reporting/reporting.module';
     ElomModule,
     SearchModule,
     ExportsModule,
+    BulkImportModule,
     CommentsModule,
     ChatModule,
     BackgroundJobsModule,

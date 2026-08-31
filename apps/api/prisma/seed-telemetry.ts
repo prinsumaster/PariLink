@@ -286,7 +286,7 @@ async function main() {
 
   console.log(`\n✅ Inserted ${totalInserted} total VehicleLocation rows\n`);
   console.log('Sample 5 rows (oldest first):');
-  sample.forEach((r) => {
+  sample.forEach((r: { gpsTimestamp: Date; providerVehicleId: string; latitude: number; longitude: number; speed: number | null; heading: number | null }) => {
     console.log(
       `  [${r.gpsTimestamp.toISOString()}] plate=${r.providerVehicleId} ` +
         `lat=${r.latitude.toFixed(4)} lng=${r.longitude.toFixed(4)} ` +

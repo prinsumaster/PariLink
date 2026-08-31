@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 export default function DispatchWorkspacePage() {
   const [selectedTrip, setSelectedTrip] = useState<string | null>(null);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'KANBAN' | 'MAP' | 'TIMELINE'>('KANBAN');
+  const [activeTab, setActiveTab] = useState<'KANBAN' | 'MAP' | 'TIMELINE'>('MAP');
 
   const handleSelectVehicle = (vehicleId: string | null, tripId: string | null) => {
     setSelectedVehicleId(vehicleId);

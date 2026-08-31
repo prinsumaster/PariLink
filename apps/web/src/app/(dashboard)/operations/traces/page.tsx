@@ -9,18 +9,18 @@ const STATUS_STYLES: Record<string, string> = {
   TIMEOUT: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
 };
 
-function SpanBar({ durationMs, maxMs }: { durationMs: number; maxMs: number }) {
-  const pct = Math.max(4, Math.round((durationMs / (maxMs || 1)) * 100));
-  const warn = durationMs > 500;
+function SpanBar({ durationMs, maxDurationMs, warn }: { durationMs?: number; maxDurationMs: number; warn?: boolean }) {
+  const safeDuration = durationMs ?? 0;
+  const pct = Math.min(100, Math.max(0, (safeDuration / maxDurationMs) * 100));
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
-        <div
+    <div className="flex items-center gap-3">
+      <div className="flex-1 h-2 bg-slate-700/50 rounded-full overflow-hidden">
+        <div 
           className={`h-full rounded-full ${warn ? 'bg-amber-500' : 'bg-indigo-500'}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className={`text-xs font-mono ${warn ? 'text-amber-400' : 'text-slate-400'}`}>{durationMs}ms</span>
+      <span className={`text-xs font-mono ${warn ? 'text-amber-400' : 'text-slate-400'}`}>{safeDuration}ms</span>
     </div>
   );
 }
@@ -47,7 +47,7 @@ function SpanNode({ span, depth = 0, maxMs }: { span: any; depth?: number; maxMs
         </span>
         <span className="text-xs text-indigo-400 font-mono shrink-0 w-28 truncate">{span.serviceName}</span>
         <span className="flex-1 text-sm text-slate-200 font-mono truncate">{span.operationName}</span>
-        <SpanBar durationMs={span.durationMs} maxMs={maxMs} />
+        <SpanBar durationMs={span.durationMs} maxDurationMs={maxMs} />
       </div>
       {open && hasChildren && (
         <div className="mt-1">
@@ -248,7 +248,7 @@ export default function TraceExplorerPage() {
                           <td className="px-4 py-3 text-indigo-400 font-mono text-xs">{span.serviceName}</td>
                           <td className="px-4 py-3 text-slate-200 font-mono text-xs">{span.operationName}</td>
                           <td className="px-4 py-3 text-slate-400 font-mono text-xs">{span.traceId?.slice(0, 12)}…</td>
-                          <td className="px-4 py-3"><SpanBar durationMs={span.durationMs} maxMs={maxMs} /></td>
+                          <td className="px-4 py-3"><SpanBar durationMs={span.durationMs} maxDurationMs={maxMs} /></td>
                           <td className="px-4 py-3 text-slate-500 text-xs">{span.startTime ? new Date(span.startTime).toLocaleTimeString() : '—'}</td>
                         </tr>
                       ))}

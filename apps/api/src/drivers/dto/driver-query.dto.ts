@@ -11,4 +11,9 @@ export class DriverQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsIn(['AVAILABLE', 'ON_DUTY', 'OFF_DUTY', 'TERMINATED'])
   status?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  sort?: string;
 }

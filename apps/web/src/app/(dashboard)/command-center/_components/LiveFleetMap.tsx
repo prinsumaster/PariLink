@@ -78,7 +78,7 @@ export function LiveFleetMap({ selectedTrip }: { selectedTrip: string | null }) 
         layers={layers}
         getTooltip={(info: any) => info.object && `Vehicle: ${info.object.id}`}
       >
-        <Map mapStyle={mapStyle} />
+        <Map mapStyle={mapStyle} style={{ width: '100%', height: '100%' }} />
       </DeckGL>
 
       {/* Map Overlay Stats */}

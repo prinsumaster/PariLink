@@ -325,7 +325,7 @@ export function DispatchFleetMap({
             : null
         }
       >
-        <Map mapStyle={mapStyle} />
+        <Map mapStyle={mapStyle} style={{ width: '100%', height: '100%' }} />
       </DeckGL>
 
       {/* ── Bottom-right stats ────────────────────────────────────────────────── */}

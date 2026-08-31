@@ -10,6 +10,8 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DriverCompliance } from './driver-compliance';
 import { DriverSafetyAnalytics } from './driver-safety-analytics';
+import { useQuery } from '@tanstack/react-query';
+import { driverService } from '@/services/drivers';
 
 interface DriverDetailViewProps {
   driver: Driver;
@@ -118,7 +120,7 @@ export function DriverDetailView({ driver }: DriverDetailViewProps) {
         {/* Lower Left: Safety */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
-            <DriverSafetyAnalytics analytics={driver.safetyAnalytics} />
+            <DriverSafetyAnalytics driverId={driver.id} />
           </div>
         </div>
       </div>

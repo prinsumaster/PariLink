@@ -106,6 +106,7 @@ export function TripMap({ trip }: TripMapProps) {
               fitBoundsOptions: { padding: 50 }
             }}
             mapStyle={mapStyle}
+            style={{ width: '100%', height: '100%' }}
             interactive={true}
           >
             <Source id="route" type="geojson" data={routeGeoJSON}>

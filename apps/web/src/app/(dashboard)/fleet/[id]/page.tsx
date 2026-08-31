@@ -6,7 +6,11 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { VehicleDetailView } from '@/components/fleet/vehicle-detail-view';
+import { MileageTrendPanel } from '@/components/fleet/mileage-trend-panel';
+import { WorkshopPanel } from '@/components/fleet/workshop-panel';
+import { TyresPanel } from '@/components/fleet/tyres-panel';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function VehicleDetailPage() {
   const { id } = useParams();
@@ -57,7 +61,26 @@ export default function VehicleDetailPage() {
           </div>
         </div>
 
-        <VehicleDetailView vehicle={vehicle} />
+        <Tabs defaultValue="overview" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="workshop">Workshop & Jobs</TabsTrigger>
+            <TabsTrigger value="tyres">Tyres</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-8 mt-0">
+            <VehicleDetailView vehicle={vehicle} />
+            <MileageTrendPanel vehicleId={id as string} />
+          </TabsContent>
+
+          <TabsContent value="workshop" className="mt-0">
+            <WorkshopPanel vehicleId={id as string} />
+          </TabsContent>
+
+          <TabsContent value="tyres" className="mt-0">
+            <TyresPanel vehicleId={id as string} />
+          </TabsContent>
+        </Tabs>
       </div>
     </RoleGuard>
   );

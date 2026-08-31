@@ -3,6 +3,7 @@ import { DynamicTool } from '@langchain/core/tools';
 import { BaseAgent } from '../base.agent';
 import { LlmManagerService } from '../../platform/llm-manager.service';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { FuelIntelligenceService } from '../../../intelligence/fuel/fuel-intelligence.service';
 
 @Injectable()
 export class FuelOptimizationAgent extends BaseAgent {
@@ -13,6 +14,7 @@ export class FuelOptimizationAgent extends BaseAgent {
   constructor(
     llmManager: LlmManagerService,
     private readonly prisma: PrismaService,
+    private readonly fuelIntelligence: FuelIntelligenceService,
   ) {
     super(llmManager);
   }
@@ -36,6 +38,19 @@ export class FuelOptimizationAgent extends BaseAgent {
           ],
         });
       },
+    }),
+    new DynamicTool({
+      name: 'get_fuel_anomalies',
+      description: 'Get a list of fuel anomalies (possible theft, pilferage, mechanical issues) for a company. Identifies worst drivers and trucks. Input: {"companyId": "string"}',
+      func: async (input: string) => {
+        try {
+          const { companyId } = JSON.parse(input);
+          const anomalies = await this.fuelIntelligence.getAnomalies(companyId);
+          return JSON.stringify(anomalies);
+        } catch (e) {
+          return "Failed to fetch fuel anomalies";
+        }
+      }
     }),
   ];
 }

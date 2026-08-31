@@ -10,8 +10,10 @@ import {
   Query,
   UseGuards,
   Header,
+  Res,
 } from '@nestjs/common';
 import { LorryReceiptsService } from './lorry-receipts.service';
+import { PdfGeneratorService } from './pdf-generator.service';
 import { CreateLorryReceiptDto } from './dto/create-lorry-receipt.dto';
 import { LorryReceiptQueryDto } from './dto/lorry-receipt-query.dto';
 import { UpdateLorryReceiptStatusDto } from './dto/update-lorry-receipt-status.dto';
@@ -25,7 +27,10 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('lorry-receipts')
 export class LorryReceiptsController {
-  constructor(private readonly lorryReceiptsService: LorryReceiptsService) {}
+  constructor(
+    private readonly lorryReceiptsService: LorryReceiptsService,
+    private readonly pdfGeneratorService: PdfGeneratorService,
+  ) {}
 
   @Post()
   @RequirePermissions('documents:create')
@@ -60,6 +65,27 @@ export class LorryReceiptsController {
   @ApiOperation({ summary: 'Printable LR (HTML → browser Print gives a PDF)' })
   print(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.lorryReceiptsService.renderPrintable(user.companyId, id);
+  }
+
+  @Get(':id/pdf')
+  @RequirePermissions('documents:read')
+  @ApiOperation({ summary: 'Generate a proper A4 PDF for a Bilty/LR' })
+  async generatePdf(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Query('copy') copy: string,
+    @Res() res: any,
+  ) {
+    const lr = await this.lorryReceiptsService.findOnePopulated(user.companyId, id);
+    const pdfBuffer = await this.pdfGeneratorService.generateBiltyPdf(lr, copy || 'OFFICE');
+    
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `inline; filename="Bilty_${lr.lrNumber}.pdf"`,
+      'Content-Length': pdfBuffer.length,
+    });
+    
+    res.end(pdfBuffer);
   }
 
   @Patch(':id/status')

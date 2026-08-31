@@ -55,6 +55,7 @@ export const LiveMap = () => {
       >
         <Map
           mapStyle={rasterStyle(true)}
+          style={{ width: '100%', height: '100%' }}
           attributionControl={false}
         />
       </DeckGL>

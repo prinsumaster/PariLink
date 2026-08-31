@@ -115,8 +115,24 @@ const navigation: NavItem[] = [
       { name: 'Analytics', href: '/analytics/command-center' },
     ],
   },
+  {
+    name: 'Intelligence',
+    href: '/intelligence/fuel',
+    icon: Shield,
+    children: [
+      { name: 'Fuel Intelligence', href: '/intelligence/fuel' },
+    ],
+  },
   { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Notifications', href: '/notifications', icon: Bell },
+  {
+    name: 'Settings',
+    href: '/settings/import',
+    icon: Settings,
+    children: [
+      { name: 'Bulk Import', href: '/settings/import' },
+    ],
+  },
   // {
   //   name: 'Admin',
   //   href: '/admin',

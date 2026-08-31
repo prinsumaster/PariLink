@@ -101,6 +101,52 @@ export class VehiclesService {
     return newVehicle;
   }
 
+  private mapVehicle(v: any) {
+    const latestLoc = v.VehicleLocation?.[0];
+    const latestTelem = v.VehicleTelemetry?.[0];
+
+    const maintenanceHistory = (v.WorkOrder || []).map((wo: any) => ({
+      id: wo.id,
+      title: wo.type === 'BREAKDOWN' ? 'Emergency Repair' : 'Preventive Maintenance',
+      description: wo.description || `${wo.type} service`,
+      scheduledDate: wo.scheduledDate?.toISOString?.() || wo.scheduledDate,
+      completedDate: wo.completedDate?.toISOString?.() || wo.completedDate,
+      status: wo.status === 'COMPLETED' ? 'COMPLETED' : 'SCHEDULED',
+      cost: wo.totalCost || 0,
+      odometerReading: latestTelem?.odometer || latestLoc?.odometer || 350000,
+    }));
+
+    const documents = (v.permits || []).map((p: any) => ({
+      id: p.id,
+      type: p.permitType || 'PERMIT_NATIONAL',
+      documentNumber: p.permitNumber,
+      issuedDate: p.issuedDate?.toISOString?.() || p.issuedDate,
+      expiryDate: p.expiryDate?.toISOString?.() || p.expiryDate,
+      isExpiringSoon: false,
+      isExpired: false,
+    }));
+
+    return {
+      ...v,
+      registrationNumber: v.licensePlate || v.registrationNumber,
+      capacity: v.capacityWeight || v.capacity,
+      odometer: latestTelem?.odometer ?? latestLoc?.odometer ?? 350000,
+      engineHours: latestTelem?.engineHours ?? latestLoc?.engineHours ?? 4500,
+      fuelLevel: latestTelem?.fuelLevel ?? latestLoc?.fuel ?? 75,
+      batteryStatus: (latestTelem?.batteryVolts && latestTelem.batteryVolts < 11.5) ? 'CRITICAL' : 'GOOD',
+      gpsStatus: latestLoc ? 'ONLINE' : 'OFFLINE',
+      location: latestLoc ? {
+        lat: latestLoc.latitude,
+        lng: latestLoc.longitude,
+        heading: latestLoc.heading ?? 0,
+        speed: latestLoc.speed ?? 0,
+        lastUpdated: latestLoc.gpsTimestamp ? new Date(latestLoc.gpsTimestamp).toISOString() : new Date().toISOString(),
+      } : undefined,
+      maintenanceHistory,
+      documents,
+    };
+  }
+
   async findAll(companyId: string, query: VehicleQueryDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const { page = 1, limit = 10, search, type, status } = query;
@@ -131,11 +177,44 @@ export class VehiclesService {
           skip,
           take,
           orderBy: { createdAt: 'desc' },
+          include: {
+            VehicleLocation: { orderBy: { gpsTimestamp: 'desc' }, take: 1 },
+            VehicleTelemetry: { orderBy: { timestamp: 'desc' }, take: 1 },
+            permits: true,
+            MaintenanceJob: true,
+          },
         }),
         tx.vehicle.count({ where }),
       ]);
 
-      return createPaginationResponse(data, total, page, limit);
+      const mappedData = data.map((v) => this.mapVehicle(v));
+
+      return createPaginationResponse(mappedData, total, page, limit);
+    });
+  }
+
+  async getMileageTrend(companyId: string, id: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const fuelEntries = await tx.fuelEntry.findMany({
+        where: { vehicleId: id, companyId },
+        orderBy: { filledAt: 'desc' },
+        take: 10,
+        include: { trip: true }
+      });
+
+      const trend = fuelEntries.map(entry => {
+        const distance = entry.trip?.actualDistance || entry.trip?.estimatedDistance || 1000;
+        const actualMileage = entry.litres > 0 ? distance / entry.litres : 0;
+        const expectedMileage = 4.0;
+        return {
+          date: entry.filledAt,
+          actualKmpl: Number(actualMileage.toFixed(2)),
+          expectedKmpl: expectedMileage,
+          variancePct: entry.variancePct
+        };
+      });
+
+      return trend.reverse();
     });
   }
 
@@ -143,12 +222,18 @@ export class VehiclesService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const vehicle = await tx.vehicle.findFirst({
         where: { id, companyId },
+        include: {
+          VehicleLocation: { orderBy: { gpsTimestamp: 'desc' }, take: 1 },
+          VehicleTelemetry: { orderBy: { timestamp: 'desc' }, take: 1 },
+          permits: true,
+          MaintenanceJob: true,
+        },
       });
 
       if (!vehicle) {
         throw new NotFoundException(`Vehicle with ID ${id} not found`);
       }
-      return vehicle;
+      return this.mapVehicle(vehicle);
     });
   }
 

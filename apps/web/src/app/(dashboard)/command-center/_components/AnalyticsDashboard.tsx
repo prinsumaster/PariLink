@@ -36,7 +36,7 @@ export function AnalyticsDashboard() {
         {/* KPI Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard title="On-Time Delivery" value="94.2%" trend="+2.1%" icon={<Clock className="h-5 w-5 text-emerald-500" />} />
-          <KpiCard title="Vehicle Utilization" value="89.5%" trend="+5.4%" icon={<Truck className="h-5 w-5 text-indigo-500" />} />
+          <KpiCard title="Vehicle Utilization" value="89.5%" trend="+5.4%" icon={<Truck className="h-5 w-5 text-primary" />} />
           <KpiCard title="Driver Productivity" value="92%" trend="-1.2%" trendNegative icon={<Users className="h-5 w-5 text-blue-500" />} />
           <KpiCard title="Today's Revenue" value="₹142.5K" trend="+12.5%" icon={<TrendingUp className="h-5 w-5 text-purple-500" />} />
         </div>

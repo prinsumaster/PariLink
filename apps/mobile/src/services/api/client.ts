@@ -19,7 +19,7 @@ import { clearAuth, refreshTokenThunk } from '../../store/slices/authSlice';
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 const BASE_URL = __DEV__
-  ? 'http://10.0.2.2:8080/api/v1'
+  ? 'http://192.168.0.101:8080/api/v1'
   : (process.env.EXPO_PUBLIC_API_URL as string);
 
 // ─── Axios Instance ───────────────────────────────────────────────────────────
