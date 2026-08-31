@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PariLink Module Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#f7f6f4;
+    --panel:#ffffff;
+    --ink:#14171c;
+    --ink-soft:#4c525c;
+    --ink-faint:#878d97;
+    --line:#e5e2dd;
+    --line-soft:#efede9;
+    --red:#e4002b;
+    --red-soft:#fdeef1;
+    --green:#0f8a4f;
+    --green-soft:#e9f6ef;
+    --amber:#b3701a;
+    --amber-soft:#fbf1e2;
+    --slate:#5b6472;
+    --slate-soft:#eef0f3;
+    --shadow:0 1px 2px rgba(20,23,28,.04),0 8px 24px rgba(20,23,28,.05);
+  }
+  :root:not([data-theme="light"]){}
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#101216;
+      --panel:#181b21;
+      --ink:#eef0f3;
+      --ink-soft:#aab1bc;
+      --ink-faint:#727986;
+      --line:#282c34;
+      --line-soft:#20242b;
+      --red:#ff375f;
+      --red-soft:#2a1119;
+      --green:#37c77f;
+      --green-soft:#12241a;
+      --amber:#e0a13c;
+      --amber-soft:#241a0f;
+      --slate:#9aa3b2;
+      --slate-soft:#1c2029;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#101216;--panel:#181b21;--ink:#eef0f3;--ink-soft:#aab1bc;--ink-faint:#727986;
+    --line:#282c34;--line-soft:#20242b;--red:#ff375f;--red-soft:#2a1119;--green:#37c77f;
+    --green-soft:#12241a;--amber:#e0a13c;--amber-soft:#241a0f;--slate:#9aa3b2;--slate-soft:#1c2029;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 72px}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--red);font-weight:500}
+
+  /* header */
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:32px}
+  h1{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(28px,5vw,44px);
+    letter-spacing:-.02em;margin:.35em 0 .15em;text-wrap:balance;line-height:1.05}
+  .sub{color:var(--ink-soft);max-width:62ch;font-size:15.5px}
+  .statrow{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}
+  .stat{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow)}
+  .stat .n{font-family:"Archivo",sans-serif;font-weight:800;font-size:30px;line-height:1;
+    letter-spacing:-.02em}
+  .stat .n.red{color:var(--red)} .stat .n.green{color:var(--green)} .stat .n.slate{color:var(--slate)}
+  .stat .l{font-size:12.5px;color:var(--ink-faint);margin-top:7px;letter-spacing:.01em}
+
+  /* timeline */
+  .timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:8px 0 40px}
+  .tl{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 14px 16px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .tl::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--red)}
+  .tl .date{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint);
+    letter-spacing:.02em}
+  .tl .sp{font-family:"Archivo",sans-serif;font-weight:700;font-size:14px;margin:5px 0 6px}
+  .tl .goal{font-size:12.5px;color:var(--ink-soft);line-height:1.4}
+
+  section{margin-bottom:38px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+  h2{font-family:"Archivo",sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;margin:0}
+  .sec-note{color:var(--ink-soft);font-size:14px;margin:4px 0 18px;max-width:70ch}
+  .count-pill{font-family:"IBM Plex Mono",monospace;font-size:12px;padding:3px 9px;border-radius:20px;
+    background:var(--slate-soft);color:var(--slate);font-weight:500}
+
+  /* module table */
+  .mods{display:flex;flex-direction:column;gap:8px}
+  .mod{display:grid;grid-template-columns:1.15fr 1.9fr auto auto;gap:14px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px 16px;
+    box-shadow:var(--shadow)}
+  .mod .name{font-weight:600;font-size:15px}
+  .mod .name small{display:block;font-weight:400;color:var(--ink-faint);font-size:11.5px;
+    font-family:"IBM Plex Mono",monospace;margin-top:2px}
+  .mod .task{font-size:13.5px;color:var(--ink-soft);line-height:1.4}
+  .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap;
+    letter-spacing:.01em}
+  .b-done{background:var(--green-soft);color:var(--green)}
+  .b-fix{background:var(--red-soft);color:var(--red)}
+  .b-build{background:var(--amber-soft);color:var(--amber)}
+  .date-tag{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;
+    color:var(--ink);white-space:nowrap;text-align:right}
+  .date-tag small{display:block;color:var(--ink-faint);font-size:10.5px;font-weight:400}
+
+  /* phase 2 grid */
+  .p2note{color:var(--ink-soft);font-size:14px;margin:4px 0 16px;max-width:72ch}
+  .p2group{margin-bottom:16px}
+  .p2group h3{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-faint);font-weight:500;margin:0 0 9px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12.5px;padding:5px 11px;border-radius:8px;background:var(--panel);
+    border:1px solid var(--line);color:var(--ink-soft)}
+
+  .foot{border-top:1px solid var(--line);margin-top:20px;padding-top:22px;color:var(--ink-soft);
+    font-size:13.5px;max-width:74ch}
+  .foot strong{color:var(--ink)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;color:var(--ink-faint)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:9px;height:9px;border-radius:50%}
+  @media(max-width:720px){
+    .timeline{grid-template-columns:1fr 1fr}
+    .mod{grid-template-columns:1fr auto;row-gap:8px}
+    .mod .task{grid-column:1/-1;order:5}
+    .mod .date-tag{text-align:left}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PariLink · Delivery Plan · Client Pilot</div>
+    <h1>Every module, what's left, and the date</h1>
+    <p class="sub">The platform has 118 modules scaffolded in code. This plan sorts every one of them by
+    whether it can realistically be finished, verified, and demo-ready by <strong>1 October 2026</strong> —
+    and shows exactly what work remains on each. Target for launch: <strong>12 core modules + the driver app</strong>.</p>
+    <div class="statrow">
+      <div class="stat"><div class="n">118</div><div class="l">Modules in the codebase</div></div>
+      <div class="stat"><div class="n red">12</div><div class="l">Core — ready by Oct 1</div></div>
+      <div class="stat"><div class="n slate">~8</div><div class="l">Stretch — if core lands early</div></div>
+      <div class="stat"><div class="n green">~98</div><div class="l">Phase 2 — after the pilot</div></div>
+    </div>
+  </header>
+
+  <!-- TIMELINE -->
+  <div class="eyebrow" style="margin-bottom:12px">The 5-week run to Oct 1</div>
+  <div class="timeline">
+    <div class="tl"><div class="date">Aug 29 – Sep 5</div><div class="sp">Sprint 1</div>
+      <div class="goal">Fix the broken core: invoices, payments, ledger, vehicles, drivers, docs, trip map.</div></div>
+    <div class="tl"><div class="date">Sep 6 – Sep 14</div><div class="sp">Sprint 2</div>
+      <div class="goal">Finish & harden: GST invoice + PDF, exports, verify the "done" modules, driver APK.</div></div>
+    <div class="tl"><div class="date">Sep 15 – Sep 22</div><div class="sp">Sprint 3</div>
+      <div class="goal">Stretch modules — customers, vendors, loads, bilty, maintenance — only if core is solid.</div></div>
+    <div class="tl"><div class="date">Sep 23 – Sep 29</div><div class="sp">Sprint 4</div>
+      <div class="goal">Security P0 (revoke keys, durable tenant isolation), full end-to-end verification, real demo data.</div></div>
+    <div class="tl"><div class="date">Sep 30 – Oct 1</div><div class="sp">Launch</div>
+      <div class="goal">Dress rehearsal, buffer day, and the client demo.</div></div>
+  </div>
+
+  <!-- TIER 1 -->
+  <section>
+    <div class="sec-head"><h2>Core — shipping by Oct 1</h2><span class="count-pill">12 modules</span></div>
+    <p class="sec-note">The daily transport loop a fleet owner actually runs: create a trip, track the truck,
+    raise a GST invoice, record the payment, see the lane's profit. Every one has a real backend and a screen —
+    they need the current fixes to land and pass the screenshot check.</p>
+    <div class="mods">
+
+      <div class="mod"><div class="name">Login &amp; Roles<small>auth · 1,828 ln</small></div>
+        <div class="task">Multi-user access, owner / manager / accountant permissions. Working — verify only.</div>
+        <span class="badge b-done">Done</span><div class="date-tag">Sep 6<small>verify</small></div></div>
+
+      <div class="mod"><div class="name">Live Tracking<small>tracking · 396 ln</small></div>
+        <div class="task">India map with all trucks + city pins. Rebuilt and working — verify only.</div>
+        <span class="badge b-done">Done</span><div class="date-tag">Sep 6<small>verify</small></div></div>
+
+      <div class="mod"><div class="name">Reports &amp; Dashboard<small>reports · 299 ln</small></div>
+        <div class="task">Revenue-vs-expense + fleet-utilization charts now fed real data. Verify rendered.</div>
+        <span class="badge b-done">Done</span><div class="date-tag">Sep 8<small>verify</small></div></div>
+
+      <div class="mod"><div class="name">Profitability<small>profitability · 457 ln</small></div>
+        <div class="task">Per-trip and per-lane P&amp;L (e.g. Pune→Nagpur loss lane). Working — verify.</div>
+        <span class="badge b-done">Done</span><div class="date-tag">Sep 9<small>verify</small></div></div>
+
+      <div class="mod"><div class="name">Drivers<small>drivers · 639 ln</small></div>
+        <div class="task">Fix the "Showing 0 of 0" pager count; seed safety scores + risk so N/A clears.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 2</div></div>
+
+      <div class="mod"><div class="name">Payments<small>payments · 230 ln</small></div>
+        <div class="task">Record Payment endpoint fails — repair it so RTGS/NEFT/UPI posts and updates the balance.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 2</div></div>
+
+      <div class="mod"><div class="name">Vehicles<small>vehicles · 480 ln</small></div>
+        <div class="task">Detail screen is empty — seed odometer, location, status, fuel so telemetry shows.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 3</div></div>
+
+      <div class="mod"><div class="name">Trips &amp; Dispatch<small>trips · 871 ln</small></div>
+        <div class="task">Map shows US "Dallas / Austin (Mock)" — wire it to the real India origin/destination cities.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 3</div></div>
+
+      <div class="mod"><div class="name">Documents<small>documents · 661 ln</small></div>
+        <div class="task">Upload returns "Failed to upload" — wire MinIO storage + bucket so LR/permits/bills save.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 4</div></div>
+
+      <div class="mod"><div class="name">Ledger &amp; Finance<small>ledger + finance · 894 ln</small></div>
+        <div class="task">General Ledger shows "No journal entries" — seed double-entry rows for invoices, payments, expenses.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 4</div></div>
+
+      <div class="mod"><div class="name">Invoices<small>invoices · 448 ln</small></div>
+        <div class="task">Empty line items, ₹0 totals, no PDF. Seed line items, fix totals/status, add PDF print.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 5</div></div>
+
+      <div class="mod"><div class="name">GST<small>gst · stub, 9 ln</small></div>
+        <div class="task">Screen exists but backend is empty — build CGST/SGST/IGST logic + the GST tax-invoice format.</div>
+        <span class="badge b-build">Build</span><div class="date-tag">Sep 10</div></div>
+
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--green)"></span> Working — verify only</span>
+      <span><span class="dot" style="background:var(--red)"></span> Built but broken — fix</span>
+      <span><span class="dot" style="background:var(--amber)"></span> Stub — build from scratch</span>
+    </div>
+  </section>
+
+  <!-- DRIVER APP -->
+  <section>
+    <div class="sec-head"><h2>Driver Mobile App</h2><span class="count-pill">Android APK</span></div>
+    <p class="sec-note">Separate deliverable — the React Native driver app has code but no Android build yet.
+    Toolchain + native project + installable APK.</p>
+    <div class="mods">
+      <div class="mod"><div class="name">PariLink Driver<small>apps/mobile · React Native</small></div>
+        <div class="task">Set up Java 17 + Android SDK, regenerate the native project, point at LAN API, build the APK.</div>
+        <span class="badge b-build">Build</span><div class="date-tag">Sep 14</div></div>
+    </div>
+  </section>
+
+  <!-- TIER 2 -->
+  <section>
+    <div class="sec-head"><h2>Stretch — only if the core lands early</h2><span class="count-pill">~8 modules</span></div>
+    <p class="sec-note">These have real code and a screen but aren't essential for the first demo. Promise them
+    only after the 12 core modules pass verification — otherwise they stay in Phase 2.</p>
+    <div class="mods">
+      <div class="mod"><div class="name">Loads<small>loads · 453 ln</small></div>
+        <div class="task">Load booking / assignment. Backend present, needs data + UI polish.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 17</div></div>
+      <div class="mod"><div class="name">Vendors<small>vendors · 361 ln</small></div>
+        <div class="task">Vendor master + payments. Present, needs seed + verify.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 18</div></div>
+      <div class="mod"><div class="name">Customers / CRM<small>customers · 234 ln</small></div>
+        <div class="task">Customer master + basic CRM. Present, needs seed + verify.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 18</div></div>
+      <div class="mod"><div class="name">Lorry Receipts / Bilty<small>lorry-receipts · 317 ln</small></div>
+        <div class="task">LR / bilty generation + print. Needs UI screen wired + PDF.</div>
+        <span class="badge b-build">Build</span><div class="date-tag">Sep 20</div></div>
+      <div class="mod"><div class="name">Trailers<small>trailers · 191 ln</small></div>
+        <div class="task">Trailer master. Light — seed + verify.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 21</div></div>
+      <div class="mod"><div class="name">Maintenance<small>maintenance · 184 ln</small></div>
+        <div class="task">Service / maintenance logs. Needs UI + data.</div>
+        <span class="badge b-build">Build</span><div class="date-tag">Sep 22</div></div>
+      <div class="mod"><div class="name">Branches<small>branches · 188 ln</small></div>
+        <div class="task">Multi-branch support. Present, verify.</div>
+        <span class="badge b-fix">Fix</span><div class="date-tag">Sep 22</div></div>
+      <div class="mod"><div class="name">FASTag<small>fastag · stub, 9 ln</small></div>
+        <div class="task">Toll/FASTag view. Screen exists, backend empty — build if time allows.</div>
+        <span class="badge b-build">Build</span><div class="date-tag">Sep 22</div></div>
+    </div>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section>
+    <div class="sec-head"><h2>Phase 2 — after the pilot</h2><span class="count-pill">~98 modules</span></div>
+    <p class="p2note">The bulk of the 118 are advanced or empty-shell modules. They're the roadmap and the upsell —
+    <strong>not</strong> part of the Oct 1 promise. Grouped by area:</p>
+
+    <div class="p2group"><h3>AI &amp; Intelligence (20+)</h3>
+      <div class="chips">
+        <span class="chip">ETA prediction</span><span class="chip">Risk scoring</span><span class="chip">Geofence</span>
+        <span class="chip">Recommendations</span><span class="chip">Driver intelligence</span><span class="chip">Fleet intelligence</span>
+        <span class="chip">Dispatch AI</span><span class="chip">Prediction engine</span><span class="chip">Feature store</span>
+        <span class="chip">Alerts</span><span class="chip">GPS processor</span><span class="chip">Telemetry processor</span>
+        <span class="chip">Business health</span><span class="chip">OCC</span><span class="chip">Rules engine</span>
+        <span class="chip">Scheduler</span><span class="chip">Network (LIN)</span><span class="chip">Analytics AI</span>
+      </div></div>
+
+    <div class="p2group"><h3>Marketplace &amp; Platform</h3>
+      <div class="chips">
+        <span class="chip">Marketplace core</span><span class="chip">Telemetry ingress</span><span class="chip">Marketplace webhooks</span>
+        <span class="chip">Digital twin</span><span class="chip">BPM</span><span class="chip">MDM</span>
+        <span class="chip">Plugins</span><span class="chip">Runtime</span><span class="chip">Realtime</span>
+        <span class="chip">Files platform</span><span class="chip">SDK</span><span class="chip">API platform / v2</span>
+        <span class="chip">Webhooks</span><span class="chip">Sandbox</span><span class="chip">Developer portal</span>
+      </div></div>
+
+    <div class="p2group"><h3>Warehouse &amp; Yard</h3>
+      <div class="chips">
+        <span class="chip">WMS</span><span class="chip">Warehouse</span><span class="chip">Yard</span>
+        <span class="chip">Optimization</span><span class="chip">Planning</span><span class="chip">Simulator</span>
+      </div></div>
+
+    <div class="p2group"><h3>Finance &amp; Integrations</h3>
+      <div class="chips">
+        <span class="chip">Factoring</span><span class="chip">Payroll</span><span class="chip">Bank reconciliation</span>
+        <span class="chip">Billing / SaaS billing</span><span class="chip">Commercial</span><span class="chip">EDI</span>
+        <span class="chip">ELOM integration</span><span class="chip">Broker</span><span class="chip">Exports</span>
+      </div></div>
+
+    <div class="p2group"><h3>Portals, Workflow &amp; Ops</h3>
+      <div class="chips">
+        <span class="chip">Customer portal</span><span class="chip">Vendor portal</span><span class="chip">Driver portal</span>
+        <span class="chip">Workflow</span><span class="chip">Automation</span><span class="chip">Chat</span>
+        <span class="chip">Comments</span><span class="chip">Communications</span><span class="chip">Support</span>
+        <span class="chip">Search</span><span class="chip">Localization</span><span class="chip">Workspace</span>
+        <span class="chip">SSO</span><span class="chip">IAM</span><span class="chip">Data lifecycle</span>
+        <span class="chip">Permits</span><span class="chip">Attendance</span><span class="chip">Operations</span>
+      </div></div>
+  </section>
+
+  <div class="foot">
+    <strong>The honest headline for the client:</strong> "12 core modules working at launch, another handful
+    shortly after, and a roadmap of advanced modules in Phase 2." &nbsp;The dates above hold <strong>only if
+    each fixed screen passes the screenshot check</strong> — a screen isn't "done" because the tool says so,
+    it's done when the screenshot proves it. Two items outside code stay on the critical path: the leaked
+    provider keys must be revoked by the owner (Sprint 4), and durable tenant isolation must survive a clean
+    rebuild before any real client data goes in.
+    <div class="legend" style="margin-top:16px">
+      <span class="mono">Source: live count of apps/api/src/*.module.ts — 118 modules, measured Aug 29 2026.</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

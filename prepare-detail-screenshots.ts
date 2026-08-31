@@ -16,16 +16,13 @@ async function run() {
 
   // 1. Get real data
   const load = await p.load.findFirst({ orderBy: { createdAt: 'desc' }});
-  const trip = await p.trip.findFirst({ orderBy: { createdAt: 'desc' }});
+  const trip = await p.trip.findFirst({ orderBy: { createdAt: 'asc' }});
   const invoice = await p.invoice.findFirst({ orderBy: { createdAt: 'desc' }});
   const customer = await p.customer.findFirst({ orderBy: { createdAt: 'desc' }});
   const vehicle = await p.vehicle.findFirst({ orderBy: { createdAt: 'desc' }});
-  const warehouse = await p.warehouse.findFirst({ orderBy: { createdAt: 'desc' }});
-  const order = await p.order.findFirst({ orderBy: { createdAt: 'desc' }});
-
   // Log in
   await page.goto('http://localhost:3000/login');
-  await page.fill('input[name="email"]', 'admin@parilink.in');
+  await page.fill('input[name="email"]', 'admin@parilink.com');
   await page.fill('input[name="password"]', 'password123');
   await page.click('button[type="submit"]');
   await page.waitForURL('**/dashboard');
@@ -56,8 +53,6 @@ async function run() {
   if (invoice) await shoot(`/finance/${invoice.id}`, 'invoice_detail');
   if (customer) await shoot(`/customers/${customer.id}`, 'customer_detail');
   if (vehicle) await shoot(`/fleet/${vehicle.id}`, 'vehicle_detail');
-  if (warehouse) await shoot(`/wms/${warehouse.id}`, 'warehouse_detail');
-  if (order) await shoot(`/orders/${order.id}`, 'order_detail');
 
   // Test Actions
   console.log("Testing Generate Bilty...");

@@ -8,7 +8,7 @@ async function main() {
   try {
     const user = await prisma.runAsSystem('Testing finding unique user', async (tx) => {
       return tx.user.findUnique({
-        where: { email: 'admin@parilink.in' },
+        where: { email: 'admin@parilink.com' },
         select: {
           id: true,
           email: true,

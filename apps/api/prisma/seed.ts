@@ -76,10 +76,10 @@ async function main() {
 
       const hashedPassword = await bcrypt.hash('password123', 10);
       const adminUser = await tx.user.upsert({
-        where:  { email: 'admin@parilink.in' },
+        where:  { email: 'admin@parilink.com' },
         update: { password: hashedPassword },
         create: {
-          email: 'admin@parilink.in', password: hashedPassword,
+          email: 'admin@parilink.com', password: hashedPassword,
           firstName: 'Vikram', lastName: 'Singh',
           roleId: adminRole.id, companyId: co.id,
         },

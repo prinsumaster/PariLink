@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PariLink Diwali Launch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#f7f6f4;--panel:#ffffff;--ink:#14171c;--ink-soft:#4c525c;--ink-faint:#878d97;
+    --line:#e5e2dd;--line-soft:#efede9;--red:#e4002b;--red-soft:#fdeef1;
+    --green:#0f8a4f;--green-soft:#e9f6ef;--amber:#b3701a;--amber-soft:#fbf1e2;
+    --gold:#c8860a;--slate:#5b6472;--slate-soft:#eef0f3;
+    --shadow:0 1px 2px rgba(20,23,28,.04),0 8px 24px rgba(20,23,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#101216;--panel:#181b21;--ink:#eef0f3;--ink-soft:#aab1bc;--ink-faint:#727986;
+      --line:#282c34;--line-soft:#20242b;--red:#ff375f;--red-soft:#2a1119;
+      --green:#37c77f;--green-soft:#12241a;--amber:#e0a13c;--amber-soft:#241a0f;
+      --gold:#e0aa3c;--slate:#9aa3b2;--slate-soft:#1c2029;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#101216;--panel:#181b21;--ink:#eef0f3;--ink-soft:#aab1bc;--ink-faint:#727986;
+    --line:#282c34;--line-soft:#20242b;--red:#ff375f;--red-soft:#2a1119;--green:#37c77f;
+    --green-soft:#12241a;--amber:#e0a13c;--amber-soft:#241a0f;--gold:#e0aa3c;--slate:#9aa3b2;
+    --slate-soft:#1c2029;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 24px 72px}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--red);font-weight:500}
+  header{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:8px}
+  h1{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(28px,5vw,44px);
+    letter-spacing:-.02em;margin:.35em 0 .15em;text-wrap:balance;line-height:1.05}
+  .sub{color:var(--ink-soft);max-width:64ch;font-size:15.5px}
+  .kpis{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px}
+  .kpi{flex:1 1 160px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .n{font-family:"Archivo",sans-serif;font-weight:800;font-size:26px;line-height:1;letter-spacing:-.02em}
+  .kpi .n.red{color:var(--red)} .kpi .n.gold{color:var(--gold)}
+  .kpi .l{font-size:12px;color:var(--ink-faint);margin-top:7px}
+
+  .phase{display:grid;grid-template-columns:150px 1fr;gap:22px;padding:22px 0;border-bottom:1px solid var(--line-soft)}
+  .phase:last-of-type{border-bottom:0}
+  .rail .wk{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:500}
+  .rail .dt{font-family:"Archivo",sans-serif;font-weight:800;font-size:16px;margin:5px 0 2px;letter-spacing:-.01em}
+  .rail .ph{font-size:12.5px;color:var(--ink-soft)}
+  .body h2{font-family:"Archivo",sans-serif;font-weight:700;font-size:18px;margin:0 0 5px;letter-spacing:-.01em}
+  .body p{color:var(--ink-soft);font-size:14px;margin:0 0 10px;max-width:66ch}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12px;padding:4px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--ink-soft)}
+  .gate{background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent);
+    border-radius:10px;padding:12px 15px;font-size:13px;color:var(--ink);margin:4px 0 0}
+  .gate b{color:var(--amber)}
+  .launch .rail .dt{color:var(--gold)}
+  .launch{background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 8%,transparent),transparent);
+    border-radius:14px;padding:22px;margin-top:6px;border:1px solid color-mix(in srgb,var(--gold) 30%,var(--line))}
+  .launch h2{font-size:22px}
+  .after{margin-top:34px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow)}
+  .after h2{font-family:"Archivo",sans-serif;font-weight:700;font-size:19px;margin:0 0 6px}
+  .after p{color:var(--ink-soft);font-size:14px;margin:0 0 12px;max-width:70ch}
+  .do2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+  .do2 .col h3{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px}
+  .do2 .col.yes h3{color:var(--green)} .do2 .col.no h3{color:var(--red)}
+  .do2 ul{margin:0;padding-left:18px} .do2 li{font-size:13.5px;color:var(--ink-soft);margin-bottom:5px}
+  .foot{border-top:1px solid var(--line);margin-top:28px;padding-top:22px;color:var(--ink-soft);font-size:13.5px;max-width:74ch}
+  .foot strong{color:var(--ink)}
+  @media(max-width:640px){.phase{grid-template-columns:1fr;gap:10px}
+    .rail{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}.do2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PariLink · Launch Plan · Ship by Diwali</div>
+    <h1>Launch on Diwali — 8 November 2026</h1>
+    <p class="sub">~10 weeks from today. Build the lean product, freeze it, harden it, launch it — then
+    stop building and start selling. The plan protects one thing above all: a stable product in a real
+    fleet owner's hands on launch day, not a pile of half-finished features.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="n gold">Nov 8</div><div class="l">Diwali — launch day</div></div>
+      <div class="kpi"><div class="n red">~10 wks</div><div class="l">From today (Aug 30)</div></div>
+      <div class="kpi"><div class="n">22</div><div class="l">Modules — the real product</div></div>
+      <div class="kpi"><div class="n">Oct 17</div><div class="l">Feature freeze — hard line</div></div>
+    </div>
+  </header>
+
+  <!-- BUILD -->
+  <div class="phase">
+    <div class="rail"><div class="wk">Weeks 1–2</div><div class="dt">Aug 30 – Sep 12</div><div class="ph">Build · Core</div></div>
+    <div class="body">
+      <h2>Get the 12 core modules truly green</h2>
+      <p>Fix the broken core first — it's mostly built. One big seed pass heals most screens at once.</p>
+      <div class="chips">
+        <span class="chip">Map tiles + AI Copilot</span><span class="chip">Invoices + GST + PDF</span>
+        <span class="chip">Payments</span><span class="chip">Ledger</span><span class="chip">Vehicles</span>
+        <span class="chip">Drivers</span><span class="chip">Documents</span><span class="chip">Seed real data</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="phase">
+    <div class="rail"><div class="wk">Weeks 3–4</div><div class="dt">Sep 13 – Sep 26</div><div class="ph">Build · Rest</div></div>
+    <div class="body">
+      <h2>The remaining 10 modules + driver app</h2>
+      <p>Template off the core — build Customers once, the rest copy the same shape. Build the Android APK.</p>
+      <div class="chips">
+        <span class="chip">Loads</span><span class="chip">Bilty / LR</span><span class="chip">Fuel &amp; Expenses</span>
+        <span class="chip">Customers</span><span class="chip">Vendors</span><span class="chip">Maintenance</span>
+        <span class="chip">FASTag</span><span class="chip">Permits</span><span class="chip">Trailers</span>
+        <span class="chip">Branches</span><span class="chip">Driver APK</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECURITY -->
+  <div class="phase">
+    <div class="rail"><div class="wk">Weeks 5–6</div><div class="dt">Sep 27 – Oct 10</div><div class="ph">Secure</div></div>
+    <div class="body">
+      <h2>Safe &amp; secure — before any real client data</h2>
+      <p>The non-negotiable phase. Nothing goes to a real fleet until this is done and proven.</p>
+      <div class="chips">
+        <span class="chip">Revoke 5 leaked keys (owner)</span><span class="chip">Durable tenant isolation</span>
+        <span class="chip">Permission guards</span><span class="chip">Input validation</span>
+        <span class="chip">Proven on clean rebuild</span><span class="chip">Full E2E crawl</span>
+      </div>
+      <div class="gate"><b>Gate:</b> tenant isolation must survive a fresh <span class="mono">docker compose down -v</span>,
+      and the 5 leaked keys must be revoked in each provider dashboard. This is the "before we go live" wall.</div>
+    </div>
+  </div>
+
+  <!-- FREEZE -->
+  <div class="phase">
+    <div class="rail"><div class="wk">Week 7</div><div class="dt">Oct 11 – Oct 17</div><div class="ph">Freeze</div></div>
+    <div class="body">
+      <h2>Feature freeze — the hard line</h2>
+      <p>From Oct 17, <strong>no new features</strong>. Only bug fixes and polish. Every new feature added
+      this late is a new bug risk on launch day. Screenshot every screen; drive the crawler to 0.</p>
+      <div class="chips">
+        <span class="chip">Bug fixes only</span><span class="chip">Polish + consistency</span>
+        <span class="chip">Screenshot every screen</span><span class="chip">Crawler = 0 failures</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PILOT -->
+  <div class="phase">
+    <div class="rail"><div class="wk">Weeks 8–9</div><div class="dt">Oct 18 – Oct 31</div><div class="ph">Pilot &amp; Deploy</div></div>
+    <div class="body">
+      <h2>Real fleet pilot + production deploy</h2>
+      <p>Put it in 1–2 real fleets' hands, fix what real use surfaces, deploy to production infra, and
+      prepare onboarding + the client pitch. This is where a demo becomes a product.</p>
+      <div class="chips">
+        <span class="chip">1–2 pilot fleets</span><span class="chip">Real-use fixes</span>
+        <span class="chip">Production deploy</span><span class="chip">Onboarding docs</span><span class="chip">Pitch ready</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAUNCH -->
+  <div class="phase launch">
+    <div class="rail"><div class="wk">Week 10</div><div class="dt">Nov 1 – Nov 8</div><div class="ph">Launch</div></div>
+    <div class="body">
+      <h2>🪔 Launch on Diwali — Nov 8</h2>
+      <p>Final polish, launch prep, and go live. A stable, secure, real product for Indian transport
+      owners — shipped on the most auspicious day of the year.</p>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div class="after">
+    <h2>After Diwali — "no more build"</h2>
+    <p>Your instinct is right: stop building new features. But "launched" doesn't mean untouched — it
+    means you switch from <em>building</em> to <em>running</em>. Here's the honest line between the two:</p>
+    <div class="do2">
+      <div class="col yes"><h3>✓ Still do</h3>
+        <ul>
+          <li>Fix bugs real clients hit</li>
+          <li>Onboard &amp; support paying fleets</li>
+          <li>Keep it running, backed up, secure</li>
+          <li>Collect feedback for a future Phase 2</li>
+          <li>Sell — this is now the main job</li>
+        </ul>
+      </div>
+      <div class="col no"><h3>✗ Stop doing</h3>
+        <ul>
+          <li>Adding new modules / features</li>
+          <li>The cut ~60 enterprise modules</li>
+          <li>Rebuilding what already works</li>
+          <li>Chasing "all 118 modules"</li>
+          <li>Building on guesses instead of client feedback</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <strong>The plan in one line:</strong> build the lean 22 by early October, secure it, freeze on
+    Oct 17, pilot &amp; deploy, and launch on Diwali (Nov 8) — then move from building to selling and
+    supporting. New features wait for real paying clients to ask for them.
+    <br><br>
+    <strong>Two things that protect the date:</strong> the feature freeze (Oct 17 — hold it), and the
+    security gate (revoke keys + durable isolation before real data). Miss either and Diwali slips.
+    Every screen still counts as done only when a screenshot proves it.
+    <div style="margin-top:14px" class="mono">Diwali 2026 = 8 November. Plan dated from Aug 30 2026.</div>
+  </div>
+</div>
+</body>
+</html>

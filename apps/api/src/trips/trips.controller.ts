@@ -1,3 +1,4 @@
+import { DriverScoreDto } from './dto/driver-score.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {

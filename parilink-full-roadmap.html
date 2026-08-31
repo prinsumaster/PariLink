@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PariLink Full Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#f7f6f4;--panel:#ffffff;--ink:#14171c;--ink-soft:#4c525c;--ink-faint:#878d97;
+    --line:#e5e2dd;--line-soft:#efede9;--red:#e4002b;--red-soft:#fdeef1;
+    --green:#0f8a4f;--green-soft:#e9f6ef;--amber:#b3701a;--amber-soft:#fbf1e2;
+    --slate:#5b6472;--slate-soft:#eef0f3;
+    --shadow:0 1px 2px rgba(20,23,28,.04),0 8px 24px rgba(20,23,28,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#101216;--panel:#181b21;--ink:#eef0f3;--ink-soft:#aab1bc;--ink-faint:#727986;
+      --line:#282c34;--line-soft:#20242b;--red:#ff375f;--red-soft:#2a1119;
+      --green:#37c77f;--green-soft:#12241a;--amber:#e0a13c;--amber-soft:#241a0f;
+      --slate:#9aa3b2;--slate-soft:#1c2029;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#101216;--panel:#181b21;--ink:#eef0f3;--ink-soft:#aab1bc;--ink-faint:#727986;
+    --line:#282c34;--line-soft:#20242b;--red:#ff375f;--red-soft:#2a1119;--green:#37c77f;
+    --green-soft:#12241a;--amber:#e0a13c;--amber-soft:#241a0f;--slate:#9aa3b2;--slate-soft:#1c2029;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 24px 72px}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--red);font-weight:500}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:14px}
+  h1{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(28px,5vw,44px);
+    letter-spacing:-.02em;margin:.35em 0 .15em;text-wrap:balance;line-height:1.05}
+  .sub{color:var(--ink-soft);max-width:64ch;font-size:15.5px}
+  .assume{background:var(--amber-soft);border:1px solid color-mix(in srgb,var(--amber) 30%,transparent);
+    border-radius:10px;padding:13px 16px;margin-top:22px;font-size:13.5px;color:var(--ink)}
+  .assume b{color:var(--amber)}
+
+  .phase{display:grid;grid-template-columns:180px 1fr;gap:24px;padding:28px 0;
+    border-bottom:1px solid var(--line-soft)}
+  .phase:last-child{border-bottom:0}
+  .rail{position:relative}
+  .rail .tag{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-faint);font-weight:500}
+  .rail .when{font-family:"Archivo",sans-serif;font-weight:800;font-size:19px;margin:6px 0 2px;
+    letter-spacing:-.01em}
+  .rail .dur{font-size:12.5px;color:var(--ink-soft)}
+  .rail .num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--slate);
+    background:var(--slate-soft);display:inline-block;padding:3px 9px;border-radius:20px;margin-top:11px}
+  .rail .num.live{color:var(--green);background:var(--green-soft)}
+
+  .body h2{font-family:"Archivo",sans-serif;font-weight:700;font-size:20px;margin:0 0 4px;
+    letter-spacing:-.01em}
+  .body .goal{color:var(--ink-soft);font-size:14px;margin:0 0 14px;max-width:66ch}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12.5px;padding:5px 11px;border-radius:8px;background:var(--panel);
+    border:1px solid var(--line);color:var(--ink-soft)}
+  .chip.core{border-color:color-mix(in srgb,var(--red) 40%,var(--line));color:var(--ink)}
+  .milestone{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+    color:var(--red);margin-top:14px}
+  .milestone::before{content:"◆";font-size:11px}
+
+  .foot{border-top:1px solid var(--line);margin-top:28px;padding-top:24px;color:var(--ink-soft);
+    font-size:13.5px;max-width:74ch}
+  .foot strong{color:var(--ink)}
+  .totalbar{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0 6px}
+  .tot{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;box-shadow:var(--shadow)}
+  .tot .n{font-family:"Archivo",sans-serif;font-weight:800;font-size:26px;line-height:1;letter-spacing:-.02em}
+  .tot .n.red{color:var(--red)} .tot .n.green{color:var(--green)}
+  .tot .l{font-size:12px;color:var(--ink-faint);margin-top:7px}
+  @media(max-width:640px){.phase{grid-template-columns:1fr;gap:12px}
+    .rail{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px}
+    .rail .num{margin-top:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PariLink · Full Delivery Roadmap · 2026 → 2027</div>
+    <h1>From the Oct 1 pilot to the whole platform</h1>
+    <p class="sub">All 118 modules, built and verified properly, is about a <strong>12-month</strong> journey —
+    not one month. The core launches Oct 1 2026; the rest ships in quarterly phases through <strong>Q3 2027</strong>.
+    Each phase is a real, usable release — you sell and pilot as you go, not in one big-bang at the end.</p>
+    <div class="assume">
+      <b>This plan assumes</b> a small team of <b>2–3 engineers</b> plus AI-assisted build, with every screen
+      verified by screenshot before it counts as done. Solo + one AI agent, the same scope runs materially longer,
+      because broken work has to be caught and redone — which is exactly the pattern we keep hitting.
+    </div>
+    <div class="totalbar">
+      <div class="tot"><div class="n red">Oct 1 '26</div><div class="l">Core pilot — 12 modules + driver app</div></div>
+      <div class="tot"><div class="n">Q3 2027</div><div class="l">Full platform — all 118 modules</div></div>
+      <div class="tot"><div class="n green">~12 mo</div><div class="l">Total, done properly, small team</div></div>
+    </div>
+  </header>
+
+  <!-- PHASE 1 -->
+  <div class="phase">
+    <div class="rail">
+      <div class="tag">Phase 1 · Pilot</div>
+      <div class="when">Now → Oct 1 '26</div>
+      <div class="dur">~5 weeks</div>
+      <div class="num live">12 modules + app</div>
+    </div>
+    <div class="body">
+      <h2>The core transport loop</h2>
+      <p class="goal">The daily operations a fleet owner runs. This is the launchable, sellable product —
+      everything after this is expansion.</p>
+      <div class="chips">
+        <span class="chip core">Login &amp; Roles</span><span class="chip core">Live Tracking</span>
+        <span class="chip core">Reports &amp; Dashboard</span><span class="chip core">Profitability</span>
+        <span class="chip core">Drivers</span><span class="chip core">Vehicles</span>
+        <span class="chip core">Trips &amp; Dispatch</span><span class="chip core">Invoices</span>
+        <span class="chip core">GST</span><span class="chip core">Payments</span>
+        <span class="chip core">Ledger &amp; Finance</span><span class="chip core">Documents</span>
+        <span class="chip core">Driver Mobile App</span>
+      </div>
+      <div class="milestone">Milestone: Client demo &amp; pilot go-live — Oct 1 2026</div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase">
+    <div class="rail">
+      <div class="tag">Phase 2 · Operations</div>
+      <div class="when">Oct → Dec '26</div>
+      <div class="dur">~3 months</div>
+      <div class="num">~18 modules</div>
+    </div>
+    <div class="body">
+      <h2>Operational &amp; finance depth</h2>
+      <p class="goal">Everything a growing fleet needs around the core loop — booking, masters, billing depth,
+      and self-service portals for customers and vendors.</p>
+      <div class="chips">
+        <span class="chip">Loads</span><span class="chip">Customers / CRM</span><span class="chip">Vendors</span>
+        <span class="chip">Lorry Receipts / Bilty</span><span class="chip">Maintenance</span><span class="chip">Trailers</span>
+        <span class="chip">Branches</span><span class="chip">FASTag</span><span class="chip">Exports</span>
+        <span class="chip">Payroll</span><span class="chip">Bank Reconciliation</span><span class="chip">Factoring</span>
+        <span class="chip">Billing / SaaS Billing</span><span class="chip">Customer Portal</span><span class="chip">Vendor Portal</span>
+        <span class="chip">Driver Portal</span><span class="chip">Permits</span><span class="chip">Attendance</span>
+      </div>
+      <div class="milestone">Milestone: Full-featured TMS release — Dec 2026</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 -->
+  <div class="phase">
+    <div class="rail">
+      <div class="tag">Phase 3 · Intelligence</div>
+      <div class="when">Jan → Mar '27</div>
+      <div class="dur">~3 months</div>
+      <div class="num">~20 modules</div>
+    </div>
+    <div class="body">
+      <h2>The AI &amp; intelligence layer</h2>
+      <p class="goal">The differentiators — real GPS/telemetry processing and the predictive layer on top.
+      This is heavy engineering (data pipelines + models), which is why it comes after the platform is stable.</p>
+      <div class="chips">
+        <span class="chip">GPS processor</span><span class="chip">Telemetry processor</span><span class="chip">ETA prediction</span>
+        <span class="chip">Geofence</span><span class="chip">Risk scoring</span><span class="chip">Driver intelligence</span>
+        <span class="chip">Fleet intelligence</span><span class="chip">Dispatch AI</span><span class="chip">Prediction engine</span>
+        <span class="chip">Recommendations</span><span class="chip">Alerts</span><span class="chip">Rules engine</span>
+        <span class="chip">Scheduler</span><span class="chip">Business health</span><span class="chip">Analytics AI</span>
+        <span class="chip">Feature store</span><span class="chip">Network (LIN)</span><span class="chip">OCC</span>
+      </div>
+      <div class="milestone">Milestone: Predictive fleet intelligence — Mar 2027</div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 -->
+  <div class="phase">
+    <div class="rail">
+      <div class="tag">Phase 4 · Platform</div>
+      <div class="when">Apr → Jun '27</div>
+      <div class="dur">~3 months</div>
+      <div class="num">~22 modules</div>
+    </div>
+    <div class="body">
+      <h2>Marketplace, platform &amp; developer surface</h2>
+      <p class="goal">Turning PariLink from a product into a platform — a marketplace, public API, and the
+      integration surface partners build on. Sold to larger fleets and ecosystem partners.</p>
+      <div class="chips">
+        <span class="chip">Marketplace core</span><span class="chip">Telemetry ingress</span><span class="chip">Marketplace webhooks</span>
+        <span class="chip">Digital twin</span><span class="chip">BPM</span><span class="chip">MDM</span>
+        <span class="chip">Plugins</span><span class="chip">Runtime</span><span class="chip">Realtime</span>
+        <span class="chip">Files platform</span><span class="chip">SDK</span><span class="chip">API platform / v2</span>
+        <span class="chip">Webhooks</span><span class="chip">Sandbox</span><span class="chip">Developer portal</span>
+        <span class="chip">EDI</span><span class="chip">ELOM integration</span><span class="chip">Broker</span>
+        <span class="chip">SSO</span><span class="chip">IAM</span>
+      </div>
+      <div class="milestone">Milestone: Open platform &amp; marketplace — Jun 2027</div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 -->
+  <div class="phase">
+    <div class="rail">
+      <div class="tag">Phase 5 · Complete</div>
+      <div class="when">Jul → Sep '27</div>
+      <div class="dur">~3 months</div>
+      <div class="num">~18 modules</div>
+    </div>
+    <div class="body">
+      <h2>Warehouse, workflow &amp; final hardening</h2>
+      <p class="goal">The last functional areas plus platform-wide hardening — scale, security, and the
+      operational polish that makes it enterprise-grade.</p>
+      <div class="chips">
+        <span class="chip">WMS</span><span class="chip">Warehouse</span><span class="chip">Yard</span>
+        <span class="chip">Optimization</span><span class="chip">Planning</span><span class="chip">Simulator</span>
+        <span class="chip">Workflow</span><span class="chip">Automation</span><span class="chip">Chat</span>
+        <span class="chip">Comments</span><span class="chip">Communications</span><span class="chip">Support</span>
+        <span class="chip">Search</span><span class="chip">Localization</span><span class="chip">Workspace</span>
+        <span class="chip">Data lifecycle</span><span class="chip">Commercial</span><span class="chip">Operations</span>
+      </div>
+      <div class="milestone">Milestone: Full platform complete — Sep 2027</div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <strong>The one-line answer:</strong> the core ships Oct 1 2026; the entire 118-module platform, built
+    and verified properly, is about a year of work landing around Q3 2027 — released in usable phases the whole
+    way so you're earning revenue and piloting from month one, not waiting for everything.
+    <br><br>
+    <strong>Two things that move these dates:</strong> team size (2–3 engineers is the assumption — fewer stretches
+    it), and discipline on verification (every screen proven by screenshot). The fastest way to blow the
+    timeline is accepting "done" that isn't real and having to redo it — which is why the screenshot gate stays.
+    <div style="margin-top:14px" class="mono" >Based on a live count of the codebase — 118 modules — measured Aug 29 2026.</div>
+  </div>
+</div>
+</body>
+</html>

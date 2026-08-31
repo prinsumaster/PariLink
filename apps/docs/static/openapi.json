@@ -5826,6 +5826,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLoadingEventDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -5855,6 +5865,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFuelEntryDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -21411,6 +21431,14 @@
         "required": [
           "loadIds"
         ]
+      },
+      "CreateLoadingEventDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFuelEntryDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreatePlanDto": {
         "type": "object",
