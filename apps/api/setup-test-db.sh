@@ -11,6 +11,15 @@ sleep 3
 export DATABASE_URL="postgresql://postgres:postgres@localhost:5434/postgres"
 export APP_DATABASE_URL="postgresql://postgres:postgres@localhost:5434/postgres"
 
+echo "Provisioning parilink_ai BEFORE migrations -- 20260901000001_ai_no_bypass
+does CREATE POLICY ... TO parilink_ai and fails if the role is absent."
+docker exec parilink-test-db psql -U postgres -d postgres -c \
+  "DO \$\$ BEGIN
+     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'parilink_ai') THEN
+       CREATE ROLE parilink_ai NOSUPERUSER NOCREATEDB NOCREATEROLE;
+     END IF;
+   END \$\$;"
+
 echo "Running migrations on throwaway DB as superuser..."
 npx prisma migrate deploy > /dev/null
 
@@ -28,17 +37,6 @@ docker exec parilink-test-db psql -U postgres -d postgres -c "ALTER DEFAULT PRIV
 docker exec parilink-test-db psql -U postgres -d postgres -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO parilink_test;"
 
 echo "Setting up AI role..."
-# Idempotent: migration 20260901000001_ai_no_bypass now creates this role
-# (NOLOGIN) if missing, because CREATE POLICY ... TO parilink_ai needs it to
-# exist. Since `set -e` is on, an unconditional CREATE ROLE would abort the
-# script with "role already exists". Create if missing, then ALTER to ensure
-# LOGIN and password regardless of which ran first.
-docker exec parilink-test-db psql -U postgres -d postgres -c \
-  "DO \$\$ BEGIN
-     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'parilink_ai') THEN
-       CREATE ROLE parilink_ai NOSUPERUSER NOCREATEDB NOCREATEROLE;
-     END IF;
-   END \$\$;"
 docker exec parilink-test-db psql -U postgres -d postgres -c "ALTER ROLE parilink_ai LOGIN PASSWORD 'aipass';"
 docker exec parilink-test-db psql -U postgres -d postgres -c "GRANT USAGE ON SCHEMA public TO parilink_ai;"
 # The AI role gets SELECT on exactly the 7 ALLOWED_TABLES and nothing else.

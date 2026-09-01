@@ -61,7 +61,23 @@ To deploy a new version (or the initial version):
     export GIT_SHA=<commit-hash>
     docker compose -f docker-compose.prod.yml pull
     ```
-2.  **Run Database Migrations:**
+2.  **Database Initial Provisioning (First deploy only):**
+    Before running migrations for the first time, you must create the AI role as a superuser. The `ai_no_bypass` migration requires this role to exist.
+    ```bash
+    docker compose -f docker-compose.prod.yml exec postgres psql -U postgres -d parilink_db -c "
+      CREATE ROLE parilink_ai NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
+      GRANT USAGE ON SCHEMA public TO parilink_ai;
+      GRANT SELECT ON \"Trip\",\"Load\",\"Invoice\",\"Vehicle\",\"Driver\",\"Customer\",\"Expense\" TO parilink_ai;
+      GRANT parilink_ai TO parilink_app;
+    "
+    ```
+    Verify that the role was created successfully:
+    ```bash
+    docker compose -f docker-compose.prod.yml exec postgres psql -U postgres -d parilink_db -c "\du parilink_ai"
+    ```
+    **IMPORTANT**: The subsequent `npx prisma migrate deploy` command MUST NOT be run until the verification command above returns a row confirming the role exists.
+
+3.  **Run Database Migrations:**
     ```bash
     docker compose -f docker-compose.prod.yml run --rm api npx prisma migrate deploy
     ```
