@@ -21,7 +21,7 @@ async function main() {
 
   // TripDesk for B
   await prisma.tripDesk.create({
-    data: { id: 't2222222-2222-2222-2222-222222222222', companyId: companyB, desk: 'Desk B' }
+    data: { id: 't2222222-2222-2222-2222-222222222222', companyId: companyB, tripId: trip.id, desk: 'Desk B' }
   });
 
   console.log("Seeded");
