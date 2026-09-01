@@ -2812,6 +2812,16 @@
       "post": {
         "operationId": "FuelController_createFuelCard_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFuelCardDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -2850,6 +2860,16 @@
       "post": {
         "operationId": "FuelController_createFuelStation_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFuelStationDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -2888,6 +2908,16 @@
       "post": {
         "operationId": "FuelController_logFuelTransaction_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFuelTransactionDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -2944,6 +2974,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FitTyreDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -3008,6 +3048,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveTyreDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4013,6 +4063,16 @@
       "post": {
         "operationId": "AiController_generateWorkflow_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4050,6 +4110,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4070,6 +4140,16 @@
       "post": {
         "operationId": "AiController_interactWithAgent_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InteractDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4157,6 +4237,16 @@
       "post": {
         "operationId": "AiController_createSession_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSessionDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4215,6 +4305,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatMessageDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4349,6 +4449,16 @@
       "post": {
         "operationId": "AiController_predictDispatch_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictDispatchDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4369,6 +4479,16 @@
       "post": {
         "operationId": "AiController_executeWorkflow_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteWorkflowDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4443,6 +4563,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectWorkflowStepDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4563,6 +4693,16 @@
       "post": {
         "operationId": "AiController_setWorkspaceMemory_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetWorkspaceMemoryDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4603,6 +4743,16 @@
       "post": {
         "operationId": "AiController_submitFeedback_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitFeedbackDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -4623,6 +4773,16 @@
       "post": {
         "operationId": "AiController_reportHallucination_v1",
         "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportHallucinationDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -20684,6 +20844,26 @@
           "payload"
         ]
       },
+      "CreateFuelCardDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFuelStationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFuelTransactionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "FitTyreDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RemoveTyreDto": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateVehicleDto": {
         "type": "object",
         "properties": {
@@ -20930,6 +21110,46 @@
         "properties": {}
       },
       "ScheduleDockDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PromptDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "InteractDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSessionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ChatMessageDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PredictDispatchDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ExecuteWorkflowDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RejectWorkflowStepDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SetWorkspaceMemoryDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SubmitFeedbackDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ReportHallucinationDto": {
         "type": "object",
         "properties": {}
       },

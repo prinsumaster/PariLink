@@ -1,7 +1,7 @@
 // import './tracer';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType, ForbiddenException } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
@@ -170,20 +170,50 @@ async function bootstrap() {
     .split(',')
     .map((o) => o.trim());
 
+  // Single source of truth for the allowlist. Both the 403 middleware below
+  // and the enableCors origin callback use this, so the two layers cannot
+  // drift apart -- a blanket `callback(null, true)` with credentials:true is
+  // the f5def35 wildcard-CORS shape and must not reappear.
+  const isOriginPermitted = (origin?: string): boolean =>
+    !origin ||
+    allowedOrigins.includes(origin) ||
+    (process.env.NODE_ENV !== 'production' &&
+      origin.endsWith('.trycloudflare.com'));
+
+  app.use((req: any, res: any, next: any) => {
+    const origin = req.headers.origin;
+    if (!isOriginPermitted(origin)) {
+      appLogger.warn(`[CORS] Rejected request from unauthorized origin: ${origin}`);
+      // Matches GlobalExceptionFilter's error shape. This middleware runs
+      // before Nest's pipeline, so the filter never sees it and the
+      // correlation id has to be attached here.
+      const correlationId =
+        req.correlationId ?? req.headers['x-correlation-id'] ?? 'no-correlation-id';
+      res.setHeader('X-Correlation-Id', correlationId);
+      return res.status(403).json({
+        success: false,
+        statusCode: 403,
+        errorCode: 'FORBIDDEN',
+        correlationId,
+        timestamp: new Date().toISOString(),
+        path: req.originalUrl ?? req.url,
+        message: 'Not allowed by CORS',
+      });
+    }
+    next();
+  });
+
   app.enableCors({
     origin: (
       origin: string | undefined,
       callback: (err: Error | null, allow?: boolean) => void,
     ) => {
-      // Allow same-origin (no origin header) and listed origins
-      if (!origin || allowedOrigins.includes(origin) || (process.env.NODE_ENV !== 'production' && origin.endsWith('.trycloudflare.com'))) {
-        callback(null, true);
-      } else {
-        appLogger.warn(
-          `[CORS] Rejected request from unauthorized origin: ${origin}`,
-        );
-        callback(new Error('Not allowed by CORS'), false);
-      }
+      // Defence in depth: the middleware above already 403s a disallowed
+      // origin, but this must not be a blanket allow. callback(null, false)
+      // simply omits the ACAO header -- it does not throw, so it cannot
+      // become a 500 the way the old ForbiddenException did inside the cors
+      // package.
+      callback(null, isOriginPermitted(origin));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
