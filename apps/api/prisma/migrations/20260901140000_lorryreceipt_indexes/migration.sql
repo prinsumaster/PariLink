@@ -15,12 +15,47 @@
 -- [companyId, lrNumber] serves LR lookup by number, which is always
 -- tenant-scoped. [loadId] serves the FK join.
 --
--- NOT added, deliberately: a UNIQUE constraint on (companyId, lrNumber).
--- An LR number is a legal document identifier and almost certainly should be
--- unique per company, but adding the constraint would fail the migration if
--- duplicates already exist. That needs a duplicate check against real data
--- first, then its own migration.
+-- (companyId, lrNumber) is UNIQUE, not a plain index. schema.prisma declares
+-- @@unique([companyId, lrNumber]); this migration previously created a plain
+-- index, so the two disagreed and `prisma migrate dev` would have generated a
+-- surprise migration for the constraint. Resolved here in favour of the
+-- constraint: an LR number is a legal document identifier and duplicates
+-- within a company are a data-integrity bug.
+--
+-- The guard below runs FIRST and aborts with the offending rows listed if any
+-- duplicates exist. Without it, the failure is a bare constraint violation
+-- that names one row and tells you nothing about the scale of the problem.
+-- Migrating is the right moment to find out, but not by guessing.
 
 CREATE INDEX IF NOT EXISTS "LorryReceipt_companyId_deletedAt_idx" ON "LorryReceipt"("companyId", "deletedAt");
-CREATE INDEX IF NOT EXISTS "LorryReceipt_companyId_lrNumber_idx" ON "LorryReceipt"("companyId", "lrNumber");
+DO $$
+DECLARE
+  dupes int;
+  sample text;
+BEGIN
+  SELECT count(*) INTO dupes FROM (
+    SELECT 1 FROM "LorryReceipt"
+    GROUP BY "companyId", "lrNumber" HAVING count(*) > 1
+  ) d;
+
+  IF dupes > 0 THEN
+    SELECT string_agg(format('%s/%s x%s', "companyId", "lrNumber", n), ', ')
+      INTO sample
+      FROM (
+        SELECT "companyId", "lrNumber", count(*) AS n
+        FROM "LorryReceipt"
+        GROUP BY "companyId", "lrNumber" HAVING count(*) > 1
+        LIMIT 10
+      ) s;
+    RAISE EXCEPTION
+      'Cannot add UNIQUE (companyId, lrNumber): % duplicate group(s) exist. First 10: %. '
+      'Deduplicate before migrating -- an LR number is a legal document id and '
+      'duplicates within a company are a data-integrity bug, not a schema problem.',
+      dupes, sample;
+  END IF;
+END
+$$;
+
+DROP INDEX IF EXISTS "LorryReceipt_companyId_lrNumber_idx";
+CREATE UNIQUE INDEX IF NOT EXISTS "LorryReceipt_companyId_lrNumber_key" ON "LorryReceipt"("companyId", "lrNumber");
 CREATE INDEX IF NOT EXISTS "LorryReceipt_loadId_idx" ON "LorryReceipt"("loadId");

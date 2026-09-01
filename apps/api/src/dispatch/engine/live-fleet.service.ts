@@ -38,16 +38,39 @@ export class LiveFleetService {
       .map((t) => t.vehicleId)
       .filter(Boolean) as string[];
 
-    // In a real high-throughput system, live location is read strictly from Redis,
-    // not Postgres. The Telemetry Ingress should update Redis keys `vehicle_loc:${id}`.
-    // Here we simulate the fast path by looking up locations.
-
-    // Fallback: DB lookup if Redis is not populated
+    // Current position comes from VehicleCurrentPosition -- one row per
+    // vehicle -- NOT from VehicleLocation history.
+    //
+    // The previous query was:
+    //     vehicleLocation.findMany({ where: { companyId },
+    //                                orderBy: { gpsTimestamp: 'desc' },
+    //                                take: 500 })
+    // which was wrong in two independent ways:
+    //
+    //  1. CORRECTNESS. History holds one row per ping. At 10,000 trucks
+    //     pinging every 2 minutes, 500 rows is about 4 SECONDS of
+    //     fleet-wide telemetry -- so the map silently showed only whichever
+    //     ~500 trucks pinged most recently and dropped the rest. That breaks
+    //     from roughly 600 trucks, well inside a single customer's fleet,
+    //     and it fails silently: a short list looks like a quiet day.
+    //
+    //  2. PERFORMANCE. No index could serve it. The only candidate was
+    //     [companyId, vehicleId, gpsTimestamp], and because vehicleId sits
+    //     between the equality column and the sort column while being
+    //     unconstrained here, Postgres could not walk it in gpsTimestamp
+    //     order -- it read every row for the tenant and sorted.
+    //
+    // Reading current position instead makes the result exact (one row per
+    // vehicle, no truncation) and bounded by fleet size rather than by ping
+    // volume, so it does not degrade as history grows.
     const locations = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.vehicleLocation.findMany({
-        where: { companyId }, // We'd filter by vehicle ID if we had mapping, but providerVehicleId is used.
-        orderBy: { gpsTimestamp: 'desc' },
-        take: 500, // naive optimization for demonstration
+      tx.vehicleCurrentPosition.findMany({
+        where: {
+          companyId,
+          ...(activeVehiclesIds.length > 0
+            ? { OR: [{ vehicleId: { in: activeVehiclesIds } }, { vehicleId: null }] }
+            : {}),
+        },
       }),
     );
 

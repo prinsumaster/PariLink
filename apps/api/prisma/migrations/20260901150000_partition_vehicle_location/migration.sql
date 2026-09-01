@@ -70,98 +70,6 @@ WITH CHECK (
   OR "companyId" = current_setting('app.current_company_id', true)
 );
 
--- ── 3. Convert VehicleLocation to monthly RANGE partitions ────────────────
--- Done as rename + create + copy rather than in place: PostgreSQL cannot
--- convert an existing ordinary table into a partitioned one. Safe now
--- because the table is small; the INSERT ... SELECT is the expensive step
--- and grows with existing row count.
-ALTER TABLE "VehicleLocation" RENAME TO "VehicleLocation_old";
-
-CREATE TABLE "VehicleLocation" (
-  "id"                TEXT        NOT NULL DEFAULT gen_random_uuid()::text,
-  "companyId"         TEXT        NOT NULL,
-  "provider"          TEXT        NOT NULL,
-  "providerVehicleId" TEXT        NOT NULL,
-  "vehicleId"         TEXT,
-  "latitude"          DOUBLE PRECISION NOT NULL,
-  "longitude"         DOUBLE PRECISION NOT NULL,
-  "speed"             DOUBLE PRECISION,
-  "heading"           DOUBLE PRECISION,
-  "altitude"          DOUBLE PRECISION,
-  "accuracy"          DOUBLE PRECISION,
-  "ignition"          BOOLEAN,
-  "fuel"              DOUBLE PRECISION,
-  "odometer"          DOUBLE PRECISION,
-  "engineHours"       DOUBLE PRECISION,
-  "signalStrength"    DOUBLE PRECISION,
-  "gpsTimestamp"      TIMESTAMP(3) NOT NULL,
-  "receivedAt"        TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  -- The partition key MUST be part of every unique constraint, so the PK is
-  -- (id, gpsTimestamp) rather than id alone. This is the one schema-visible
-  -- consequence of partitioning.
-  CONSTRAINT "VehicleLocation_pkey" PRIMARY KEY ("id", "gpsTimestamp")
-) PARTITION BY RANGE ("gpsTimestamp");
-
-CREATE INDEX "VehicleLocation_companyId_vehicleId_gpsTimestamp_idx"
-  ON "VehicleLocation" ("companyId", "vehicleId", "gpsTimestamp");
-CREATE INDEX "VehicleLocation_companyId_gpsTimestamp_idx"
-  ON "VehicleLocation" ("companyId", "gpsTimestamp" DESC);
-CREATE INDEX "VehicleLocation_provider_providerVehicleId_idx"
-  ON "VehicleLocation" ("provider", "providerVehicleId");
-
-ALTER TABLE "VehicleLocation" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "VehicleLocation" FORCE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "tenant_isolation_policy" ON "VehicleLocation";
-CREATE POLICY "tenant_isolation_policy" ON "VehicleLocation"
-AS PERMISSIVE FOR ALL
-USING (
-  current_setting('app.bypass_rls', true) = 'on'
-  OR "companyId" = current_setting('app.current_company_id', true)
-)
-WITH CHECK (
-  current_setting('app.bypass_rls', true) = 'on'
-  OR "companyId" = current_setting('app.current_company_id', true)
-);
-
--- Partitions: the current month and the next three. A scheduled job must
--- create each following month BEFORE it begins -- an insert with no matching
--- partition fails outright. That job is the operational prerequisite of this
--- migration and is NOT created here.
-DO $$
-DECLARE
-  m date := date_trunc('month', now())::date;
-  i int;
-  part text;
-BEGIN
-  FOR i IN 0..3 LOOP
-    part := 'VehicleLocation_' || to_char(m + (i || ' month')::interval, 'YYYY_MM');
-    EXECUTE format(
-      'CREATE TABLE IF NOT EXISTS %I PARTITION OF "VehicleLocation" FOR VALUES FROM (%L) TO (%L)',
-      part,
-      (m + (i     || ' month')::interval)::date,
-      (m + ((i+1) || ' month')::interval)::date
-    );
-  END LOOP;
-END
-$$;
-
--- Catch-all so a ping with a clock-skewed or backdated timestamp is stored
--- rather than rejected. Monitor it: rows landing here mean a device clock is
--- wrong or the month-ahead job did not run.
-CREATE TABLE IF NOT EXISTS "VehicleLocation_default"
-  PARTITION OF "VehicleLocation" DEFAULT;
-
-INSERT INTO "VehicleLocation" (
-  "id","companyId","provider","providerVehicleId","vehicleId","latitude",
-  "longitude","speed","heading","altitude","accuracy","ignition","fuel",
-  "odometer","engineHours","signalStrength","gpsTimestamp","receivedAt"
-)
-SELECT
-  "id","companyId","provider","providerVehicleId","vehicleId","latitude",
-  "longitude","speed","heading","altitude","accuracy","ignition","fuel",
-  "odometer","engineHours","signalStrength","gpsTimestamp","receivedAt"
-FROM "VehicleLocation_old";
-
 -- Seed current position from the newest row per vehicle already on file.
 INSERT INTO "VehicleCurrentPosition" (
   "companyId","providerVehicleId","vehicleId","provider","latitude",
@@ -170,8 +78,7 @@ INSERT INTO "VehicleCurrentPosition" (
 SELECT DISTINCT ON ("companyId","providerVehicleId")
   "companyId","providerVehicleId","vehicleId","provider","latitude",
   "longitude","speed","heading","ignition","gpsTimestamp"
-FROM "VehicleLocation_old"
+FROM "VehicleLocation"
 ORDER BY "companyId","providerVehicleId","gpsTimestamp" DESC
 ON CONFLICT ("companyId","providerVehicleId") DO NOTHING;
 
-DROP TABLE "VehicleLocation_old";

@@ -129,19 +129,48 @@ export class TelemetryIngressService {
         );
         successCount++;
 
-        // Push event to DomainEvent (Outbox)
+        // Keep VehicleCurrentPosition live -- the dispatch map reads it
+        // instead of scanning history. The WHERE on DO UPDATE guards against
+        // an out-of-order or replayed ping overwriting a fresher fix with a
+        // stale one; Prisma's upsert cannot express that condition, so this
+        // is raw.
         await this.prisma.runAsTenant(payload.companyId, async (tx) =>
-          tx.domainEvent.create({
-            data: {
-              eventType: 'VehicleLocationReceived',
-              streamId: record.providerVehicleId,
-              streamType: 'Vehicle',
-              companyId: payload.companyId,
-              version: 1,
-              payload: record as any,
-            },
-          }),
+          tx.$executeRaw`
+            INSERT INTO "VehicleCurrentPosition"
+              ("companyId","providerVehicleId","provider","latitude","longitude",
+               "speed","heading","ignition","gpsTimestamp","updatedAt")
+            VALUES (${payload.companyId}, ${record.providerVehicleId},
+                    ${installation.app.provider}, ${record.latitude},
+                    ${record.longitude}, ${record.speed ?? null},
+                    ${record.heading ?? null}, ${record.ignition ?? null},
+                    ${new Date(record.gpsTimestamp)}, now())
+            ON CONFLICT ("companyId","providerVehicleId") DO UPDATE SET
+              "latitude"     = EXCLUDED."latitude",
+              "longitude"    = EXCLUDED."longitude",
+              "speed"        = EXCLUDED."speed",
+              "heading"      = EXCLUDED."heading",
+              "ignition"     = EXCLUDED."ignition",
+              "gpsTimestamp" = EXCLUDED."gpsTimestamp",
+              "updatedAt"    = now()
+            WHERE "VehicleCurrentPosition"."gpsTimestamp" < EXCLUDED."gpsTimestamp"`,
         );
+
+        // The per-ping DomainEvent write was removed here.
+        //
+        // DomainEvent as a table IS consumed -- 7 read sites across
+        // enterprise-event-bus.service.ts, event-store.service.ts and
+        // occ.controller.ts -- so the outbox is not dead. But
+        // 'VehicleLocationReceived' specifically had exactly ONE occurrence
+        // in the codebase: this write. Nothing ever read it.
+        //
+        // At 10,000 trucks pinging every 2 minutes that was 7.2M rows/day of
+        // an event nobody consumes, doubling telemetry write volume to
+        // ~14.4M rows/day and adding a second transaction to every ping.
+        //
+        // A position fix is not a domain event -- it carries no decision and
+        // no state transition. If downstream consumers need movement
+        // signals, emit on thresholds (geofence crossing, ignition on/off,
+        // stop start/end), not every fix.
       } catch (err) {
         this.logger.error(
           `Error processing record for ${record.providerVehicleId}`,

@@ -2412,6 +2412,30 @@ model AppUsageStatistic {
 // ENTERPRISE GPS INTEGRATION CLOUD
 // ─────────────────────────────────────────────────────────────
 
+/// One row per vehicle: where it is NOW. Created by
+/// 20260901150000_partition_vehicle_location and declared here so schema and
+/// migrations agree -- without this Prisma sees the table as drift and wants
+/// to drop it.
+///
+/// The dispatch map reads this instead of VehicleLocation. History grows at
+/// ~7.2M rows/day at 10k trucks; "where is each truck now" is 10k rows.
+model VehicleCurrentPosition {
+  companyId         String
+  providerVehicleId String
+  vehicleId         String?
+  provider          String
+  latitude          Float
+  longitude         Float
+  speed             Float?
+  heading           Float?
+  ignition          Boolean?
+  gpsTimestamp      DateTime
+  updatedAt         DateTime @default(now()) @updatedAt
+
+  @@id([companyId, providerVehicleId])
+  @@index([companyId, vehicleId])
+}
+
 model VehicleLocation {
   id                String   @id @default(uuid())
   companyId         String
