@@ -245,12 +245,13 @@ async function main() {
   for (let v=0; v<3; v++) {
     for (let p=0; p<10; p++) {
       const locId = `demo-loc-${v}-${p}`;
+      const ts = new Date(Date.now() - (10 - p) * 60000);
       await prisma.vehicleLocation.upsert({
-        where: { id: locId },
+        where: { id_gpsTimestamp: { id: locId, gpsTimestamp: ts } },
         update: {
           latitude: baseLat + (v * 0.1) + (p * 0.05),
           longitude: baseLng - (v * 0.1) - (p * 0.05),
-          gpsTimestamp: new Date(Date.now() - (10 - p) * 60000)
+          gpsTimestamp: ts
         },
         create: {
           id: locId,

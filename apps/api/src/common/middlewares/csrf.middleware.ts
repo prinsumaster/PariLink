@@ -25,7 +25,8 @@ export function csrfMiddleware(
   if (
     req.path.match(/^\/api\/v[0-9]+\/auth\/(login|register)$/) ||
     req.path.match(/^\/api\/v[0-9]+\/iam\/oauth\/token$/) ||
-    req.path.match(/^\/api\/v[0-9]+\/(.*\/)?webhook(s)?(\/|$)/)
+    req.path.match(/^\/api\/v[0-9]+\/(.*\/)?webhook(s)?(\/|$)/) ||
+    req.path.match(/^\/api\/v[0-9]+\/ingress\/telemetry$/)
   ) {
     return next();
   }

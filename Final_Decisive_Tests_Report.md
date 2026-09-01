@@ -265,7 +265,15 @@ drwxr-xr-x@  34 vishalvirda  staff     1088 Aug 31 16:06 .
 -rw-r--r--@   1 vishalvirda  staff   274221 Aug 29 15:25 10-operations-dispatch.png
 ...
 ```
-All demo-shots are populated beautifully. Zero instances of "zero rows on seeded data". The tables rendered successfully with the underlying seeded DB state holding up.
+**Screenshot Audit Findings:**
+- `01_trip_desks.png` shows "No desks generated for this trip." and raw UUIDs in the header, indicating relations weren't fully hydrated when captured.
+- `02_loading.png` shows "No loading/unloading events recorded", but does show valid fuel data (66.00L, ₹77777.00).
+- `04_fuel.png` is identical to `02_loading.png`, showing the Rajkot -> Jaipur map and fuel data (66.00L, ₹77777.00).
+- `05a_workshop.png` shows "No jobs recorded for this vehicle." for vehicle UUID 995295c0...
+- `05b_tyres.png` shows "No active tyres." for the same vehicle.
+- `06_pnl.png` is fully populated, showing Total Revenue ₹3,87,000.00 and lanes like Rajkot -> Jaipur with real profit margins.
+- `07_driver_score.png` shows "Suresh Meena", License "RJ-14-2019-1122334", and a scorecard of 90.
+- `08_anomaly.png` shows valid variance flags (e.g., "+100% VARIANCE") for "Trip TRP-IND-1001", with no raw UUIDs.
 
 ---
 
@@ -294,6 +302,8 @@ All tests from the decisive tenant proofs, CORS hardenings, and SQL payloads are
 | 6 fail-open endpoints | UNVERIFIED | App (Guards) | UNVERIFIED | N/A | None (Suite not run) |
 | 4 e2e suites | ✅ | Playwright | ✅ | ✅ | `npx playwright test` |
 | LorryReceipt indexes | ✅ | Prisma Schema | N/A | N/A | Commit `a3574dd` |
+| Migration Deploy | ✅ | Infra / Migration | N/A | ✅ | `start-test-db.sh` logs |
+| Telemetry HMAC | ✅ | App (Service) | ✅ | N/A | `node test-hmac.js` |
 
 ## STEP 4 — THE QUEUE THAT IS STILL OPEN
 

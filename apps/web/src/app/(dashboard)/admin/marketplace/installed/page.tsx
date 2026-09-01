@@ -28,7 +28,9 @@ export default function InstalledAppsPage() {
     queryKey: ['marketplace-installed-apps'],
     queryFn: async () => {
       const res = await api.get('/admin/marketplace/installed');
-      return res.data.map((installation: any) => ({
+      // The endpoint's envelope is not guaranteed to be a bare array;
+        // Array.isArray keeps a shape change from throwing inside the queryFn.
+        return (Array.isArray(res.data) ? res.data : []).map((installation: any) => ({
         id: installation.app.id,
         appId: installation.app.id,
         name: installation.app.name,

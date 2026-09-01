@@ -247,7 +247,7 @@ export function CreateLoadDialog({ open, onOpenChange }: CreateLoadDialogProps) 
                       className={selectClass(!!errors.customerId)}
                     >
                       <option value="">Select customer…</option>
-                      {customers?.data.map((c) => (
+                      {(customers?.data ?? []).map((c) => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </select>

@@ -22,7 +22,9 @@ export default function MarketplacePage() {
     queryFn: async () => {
       const res = await api.get('/admin/marketplace/apps');
       // Map API data to component props format
-      return res.data.map((app: any) => ({
+      // The endpoint's envelope is not guaranteed to be a bare array;
+        // Array.isArray keeps a shape change from throwing inside the queryFn.
+        return (Array.isArray(res.data) ? res.data : []).map((app: any) => ({
         id: app.id,
         name: app.name,
         developer: app.developer?.name || 'PariLink',

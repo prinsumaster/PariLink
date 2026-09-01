@@ -15,7 +15,11 @@ export default function DriverAttendancePage() {
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
   const [statusFilter, setStatusFilter] = useState('ALL');
 
-  const { data, isLoading, refetch, isFetching } = useQuery({
+  // `data = []` is load-bearing: the table renders `isLoading || isFetching ? spinner
+  // : data.map(...)`, so on a query ERROR both flags go false while data stays
+  // undefined -- undefined.map() and a white screen. The default keeps the
+  // empty state rendering instead.
+  const { data = [], isLoading, refetch, isFetching } = useQuery({
     queryKey: ['driver-attendance', filterDate, statusFilter],
     queryFn: async () => {
       // Mock API response matching enterprise structure until backend is fully hooked up

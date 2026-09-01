@@ -71,7 +71,7 @@ export function RecordPaymentDialog({ open, onOpenChange }: RecordPaymentDialogP
             <Label>Invoice *</Label>
             <select {...register('invoiceId')} className={`${selectClass} ${errors.invoiceId ? 'border-red-500' : ''}`}>
               <option value="">Select invoice…</option>
-              {invoices?.data.map((inv) => (
+              {(invoices?.data ?? []).map((inv) => (
                 <option key={inv.id} value={inv.id}>
                   {inv.invoiceNumber} — {inv.customer?.name} (${inv.amount})
                 </option>

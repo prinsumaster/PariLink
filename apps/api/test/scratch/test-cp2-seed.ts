@@ -36,6 +36,11 @@ async function main() {
     data: { id: 'u2222222-2222-2222-2222-222222222222', companyId: companyB, email: 'userb@b.com', password: 'password', firstName: 'User', lastName: 'B' }
   });
 
+  // TruckProfitability for B
+  await prisma.truckProfitability.create({
+    data: { id: 'p2222222-2222-2222-2222-222222222222', companyId: companyB, vehicleId: vehicle.id, month: new Date(), totalRevenue: 10000, totalCost: 5000, profitMarginPct: 50 }
+  });
+
   console.log("Seeded");
 }
 

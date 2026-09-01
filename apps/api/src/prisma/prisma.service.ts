@@ -19,6 +19,7 @@ export class PrismaService
   private readonly logger = new Logger(PrismaService.name);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly dmmfModels = new Map<string, any>();
+  private readonly systemClient: PrismaClient;
 
   constructor() {
     let datasourceUrl = process.env.APP_DATABASE_URL || process.env.DATABASE_URL;
@@ -49,6 +50,25 @@ export class PrismaService
 
     this.$on('error', (e) => this.logger.error(`Prisma Error: ${e.message}`));
     this.$on('warn', (e) => this.logger.warn(`Prisma Warn: ${e.message}`));
+
+    let systemDatasourceUrl = process.env.SYSTEM_DATABASE_URL || datasourceUrl;
+    if (systemDatasourceUrl) {
+      try {
+        const url = new URL(systemDatasourceUrl);
+        if (process.env.NODE_ENV === 'test') {
+          url.searchParams.set('connection_limit', '1');
+        }
+        systemDatasourceUrl = url.toString();
+      } catch (e) {}
+    }
+    this.systemClient = new PrismaClient({
+      datasourceUrl: systemDatasourceUrl,
+      log: [
+        { emit: 'event', level: 'query' },
+        { emit: 'event', level: 'error' },
+        { emit: 'event', level: 'warn' },
+      ],
+    });
   }
 
   async onModuleInit() {
@@ -67,6 +87,7 @@ export class PrismaService
 
   async onModuleDestroy() {
     await this.$disconnect();
+    await this.systemClient.$disconnect();
   }
 
   private setupSoftDeleteMiddleware() {
@@ -315,11 +336,9 @@ export class PrismaService
       `[SECURITY_AUDIT] SYSTEM_BYPASS: Bypassing RLS. Reason: ${reason}`
     );
 
-    return this.$transaction(async (tx) => {
-      // Set the PostgreSQL local configuration variable to bypass RLS
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
-      // Execute the business logic
-      return callback(tx);
+    return this.systemClient.$transaction(async (tx) => {
+      // Execute the business logic using the system-level connection
+      return callback(tx as any);
     });
   }
 

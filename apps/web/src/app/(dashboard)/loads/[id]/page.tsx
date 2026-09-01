@@ -428,7 +428,7 @@ export default function LoadDetailPage({ params }: LoadDetailPageProps) {
               }}
             >
               <option value="">Select available driver</option>
-              {driversData?.data.map((d) => (
+              {(driversData?.data ?? []).map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.firstName} {d.lastName} ({d.status})
                 </option>
