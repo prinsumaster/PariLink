@@ -23,6 +23,7 @@ export interface SqlValidationResult {
 const BANNED_WRITE_VERBS = [
   'UPDATE', 'DELETE', 'INSERT', 'DROP', 'ALTER', 'TRUNCATE', 'GRANT',
   'REVOKE', 'EXEC', 'EXECUTE', 'CALL', 'MERGE', 'CREATE', 'VACUUM',
+  'SET', 'SET_CONFIG', 'CURRENT_SETTING', 'PG_SLEEP'
 ];
 
 const CLAUSE_TERMINATORS = ['GROUP BY', 'ORDER BY', 'LIMIT', 'HAVING', 'OFFSET'];
