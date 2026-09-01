@@ -2437,7 +2437,7 @@ model VehicleCurrentPosition {
 }
 
 model VehicleLocation {
-  id                String   @id @default(uuid())
+  id                String   @default(uuid())
   companyId         String
   provider          String
   providerVehicleId String
@@ -2459,7 +2459,12 @@ model VehicleLocation {
   company Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   vehicle Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 
+  /// PostgreSQL requires the partition key in every unique constraint, so the
+  /// primary key is (id, gpsTimestamp), not (id). This is the one
+  /// schema-visible consequence of 20260901160000_partition_vehicle_location_v2.
+  @@id([id, gpsTimestamp])
   @@index([companyId, vehicleId, gpsTimestamp])
+  @@index([companyId, gpsTimestamp])
   @@index([provider, providerVehicleId])
 }
 

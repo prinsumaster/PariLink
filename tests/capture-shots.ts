@@ -1,6 +1,9 @@
 import { chromium } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
+import { PrismaClient } from '@prisma/client';
+
+const OUT_DIR = path.join(__dirname, '../demo-shots');
 
 const BASE_URL = 'http://localhost:3000';
 const API_URL = 'http://localhost:8080';

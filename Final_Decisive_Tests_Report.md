@@ -287,11 +287,11 @@ All tests from the decisive tenant proofs, CORS hardenings, and SQL payloads are
 | CORS | ✅ | App (NestJS) | ✅ | N/A | Curl test (Evil 403 / Localhost 200) |
 | SQL validator (rejection path) | ✅ | App (Validator) | ✅ | ✅ | `test/scratch/test-payloads.ts` |
 | SQL validator (execution path) | ✅ | App / Database | N/A | ✅ | `test/scratch/test-sql-execution.ts` |
-| 15 DTOs | ✅ | App (class-validator) | ✅ | N/A | Code review of `*.dto.ts` |
-| runAsTenantById | ✅ | App (Prisma) | N/A | ✅ | Code review `prisma.service.ts` |
-| companies 403s | ✅ | App (Auth) | ✅ | ✅ | E2E `auth-isolation.spec.ts` |
+| 15 DTOs | UNVERIFIED | App (class-validator) | UNVERIFIED | N/A | None (was Code review) |
+| runAsTenantById | UNVERIFIED | App (Prisma) | N/A | UNVERIFIED | None (was Code review) |
+| companies 403s | UNVERIFIED | App (Auth) | UNVERIFIED | UNVERIFIED | None (Suite not run) |
 | anomalies isolation | ✅ | Database (RLS) | ✅ | ✅ | `test/scratch/test-decisive.ts` |
-| 6 fail-open endpoints | ✅ | App (Guards) | ✅ | N/A | E2E `critical-journeys.spec.ts` |
+| 6 fail-open endpoints | UNVERIFIED | App (Guards) | UNVERIFIED | N/A | None (Suite not run) |
 | 4 e2e suites | ✅ | Playwright | ✅ | ✅ | `npx playwright test` |
 | LorryReceipt indexes | ✅ | Prisma Schema | N/A | N/A | Commit `a3574dd` |
 
