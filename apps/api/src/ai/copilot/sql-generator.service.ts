@@ -57,9 +57,16 @@ export class SqlGeneratorService {
     // query genuinely needs RLS off, it should not be an LLM-generated one.
     try {
       const sanitizedQuery = this.injectCompanyId(sqlQuery);
-      const result = await this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.$queryRawUnsafe(sanitizedQuery, companyId),
-      );
+      const result = await this.prisma.runAsTenant(companyId, async (tx) => {
+        await tx.$executeRawUnsafe('SET LOCAL ROLE parilink_ai;');
+        // NOT `SET TRANSACTION READ ONLY`: runAsTenant already issues
+        // `SELECT set_config('app.current_company_id', ...)` as the first
+        // statement of this transaction, and SET TRANSACTION must precede
+        // any query -- it would throw 25001 on every AI query. The GUC form
+        // is legal at any point in the transaction.
+        await tx.$executeRawUnsafe('SET LOCAL transaction_read_only = on;');
+        return tx.$queryRawUnsafe(sanitizedQuery, companyId);
+      });
       return result;
     } catch (error) {
       this.logger.error(`Failed to execute generated SQL: ${(error as Error).message}`);

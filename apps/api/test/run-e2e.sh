@@ -33,6 +33,17 @@ docker exec parilink-test-db psql -U postgres -d postgres -c "GRANT ALL PRIVILEG
 docker exec parilink-test-db psql -U postgres -d postgres -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO parilink_test;"
 docker exec parilink-test-db psql -U postgres -d postgres -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO parilink_test;"
 
+# The AI SQL path does `SET LOCAL ROLE parilink_ai`, which requires
+# parilink_test to be a MEMBER of parilink_ai -- otherwise it fails with
+# "permission denied to set role". The role itself is created by migration
+# 20260901000001_ai_no_bypass (already applied above by migrate deploy).
+# Its grant is deliberately narrow: SELECT on the 7 ALLOWED_TABLES only, so
+# the AI role cannot read User/RefreshToken even if the validator is bypassed.
+docker exec parilink-test-db psql -U postgres -d postgres -c "GRANT parilink_ai TO parilink_test;"
+docker exec parilink-test-db psql -U postgres -d postgres -c "REVOKE ALL ON ALL TABLES IN SCHEMA public FROM parilink_ai;"
+docker exec parilink-test-db psql -U postgres -d postgres -c "GRANT USAGE ON SCHEMA public TO parilink_ai;"
+docker exec parilink-test-db psql -U postgres -d postgres -c "GRANT SELECT ON \"Trip\",\"Load\",\"Invoice\",\"Vehicle\",\"Driver\",\"Customer\",\"Expense\" TO parilink_ai;"
+
 echo "Switching connection to non-superuser — RLS will now apply for all subsequent operations..."
 export DATABASE_URL="postgresql://parilink_test:testpass@localhost:5434/postgres"
 export APP_DATABASE_URL="postgresql://parilink_test:testpass@localhost:5434/postgres"
