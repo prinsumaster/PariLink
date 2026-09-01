@@ -28,20 +28,14 @@
 -- sql-generator.service.ts. Every other table is protected from the AI role
 -- by the narrowed GRANT in setup-test-db.sh, not by a policy here.
 
--- The role must exist before CREATE POLICY ... TO parilink_ai, or this
--- migration fails with `role "parilink_ai" does not exist`. It is created by
--- setup-test-db.sh, but that script is NOT run by run-e2e.sh and is not
--- referenced by package.json -- and a migration has to stand on its own on
--- any database it is deployed to. Created NOLOGIN here: this migration only
--- needs the role to exist so the policy can reference it. setup-test-db.sh
--- separately grants it LOGIN and a password for the AI connection path.
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'parilink_ai') THEN
-    CREATE ROLE parilink_ai NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
-  END IF;
-END
-$$;
+-- NOTE: this migration does NOT create the parilink_ai role. Provisioning it
+-- here was considered and rejected: in production the migrating user has no
+-- CREATEROLE, so the guard would fail with "permission denied to create role"
+-- -- a more confusing error than the honest one. Role provisioning is infra,
+-- not schema, and lives in setup-test-db.sh, test/run-e2e.sh and DEPLOY.md.
+-- On a database where the role was never provisioned this migration fails
+-- loudly with `role "parilink_ai" does not exist`, which points straight at
+-- the fix. Both scripts create the role BEFORE `prisma migrate deploy`.
 
 DROP POLICY IF EXISTS "ai_no_bypass" ON "Trip";
 CREATE POLICY "ai_no_bypass" ON "Trip"

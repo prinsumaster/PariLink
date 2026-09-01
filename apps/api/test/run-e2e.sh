@@ -17,6 +17,15 @@ if [ -z "$CI" ]; then
   export REDIS_URL="redis://localhost:6379"
 fi
 
+echo "Provisioning parilink_ai BEFORE migrations -- 20260901000001_ai_no_bypass
+does CREATE POLICY ... TO parilink_ai and fails if the role is absent."
+docker exec parilink-test-db psql -U postgres -d postgres -c \
+  "DO \$\$ BEGIN
+     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'parilink_ai') THEN
+       CREATE ROLE parilink_ai NOSUPERUSER NOCREATEDB NOCREATEROLE;
+     END IF;
+   END \$\$;"
+
 echo "Running migrations on throwaway DB as superuser (DDL requires superuser)..."
 npx prisma migrate deploy > /dev/null
 
