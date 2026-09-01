@@ -14,14 +14,26 @@ async function main() {
     create: { id: companyB, name: 'Company B' }
   });
 
-  const trip = await prisma.trip.findFirst();
-  if (!trip) throw new Error("No trip");
+  const driver = await prisma.driver.create({
+    data: { id: 'd2222222-2222-2222-2222-222222222222', companyId: companyB, firstName: 'Driver', lastName: 'B' }
+  });
 
+  const vehicle = await prisma.vehicle.create({
+    data: { id: 'v2222222-2222-2222-2222-222222222222', companyId: companyB, licensePlate: 'BB-1234' }
+  });
 
+  const tripB = await prisma.trip.create({
+    data: { id: 'tr222222-2222-2222-2222-222222222222', companyId: companyB, tripNumber: 'TRIP-B', driverId: driver.id, vehicleId: vehicle.id }
+  });
 
   // TripDesk for B
   await prisma.tripDesk.create({
-    data: { id: 't2222222-2222-2222-2222-222222222222', companyId: companyB, tripId: trip.id, desk: 'Desk B' }
+    data: { id: 't2222222-2222-2222-2222-222222222222', companyId: companyB, tripId: tripB.id, desk: 'Desk B' }
+  });
+
+  // User for B
+  await prisma.user.create({
+    data: { id: 'u2222222-2222-2222-2222-222222222222', companyId: companyB, email: 'userb@b.com', password: 'password', firstName: 'User', lastName: 'B' }
   });
 
   console.log("Seeded");

@@ -1,5 +1,15 @@
 # ── Secrets (NEVER commit these) ──────────────────────────────────────────
 .env
+# Catch every .env variant -- backups, copies and dumps leak the same
+# secrets as .env itself. apps/api/.env.backup (29 keys incl.
+# POSTGRES_PASSWORD, REDIS_PASSWORD, MINIO_ROOT_PASSWORD, JWT_PRIVATE_KEY)
+# was sitting untracked and NOT ignored: .env.bak was listed, .env.backup
+# was not. One `git add -A` from entering history permanently.
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.template
 .env.local
 .env.*.local
 .env.development.local

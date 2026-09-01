@@ -16053,7 +16053,16 @@
     "/api/v1/ingress/telemetry": {
       "post": {
         "operationId": "TelemetryIngressController_ingestTelemetry_v1",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "202": {
             "description": ""

@@ -1,4 +1,5 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export interface StandardTelemetryPayload {
@@ -22,7 +23,66 @@ export class TelemetryIngressService {
 
   constructor(private prisma: PrismaService) {}
 
-  async processIncomingTelemetry(payload: StandardTelemetryPayload) {
+  /**
+   * HMAC-SHA256 over the raw request body, compared in constant time.
+   *
+   * Replaces `creds.secretKey !== payload.secretKey`, which had three
+   * separate problems:
+   *   1. FAILED OPEN. The check was guarded by `creds?.secretKey &&`, so an
+   *      installation with no secret configured skipped verification
+   *      entirely -- anyone who knew a companyId and appId could post
+   *      telemetry. That is the serious one.
+   *   2. The secret travelled in the request body, so it landed in access
+   *      logs, proxy logs and crash dumps.
+   *   3. `!==` on a string short-circuits at the first differing byte,
+   *      leaking length and prefix under timing analysis.
+   *
+   * Fails closed: a missing secret is a configuration error and is rejected,
+   * not waved through. Same shape as request-signature.guard.ts.
+   */
+  private verifyTelemetrySignature(
+    secret: string | undefined,
+    rawBody: Buffer | undefined,
+    signature: string | undefined,
+  ): void {
+    if (!secret) {
+      this.logger.error(
+        '[TELEMETRY] Rejected: no secretKey configured for this installation. ' +
+          'Refusing to accept unauthenticated telemetry.',
+      );
+      throw new UnauthorizedException('Telemetry signing is not configured');
+    }
+    if (!rawBody || !signature) {
+      throw new UnauthorizedException('Missing telemetry signature');
+    }
+
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(rawBody)
+      .digest();
+
+    let provided: Buffer;
+    try {
+      provided = Buffer.from(signature.replace(/^sha256=/, ''), 'hex');
+    } catch {
+      throw new UnauthorizedException('Malformed telemetry signature');
+    }
+
+    // Compare lengths first: timingSafeEqual throws on a length mismatch, so
+    // letting it throw would itself be a side channel.
+    if (
+      provided.length !== expected.length ||
+      !crypto.timingSafeEqual(provided, expected)
+    ) {
+      throw new UnauthorizedException('Invalid telemetry signature');
+    }
+  }
+
+  async processIncomingTelemetry(
+    payload: StandardTelemetryPayload,
+    rawBody?: Buffer,
+    signature?: string,
+  ) {
     this.logger.log(
       `Received telemetry from App ${payload.appId} for Company ${payload.companyId}`,
     );
@@ -46,9 +106,7 @@ export class TelemetryIngressService {
     }
 
     const creds = installation.credentials as any;
-    if (creds?.secretKey && creds.secretKey !== payload.secretKey) {
-      throw new UnauthorizedException('Invalid telemetry secret key');
-    }
+    this.verifyTelemetrySignature(creds?.secretKey, rawBody, signature);
 
     // Process each record
     let successCount = 0;
