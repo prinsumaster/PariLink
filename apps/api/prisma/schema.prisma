@@ -4497,6 +4497,10 @@ model LorryReceipt {
   company Company  @relation(fields: [companyId], references: [id])
   load    Load     @relation(fields: [loadId], references: [id])
   vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  @@index([companyId, deletedAt])
+  @@unique([companyId, lrNumber])
+  @@index([loadId])
 }
 
 model LrSequence {
