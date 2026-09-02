@@ -32,6 +32,13 @@ export class PrismaService
         if (process.env.NODE_ENV === 'test') {
           url.searchParams.set('connection_limit', '2');
           url.searchParams.set('pool_timeout', '10');
+        } else {
+          // Connection math (max_connections=100, reserve 10 for maintenance → budget=90):
+          // Main datasource:   16 connections/instance
+          // System datasource:  2 connections/instance
+          // Total per instance: 18 connections
+          // 5 instances × 18 = 90 = budget. At 4 instances: 4 × 18 = 72 (safe head-room).
+          url.searchParams.set('connection_limit', '16');
         }
         datasourceUrl = url.toString();
       } catch (e) {
@@ -57,6 +64,10 @@ export class PrismaService
         const url = new URL(systemDatasourceUrl);
         if (process.env.NODE_ENV === 'test') {
           url.searchParams.set('connection_limit', '1');
+        } else {
+          // System datasource: 2 connections/instance.
+          // (16 main + 2 system) × 5 instances = 90 = budget.
+          url.searchParams.set('connection_limit', '2');
         }
         systemDatasourceUrl = url.toString();
       } catch (e) {}
