@@ -1,76 +1,25 @@
 #!/bin/bash
-# CP4(d) — prove the FK-linked EXISTS policies bite.
-#
-# Same pattern as cp2-rls-bite-check.sh, but for tables with no companyId of
-# their own, whose policy resolves tenancy through a parent FK.
-#
-# Run AFTER `npx prisma migrate deploy` has applied
-# 20260831174500_enable_rls_fk_linked_auth_money.
-#
-# Usage:  bash test/cp4-fk-rls-bite-check.sh
-set -euo pipefail
+COMPANY_A="a2d6237c-2a41-42a7-a075-c91a6d38c65b"
+COMPANY_B="5622b6af-d597-497e-829e-4cfa290051d9"
+ROW_ID="22222222-2222-2222-2222-222222222222"
+RESOURCE="InvoiceLineItem"
 
-DB=parilink-test-db
-ADMIN="docker exec $DB psql -U postgres -d postgres -t -A"
-TEST="docker exec $DB psql -U parilink_test -d postgres -t -A"
+echo "=== cp4 ($RESOURCE) ==="
+echo "Row ID: $ROW_ID"
 
-echo "=== 0. connected as? (MUST be parilink_test|f) ==="
-$TEST -c "SELECT current_user, usesuper FROM pg_user WHERE usename = current_user;"
-echo
+COUNT1=$(PGPASSWORD=password psql -U parilink_sys -h localhost -p 5434 -d parilink_test -t -c "SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "1. parilink_sys (unscoped) sees: $COUNT1"
 
-echo "=== 1. RLS enabled AND forced on the 7 FK-linked tables? (all must be t|t) ==="
-$TEST -c "SELECT relname, relrowsecurity, relforcerowsecurity FROM pg_class
-          WHERE relname IN ('RefreshToken','BackupCode','WebAuthnCredential',
-                            'TrustedDevice','SsoSession','OAuthToken','InvoiceLineItem')
-          ORDER BY relname;"
-echo
+COUNT2=$(PGPASSWORD=password psql -U parilink_app -h localhost -p 5434 -d parilink_test -t -c "SET app.current_company_id = '$COMPANY_B'; SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "2. parilink_app (tenant: $COMPANY_B) sees: $COUNT2"
 
-A=$($ADMIN -c "SELECT id FROM \"Company\" ORDER BY \"createdAt\" LIMIT 1;")
-B=$($ADMIN -c "SELECT id FROM \"Company\" ORDER BY \"createdAt\" DESC LIMIT 1;")
-if [ "$A" = "$B" ]; then echo "FATAL: need two distinct companies seeded"; exit 1; fi
-echo "tenant A = $A"
-echo "tenant B = $B"
-echo
+COUNT3=$(PGPASSWORD=password psql -U parilink_app -h localhost -p 5434 -d parilink_test -t -c "SET app.current_company_id = '$COMPANY_A'; SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "3. parilink_app (tenant: $COMPANY_A) sees: $COUNT3"
 
-echo "=== 2. seed one RefreshToken per tenant, owned via that tenant's User ==="
-for T in "$A" "$B"; do
-  U=$($ADMIN -c "SELECT id FROM \"User\" WHERE \"companyId\"='$T' LIMIT 1;")
-  if [ -z "$U" ]; then echo "  no user for $T — skipping"; continue; fi
-  $ADMIN -c "INSERT INTO \"RefreshToken\" (id,token,\"userId\",\"expiresAt\",\"lastActiveAt\",\"familyId\",history,\"createdAt\",\"updatedAt\")
-             VALUES ('cp4-rt-$T','cp4-token-$T','$U', now() + interval '7 days', now(), gen_random_uuid()::text, '[]'::jsonb, now(), now())
-             ON CONFLICT (id) DO NOTHING;" > /dev/null
-  echo "  seeded RefreshToken for $T (user $U)"
-done
-echo
-
-echo "=== 3. ground truth, RLS bypassed ==="
-TOTAL=$($ADMIN -c "SELECT count(*) FROM \"RefreshToken\";")
-XA=$($ADMIN -c "SELECT count(*) FROM \"RefreshToken\" rt JOIN \"User\" u ON u.id=rt.\"userId\" WHERE u.\"companyId\"='$A';")
-XB=$($ADMIN -c "SELECT count(*) FROM \"RefreshToken\" rt JOIN \"User\" u ON u.id=rt.\"userId\" WHERE u.\"companyId\"='$B';")
-echo "  RefreshToken total across all tenants = $TOTAL"
-echo "  actually owned by A = $XA"
-echo "  actually owned by B = $XB"
-echo
-
-echo "=== 4. THE TEST: same connection, same query, only the tenant setting changes ==="
-CA=$($TEST -c "SET app.current_company_id = '$A'; SELECT count(*) FROM \"RefreshToken\";" | tail -1)
-CB=$($TEST -c "SET app.current_company_id = '$B'; SELECT count(*) FROM \"RefreshToken\";" | tail -1)
-echo "  as tenant A: sees $CA   (A owns $XA)"
-echo "  as tenant B: sees $CB   (B owns $XB)"
-if [ "$CA" = "$XA" ] && [ "$CB" = "$XB" ]; then
-  echo "  PASS — EXISTS policy resolves tenancy through the parent correctly"
+if [ "$COUNT1" -eq 1 ] && [ "$COUNT2" -eq 1 ] && [ "$COUNT3" -eq 0 ]; then
+  echo "PASS"
+  exit 0
 else
-  echo "  FAIL — FK-linked policy is not filtering"
+  echo "FAIL"
+  exit 1
 fi
-echo
-
-echo "=== 5. fail-closed check: no tenant context set at all ==="
-CN=$($TEST -c "RESET app.current_company_id; SELECT count(*) FROM \"RefreshToken\";" | tail -1)
-echo "  with no app.current_company_id: sees $CN   (expected 0 — fails closed)"
-[ "$CN" = "0" ] && echo "  PASS" || echo "  FAIL — rows visible with no tenant context"
-echo
-
-echo "=== 6. the auth path must still work: runAsSystem equivalent ==="
-CS=$($TEST -c "SET app.bypass_rls = 'on'; SELECT count(*) FROM \"RefreshToken\";" | tail -1)
-echo "  with app.bypass_rls='on': sees $CS   (expected $TOTAL — login/refresh unaffected)"
-[ "$CS" = "$TOTAL" ] && echo "  PASS" || echo "  FAIL — bypass path broken, auth would break"

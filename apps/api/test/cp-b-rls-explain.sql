@@ -31,7 +31,7 @@ LIMIT 50;
 
 \echo '=== 2. PER-TRUCK P&L (TruckProfitability, RLS on companyId) ==='
 EXPLAIN (ANALYZE, BUFFERS)
-SELECT "vehicleId", month, SUM("totalRevenue") AS revenue, SUM("totalCost") AS cost
+SELECT "vehicleId", month, SUM("revenue") AS revenue, SUM("fuelCost" + "tollCost" + "maintCost" + "driverCost" + "otherCost") AS cost
 FROM "TruckProfitability"
 GROUP BY "vehicleId", month
 ORDER BY month DESC

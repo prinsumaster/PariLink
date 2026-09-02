@@ -38,7 +38,7 @@ async function main() {
 
   // TruckProfitability for B
   await prisma.truckProfitability.create({
-    data: { id: 'p2222222-2222-2222-2222-222222222222', companyId: companyB, vehicleId: vehicle.id, month: new Date(), totalRevenue: 10000, totalCost: 5000, profitMarginPct: 50 }
+    data: { id: 'p2222222-2222-2222-2222-222222222222', companyId: companyB, vehicleId: vehicle.id, month: new Date(), revenue: 10000, netProfit: 5000 }
   });
 
   console.log("Seeded");

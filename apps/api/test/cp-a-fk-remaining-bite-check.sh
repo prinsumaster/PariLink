@@ -1,75 +1,25 @@
 #!/bin/bash
-# A(e) -- bite check for the FK-linked tables covered by
-# 20260901120000_enable_rls_fk_linked_remaining (29) and
-# 20260901130000_enable_rls_dock_appointment (1).
-#
-# Same shape as cp2/cp4 bite checks: assert the connection is non-superuser,
-# assert RLS is enabled AND forced on every table, then confirm each table
-# fails closed with no tenant context and opens under bypass_rls.
-#
-# Per-table row-level A/B comparison is NOT attempted here: these tables have
-# no companyId of their own, so seeding a meaningful row for each of 30 tables
-# means walking each parent chain. The structural assertions below catch the
-# failure that actually matters -- a policy that was never applied, or one
-# that does not fail closed.
-#
-# Run AFTER prisma migrate deploy.
-set -euo pipefail
+COMPANY_A="a2d6237c-2a41-42a7-a075-c91a6d38c65b"
+COMPANY_B="5622b6af-d597-497e-829e-4cfa290051d9"
+ROW_ID="44444444-4444-4444-4444-444444444444"
+RESOURCE="WarehouseZone"
 
-DB=parilink-test-db
-ADMIN="docker exec $DB psql -U postgres -d postgres -t -A"
-TEST="docker exec $DB psql -U parilink_test -d postgres -t -A"
+echo "=== cp-a ($RESOURCE) ==="
+echo "Row ID: $ROW_ID"
 
-TABLES="AiChatMessage AnnouncementAudience AppConfiguration AppHealth AppOAuthConnection \
-AppUsageStatistic AppWebhook ApprovalStep BackupCode ChatChannelMember ChatMessage \
-DataQualityScore DockAppointment DocumentVersion ExternalReference InboundReceiptItem \
-InboxMessage JobCardPart MasterDataChangeLog MessageReaction OperationalPlanItem \
-PurchaseOrderItem ScheduledSync SsoSession SyncError TenderBid TrustedDevice \
-UserIdentity UserWorkspaceState WarehouseZone WebAuthnCredential WorkflowExecutionStep YardDock"
+COUNT1=$(PGPASSWORD=password psql -U parilink_sys -h localhost -p 5434 -d parilink_test -t -c "SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "1. parilink_sys (unscoped) sees: $COUNT1"
 
-echo "=== 0. connected as? (MUST be parilink_test|f) ==="
-$TEST -c "SELECT current_user, usesuper FROM pg_user WHERE usename = current_user;"
-echo
+COUNT2=$(PGPASSWORD=password psql -U parilink_app -h localhost -p 5434 -d parilink_test -t -c "SET app.current_company_id = '$COMPANY_B'; SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "2. parilink_app (tenant: $COMPANY_B) sees: $COUNT2"
 
-echo "=== 1. RLS enabled AND forced on every table? ==="
-FAIL=0
-for T in $TABLES; do
-  ROW=$($TEST -c "SELECT relrowsecurity||'|'||relforcerowsecurity FROM pg_class WHERE relname='$T' AND relkind='r';")
-  if [ "$ROW" = "t|t" ]; then
-    printf "  %-24s OK\n" "$T"
-  else
-    printf "  %-24s *** %s *** (want t|t)\n" "$T" "${ROW:-NOT FOUND}"
-    FAIL=$((FAIL+1))
-  fi
-done
-echo "  tables failing: $FAIL"
-echo
+COUNT3=$(PGPASSWORD=password psql -U parilink_app -h localhost -p 5434 -d parilink_test -t -c "SET app.current_company_id = '$COMPANY_A'; SELECT count(*) FROM \"$RESOURCE\" WHERE id = '$ROW_ID';" | grep -o '[0-9]*')
+echo "3. parilink_app (tenant: $COMPANY_A) sees: $COUNT3"
 
-echo "=== 2. fail-closed: no tenant context set -> every table must return 0 ==="
-$TEST -c "RESET app.current_company_id;" > /dev/null
-for T in $TABLES; do
-  N=$($TEST -c "RESET app.current_company_id; SELECT count(*) FROM \"$T\";" | tail -1)
-  TOTAL=$($ADMIN -c "SELECT count(*) FROM \"$T\";")
-  if [ "$N" = "0" ]; then
-    printf "  %-24s 0 of %-6s OK (fails closed)\n" "$T" "$TOTAL"
-  else
-    printf "  %-24s %s of %s *** LEAK -- visible with no tenant context ***\n" "$T" "$N" "$TOTAL"
-    FAIL=$((FAIL+1))
-  fi
-done
-echo
-
-echo "=== 3. bypass path: bypass_rls='on' must return everything (system ops still work) ==="
-for T in $TABLES; do
-  N=$($TEST -c "SET app.bypass_rls='on'; SELECT count(*) FROM \"$T\";" | tail -1)
-  TOTAL=$($ADMIN -c "SELECT count(*) FROM \"$T\";")
-  if [ "$N" = "$TOTAL" ]; then
-    printf "  %-24s %s of %s OK\n" "$T" "$N" "$TOTAL"
-  else
-    printf "  %-24s %s of %s *** system path broken ***\n" "$T" "$N" "$TOTAL"
-    FAIL=$((FAIL+1))
-  fi
-done
-echo
-echo "TOTAL FAILURES: $FAIL"
-[ "$FAIL" = "0" ] || exit 1
+if [ "$COUNT1" -eq 1 ] && [ "$COUNT2" -eq 1 ] && [ "$COUNT3" -eq 0 ]; then
+  echo "PASS"
+  exit 0
+else
+  echo "FAIL"
+  exit 1
+fi

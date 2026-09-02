@@ -28,7 +28,7 @@ run() {
   echo "  $1"
   echo "=============================================================="
   $RUN <<SQL
-SET app.current_company_id = '$TENANT';
+SELECT set_config('app.current_company_id', '$TENANT';
 EXPLAIN (ANALYZE, BUFFERS, COSTS)
 $2
 SQL
