@@ -8,7 +8,9 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL
+});
 
 const DEV_CLIENT_ID     = 'client_parilink_dev_local';
 const DEV_CLIENT_SECRET = 'secret_parilink_dev_local_changeme';
@@ -32,8 +34,6 @@ async function main() {
 
   await prisma.$transaction(
     async (tx: any) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
-
       // ── 1. Company ──────────────────────────────────────────────────────────
       const co = await findOrCreate(
         () => tx.company.findFirst({ where: { email: 'billing@parilink.in' } }),

@@ -21,7 +21,9 @@ import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL
+});
 
 // Dev OAuth client — documented plaintext for local dev only.
 // DO NOT ship to production without rotating these values.
@@ -46,8 +48,7 @@ async function findOrCreate<T>(
 async function main() {
   console.log('🌱 Seeding database (idempotent run)...');
 
-  await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
+  await prisma.$transaction(async (tx: any) => {
 
     // ── 1. Company ─────────────────────────────────────────────────────────
     const primaryCompany = await findOrCreate(

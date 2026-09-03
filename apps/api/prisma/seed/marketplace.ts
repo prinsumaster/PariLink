@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL });
 
 // Stable IDs for idempotent upserts
 const DEV_SAMSARA_ID  = 'seed-dev-samsara-001';
@@ -10,7 +10,6 @@ const DEV_PARILINK_ID = 'seed-dev-parilink-001';
 async function main() {
   console.log('Seeding Marketplace Data...');
 
-  await prisma.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
 
   // 1. Categories (have @@unique on name)
   const telematicsCat = await prisma.marketplaceCategory.upsert({

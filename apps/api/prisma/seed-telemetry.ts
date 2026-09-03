@@ -6,7 +6,7 @@
  */
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL });
 const PROVIDER = 'DEMO_TELEMETRY';
 const COMPANY_ID = '42821801-eb35-410d-adf5-4f86d0f901e2';
 
@@ -223,7 +223,6 @@ async function main() {
   // Always delete old demo rows first (idempotent)
   // Need to bypass RLS for seed scripts
   const deleted = await prisma.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
     return tx.vehicleLocation.deleteMany({
       where: { companyId: COMPANY_ID, provider: PROVIDER },
     });
@@ -239,7 +238,6 @@ async function main() {
 
   for (const route of ROUTES) {
     const vehicle = await prisma.$transaction(async (tx: any) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
       return tx.vehicle.findFirst({
         where: { companyId: COMPANY_ID, licensePlate: route.vehiclePlate },
       });
@@ -266,7 +264,6 @@ async function main() {
     }));
 
     await prisma.$transaction(async (tx: any) => {
-      await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
       await tx.vehicleLocation.createMany({ data: rows });
     });
     totalInserted += rows.length;
@@ -276,7 +273,6 @@ async function main() {
 
   // Print sample 5 rows
   const sample = await prisma.$transaction(async (tx: any) => {
-    await tx.$executeRaw`SELECT set_config('app.bypass_rls', 'on', true)`;
     return tx.vehicleLocation.findMany({
       where: { companyId: COMPANY_ID, provider: PROVIDER },
       orderBy: { gpsTimestamp: 'asc' },
