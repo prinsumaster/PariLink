@@ -11,6 +11,9 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  console.error('[BOUNDARY_SERVER_LOG]', error);
+  console.error('[BOUNDARY_SERVER_STACK]', error.stack);
+
   useEffect(() => {
     console.error('Dashboard Error Boundary caught:', error);
     console.error('[BOUNDARY]', error.message);

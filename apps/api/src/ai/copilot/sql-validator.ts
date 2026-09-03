@@ -57,6 +57,8 @@ export function validateGeneratedSql(
   }
 
   // 4. Must be a single SELECT statement.
+  // 4.5 Top-level OR check has been moved to the WHERE clause analysis to allow
+  // legitimate uses of OR inside parentheses (e.g. AND (status='A' OR status='B')).
   if (!/^SELECT\b/i.test(query)) {
     return { ok: false, reason: 'Only SELECT statements are allowed.' };
   }
@@ -109,6 +111,19 @@ export function validateGeneratedSql(
     if (tMatch) {
       whereClause = whereClause.slice(0, tMatch.index);
     }
+  }
+
+  // 7.5 Option 1: Reject OR at the top level of the WHERE clause.
+  // We strip all balanced parentheses and their contents, then check for OR.
+  // This allows `AND (x OR y)` but rejects `OR 1=1`.
+  let strippedWhere = whereClause;
+  while (strippedWhere.includes('(')) {
+    const next = strippedWhere.replace(/\([^()]*\)/g, '()');
+    if (next === strippedWhere) break;
+    strippedWhere = next;
+  }
+  if (/\bOR\b/i.test(strippedWhere)) {
+    return { ok: false, reason: 'OR is not allowed at the top level of the WHERE clause.' };
   }
 
   // 8. Require the companyId predicate, structurally, for every distinct

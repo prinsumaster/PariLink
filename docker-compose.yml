@@ -87,6 +87,7 @@ services:
       - RUN_MIGRATIONS=false
       - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@postgres:5432/parilink_db?schema=public
       - APP_DATABASE_URL=postgresql://parilink_app:apppassword@postgres:5432/parilink_db?schema=public
+      - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD}
       - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD}@postgres:5432/parilink_db?schema=public
       - REDIS_URL=redis://redis:6379
       - S3_ENDPOINT=http://minio:9000

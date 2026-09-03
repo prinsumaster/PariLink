@@ -1,3 +1,5 @@
+import { createDefaultTripDesks } from "./trip-desks.util";
+
 import { AuditService } from '../platform/audit/audit.service';
 import { Prisma } from '@prisma/client';
 import {
@@ -110,17 +112,7 @@ export class TripsService {
       });
 
       // Auto-create the 5 mandatory TripDesks
-      const defaultDesks = ['DISPATCH', 'DIESEL', 'FASTAG', 'WORKSHOP', 'DOCS'];
-      for (const desk of defaultDesks) {
-        await tx.tripDesk.create({
-          data: {
-            companyId,
-            tripId: trip.id,
-            desk,
-            status: 'PENDING',
-          }
-        });
-      }
+      await createDefaultTripDesks(tx, companyId, trip.id);
 
       // Rule Engine Integration
       const ruleResult = await this.workflow.evaluateRules(companyId, {

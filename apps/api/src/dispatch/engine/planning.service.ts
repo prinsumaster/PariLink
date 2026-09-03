@@ -19,7 +19,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 import { ConstraintEngine } from './constraint.engine';
 import { ScoringEngine } from './scoring.engine';
-
+import { createDefaultTripDesks } from '../../trips/trip-desks.util';
 @Injectable()
 export class PlanningService {
   private readonly logger = new Logger(PlanningService.name);
@@ -290,6 +290,9 @@ export class PlanningService {
           endDate: plan.load.deliveryDate,
         },
       });
+
+      // Auto-create the 5 mandatory TripDesks
+      await createDefaultTripDesks(tx, companyId, trip.id);
 
       // Link load to trip
       await tx.load.update({
