@@ -84,6 +84,7 @@ services:
     environment:
       - GIT_SHA=${GIT_SHA:-unknown}
       - NODE_ENV=production
+      - RUN_MIGRATIONS=false
       - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@postgres:5432/parilink_db?schema=public
       - APP_DATABASE_URL=postgresql://parilink_app:apppassword@postgres:5432/parilink_db?schema=public
       - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD}@postgres:5432/parilink_db?schema=public

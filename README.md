@@ -50,6 +50,18 @@ Start the Web Frontend:
 cd apps/web
 npm run dev
 ```
+## Database migrations
+
+To deploy database migrations manually:
+```bash
+cd apps/api && DATABASE_URL="<privileged_connection_url>" npx prisma migrate deploy
+```
+- Connection requirement: Requires a privileged connection string (`DATABASE_URL`) capable of `CREATE EVENT TRIGGER` (admin/superuser role).
+- Automated deployment: Setting `RUN_MIGRATIONS=true` in `docker-compose.yml` makes the API container run migrations automatically on startup via `start.sh`.
+
+## Row-level security
+
+Tenant isolation is enforced natively via PostgreSQL Row-Level Security (`tenant_isolation_policy`) across 224 tables. The legacy `app.bypass_rls` session GUC was removed in migration `20260902000000_drop_bypass_rls` and no longer exists in any policy predicate. RLS bypass is exclusively an administrative role attribute granted to `parilink_sys` (`BYPASSRLS`), accessible solely through `PrismaService.runAsSystem()`. As of 2026-09-02, the baseline is verified at 224 tables with policies and 231 total policies with `still_bypass = 0` via `SELECT count(*) FILTER (WHERE qual LIKE '%bypass_rls%') AS still_bypass, count(DISTINCT tablename) AS tables_with_policies, count(*) AS total_policies FROM pg_policies WHERE schemaname='public';`.
 
 ## Production Deployment
 
