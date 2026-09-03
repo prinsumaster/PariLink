@@ -76,7 +76,7 @@ export function TripDesksPanel({ tripId }: TripDesksPanelProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {desks.map((desk: any) => {
+          {desks?.map((desk: any) => {
             const isDone = desk.status === 'DONE';
             return (
               <div key={desk.id} className="flex items-center justify-between p-3 border border-slate-100 dark:border-slate-800 rounded-md">
