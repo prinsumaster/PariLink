@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import * as path from 'path';
 import * as fs from 'fs';
-const OUT_DIR = path.join(__dirname, '../demo-shots');
+const OUT_DIR = path.join(process.cwd(), '../demo-shots');
 const BASE_URL = 'http://localhost:3000';
 const API_URL = 'http://localhost:8080';
 const OUTPUT_DIR = path.resolve(process.cwd(), 'demo-shots');

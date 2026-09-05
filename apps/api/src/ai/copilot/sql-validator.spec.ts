@@ -78,4 +78,18 @@ describe('sql-validator', () => {
     const res = validateGeneratedSql(query, allowedTables);
     expect(res.ok).toBe(true);
   });
+
+  // 10  WHERE ("companyId"='{{…}}' OR 1=1)                          → REJECTED
+  it('10  WHERE ("companyId"=\'{{…}}\' OR 1=1) -> REJECTED', () => {
+    const query = "SELECT * FROM Trip WHERE (\"companyId\"='{{COMPANY_ID_PLACEHOLDER}}' OR 1=1)";
+    const res = validateGeneratedSql(query, allowedTables);
+    expect(res.ok).toBe(false);
+  });
+
+  // 11  WHERE "companyId"='{{…}}' AND (1=1 OR "companyId"='{{…}}')  → REJECTED
+  it('11  WHERE "companyId"=\'{{…}}\' AND (1=1 OR "companyId"=\'{{…}}\') -> REJECTED', () => {
+    const query = "SELECT * FROM Trip WHERE \"companyId\"='{{COMPANY_ID_PLACEHOLDER}}' AND (1=1 OR \"companyId\"='{{COMPANY_ID_PLACEHOLDER}}')";
+    const res = validateGeneratedSql(query, allowedTables);
+    expect(res.ok).toBe(false);
+  });
 });

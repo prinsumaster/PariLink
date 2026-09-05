@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig, AxiosResp
 import { useAuthStore } from '@/store/auth';
 import { toast } from 'sonner';
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+export const API_URL = typeof window === 'undefined' ? process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || '/api/v1' : process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,

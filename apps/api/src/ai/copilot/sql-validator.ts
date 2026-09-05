@@ -113,43 +113,57 @@ export function validateGeneratedSql(
     }
   }
 
-  // 7.5 Option 1: Reject OR at the top level of the WHERE clause.
-  // We strip all balanced parentheses and their contents, then check for OR.
-  // This allows `AND (x OR y)` but rejects `OR 1=1`.
-  let strippedWhere = whereClause;
-  while (strippedWhere.includes('(')) {
-    const next = strippedWhere.replace(/\([^()]*\)/g, '()');
-    if (next === strippedWhere) break;
-    strippedWhere = next;
-  }
-  if (/\bOR\b/i.test(strippedWhere)) {
-    return { ok: false, reason: 'OR is not allowed at the top level of the WHERE clause.' };
-  }
-
-  // 8. Require the companyId predicate, structurally, for every distinct
-  // table/alias referenced — not just once anywhere in the WHERE clause.
+  // 8. Require the companyId predicate to be the outermost conjunct.
+  // The WHERE clause must begin exactly with the required tenant predicates,
+  // chained by AND, so that they cannot be bypassed via OR.
   const placeholder = "\\{\\{COMPANY_ID_PLACEHOLDER\\}\\}";
   const uniqueAliases = Array.from(new Set(refs.map((r) => r.alias)));
   const usesAliases = refs.some((r) => r.alias !== r.table);
 
-  if (uniqueAliases.length === 1 && !usesAliases) {
-    // Single, unaliased table — bare companyId predicate is fine.
-    const bare = new RegExp(`"?companyId"?\\s*=\\s*'${placeholder}'`, 'i');
-    if (!bare.test(whereClause)) {
-      return { ok: false, reason: 'WHERE clause does not contain a structural companyId predicate.' };
-    }
-  } else {
-    // Multiple tables (join) — require an alias-qualified companyId
-    // predicate for each distinct alias referenced.
-    for (const alias of uniqueAliases) {
-      const qualified = new RegExp(`"?${alias}"?\\."?companyId"?\\s*=\\s*'${placeholder}'`, 'i');
-      if (!qualified.test(whereClause)) {
-        return {
-          ok: false,
-          reason: `WHERE clause does not contain a companyId predicate qualified for "${alias}".`,
-        };
+  let remaining = whereClause.trim();
+  const satisfied = new Set<string>();
+
+  while (true) {
+    let matchedAny = false;
+
+    // Check bare unaliased predicate
+    if (!usesAliases && uniqueAliases.length === 1 && !satisfied.has(uniqueAliases[0])) {
+      const bareRegex = new RegExp(`^"?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`, 'i');
+      const m = remaining.match(bareRegex);
+      if (m) {
+        satisfied.add(uniqueAliases[0]);
+        remaining = remaining.slice(m[0].length).trim();
+        matchedAny = true;
       }
     }
+
+    // Check alias-qualified predicate
+    for (const alias of uniqueAliases) {
+      if (satisfied.has(alias)) continue;
+      const qualifiedRegex = new RegExp(`^"?${alias}"?\\."?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`, 'i');
+      const m = remaining.match(qualifiedRegex);
+      if (m) {
+        satisfied.add(alias);
+        remaining = remaining.slice(m[0].length).trim();
+        matchedAny = true;
+      }
+    }
+
+    if (!matchedAny) break;
+  }
+
+  if (satisfied.size !== uniqueAliases.length) {
+    return { 
+      ok: false, 
+      reason: 'WHERE clause must begin exactly with all required companyId predicates chained by AND.' 
+    };
+  }
+
+  if (remaining.toLowerCase().includes('companyid')) {
+    return { 
+      ok: false, 
+      reason: 'companyId predicate must only appear at the very beginning of the WHERE clause.' 
+    };
   }
 
   return { ok: true, tables: refs.map((r) => r.table) };
