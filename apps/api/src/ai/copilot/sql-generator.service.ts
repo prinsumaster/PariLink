@@ -86,6 +86,8 @@ export class SqlGeneratorService {
     2. You MUST include a WHERE clause that filters by "companyId" = '{{COMPANY_ID_PLACEHOLDER}}' in every query.
     3. You may only query the following tables: ${this.ALLOWED_TABLES.join(', ')}.
     4. Never write UPDATE, DELETE, DROP, INSERT, or ALTER queries.
+    5. Do NOT use sub-queries. Keep queries flat (JOINs are allowed). Sub-queries are rejected by the
+       validator even when they restate the same companyId filter.
 
     User Question: {question}
     `;

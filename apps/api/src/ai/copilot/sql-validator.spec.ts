@@ -92,4 +92,15 @@ describe('sql-validator', () => {
     const res = validateGeneratedSql(query, allowedTables);
     expect(res.ok).toBe(false);
   });
+
+  // 12  Correlated sub-query restating tenant filter               → REJECTED
+  // Decision: rejected by policy. Sub-queries introduce a new trust boundary
+  // (the inner WHERE) that the validator cannot reason about without a full SQL
+  // parser. The model is told "no sub-queries" in the prompt (rule 5 of
+  // generateSql). Either answer is defensible; this is the deliberate choice.
+  it('12  WHERE "companyId"=\'{{…}}\' AND EXISTS (SELECT 1 FROM Load l WHERE l."companyId"=\'{{…}}\') -> REJECTED', () => {
+    const query = "SELECT * FROM Trip WHERE \"companyId\"='{{COMPANY_ID_PLACEHOLDER}}' AND EXISTS (SELECT 1 FROM \"Load\" l WHERE l.\"companyId\"='{{COMPANY_ID_PLACEHOLDER}}')";
+    const res = validateGeneratedSql(query, allowedTables);
+    expect(res.ok).toBe(false);
+  });
 });

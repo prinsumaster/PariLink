@@ -28,5 +28,6 @@
       "langchain/*": ["./src/ai/stubs/langchain.ts"],
       "passport-saml/*": ["./src/ai/stubs/langchain.ts"]
     }
-  }
+  },
+  "exclude": ["node_modules", "prisma", "dist"]
 }
