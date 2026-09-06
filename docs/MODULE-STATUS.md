@@ -2,11 +2,13 @@
 
 ## 1. Context
 Date: 2026-09-06
-Git SHA: 0b68a98 (from `git log -1 --format='%h'` baseline without foreign commits, current HEAD is ~156 commits deep)
+Git SHA: b793a94
+Total Commits: 157
+- IPv6 Diagnosis (2026-09-06): The theory that Node 18+ resolving `localhost` to IPv6 caused the auth failure is incorrect; fetch to `localhost:8080` succeeds.
 
 ## 2. Headline Counts
 - **81 modules** (Command: `ls -1 apps/api/src/` | 81 directories listed)
-- **1309 endpoints** (Command: `find apps/api/src -name '*.ts' ! -name '*.spec.ts' -exec grep -ho "@Get(\|@Post(\|@Put(\|@Patch(\|@Delete(" {} + | wc -l`)
+- **734 endpoints** (Command: `find apps/api/src -name '*.controller.ts' -exec grep -ho "@Get(\|@Post(\|@Put(\|@Patch(\|@Delete(" {} + | wc -l`)
 - **242 models** (Command: `grep -c "^model " apps/api/prisma/schema.prisma`)
 - **Tests**: 199 tests, 157 pass, 42 fail, 12 suites red.
 
@@ -116,4 +118,4 @@ Git SHA: 0b68a98 (from `git log -1 --format='%h'` baseline without foreign commi
 - **L** - Render sweep of 156 pages once auth works — the boundary has hidden crashes before. (Proof: a per-route table of status, size and boundary count)
 
 ## 7. Not Measured
-- Frontend rendering / dashboard sweeps (`unknown`): NextAuth authentication remains blocked due to a server-side `ECONNREFUSED` when fetching the API, so no session could be acquired to test dashboard layouts.
+- Frontend rendering / dashboard sweeps (`unknown`): NextAuth authentication remains blocked due to the API returning 400 Bad Request (caused by `csrfToken` being injected into the payload).
