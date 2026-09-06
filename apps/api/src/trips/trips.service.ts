@@ -219,7 +219,10 @@ export class TripsService {
           driver: true,
           vehicle: true,
           trailer: true,
-          loads: { include: { customer: true } },
+          loads: {
+            select: { id: true, originCity: true, destinationCity: true, createdAt: true },
+            orderBy: { createdAt: 'asc' },
+          },
         },
       });
 
