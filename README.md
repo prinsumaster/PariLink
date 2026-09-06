@@ -90,6 +90,11 @@ Proprietary Commercial License. See `LICENSE` for details.
 `docker compose build web` is required after any frontend changes to update the container.
 `npm run dev` on the host is the fast path for development.
 
+## Container state
+- both `api` and `web` are built into images, not mounted, so a source change needs `docker compose build <service>`
+- never `docker cp` a host-built file into a running container — the host `dist/` and the image's `node_modules` layout can differ, and the container reverts on any recreate
+- `docker compose up -d --force-recreate <service>` after a build, to be sure the old container is gone
+
 ## Trip origin and destination
 
 A `Trip` has no `origin` or `destination` columns in the database.
