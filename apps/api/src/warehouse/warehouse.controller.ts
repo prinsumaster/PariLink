@@ -4,7 +4,19 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
-import { IsString, IsNotEmpty, IsOptional, IsObject, IsArray, IsDateString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsObject,
+  IsArray,
+  IsDateString,
+  IsNumber,
+  IsPositive,
+  ArrayNotEmpty,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 import { WarehouseMasterService } from './engine/warehouse-master.service';
 import { InventoryService } from './engine/inventory.service';
@@ -29,14 +41,48 @@ export class ReceiveGoodsDto {
   @IsArray() @IsNotEmpty() items!: unknown[];
 }
 
+// Cross-checked against the Prisma models, not guessed.
+//
+//   OutboundOrderItem NOT NULL, no default: companyId, orderId, sku, requestedQty
+//     -> companyId comes from the JWT, orderId from the parent create.
+//        sku and requestedQty must come from the caller, so both are required.
+//   OutboundOrder     NOT NULL, no default: companyId, orderNumber
+//     -> loadId is `String?` in the schema, so it is OPTIONAL here. It was
+//        previously @IsNotEmpty(), which made wave-based orders (no load)
+//        impossible to create through the API.
+//
+// `items!: unknown[]` with a bare @IsArray() was the real gap: it accepts
+// [null, 42, "junk"]. Those reach Prisma as sku: undefined and fail against a
+// NOT NULL column, turning a 400 into a 500. @ValidateNested + @Type validate
+// each element.
+export class OutboundOrderItemDto {
+  @IsString() @IsNotEmpty() sku!: string;
+  @IsNumber() @IsPositive() requestedQty!: number;
+}
+
 export class CreateOutboundDto {
-  @IsString() @IsNotEmpty() loadId!: string;
+  @IsOptional() @IsString() @IsNotEmpty() loadId?: string;
   @IsString() @IsNotEmpty() orderNumber!: string;
-  @IsArray() @IsNotEmpty() items!: unknown[];
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => OutboundOrderItemDto)
+  items!: OutboundOrderItemDto[];
+}
+
+export class PickDto {
+  @IsString() @IsNotEmpty() orderItemId!: string;
+  @IsString() @IsNotEmpty() inventoryItemId!: string;
+  @IsNumber() @IsPositive() qty!: number;
 }
 
 export class PickOrderDto {
-  @IsArray() @IsNotEmpty() picks!: unknown[];
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => PickDto)
+  picks!: PickDto[];
 }
 
 export class ScheduleDockDto {
@@ -120,8 +166,7 @@ export class WarehouseController {
       user.companyId,
       data.loadId,
       data.orderNumber,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.items as any,
+      data.items,
     );
   }
 
@@ -135,8 +180,7 @@ export class WarehouseController {
     return this.outbound.pickOrder(
       user.companyId,
       id,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.picks as any,
+      data.picks,
       user.userId,
     );
   }

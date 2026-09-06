@@ -21,26 +21,41 @@ export class OutboundService {
    */
   async createOutboundOrder(
     companyId: string,
-    loadId: string,
+    loadId: string | undefined,
     orderNumber: string,
     items: { sku: string; requestedQty: number }[],
   ) {
-    return this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.outboundOrder.create({
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // loadId arrives from the request body. Without this check a caller
+      // could attach their order to another tenant's Load: the Load row is
+      // invisible to them under RLS, but the FK write would still succeed.
+      if (loadId) {
+        const load = await tx.load.findFirst({
+          where: { id: loadId, companyId },
+          select: { id: true },
+        });
+        if (!load) {
+          throw new NotFoundException(`Load ${loadId} not found`);
+        }
+      }
+
+      return tx.outboundOrder.create({
         data: {
+          companyId,
           loadId,
           orderNumber,
           status: 'PENDING',
           items: {
             create: items.map((i) => ({
+              companyId,
               sku: i.sku,
               requestedQty: i.requestedQty,
             })),
           },
         },
         include: { items: true },
-      }),
-    );
+      });
+    });
   }
 
   /**
@@ -52,9 +67,12 @@ export class OutboundService {
     picks: { orderItemId: string; inventoryItemId: string; qty: number }[],
     userId: string,
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      const order = await tx.outboundOrder.findUnique({
-        where: { id: orderId },
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // Was $transaction + findUnique({ where: { id } }): no tenant context
+      // was set and the lookup was not scoped, so any authenticated caller
+      // could pick another tenant's order by id.
+      const order = await tx.outboundOrder.findFirst({
+        where: { id: orderId, companyId },
         include: { items: true },
       });
 
@@ -114,8 +132,8 @@ export class OutboundService {
         sortedPicks.map((pick) => {
           const orderItem = order.items.find((i) => i.id === pick.orderItemId);
           if (orderItem) {
-            return tx.outboundOrderItem.update({
-              where: { id: pick.orderItemId },
+            return tx.outboundOrderItem.updateMany({
+              where: { id: pick.orderItemId, companyId },
               data: { pickedQty: { increment: pick.qty } },
             });
           }
@@ -136,9 +154,12 @@ export class OutboundService {
         ),
       );
 
-      const updatedOrder = await tx.outboundOrder.update({
-        where: { id: orderId },
+      await tx.outboundOrder.updateMany({
+        where: { id: orderId, companyId },
         data: { status: 'STAGED' },
+      });
+      const updatedOrder = await tx.outboundOrder.findFirst({
+        where: { id: orderId, companyId },
         include: { items: true },
       });
 
@@ -164,12 +185,19 @@ export class OutboundService {
     dockId: string,
     userId: string,
   ) {
-    const order = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.outboundOrder.update({
-        where: { id: orderId },
+    const order = await this.prisma.runAsTenant(companyId, async (tx) => {
+      // updateMany so the companyId predicate is part of the WHERE clause.
+      // update({ where: { id } }) cannot express a composite scope and would
+      // mutate another tenant's row if RLS were ever disabled on this table.
+      const res = await tx.outboundOrder.updateMany({
+        where: { id: orderId, companyId },
         data: { status: 'DISPATCHED', stagedAtDockId: dockId },
-      }),
-    );
+      });
+      if (res.count === 0) {
+        throw new NotFoundException(`Outbound order ${orderId} not found`);
+      }
+      return tx.outboundOrder.findFirst({ where: { id: orderId, companyId } });
+    });
 
     await this.eventStore.append({
       tenantId: companyId,

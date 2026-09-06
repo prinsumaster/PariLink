@@ -182,6 +182,8 @@ model Company {
 
   @@index([status])
   @@index([subscriptionPlanId])
+  outboundOrders     OutboundOrder[]
+  outboundOrderItems OutboundOrderItem[]
 }
 
 model Trip {
@@ -1733,6 +1735,11 @@ model OutboundWave {
 
 model OutboundOrder {
   id             String              @id @default(uuid())
+  // Denormalised tenant anchor. waveId, loadId and stagedAtDockId are all
+  // nullable, so there is no required parent to resolve tenancy through and
+  // an EXISTS-against-parent RLS policy is impossible here. See
+  // 20260903000000_outbound_order_tenant_isolation.
+  companyId      String
   waveId         String?
   loadId         String?             @unique
   orderNumber    String
@@ -1744,7 +1751,9 @@ model OutboundOrder {
   stagedAtDock   YardDock?           @relation(fields: [stagedAtDockId], references: [id])
   load           Load?               @relation(fields: [loadId], references: [id])
   items          OutboundOrderItem[]
+  company        Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
+  @@index([companyId])
   @@index([waveId])
   @@index([loadId])
   @@index([stagedAtDockId])
@@ -1752,6 +1761,7 @@ model OutboundOrder {
 
 model OutboundOrderItem {
   id           String        @id @default(uuid())
+  companyId    String
   orderId      String
   sku          String
   requestedQty Float
@@ -1759,7 +1769,9 @@ model OutboundOrderItem {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   order        OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
+  @@index([companyId])
   @@index([orderId])
 }
 
