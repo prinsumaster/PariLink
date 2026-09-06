@@ -94,6 +94,69 @@ export class PrismaService
     }
     // await this.$connect(); // Bypassed for local load testing without a running DB
     this.setupSoftDeleteMiddleware();
+    await this.assertRequestPathIsNotPrivileged();
+  }
+
+  /**
+   * The request path must never connect as a SUPERUSER or a BYPASSRLS role.
+   *
+   * Both would make every RLS policy inert -- silently. A superuser ignores
+   * row security entirely, and BYPASSRLS does the same by design; neither
+   * logs anything, and every tenant query would quietly return every tenant's
+   * rows while all 231 policies still look correct in pg_policies.
+   *
+   * The failure is one typo away. The datasource above resolves as
+   *     process.env.APP_DATABASE_URL || process.env.DATABASE_URL
+   * and .env.example documents DATABASE_URL as "migrations and admin only;
+   * privileged". So an unset or misspelled APP_DATABASE_URL in any single
+   * environment silently promotes the request path to the admin role. A
+   * one-off check proves one environment at one moment; this proves it at
+   * every boot, in every environment, or refuses to serve.
+   *
+   * SYSTEM_DATABASE_URL is deliberately NOT checked here: parilink_sys is
+   * supposed to hold BYPASSRLS. Whether an empty SYSTEM_DATABASE_URL should
+   * be fatal rather than silently degrading runAsSystem to zero rows is a
+   * separate decision -- see the note in .env.example.
+   */
+  private async assertRequestPathIsNotPrivileged(): Promise<void> {
+    // An opt-out exists for the no-database load-testing mode the commented
+    // $connect() above refers to, but it cannot be used in production.
+    if (
+      process.env.SKIP_RLS_ROLE_CHECK === 'true' &&
+      process.env.NODE_ENV !== 'production'
+    ) {
+      this.logger.warn(
+        '[RLS] request-path role assertion SKIPPED (SKIP_RLS_ROLE_CHECK=true). ' +
+          'This flag is ignored when NODE_ENV=production.',
+      );
+      return;
+    }
+
+    const rows = await this.$queryRaw<
+      Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+    >`SELECT current_user,
+             current_setting('is_superuser') AS is_superuser,
+             (SELECT rolbypassrls FROM pg_roles WHERE rolname = current_user) AS bypassrls`;
+
+    const role = rows[0];
+    if (!role) {
+      throw new Error(
+        'FATAL: could not determine the request-path database role. Refusing to start.',
+      );
+    }
+
+    if (role.is_superuser === 'on' || role.bypassrls) {
+      throw new Error(
+        `FATAL: request-path connection is '${role.current_user}' ` +
+          `(superuser=${role.is_superuser}, bypassrls=${role.bypassrls}). ` +
+          'RLS is INERT on this connection -- every tenant policy is bypassed. ' +
+          'Set APP_DATABASE_URL to a NOSUPERUSER NOBYPASSRLS role.',
+      );
+    }
+
+    this.logger.log(
+      `[RLS] request path connected as '${role.current_user}' (no superuser, no bypass)`,
+    );
   }
 
   async onModuleDestroy() {
