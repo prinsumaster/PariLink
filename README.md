@@ -84,3 +84,8 @@ Ensure you inject your infrastructure URLs dynamically via Kubernetes Secrets.
 
 ## License
 Proprietary Commercial License. See `LICENSE` for details.
+
+## Frontend changes
+`apps/web` is built into the container image rather than mounted.
+`docker compose build web` is required after any frontend changes to update the container.
+`npm run dev` on the host is the fast path for development.
