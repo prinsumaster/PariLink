@@ -89,3 +89,10 @@ Proprietary Commercial License. See `LICENSE` for details.
 `apps/web` is built into the container image rather than mounted.
 `docker compose build web` is required after any frontend changes to update the container.
 `npm run dev` on the host is the fast path for development.
+
+## Trip origin and destination
+
+A `Trip` has no `origin` or `destination` columns in the database.
+They are derived from the first and last `Load` attached to the trip — `loads[0].originCity` and `loads[N-1].destinationCity`.
+`trips.service.ts` includes loads ordered by `createdAt` ascending for this reason, returning only the fields the UI needs.
+The trip detail UI falls back to `'Unknown Origin'` / `'Unknown Destination'` when a trip has no loads.
