@@ -11,20 +11,45 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "admin@parilink.com" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        mfaToken: { label: "MFA Token", type: "text" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        
+
         try {
           const baseUrl = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+
+          // Send ONLY what LoginDto declares (email, password, optional
+          // mfaToken). NextAuth passes the entire posted form body into
+          // authorize(), which for the credentials callback includes its own
+          // csrfToken and callbackUrl fields. Forwarding `credentials`
+          // wholesale sent those to the API, whose ValidationPipe runs with
+          // forbidNonWhitelisted: true, so every login returned:
+          //   400 {"message":["property csrfToken should not exist",
+          //                   "property callbackUrl should not exist"]}
+          // and authorize() returned null -- login:302 back to the sign-in
+          // page with no session cookie. Destructure; never spread credentials.
+          const payload: Record<string, string> = {
+            email: credentials.email,
+            password: credentials.password,
+          };
+          if (credentials.mfaToken) payload.mfaToken = credentials.mfaToken;
+
           const res = await fetch(`${baseUrl}/auth/login`, {
             method: 'POST',
-            body: JSON.stringify(credentials),
+            body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" }
           });
-          
+
           const data = await res.json();
+
+          if (!res.ok) {
+            console.error(
+              `[auth] ${baseUrl}/auth/login -> ${res.status}`,
+              JSON.stringify(data?.message ?? data),
+            );
+          }
 
           if (res.ok && data.user) {
             return {
