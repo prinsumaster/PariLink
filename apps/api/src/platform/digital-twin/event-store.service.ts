@@ -22,7 +22,7 @@ export class EventStoreService {
     private readonly eventService: EventService,
   ) {}
 
-  async append(params: AppendEventParams): Promise<void> {
+  async append(params: AppendEventParams, txClient?: any): Promise<void> {
     const {
       tenantId,
       streamId,
@@ -34,7 +34,7 @@ export class EventStoreService {
       correlationId,
     } = params;
 
-    return await this.prisma.runAsTenant(tenantId ?? 'SYSTEM', async (tx) => {
+    const runOp = async (tx: any) => {
       // 1. Get current version of the stream
       const lastEvent = await tx.domainEvent.findFirst({
         where: { streamId, companyId: tenantId },
@@ -84,7 +84,13 @@ export class EventStoreService {
           },
         },
       });
-    });
+    };
+
+    if (txClient) {
+      await runOp(txClient);
+    } else {
+      await this.prisma.runAsTenant(tenantId ?? 'SYSTEM', runOp);
+    }
   }
 
   async getStream(tenantId: string, streamId: string, fromVersion = 0) {

@@ -32,7 +32,7 @@ export class CompaniesService {
         companyId: company.id,
         source: 'API',
         details: { name: company.name },
-      });
+      }, null, tx);
 
       await this.eventStore.append({
         tenantId: company.id,
@@ -41,7 +41,7 @@ export class CompaniesService {
         eventType: 'CompanyCreated',
         payload: { name: company.name },
         userId,
-      });
+      }, tx);
 
       return company;
     });

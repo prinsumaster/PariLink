@@ -78,18 +78,20 @@ export class ExecutiveDashboardController {
           where: { companyId, tripsVehicle: { some: { status: 'IN_TRANSIT' } } },
         })
       ),
-      this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.invoice.aggregate({
+      this.prisma.runAsTenant(companyId, async (tx) => {
+        const result = await tx.invoice.aggregate({
           _sum: { amount: true },
-          where: { companyId, status: { in: ['GENERATED', 'PAID'] } },
-        })
-      ),
-      this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.invoice.aggregate({
+          where: { companyId, createdAt: { gte: today }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
+        });
+        return result;
+      }),
+      this.prisma.runAsTenant(companyId, async (tx) => {
+        const result = await tx.invoice.aggregate({
           _sum: { amount: true },
-          where: { companyId, status: { in: ['GENERATED', 'PAID'] } },
-        })
-      ),
+          where: { companyId, createdAt: { gte: firstDayOfMonth }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
+        });
+        return result;
+      }),
     ]);
 
     const revenueToday = revenueTodayRes._sum?.amount || 0;

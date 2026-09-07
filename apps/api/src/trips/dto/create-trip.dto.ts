@@ -37,8 +37,8 @@ export class CreateTripDto {
     default: 'PLANNED',
   })
   @IsIn(['PLANNED', 'DISPATCHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'])
-  @IsNotEmpty()
-  status!: string;
+  @IsOptional()
+  status?: string;
 
   @ApiPropertyOptional({ example: '2028-12-01T10:00:00Z' })
   @IsDateString()
