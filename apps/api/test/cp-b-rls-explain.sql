@@ -18,6 +18,23 @@
 --   * Rows Removed by Filter -- a high count means the policy is filtering
 --     after the fact rather than being pushed into the index scan.
 
+-- PREFLIGHT. The note above says "run as parilink_test, not postgres". A
+-- comment is not a guard -- run this as a superuser and every plan below is
+-- RLS-free and proves nothing, while looking perfectly healthy. Abort instead.
+DO $$
+BEGIN
+  IF current_setting('is_superuser') = 'on'
+     OR (SELECT rolbypassrls FROM pg_roles WHERE rolname = current_user) THEN
+    RAISE EXCEPTION
+      'Refusing to run: connected as % (superuser=%, bypassrls=%). '
+      'RLS is not applied to this role, so every plan below would be '
+      'measured without the policy. Reconnect as parilink_app or parilink_test.',
+      current_user,
+      current_setting('is_superuser'),
+      (SELECT rolbypassrls FROM pg_roles WHERE rolname = current_user);
+  END IF;
+END $$;
+
 \timing on
 SET app.current_company_id = :A;
 
@@ -66,12 +83,24 @@ WHERE "deletedAt" IS NULL
 ORDER BY date DESC
 LIMIT 50;
 
-\echo '=== 6. CONTROL: same Trip query with RLS bypassed, for comparison ==='
-SET app.bypass_rls = 'on';
-EXPLAIN (ANALYZE, BUFFERS)
-SELECT id, "tripNumber", status, "createdAt"
-FROM "Trip"
-WHERE "deletedAt" IS NULL
-ORDER BY "createdAt" DESC
-LIMIT 50;
-RESET app.bypass_rls;
+\echo '=== 6. ASSERTION: no policy may still carry the bypass_rls disjunct ==='
+-- This block used to SET app.bypass_rls='on' and re-run the Trip query as a
+-- "control". That control is dead: 20260902000000_drop_bypass_rls removed the
+-- disjunct from all 219 policies and moved the escape hatch to the
+-- parilink_sys BYPASSRLS role, so the GUC is now inert and both legs plan
+-- IDENTICALLY. Any delta it printed was noise.
+--
+-- What CP3 actually needs is the fallback it already describes -- if
+-- companyId is still landing in Filter, find the policy that still has the
+-- OR. Ask the catalog directly rather than grepping migration files, because
+-- the database is the thing that matters and a file can disagree with it.
+SELECT count(*) FILTER (WHERE qual LIKE '%bypass_rls%')  AS policies_still_carrying_bypass,
+       count(*)                                          AS total_policies
+FROM pg_policies
+WHERE schemaname = 'public';
+
+\echo '--- any offenders, by table (empty is the pass condition) ---'
+SELECT tablename, policyname
+FROM pg_policies
+WHERE schemaname = 'public' AND qual LIKE '%bypass_rls%'
+ORDER BY tablename;
