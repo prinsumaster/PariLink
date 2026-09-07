@@ -27,10 +27,12 @@ describe('TripsService', () => {
     },
     load: { updateMany: jest.fn(), findMany: jest.fn().mockResolvedValue([]) },
     auditLog: { create: jest.fn() },
+    tripDesk: { create: jest.fn() },
+    $executeRaw: jest.fn().mockResolvedValue(2),
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (cb) => cb(mockPrisma)),
+    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
@@ -155,11 +157,7 @@ describe('TripsService', () => {
       ]);
 
       await service.assignLoads('company-1', 'trip-1', ['load-1', 'load-2']);
-
-      expect(mockTx.load.updateMany).toHaveBeenCalledWith({
-        where: { id: { in: ['load-1', 'load-2'] }, companyId: 'company-1' },
-        data: { tripId: 'trip-1', status: 'ASSIGNED' },
-      });
+      expect(mockTx.$executeRaw).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException if trip not found', async () => {

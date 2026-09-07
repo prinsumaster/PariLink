@@ -11,7 +11,7 @@ describe('WorkflowService', () => {
   const mockPrismaService = {
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (cb) => cb(mockPrismaService)),
+      .mockImplementation(async (reason, cb) => cb(mockPrismaService)),
     runAsTenant: jest.fn((companyId, callback) => callback(mockTx)),
   };
 

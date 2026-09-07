@@ -19,7 +19,7 @@ describe('MfaService', () => {
         {
           provide: PrismaService,
           useValue: {
-            runAsSystem: jest.fn().mockImplementation(async function (cb) {
+            runAsSystem: jest.fn().mockImplementation(async function (reason, cb) {
               return await cb(this);
             }),
             runAsTenant: jest.fn().mockImplementation(async function (t, cb) {

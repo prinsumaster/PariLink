@@ -17,7 +17,8 @@ describe('SsoService', () => {
 
   beforeEach(async () => {
     prisma = {
-      runAsSystem: jest.fn().mockImplementation(async (cb) => await cb(prisma)),
+      runAsSystem: jest.fn().mockImplementation(async (reason, cb) => await cb(prisma)),
+      runAsTenant: jest.fn().mockImplementation(async (tenantId, cb) => await cb(prisma)),
       identityProvider: {
         findUnique: jest.fn(),
         findMany: jest.fn(),

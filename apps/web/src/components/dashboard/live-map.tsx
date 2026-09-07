@@ -6,6 +6,7 @@ import { MapIcon, Truck } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { rasterStyle } from '@/lib/map-style';
 
 // City coordinates for known freight hubs

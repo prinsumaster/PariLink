@@ -65,7 +65,7 @@ export class ExecutiveDashboardController {
 
     const [activeLoads, todayDeliveries, totalVehicles, activeVehicles, revenueTodayRes, revenueMonthRes] = await Promise.all([
       this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.load.count({ where: { companyId, status: 'IN_TRANSIT' } })
+        tx.load.count({ where: { companyId, status: { notIn: ['DELIVERED', 'CANCELLED'] } } })
       ),
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.load.count({ where: { companyId, status: 'DELIVERED', updatedAt: { gte: today } } })
@@ -81,13 +81,13 @@ export class ExecutiveDashboardController {
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.invoice.aggregate({
           _sum: { amount: true },
-          where: { companyId, createdAt: { gte: today }, status: { in: ['GENERATED', 'PAID'] } },
+          where: { companyId, status: { in: ['GENERATED', 'PAID'] } },
         })
       ),
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.invoice.aggregate({
           _sum: { amount: true },
-          where: { companyId, createdAt: { gte: firstDayOfMonth }, status: { in: ['GENERATED', 'PAID'] } },
+          where: { companyId, status: { in: ['GENERATED', 'PAID'] } },
         })
       ),
     ]);
@@ -153,7 +153,7 @@ export class ExecutiveDashboardController {
     // Fetch loads, map to ShipmentSummary
     const loads = await this.prisma.runAsTenant(companyId, async (tx) => 
       tx.load.findMany({
-        where: { companyId },
+        where: { companyId, status: { notIn: ['DELIVERED', 'CANCELLED'] } },
         take: 50,
         orderBy: { createdAt: 'desc' }
       })

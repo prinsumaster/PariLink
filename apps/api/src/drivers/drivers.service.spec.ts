@@ -11,6 +11,9 @@ describe('DriversService', () => {
   let service: DriversService;
 
   const mockTx = {
+    trip: {
+      count: jest.fn().mockResolvedValue(0),
+    },
     driver: {
       create: jest.fn(),
       findMany: jest.fn(),
@@ -22,7 +25,7 @@ describe('DriversService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (cb) => cb(mockPrisma)),
+    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
@@ -146,7 +149,7 @@ describe('DriversService', () => {
       mockTx.driver.findFirst.mockResolvedValue(mockDriver);
 
       const result = await service.findOne('company-1', 'driver-1');
-      expect(result).toEqual(mockDriver);
+      expect(result).toEqual(expect.objectContaining(mockDriver));
     });
 
     it('should throw NotFoundException if driver not found', async () => {

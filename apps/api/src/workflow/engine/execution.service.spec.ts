@@ -15,7 +15,7 @@ describe('ExecutionEngineService', () => {
   const mockPrismaService = {
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (cb) => cb(mockPrismaService)),
+      .mockImplementation(async (reason, cb) => cb(mockPrismaService)),
     runAsTenant: jest
       .fn()
       .mockImplementation(async (tenantId, cb) => cb(mockPrismaService)),

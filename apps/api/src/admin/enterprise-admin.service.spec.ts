@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../platform/audit/audit.service';
+import { BruteForceProtectionService } from '../platform/security/brute-force/brute-force-protection.service';
 import { TenantAdminService } from './services/tenant-admin.service';
 import { OrgAdminService } from './services/org-admin.service';
 import { UserAdminService } from './services/user-admin.service';
@@ -32,7 +33,7 @@ describe('Enterprise Administration Platform Services', () => {
       .mockImplementation(async (tenantId, cb) => await cb(mockPrisma)),
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (cb) => await cb(mockPrisma)),
+      .mockImplementation(async (reason, cb) => await cb(mockPrisma)),
     company: {
       count: jest.fn().mockResolvedValue(10),
       findMany: jest
@@ -262,6 +263,10 @@ describe('Enterprise Administration Platform Services', () => {
         AuditAdminService,
         SystemSettingsAdminService,
         DashboardAdminService,
+        {
+          provide: BruteForceProtectionService,
+          useValue: { resetLock: jest.fn() },
+        },
         { provide: PrismaService, useValue: mockPrisma },
         { provide: AuditService, useValue: mockAudit },
       ],

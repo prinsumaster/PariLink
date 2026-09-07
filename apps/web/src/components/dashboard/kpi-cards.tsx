@@ -115,7 +115,6 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
               )}>
                 {kpi.change}
               </span>
-              <span className="text-slate-500 dark:text-slate-400 ml-1 text-xs">from last month</span>
             </p>
           </CardContent>
         </Card>

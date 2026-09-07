@@ -5,7 +5,7 @@ import { AuditService } from '../../platform/audit/audit.service';
 import { UnauthorizedException } from '@nestjs/common';
 
 const mockPrisma = {
-  runAsSystem: jest.fn().mockImplementation(async (cb) => cb(mockPrisma)),
+  runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
   runAsTenant: jest
     .fn()
     .mockImplementation(async (tenantId, cb) => cb(mockPrisma)),

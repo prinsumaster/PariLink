@@ -17,7 +17,9 @@ export interface Trip {
   destination?: Location;
   loads?: { originCity?: string; destinationCity?: string; }[];
   driverId?: string;
+  driver?: { firstName: string; lastName: string; };
   vehicleId?: string;
+  vehicle?: { licensePlate: string; };
   shipmentId?: string;
   startDate?: string;
   endDate?: string;

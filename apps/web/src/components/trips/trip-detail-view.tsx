@@ -143,10 +143,10 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                   <div>
                     <div className="text-sm font-medium text-gray-500">Assignments</div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Driver: {trip.driverId || 'Unassigned'}
+                      Driver: {trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId || 'Unassigned'}
                     </div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Vehicle: {trip.vehicleId || 'Unassigned'}
+                      Vehicle: {trip.vehicle ? trip.vehicle.licensePlate : trip.vehicleId || 'Unassigned'}
                     </div>
                   </div>
                 </div>
@@ -176,7 +176,7 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
             <div className="flex justify-between items-center pb-4 border-b border-gray-100 dark:border-gray-800">
               <span className="text-sm text-gray-500">SLA</span>
               <Badge variant={trip.slaStatus === 'MET' ? 'default' : 'destructive'} className="text-sm">
-                {(trip.slaStatus || 'UNKNOWN').replace('_', ' ')}
+                {(trip.slaStatus || (currentStatus === 'COMPLETED' ? 'MET' : 'Not Set')).replace('_', ' ')}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
