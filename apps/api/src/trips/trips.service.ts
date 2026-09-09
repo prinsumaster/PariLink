@@ -34,6 +34,7 @@ export class TripsService {
   async create(companyId: string, createTripDto: CreateTripDto) {
     const trip = await this.prisma.runAsTenant(companyId, async (tx) => {
       const data: any = { ...createTripDto, companyId };
+      data.status = data.status ?? 'PLANNED';
       if (data.startDate) data.startDate = new Date(data.startDate);
       if (data.endDate) data.endDate = new Date(data.endDate);
       if (data.eta) data.eta = new Date(data.eta);
