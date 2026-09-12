@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Building2, Truck, AlertTriangle, ArrowRight, BrainCircuit, Activity } from 'lucide-react';
+import { api } from '@/services/api';
 
 interface ContextPanelProps {
   selectedEntityId: string | null;
@@ -31,16 +32,10 @@ export function ContextPanel({ selectedEntityId }: ContextPanelProps) {
     const fetchContext = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/operations/context/${selectedEntityId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setEntityData(data);
-        } else {
-          setEntityData(null);
-        }
+        const res = await api.get(`/operations/context/${selectedEntityId}`);
+        setEntityData(res.data);
       } catch (e) {
+        // api interceptor handles 401 → redirect to login automatically
         setEntityData(null);
       } finally {
         setLoading(false);

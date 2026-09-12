@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useRealtimeEngine } from '@/hooks/use-realtime-engine';
+import { api } from '@/services/api';
 
 interface ExecutionStep {
   id: string;
@@ -31,14 +32,10 @@ export function ExecutionCenter() {
     // Basic polling or initial fetch until realtime engine is fully connected
     const fetchExecutions = async () => {
       try {
-        const res = await fetch('/api/v1/operations/executions', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.executions) setActiveExecutions(data.executions);
-          if (data.stats) setStats(data.stats);
-        }
+        const res = await api.get('/operations/executions');
+        // api interceptor handles 401 → redirect to login automatically
+        if (res.data.executions) setActiveExecutions(res.data.executions);
+        if (res.data.stats) setStats(res.data.stats);
       } catch (e) {
         console.error('Failed to fetch executions', e);
       }

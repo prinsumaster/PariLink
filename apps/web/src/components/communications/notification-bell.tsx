@@ -12,11 +12,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { api } from '@/services/api';
+import { useAuthStore } from '@/store/auth';
 import Link from 'next/link';
 
 export function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState<any[]>([]);
+
+  const token = useAuthStore((s) => s.token);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -32,8 +35,9 @@ export function NotificationBell() {
     // Initial fetch
     fetchNotifications();
 
-    // SSE connection
-    const token = localStorage.getItem('access_token');
+    // SSE connection — use session-derived token from Zustand store, not localStorage.
+    // BEFORE: localStorage.getItem('access_token') — different key, always null, SSE silently never opened.
+    // AFTER: token from store, guarded by cookie validation in customStorage.
     if (!token) return;
     
     const eventSource = new EventSource(
@@ -56,7 +60,7 @@ export function NotificationBell() {
     };
 
     return () => eventSource.close();
-  }, []);
+  }, [token]);
 
   const markAsRead = async (id: string) => {
     try {

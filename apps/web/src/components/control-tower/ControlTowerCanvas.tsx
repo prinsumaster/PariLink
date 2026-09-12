@@ -1,5 +1,6 @@
 'use client';
 import { money, num, dateIN } from '@/lib/format';
+import { api } from '@/services/api';
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -39,13 +40,9 @@ export function ControlTowerCanvas() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const res = await fetch('/api/v1/operations/dashboard/snapshot', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data) setMetrics(data);
-        }
+        const res = await api.get('/operations/dashboard/snapshot');
+        if (res.data) setMetrics(res.data);
+        // api interceptor handles 401 → redirect to login automatically
       } catch (e) {
         console.error(e);
       }

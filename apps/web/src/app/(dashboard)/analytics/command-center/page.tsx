@@ -2,11 +2,13 @@
 import { money, num, dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { api, API_URL } from '@/services/api';
+import { useAuthStore } from '@/store/auth';
 import { 
   TrendingUp, TrendingDown, DollarSign, Truck, Users, Activity, Download, BrainCircuit, RefreshCcw
 } from 'lucide-react';
@@ -39,8 +41,24 @@ export default function CommandCenterPage() {
     { date: 'Sun', active: 3, idle: 2, maintenance: 1 },
   ];
 
-  // Phase 8: Role-based filtering simulation
-  const userRole = typeof window !== 'undefined' ? localStorage.getItem('role') || 'CEO' : 'CEO';
+  const router = useRouter();
+  // BEFORE (vulnerable): localStorage.getItem('role') || 'CEO'
+  // If 'role' key was absent, tampered, or stale, the page silently granted CEO-level UI.
+  // AFTER: role derived from Zustand auth store (cookie-coupled). If absent, redirect to login.
+  const sessionUser = useAuthStore((s) => s.user);
+  const userRole = sessionUser?.role ?? null;
+
+  // Guard: no session → redirect rather than granting CEO access
+  useEffect(() => {
+    if (!sessionUser) {
+      router.replace('/login?session_expired=true');
+    }
+  }, [sessionUser, router]);
+
+  if (!userRole) {
+    // Render nothing while redirect is in flight; avoids flash of CEO UI
+    return null;
+  }
 
   const fetchMetrics = async () => {
     try {
