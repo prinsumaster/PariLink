@@ -140,10 +140,9 @@ export class PartitionMaintenanceService implements OnModuleInit {
                 part, m, nxt);
             END IF;
           END $$;
-          SELECT true AS created;
         `),
     );
-    return rows?.length ? null : null;
+    return null;
   }
 
   /** The alarm that matters: next month must exist before next month starts. */

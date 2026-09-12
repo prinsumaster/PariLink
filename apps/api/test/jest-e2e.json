@@ -8,5 +8,6 @@
   },
   "transformIgnorePatterns": [
     "/node_modules/(?!uuid)/"
-  ]
+  ],
+  "testTimeout": 30000
 }

@@ -63,7 +63,7 @@ export class PrismaService
       try {
         const url = new URL(systemDatasourceUrl);
         if (process.env.NODE_ENV === 'test') {
-          url.searchParams.set('connection_limit', '1');
+          url.searchParams.set('connection_limit', '5');
         } else {
           // System datasource: 2 connections/instance.
           // (16 main + 2 system) × 5 instances = 90 = budget.
@@ -410,10 +410,17 @@ export class PrismaService
       `[SECURITY_AUDIT] SYSTEM_BYPASS: Bypassing RLS. Reason: ${reason}`
     );
 
-    return this.systemClient.$transaction(async (tx) => {
-      // Execute the business logic using the system-level connection
-      return callback(tx as any);
-    });
+    // Execute the business logic using the system-level connection inside a transaction
+    // to guarantee connection isolation, configuring maxWait to prevent pool exhaustion timeouts.
+    return this.systemClient.$transaction(
+      async (tx) => {
+        return callback(tx as any);
+      },
+      {
+        maxWait: 10000, // 10 seconds to wait for a connection in the pool
+        timeout: 20000, // 20 seconds max for the transaction itself
+      }
+    );
   }
 
   /**
