@@ -32,6 +32,7 @@ import { DriversModule } from './drivers/drivers.module';
 import { CustomersModule } from './customers/customers.module';
 import { LoadsModule } from './loads/loads.module';
 import { TripsModule } from './trips/trips.module';
+import { RoutesModule } from './routes/routes.module';
 import { DispatchModule } from './dispatch/dispatch.module';
 import { FactoringModule } from './factoring/factoring.module';
 import { GpsModule } from './intelligence/gps/gps.module';
@@ -248,6 +249,7 @@ import { ReportingModule } from './reporting/reporting.module';
     CustomersModule,
     LoadsModule,
     TripsModule,
+    RoutesModule,
     DispatchModule,
     FactoringModule,
     WmsModule,

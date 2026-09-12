@@ -184,6 +184,14 @@ async function main() {
       // ── 8. Trips (8) ────────────────────────────────────────────────────────
       const trip1 = await tx.trip.upsert({ where: { tripNumber: 'TRP-IND-1001' }, update: {}, create: { tripNumber: 'TRP-IND-1001', status: 'IN_TRANSIT', driverId: drv1.id, vehicleId: veh1.id, companyId: co.id, startDate: d(-1), eta: d(1), fuelExpenses: 8500, otherExpenses: 2000, estimatedDistance: 1450 } });
       const trip2 = await tx.trip.upsert({ where: { tripNumber: 'TRP-IND-1002' }, update: {}, create: { tripNumber: 'TRP-IND-1002', status: 'COMPLETED', driverId: drv2.id, vehicleId: veh2.id, companyId: co.id, startDate: d(-5), endDate: d(-3), fuelExpenses: 7200, otherExpenses: 1800, estimatedDistance: 980 } });
+      
+      // Seed Trip Reviews for trip2
+      await tx.tripReview.upsert({ where: { tripId_reviewerRole: { tripId: trip2.id, reviewerRole: 'DISPATCHER' } }, update: {}, create: { tripId: trip2.id, companyId: co.id, reviewerId: adminUser.id, reviewerRole: 'DISPATCHER', rating: 5, comment: 'Dispatched on time.' } });
+      await tx.tripReview.upsert({ where: { tripId_reviewerRole: { tripId: trip2.id, reviewerRole: 'LOADER' } }, update: {}, create: { tripId: trip2.id, companyId: co.id, reviewerId: adminUser.id, reviewerRole: 'LOADER', rating: 4, comment: 'Loading took slightly longer than expected.' } });
+      await tx.tripReview.upsert({ where: { tripId_reviewerRole: { tripId: trip2.id, reviewerRole: 'SAFETY_OFFICER' } }, update: {}, create: { tripId: trip2.id, companyId: co.id, reviewerId: adminUser.id, reviewerRole: 'SAFETY_OFFICER', rating: 5, comment: 'All safety protocols followed.' } });
+      await tx.tripReview.upsert({ where: { tripId_reviewerRole: { tripId: trip2.id, reviewerRole: 'UNLOADER' } }, update: {}, create: { tripId: trip2.id, companyId: co.id, reviewerId: adminUser.id, reviewerRole: 'UNLOADER', rating: 4 } });
+      await tx.tripReview.upsert({ where: { tripId_reviewerRole: { tripId: trip2.id, reviewerRole: 'FLEET_MANAGER' } }, update: {}, create: { tripId: trip2.id, companyId: co.id, reviewerId: adminUser.id, reviewerRole: 'FLEET_MANAGER', rating: 5, comment: 'Excellent execution.' } });
+
       const trip3 = await tx.trip.upsert({ where: { tripNumber: 'TRP-IND-1003' }, update: {}, create: { tripNumber: 'TRP-IND-1003', status: 'IN_TRANSIT', driverId: drv3.id, vehicleId: veh3.id, companyId: co.id, startDate: d(-2), eta: d(1), fuelExpenses: 12000, otherExpenses: 3500, estimatedDistance: 1850 } });
       const trip4 = await tx.trip.upsert({ where: { tripNumber: 'TRP-IND-1004' }, update: {}, create: { tripNumber: 'TRP-IND-1004', status: 'COMPLETED', driverId: drv4.id, vehicleId: veh4.id, companyId: co.id, startDate: d(-8), endDate: d(-6), fuelExpenses: 5500, otherExpenses: 1200, estimatedDistance: 275 } });
       // LOSS-MAKING trip: Pune→Nagpur, rate=18000 but costs=26000
@@ -230,33 +238,33 @@ async function main() {
       // ── 10. Invoices (6) & Line Items ──────────────────────────────────────
       const inv1 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1001' } },
-        update: { amount: 45000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable' },
-        create: { invoiceNumber: 'INV-IND-1001', amount: 45000, status: 'PAID', dueDate: d(-20), loadId: load1.id, customerId: cust1.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable' },
+        update: { amount: 45000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable', createdAt: d(0) },
+        create: { invoiceNumber: 'INV-IND-1001', amount: 45000, status: 'PAID', dueDate: d(-20), loadId: load1.id, customerId: cust1.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965) - Reverse Charge Applicable', createdAt: d(0) },
       });
       const inv2 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1002' } },
-        update: { amount: 72000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965)' },
-        create: { invoiceNumber: 'INV-IND-1002', amount: 72000, status: 'PAID', dueDate: d(-15), loadId: load2.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965)' },
+        update: { amount: 72000, status: 'PAID', notes: 'GST 5% GTA Services (SAC 9965)', createdAt: d(-2) },
+        create: { invoiceNumber: 'INV-IND-1002', amount: 72000, status: 'PAID', dueDate: d(-15), loadId: load2.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Services (SAC 9965)', createdAt: d(-2) },
       });
       const inv3 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1003' } },
-        update: { amount: 55000, status: 'ISSUED', notes: 'GST 5% GTA Cold Chain Services (SAC 9965)' },
-        create: { invoiceNumber: 'INV-IND-1003', amount: 55000, status: 'ISSUED', dueDate: d(15), loadId: load3.id, customerId: cust3.id, companyId: co.id, notes: 'GST 5% GTA Cold Chain Services (SAC 9965)' },
+        update: { amount: 55000, status: 'ISSUED', notes: 'GST 5% GTA Cold Chain Services (SAC 9965)', createdAt: d(-5) },
+        create: { invoiceNumber: 'INV-IND-1003', amount: 55000, status: 'ISSUED', dueDate: d(15), loadId: load3.id, customerId: cust3.id, companyId: co.id, notes: 'GST 5% GTA Cold Chain Services (SAC 9965)', createdAt: d(-5) },
       });
       const inv4 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1004' } },
-        update: { amount: 38000, status: 'OVERDUE', notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)' },
-        create: { invoiceNumber: 'INV-IND-1004', amount: 38000, status: 'OVERDUE', dueDate: d(-5), loadId: load4.id, customerId: cust4.id, companyId: co.id, notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)' },
+        update: { amount: 38000, status: 'OVERDUE', notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)', createdAt: d(-10) },
+        create: { invoiceNumber: 'INV-IND-1004', amount: 38000, status: 'OVERDUE', dueDate: d(-5), loadId: load4.id, customerId: cust4.id, companyId: co.id, notes: 'GST 5% GTA Hazardous Cargo (SAC 9965)', createdAt: d(-10) },
       });
       const inv5 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1005' } },
-        update: { amount: 18000, status: 'ISSUED', notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)' },
-        create: { invoiceNumber: 'INV-IND-1005', amount: 18000, status: 'ISSUED', dueDate: d(10), loadId: load5.id, customerId: cust5.id, companyId: co.id, notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)' },
+        update: { amount: 18000, status: 'ISSUED', notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)', createdAt: d(-15) },
+        create: { invoiceNumber: 'INV-IND-1005', amount: 18000, status: 'ISSUED', dueDate: d(10), loadId: load5.id, customerId: cust5.id, companyId: co.id, notes: 'GST 5% GTA Switchgear Haulage (SAC 9965)', createdAt: d(-15) },
       });
       const inv6 = await tx.invoice.upsert({
         where: { companyId_invoiceNumber: { companyId: co.id, invoiceNumber: 'INV-IND-1006' } },
-        update: { amount: 85000, status: 'PAID', notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)' },
-        create: { invoiceNumber: 'INV-IND-1006', amount: 85000, status: 'PAID', dueDate: d(-10), loadId: load7.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)' },
+        update: { amount: 85000, status: 'PAID', notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)', createdAt: d(-20) },
+        create: { invoiceNumber: 'INV-IND-1006', amount: 85000, status: 'PAID', dueDate: d(-10), loadId: load7.id, customerId: cust2.id, companyId: co.id, notes: 'GST 5% GTA Heavy Commercial Transport (SAC 9965)', createdAt: d(-20) },
       });
 
       // Line Items per invoice

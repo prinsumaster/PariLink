@@ -27,4 +27,17 @@ export class FuelIntelligenceController {
   getSummary(@GetUser() user: AuthenticatedUser) {
     return this.fuelIntelligenceService.getSummary(user.companyId);
   }
+
+  @Get('root-cause')
+  @RequirePermissions('reports:read')
+  @ApiOperation({
+    summary: 'Fuel variance root-cause analysis',
+    description:
+      'Returns per-entry root-cause attribution. Isolates DRIVER (same vehicle+route, different drivers), ' +
+      'MECHANICAL (same driver+route, different vehicles), ROUTE (same driver+vehicle, different routes). ' +
+      'Returns INSUFFICIENT_DATA when no comparison group exists — never silently guesses.',
+  })
+  getRootCause(@GetUser() user: AuthenticatedUser) {
+    return this.fuelIntelligenceService.getRootCause(user.companyId);
+  }
 }

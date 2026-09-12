@@ -265,4 +265,81 @@ export class MaintenanceService {
       return tx.maintenanceSchedule.findMany({ where });
     });
   }
+
+  async getVehicleKundali(companyId: string, vehicleId: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const jobCards = await tx.jobCard.findMany({
+        where: { companyId, vehicleId },
+        include: { parts: true, workshop: true, mechanic: true },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      const maintenanceJobs = await tx.maintenanceJob.findMany({
+        where: { companyId, vehicleId },
+        include: { parts: true, vendor: true },
+        orderBy: { openedAt: 'desc' }
+      });
+
+      const tyreLogs = await tx.tyreLog.findMany({
+        where: { companyId, vehicleId },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      const timeline = [];
+
+      for (const jc of jobCards) {
+        timeline.push({
+          type: 'JOB_CARD',
+          id: jc.id,
+          date: jc.closedAt || jc.createdAt,
+          status: jc.status,
+          title: `Job Card: ${jc.issueReported}`,
+          cost: jc.totalCost,
+          details: {
+            workshop: jc.workshop?.name,
+            mechanic: jc.mechanic?.name,
+            workDone: jc.workDone,
+            parts: jc.parts.map(p => `${p.partName} (x${p.quantity})`)
+          }
+        });
+      }
+
+      for (const mj of maintenanceJobs) {
+        timeline.push({
+          type: 'MAINTENANCE_JOB',
+          id: mj.id,
+          date: mj.closedAt || mj.openedAt,
+          status: mj.status,
+          title: `Maintenance: ${mj.type}`,
+          cost: mj.labourCost + mj.parts.reduce((sum: number, p: any) => sum + p.amount, 0),
+          details: {
+            vendor: mj.vendor?.name,
+            odometer: mj.odometer,
+            parts: mj.parts.map((p: any) => `${p.name} (x${p.qty})`)
+          }
+        });
+      }
+
+      for (const tl of tyreLogs) {
+        timeline.push({
+          type: 'TYRE_LOG',
+          id: tl.id,
+          date: tl.createdAt,
+          status: 'COMPLETED',
+          title: `Tyre Action: ${tl.action}`,
+          cost: tl.cost,
+          details: {
+            position: tl.newPosition || tl.oldPosition,
+            reason: tl.reason,
+            odometer: tl.odometer,
+            treadDepthMm: tl.treadDepthMm
+          }
+        });
+      }
+
+      timeline.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      return timeline;
+    });
+  }
 }

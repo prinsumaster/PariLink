@@ -3479,6 +3479,576 @@
         ]
       }
     },
+    "/api/v1/workflow/rules/simulate": {
+      "post": {
+        "operationId": "WorkflowController_simulateRule_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Simulate a rule without side effects",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/import": {
+      "post": {
+        "operationId": "WorkflowController_importRules_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRulesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Import rules from JSON",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/export": {
+      "get": {
+        "operationId": "WorkflowController_exportRules_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export all rules to JSON",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules": {
+      "post": {
+        "operationId": "WorkflowController_createRule_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkflowRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "get": {
+        "operationId": "WorkflowController_getRules_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all workflow rules",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}": {
+      "get": {
+        "operationId": "WorkflowController_getRuleById_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a specific workflow rule by ID",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "patch": {
+        "operationId": "WorkflowController_updateRule_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWorkflowRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "delete": {
+        "operationId": "WorkflowController_deleteRule_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}/activate": {
+      "post": {
+        "operationId": "WorkflowController_activateRule_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Activate a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}/deactivate": {
+      "post": {
+        "operationId": "WorkflowController_deactivateRule_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}/clone": {
+      "post": {
+        "operationId": "WorkflowController_cloneRule_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Clone a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}/version": {
+      "post": {
+        "operationId": "WorkflowController_createVersion_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new version of a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/rules/{id}/history": {
+      "get": {
+        "operationId": "WorkflowController_getRuleHistory_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get execution history of a workflow rule",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/evaluate": {
+      "post": {
+        "operationId": "WorkflowController_evaluateRules_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluateWorkflowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Evaluate data against active workflow rules",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/definitions": {
+      "post": {
+        "operationId": "WorkflowController_createWorkflow_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWorkflowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new workflow definition (Graph)",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/definitions/{id}/publish": {
+      "post": {
+        "operationId": "WorkflowController_publishWorkflow_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Publish workflow definition",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/definitions/{id}/archive": {
+      "post": {
+        "operationId": "WorkflowController_archiveWorkflow_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Archive workflow definition",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/metrics": {
+      "get": {
+        "operationId": "WorkflowController_getMetrics_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workflow metrics",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/definitions/{id}/history": {
+      "get": {
+        "operationId": "WorkflowController_getExecutionHistory_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get workflow execution history",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/workflow/v2/approvals/requests/{requestId}/steps/{stepId}": {
+      "post": {
+        "operationId": "WorkflowController_processApprovalDecision_v1",
+        "parameters": [
+          {
+            "name": "requestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stepId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Process approval decision",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
     "/api/v1/drivers": {
       "post": {
         "operationId": "DriversController_create_v1",
@@ -20986,6 +21556,126 @@
             "example": 3000
           }
         }
+      },
+      "CreateWorkflowRuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "object"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "priority": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "entityType",
+          "trigger",
+          "conditions",
+          "actions",
+          "priority"
+        ]
+      },
+      "SimulateRuleDto": {
+        "type": "object",
+        "properties": {
+          "ruleDefinition": {
+            "$ref": "#/components/schemas/CreateWorkflowRuleDto"
+          },
+          "ruleId": {
+            "type": "string"
+          },
+          "entityData": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "ruleDefinition",
+          "ruleId",
+          "entityData"
+        ]
+      },
+      "ImportRulesDto": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "rules"
+        ]
+      },
+      "UpdateWorkflowRuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "conditions": {
+            "type": "object"
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "priority": {
+            "type": "number"
+          }
+        }
+      },
+      "EvaluateWorkflowDto": {
+        "type": "object",
+        "properties": {
+          "entityType": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "entityData": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "entityType",
+          "trigger",
+          "entityData"
+        ]
+      },
+      "CreateWorkflowDto": {
+        "type": "object",
+        "properties": {
+          "payload": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "payload"
+        ]
       },
       "CreateDriverDto": {
         "type": "object",

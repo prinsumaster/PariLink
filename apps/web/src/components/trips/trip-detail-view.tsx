@@ -26,6 +26,7 @@ import { StatusFlip } from '@/components/motion';
 import { tripService } from '@/services/trips';
 import { toast } from 'sonner';
 import { TripDesksPanel } from './trip-desks-panel';
+import { TripReviewsPanel } from './trip-reviews-panel';
 import { LoadingEventsPanel } from './loading-events-panel';
 import { useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
@@ -284,6 +285,7 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
 
         <TripDesksPanel tripId={trip.id} />
         <LoadingEventsPanel tripId={trip.id} />
+        <TripReviewsPanel tripId={trip.id} reviews={trip.tripReviews} />
 
         <Card>
           <CardHeader>

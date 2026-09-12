@@ -98,4 +98,14 @@ export class MaintenanceController {
   ) {
     return this.maintenance.getSchedules(user.companyId, vehicleId);
   }
+
+  @Get('kundali/:vehicleId')
+  @RequirePermissions('vehicles:read')
+  @ApiOperation({ summary: 'Get Vehicle Service History (Kundali)' })
+  async getVehicleKundali(
+    @GetUser() user: AuthenticatedUser,
+    @Param('vehicleId') vehicleId: string,
+  ) {
+    return this.maintenance.getVehicleKundali(user.companyId, vehicleId);
+  }
 }

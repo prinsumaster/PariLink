@@ -57,6 +57,11 @@ export const tripService = {
     return data;
   },
 
+  submitReview: async (id: string, payload: { reviewerRole: string; rating: number; comment?: string }) => {
+    const { data } = await api.post(`/trips/${id}/reviews`, payload);
+    return data;
+  },
+
   submitDriverScore: async (id: string, scoreData: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }) => {
     const { data } = await api.post(`/trips/${id}/driver-score`, scoreData);
     return data;

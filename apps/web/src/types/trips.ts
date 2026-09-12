@@ -24,6 +24,7 @@ export interface Trip {
   startDate?: string;
   endDate?: string;
   eta?: string;
+  tripReviews?: any[];
   startOdometer?: number;
   endOdometer?: number;
   estimatedDistance?: number;

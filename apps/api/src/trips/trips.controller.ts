@@ -19,6 +19,7 @@ import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripQueryDto } from './dto/trip-query.dto';
 import { AssignLoadsDto } from './dto/assign-loads.dto';
+import { CreateTripReviewDto } from './dto/create-trip-review.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -104,5 +105,16 @@ export class TripsController {
     @Body() body: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }
   ) {
     return this.tripsService.submitDriverScore(user.companyId, id, body, user.id);
+  }
+
+  @Post(':id/reviews')
+  @RequirePermissions('trips:update')
+  @ApiOperation({ summary: 'Submit a trip review' })
+  submitReview(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: CreateTripReviewDto
+  ) {
+    return this.tripsService.submitReview(user.companyId, id, user.id, body);
   }
 }

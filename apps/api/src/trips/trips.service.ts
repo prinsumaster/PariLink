@@ -17,6 +17,7 @@ import { CreateTripDto } from './dto/create-trip.dto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripQueryDto } from './dto/trip-query.dto';
+import { CreateTripReviewDto } from './dto/create-trip-review.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as crypto from 'crypto';
 import { EventStoreService } from '../platform/digital-twin/event-store.service';
@@ -224,6 +225,7 @@ export class TripsService {
             select: { id: true, originCity: true, destinationCity: true, createdAt: true },
             orderBy: { createdAt: 'asc' },
           },
+          tripReviews: true,
         },
       });
 
@@ -679,6 +681,57 @@ export class TripsService {
           ratedAt: new Date()
         }
       });
+    });
+  }
+  async submitReview(companyId: string, tripId: string, reviewerId: string, dto: CreateTripReviewDto) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const trip = await tx.trip.findFirst({ where: { id: tripId, companyId } });
+      if (!trip) throw new NotFoundException('Trip not found');
+      if (!trip.driverId) throw new BadRequestException('Trip has no driver assigned');
+
+      const existing = await tx.tripReview.findFirst({
+        where: { tripId: tripId, reviewerRole: dto.reviewerRole }
+      });
+      if (existing) throw new ConflictException(`Review for role ${dto.reviewerRole} already exists`);
+
+      const review = await tx.tripReview.create({
+        data: {
+          companyId,
+          tripId: tripId,
+          reviewerId,
+          reviewerRole: dto.reviewerRole,
+          rating: dto.rating,
+          comment: dto.comment,
+        }
+      });
+
+      const allReviews = await tx.tripReview.findMany({
+        where: { tripId: tripId }
+      });
+
+      if (allReviews.length === 5) {
+        const avg = allReviews.reduce((sum, r) => sum + r.rating, 0) / 5;
+        
+        await tx.driverScore.create({
+          data: {
+            companyId,
+            driverId: trip.driverId,
+            tripId: trip.id,
+            total: avg,
+            ratedBy: 'SYSTEM_AGGREGATE',
+            ratedAt: new Date(),
+          }
+        });
+
+        this.eventEmitter.emit('driver.score.updated', {
+          companyId,
+          driverId: trip.driverId,
+          tripId: trip.id,
+          score: avg
+        });
+      }
+
+      return review;
     });
   }
 }

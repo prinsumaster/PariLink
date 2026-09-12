@@ -17,14 +17,38 @@ export interface FuelSummary {
   totalAnomalies: number;
 }
 
+export type RootCauseType = 'DRIVER' | 'MECHANICAL' | 'ROUTE' | 'INVESTIGATE' | 'INSUFFICIENT_DATA' | 'NORMAL';
+
+export interface FuelRootCauseEntry {
+  fuelEntryId: string;
+  tripId: string;
+  driverId: string;
+  driverName: string;
+  vehicleId: string;
+  licensePlate: string;
+  routeKey: string | null;
+  litres: number;
+  expectedLitres: number | null;
+  variancePct: number | null;
+  rootCause: RootCauseType;
+  confidence: 'HIGH' | 'LOW';
+  comparisonGroupSize: number;
+  explanation: string;
+}
+
 export const intelligenceService = {
   getFuelAnomalies: async (): Promise<FuelAnomaly[]> => {
     const { data } = await api.get('/intelligence/fuel/anomalies');
-    return data;
+    return Array.isArray(data) ? data : [];
   },
-  
+
   getFuelSummary: async (): Promise<FuelSummary> => {
     const { data } = await api.get('/intelligence/fuel/summary');
     return data;
-  }
+  },
+
+  getFuelRootCause: async (): Promise<FuelRootCauseEntry[]> => {
+    const { data } = await api.get('/intelligence/fuel/root-cause');
+    return Array.isArray(data) ? data : [];
+  },
 };

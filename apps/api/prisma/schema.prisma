@@ -179,11 +179,13 @@ model Company {
   JobPart             JobPart[]
   TruckProfitability  TruckProfitability[]
   TripExpense         TripExpense[]
+  outboundOrders      OutboundOrder[]
+  outboundOrderItems  OutboundOrderItem[]
+  tripReviews         TripReview[]
+  RouteTollRate       RouteTollRate[]
 
   @@index([status])
   @@index([subscriptionPlanId])
-  outboundOrders     OutboundOrder[]
-  outboundOrderItems OutboundOrderItem[]
 }
 
 model Trip {
@@ -228,6 +230,7 @@ model Trip {
   MaintenanceJob   MaintenanceJob[]
   DriverScore      DriverScore[]
   TripExpense      TripExpense[]
+  tripReviews      TripReview[]
 
   @@index([companyId, status])
   @@index([driverId])
@@ -717,6 +720,7 @@ model User {
   performedActivities CrmActivity[] @relation("ActivityPerformer")
   salesTargets        SalesTarget[] @relation("UserTargets")
   payslips            Payslip[]
+  tripReviews         TripReview[]
 
   @@index([companyId, status])
   @@index([costCenterId])
@@ -4539,8 +4543,8 @@ model LorryReceipt {
   load    Load     @relation(fields: [loadId], references: [id])
   vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
 
-  @@index([companyId, deletedAt])
   @@unique([companyId, lrNumber])
+  @@index([companyId, deletedAt])
   @@index([loadId])
 }
 
@@ -4688,20 +4692,24 @@ model TripDesk {
 }
 
 model FuelEntry {
-  id             String   @id @default(uuid())
-  companyId      String
-  tripId         String
-  vehicleId      String
-  driverId       String
-  litres         Float
-  amount         Float
-  pump           String?
-  slipNo         String?
-  expectedLitres Float?
-  variancePct    Float?
-  filledAt       DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  companyId       String
+  tripId          String
+  vehicleId       String
+  driverId        String
+  litres          Float
+  amount          Float
+  pump            String?
+  slipNo          String?
+  expectedLitres  Float?
+  variancePct     Float?
+  // Route key fields — copied from Load at write time so root-cause grouping
+  // needs no join. routeKey = originCity + ":" + destinationCity
+  originCity      String?
+  destinationCity String?
+  filledAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
@@ -4750,4 +4758,49 @@ model TripExpense {
   trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
 
   @@index([companyId, tripId])
+}
+
+enum ReviewRole {
+  DISPATCHER
+  LOADER
+  SAFETY_OFFICER
+  UNLOADER
+  FLEET_MANAGER
+}
+
+model TripReview {
+  id           String     @id @default(uuid())
+  companyId    String
+  tripId       String
+  reviewerId   String
+  reviewerRole ReviewRole
+  rating       Int
+  comment      String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  company  Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trip     Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  reviewer User    @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, reviewerRole])
+  @@index([companyId, tripId])
+  @@index([companyId, reviewerId])
+}
+
+model RouteTollRate {
+  id              String   @id @default(uuid())
+  companyId       String
+  originCity      String
+  destinationCity String
+  fastagCost      Float
+  cashCost        Float?
+  distanceKm      Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, originCity, destinationCity])
+  @@index([companyId])
 }
