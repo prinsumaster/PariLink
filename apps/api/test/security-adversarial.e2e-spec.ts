@@ -141,8 +141,10 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
     });
 
     it('should reject expired JWT', async () => {
-      const validSecret = process.env.JWT_SECRET || 'fallback-secret-for-tests';
-      const expiredJwtService = new JwtService({ secret: validSecret });
+      // Dummy secret used exclusively to generate an expired HS256 token for negative testing.
+      // The real application uses RS256 keypairs and will reject this regardless of expiry.
+      const dummySecret = 'dummy-secret-for-test-token-generation';
+      const expiredJwtService = new JwtService({ secret: dummySecret });
       const expiredToken = expiredJwtService.sign(
         { sub: adminA.id, cid: companyA.id },
         { expiresIn: '-1h' } // Expired 1 hour ago
