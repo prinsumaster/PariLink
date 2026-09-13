@@ -5,7 +5,7 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 import { AuditService } from '../audit/audit.service';
 
 @Injectable()
@@ -23,8 +23,8 @@ export class AuditInterceptor implements NestInterceptor {
     }
 
     return next.handle().pipe(
-      tap(async (data) => {
-        if (!req.user || !req.user.companyId) return;
+      concatMap(async (data) => {
+        if (!req.user || !req.user.companyId) return data;
 
         // Try to infer entity ID from params or response
         const entityId = req.params?.id || data?.id || 'UNKNOWN';
@@ -41,6 +41,8 @@ export class AuditInterceptor implements NestInterceptor {
           correlationId: req['correlationId'],
           source: 'API_INTERCEPTOR',
         });
+
+        return data;
       }),
     );
   }

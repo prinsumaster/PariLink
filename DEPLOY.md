@@ -211,3 +211,9 @@ During the v0.1.0 RC deployment, the following discrepancies from the written pr
 * Each API instance uses `16` (App Pool) + `2` (System Pool) = `18` connections.
 * At `4` instances, the application will peak at `72` connections, leaving a safe headroom of `12-25` connections for maintenance and temporary spikes.
 * Running `5` instances uses `90` connections, leaving dangerous headroom (~`7`) and will likely cause connection drops.
+
+**Concurrency and Timeout Safety:**
+Under high concurrency (e.g., parallel background jobs or burst traffic), the limited `2` connection System Pool can become temporarily contended. To guarantee connection isolation without throwing pool exhaustion errors, `runAsSystem` wraps all bypass logic in interactive transactions (`$transaction`) with explicitly tuned timeouts:
+* **maxWait:** `10000` (10 seconds to acquire a connection from the pool before timing out, increased from the Prisma default of 2s).
+* **timeout:** `20000` (20 seconds for the system operation to complete).
+These settings prevent rapid timeout crashes during pool contention while maintaining strict connection-level RLS state isolation.
