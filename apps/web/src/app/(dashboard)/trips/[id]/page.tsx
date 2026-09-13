@@ -9,6 +9,8 @@ import { TripDetailView } from '@/components/trips/trip-detail-view';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { FuelEntriesPanel } from '@/components/trips/fuel-entries-panel';
 
+import { TripReviewsPanel } from '@/components/trips/trip-reviews-panel';
+
 export default function TripDetailPage() {
   const { id } = useParams();
   
@@ -60,6 +62,7 @@ export default function TripDetailPage() {
 
         <TripDetailView trip={trip} />
         <FuelEntriesPanel tripId={id as string} />
+        <TripReviewsPanel tripId={id as string} />
       </div>
     </RoleGuard>
   );

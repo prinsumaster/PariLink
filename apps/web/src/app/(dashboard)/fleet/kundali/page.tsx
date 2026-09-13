@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'next/navigation';
 import { api } from '@/services/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -126,9 +127,11 @@ async function fetchKundali(vehicleId: string): Promise<KundaliEntry[]> {
   return res.data;
 }
 
-export default function VehicleKundaliPage() {
-  const [vehicleIdInput, setVehicleIdInput] = useState('');
-  const [vehicleId, setVehicleId] = useState<string | null>(null);
+function VehicleKundaliContent() {
+  const searchParams = useSearchParams();
+  const defaultId = searchParams.get('vehicleId') || '';
+  const [vehicleIdInput, setVehicleIdInput] = useState(defaultId);
+  const [vehicleId, setVehicleId] = useState<string | null>(defaultId || null);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['kundali', vehicleId],
@@ -251,5 +254,13 @@ export default function VehicleKundaliPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function VehicleKundaliPage() {
+  return (
+    <Suspense fallback={<div>Loading Kundali...</div>}>
+      <VehicleKundaliContent />
+    </Suspense>
   );
 }

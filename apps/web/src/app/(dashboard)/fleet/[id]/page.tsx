@@ -58,6 +58,12 @@ export default function VehicleDetailPage() {
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Vehicle Overview
             </h1>
+            <Link 
+              href={`/fleet/kundali?vehicleId=${id}`} 
+              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-slate-900 text-white hover:bg-slate-900/90 dark:bg-white dark:text-slate-900 dark:hover:bg-white/90 h-10 px-4 py-2"
+            >
+              View Fleet Kundali
+            </Link>
           </div>
         </div>
 

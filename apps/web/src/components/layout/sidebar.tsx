@@ -52,6 +52,7 @@ const navigation: NavItem[] = [
     children: [
       { name: 'Bookings', href: '/loads' },
       { name: 'Trips', href: '/trips' },
+      { name: 'Route Toll', href: '/routes/toll' },
       { name: 'Bilty (LR)', href: '/bilty' },
       { name: 'Orders', href: '/orders' },
     ],
