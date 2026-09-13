@@ -13,7 +13,7 @@ export class BillingService {
   ) {}
 
   async getSubscriptionPlans() {
-    return this.prisma.runAsSystem('System operation or legacy bypass', (tx) =>
+    return this.prisma.runAsSystem('[BillingService.getSubscriptionPlans] Internal service operation bypass', (tx) =>
       tx.subscriptionPlan.findMany({
         orderBy: { price: 'asc' },
       }),
@@ -73,7 +73,7 @@ export class BillingService {
   async handleWebhook(event: any) {
     this.logger.log(`Handling stripe webhook: ${event.type}`);
     try {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
+      await this.prisma.runAsSystem('[BillingService.handleWebhook] Webhook handler bypass', async (tx) => {
         // Idempotency Check: Insert WebhookDelivery using event.id as primary key
         // If the event was already processed, Prisma will throw a P2002 Unique Constraint violation
         await tx.webhookDelivery.create({
@@ -130,7 +130,7 @@ export class BillingService {
         .digest('hex');
 
     try {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => {
+      await this.prisma.runAsSystem('[BillingService.handleRazorpayWebhook] Webhook handler bypass', async (tx) => {
         // Idempotency Check: Insert WebhookDelivery using uniqueId as primary key
         await tx.webhookDelivery.create({
           data: {

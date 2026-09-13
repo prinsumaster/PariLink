@@ -46,7 +46,7 @@ class ApiKeyAuthGuard implements CanActivate {
 
     const hashedKey = this.crypto.hashApiKey(apiKey);
 
-    const credential = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const credential = await this.prisma.runAsSystem('[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
       tx.apiCredential.findFirst({
         where: { apiKeyHash: hashedKey },
       }),
@@ -65,7 +65,7 @@ class ApiKeyAuthGuard implements CanActivate {
 
     // Log request asynchronously
     this.prisma
-      .runAsSystem('System operation or legacy bypass', async (tx) =>
+      .runAsSystem('[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
         tx.apiRequestLog.create({
           data: {
             companyId: credential.companyId,

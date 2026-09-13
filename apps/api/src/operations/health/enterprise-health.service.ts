@@ -137,7 +137,7 @@ export class EnterpriseHealthService {
     const start = Date.now();
     try {
       // Query recent API Request logs or error rates from schema
-      const recentErrors = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const recentErrors = await this.prisma.runAsSystem('[EnterpriseHealthService.checkApiHealth] Internal service operation bypass', async (tx) =>
         tx.apiAnalyticsLog.count({
           where: {
             ...(companyId ? { companyId } : {}),
@@ -146,7 +146,7 @@ export class EnterpriseHealthService {
           },
         }),
       );
-      const totalRequests = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const totalRequests = await this.prisma.runAsSystem('[EnterpriseHealthService.checkApiHealth] Internal service operation bypass', async (tx) =>
         tx.apiAnalyticsLog.count({
           where: {
             ...(companyId ? { companyId } : {}),
@@ -191,7 +191,7 @@ export class EnterpriseHealthService {
   async checkDatabaseHealth(): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) => tx.$queryRaw`SELECT 1`);
+      await this.prisma.runAsSystem('[EnterpriseHealthService.checkDatabaseHealth] Internal service operation bypass', async (tx) => tx.$queryRaw`SELECT 1`);
       const latencyMs = Date.now() - start;
       const status = latencyMs > 500 ? 'DEGRADED' : 'HEALTHY';
       return {
@@ -236,7 +236,7 @@ export class EnterpriseHealthService {
   async checkQueueHealth(companyId?: string): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      const pendingJobs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const pendingJobs = await this.prisma.runAsSystem('[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass', async (tx) =>
         tx.backgroundJob.count({
           where: {
             ...(companyId ? { companyId } : {}),
@@ -244,7 +244,7 @@ export class EnterpriseHealthService {
           },
         }),
       );
-      const failedJobs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const failedJobs = await this.prisma.runAsSystem('[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass', async (tx) =>
         tx.backgroundJob.count({
           where: {
             ...(companyId ? { companyId } : {}),
@@ -323,7 +323,7 @@ export class EnterpriseHealthService {
   ): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      const activeConnections = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const activeConnections = await this.prisma.runAsSystem('[EnterpriseHealthService.checkIntegrationHealth] Internal service operation bypass', async (tx) =>
         tx.integrationConnection.count({
           where: { ...(companyId ? { companyId } : {}), status: 'ENABLED' },
         }),
@@ -402,7 +402,7 @@ export class EnterpriseHealthService {
         details: comp.details as object,
       }));
 
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[EnterpriseHealthService.recordHealthSnapshot] Internal service operation bypass', async (tx) =>
         tx.systemHealthLog.createMany({
           data: logEntries,
         }),

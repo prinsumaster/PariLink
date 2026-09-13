@@ -44,7 +44,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: { sub: string; cid: string; rid: string }) {
     console.error('JwtStrategy validate called for sub:', payload.sub);
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsSystem('[JwtStrategy.validate] Security/Auth lifecycle bypass', async (tx) =>
       tx.user.findUnique({
         where: { id: payload.sub },
         select: {

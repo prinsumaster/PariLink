@@ -36,7 +36,7 @@ export class DisasterRecoveryService {
   ) {}
 
   async createRecoveryPlan(input: CreateDrPlanInput): Promise<unknown> {
-    const plan = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const plan = await this.prisma.runAsSystem('[DisasterRecoveryService.createRecoveryPlan] Internal service operation bypass', async (tx) =>
       tx.disasterRecoveryPlan.create({
         data: {
           companyId: input.companyId,
@@ -72,7 +72,7 @@ export class DisasterRecoveryService {
       rpoTargetMinutes: number;
     }>('disasterRecoveryPlan', input.planId, input.companyId);
 
-    const drill = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const drill = await this.prisma.runAsSystem('[DisasterRecoveryService.startDrill] Internal service operation bypass', async (tx) =>
       tx.disasterRecoveryDrill.create({
         data: {
           planId: input.planId,

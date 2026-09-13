@@ -86,7 +86,7 @@ export class LoggingPlatformService {
     }
 
     try {
-      const logRecord = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const logRecord = await this.prisma.runAsSystem('[LoggingPlatformService.log] Internal service operation bypass', async (tx) =>
         tx.enterpriseLog.create({
           data: {
             companyId: input.companyId || null,
@@ -144,7 +144,7 @@ export class LoggingPlatformService {
       if (filter.endTime) where.timestamp.lte = filter.endTime;
     }
 
-    const logs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const logs = await this.prisma.runAsSystem('[LoggingPlatformService.searchLogs] Internal service operation bypass', async (tx) =>
       tx.enterpriseLog.findMany({
         where,
         orderBy: { timestamp: 'desc' },
@@ -177,7 +177,7 @@ export class LoggingPlatformService {
     };
     if (companyId) where.companyId = companyId;
 
-    const errors = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const errors = await this.prisma.runAsSystem('[LoggingPlatformService.getErrorGroupsSummary] Internal service operation bypass', async (tx) =>
       tx.enterpriseLog.findMany({
         where,
         orderBy: { timestamp: 'desc' },
@@ -249,7 +249,7 @@ export class LoggingPlatformService {
     retentionDays = 30,
   ): Promise<{ deletedCount: number }> {
     const cutoffDate = new Date(Date.now() - retentionDays * 86400000);
-    const result = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const result = await this.prisma.runAsSystem('[LoggingPlatformService.purgeExpiredLogs] Internal service operation bypass', async (tx) =>
       tx.enterpriseLog.deleteMany({
         where: {
           timestamp: { lt: cutoffDate },

@@ -115,7 +115,7 @@ export class AiGovernanceService {
   // ─── Recommendation Governance ────────────────────────────────────────────
 
   async evaluateRecommendation(recommendationId: string): Promise<boolean> {
-    const rec = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const rec = await this.prisma.runAsSystem('[AiGovernanceService.evaluateRecommendation] Internal service operation bypass', async (tx) =>
       tx.aiRecommendation.findUnique({
         where: { id: recommendationId },
       }),
@@ -126,7 +126,7 @@ export class AiGovernanceService {
       this.logger.warn(
         `Recommendation ${recommendationId} rejected by Governance (confidence ${rec.confidence} < ${this.CONFIDENCE_THRESHOLD})`,
       );
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[AiGovernanceService.evaluateRecommendation] Internal service operation bypass', async (tx) =>
         tx.aiRecommendation.update({
           where: { id: recommendationId },
           data: { status: 'REJECTED' },
@@ -149,7 +149,7 @@ export class AiGovernanceService {
       'LOW',
       `Accepted by ${userId}`,
     );
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[AiGovernanceService.acceptRecommendation] Internal service operation bypass', async (tx) =>
       tx.aiRecommendation.update({
         where: { id: recommendationId },
         data: {

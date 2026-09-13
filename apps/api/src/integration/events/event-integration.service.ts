@@ -25,7 +25,7 @@ export class EventIntegrationService {
     if (!topic) return;
 
     // In a production system, this mapping would be heavily cached in Redis.
-    const connections = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const connections = await this.prisma.runAsSystem('[EventIntegrationService.handleDomainEvent] Internal service operation bypass', async (tx) =>
       tx.integrationConnection.findMany({
         where: {
           companyId: eventPayload.tenantId,

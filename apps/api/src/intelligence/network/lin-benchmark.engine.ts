@@ -27,7 +27,7 @@ export class LinBenchmarkEngine {
   }
 
   private async computeAiApprovalRate() {
-    const events = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const events = await this.prisma.runAsSystem('[LinBenchmarkEngine.computeAiApprovalRate] Internal service operation bypass', async (tx) =>
       tx.linEventArchive.findMany({
         where: { eventType: 'anomaly.resolved' },
       }),
@@ -49,7 +49,7 @@ export class LinBenchmarkEngine {
   }
 
   private async computeAverageHealthScore() {
-    const events = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const events = await this.prisma.runAsSystem('[LinBenchmarkEngine.computeAverageHealthScore] Internal service operation bypass', async (tx) =>
       tx.linEventArchive.findMany({
         where: { eventType: 'business_health.updated' },
         orderBy: { timestamp: 'desc' },
@@ -79,7 +79,7 @@ export class LinBenchmarkEngine {
     confidenceScore: number,
     sampleSize: number,
   ) {
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[LinBenchmarkEngine.upsertBenchmark] Internal service operation bypass', async (tx) =>
       tx.linBenchmark.upsert({
         where: { metricName },
         update: {

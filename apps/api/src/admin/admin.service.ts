@@ -17,7 +17,7 @@ export class AdminService {
   constructor(private prisma: PrismaService) {}
 
   async createSubscriptionPlan(dto: CreateSubscriptionPlanDto) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[AdminService.createSubscriptionPlan] Internal service operation bypass', async (tx) =>
       tx.subscriptionPlan.create({
         data: dto,
       }),
@@ -25,14 +25,14 @@ export class AdminService {
   }
 
   async getSubscriptionPlans() {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[AdminService.getSubscriptionPlans] Internal service operation bypass', async (tx) =>
       tx.subscriptionPlan.findMany(),
     );
   }
 
   async provisionTenant(dto: CreateTenantDto) {
     // Check if admin email already exists globally
-    const existingUser = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const existingUser = await this.prisma.runAsSystem('[AdminService.provisionTenant] Internal service operation bypass', async (tx) =>
       tx.user.findUnique({
         where: { email: dto.adminEmail },
       }),

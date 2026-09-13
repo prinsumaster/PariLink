@@ -115,7 +115,7 @@ export class EnterpriseMemoryService {
    */
   async getConversationContext(sessionId: string): Promise<string> {
     try {
-      const messages = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const messages = await this.prisma.runAsSystem('[EnterpriseMemoryService.getConversationContext] Internal service operation bypass', async (tx) =>
         tx.aiChatMessage.findMany({
           where: { sessionId },
           orderBy: { createdAt: 'desc' },

@@ -223,7 +223,7 @@ export class NotificationOrchestratorService {
     channel: string,
   ): Promise<boolean> {
     const oneHourAgo = new Date(Date.now() - 3600000);
-    const count = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const count = await this.prisma.runAsSystem('[NotificationOrchestratorService.checkRateLimit] Internal service operation bypass', async (tx) =>
       tx.notificationDelivery.count({
         where: {
           userId,

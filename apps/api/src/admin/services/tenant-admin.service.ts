@@ -18,7 +18,7 @@ export class TenantAdminService {
   async getTenants(status?: string) {
     const where: any = {};
     if (status) where.status = status;
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[TenantAdminService.getTenants] Internal service operation bypass', async (tx) =>
       tx.company.findMany({
         where,
         orderBy: { createdAt: 'desc' },

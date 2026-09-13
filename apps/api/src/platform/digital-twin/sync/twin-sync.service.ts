@@ -25,7 +25,7 @@ export class TwinSyncService {
     );
 
     // Fetch the latest state to bump the version
-    const latestSnapshot = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const latestSnapshot = await this.prisma.runAsSystem('[TwinSyncService.handleDomainEvent] Internal service operation bypass', async (tx) =>
       tx.twinSnapshot.findFirst({
         where: {
           companyId: event.companyId as string,
@@ -50,7 +50,7 @@ export class TwinSyncService {
     };
 
     // Maintain historical states by inserting a new immutable record
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[TwinSyncService.handleDomainEvent] Internal service operation bypass', async (tx) =>
       tx.twinSnapshot.create({
         data: {
           companyId: event.companyId as string,

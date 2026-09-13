@@ -29,7 +29,7 @@ export class SyncEngineProcessor extends WorkerHost {
       `Starting Sync Job ${job.id} for connection ${job.data.connectionId}`,
     );
 
-    const connection = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const connection = await this.prisma.runAsSystem('[SyncEngineProcessor.process] Background job bypass', async (tx) =>
       tx.integrationConnection.findUnique({
         where: { id: job.data.connectionId },
         include: { connector: true },
@@ -68,7 +68,7 @@ export class SyncEngineProcessor extends WorkerHost {
       );
 
       // Log success
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[SyncEngineProcessor.process] Background job bypass', async (tx) =>
         tx.syncJob.create({
           data: {
             connectionId: connection.id,
@@ -84,7 +84,7 @@ export class SyncEngineProcessor extends WorkerHost {
       );
 
       // Update connection
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[SyncEngineProcessor.process] Background job bypass', async (tx) =>
         tx.integrationConnection.update({
           where: { id: connection.id },
           data: { lastSync: new Date(), lastError: null },
@@ -99,7 +99,7 @@ export class SyncEngineProcessor extends WorkerHost {
       this.logger.error(`Sync Job ${job.id} failed: ${errorMessage}`);
 
       // Log Error
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[SyncEngineProcessor.process] Background job bypass', async (tx) =>
         tx.syncError.create({
           data: {
             connectionId: connection.id,
@@ -110,7 +110,7 @@ export class SyncEngineProcessor extends WorkerHost {
       );
 
       // Update connection
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[SyncEngineProcessor.process] Background job bypass', async (tx) =>
         tx.integrationConnection.update({
           where: { id: connection.id },
           data: { status: 'FAILED', lastError: errorMessage },

@@ -28,7 +28,7 @@ export class AnomalyDetectionService {
         `Anomaly Detected in Event: ${eventPayload.payload.data?.eventType}`,
       );
 
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[AnomalyDetectionService.handleDomainEvent] Internal service operation bypass', async (tx) =>
         tx.aiAnomaly.create({
           data: {
             companyId: eventPayload.tenantId,

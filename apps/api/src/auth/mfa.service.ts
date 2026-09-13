@@ -25,7 +25,7 @@ export class MfaService {
   }
 
   async generateTotpSecret(userId: string, email: string) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsSystem('[MfaService.generateTotpSecret] Internal service operation bypass', async (tx) =>
       tx.user.findUnique({ where: { id: userId } }),
     );
     if (!user) throw new UnauthorizedException('User not found');
@@ -40,7 +40,7 @@ export class MfaService {
     // Encrypt the secret before storing
     const encryptedSecret = this.security.encryptSecret(secret);
 
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[MfaService.generateTotpSecret] Internal service operation bypass', async (tx) =>
       tx.user.update({
         where: { id: userId },
         data: { totpSecret: encryptedSecret },
@@ -51,7 +51,7 @@ export class MfaService {
   }
 
   async verifyTotpSetup(userId: string, token: string) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsSystem('[MfaService.verifyTotpSetup] Internal service operation bypass', async (tx) =>
       tx.user.findUnique({ where: { id: userId } }),
     );
     if (!user || !user.totpSecret) {
@@ -77,14 +77,14 @@ export class MfaService {
     );
 
     // Bulk insert to avoid N+1 insertions
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[MfaService.verifyTotpSetup] Internal service operation bypass', async (tx) =>
       tx.backupCode.createMany({
         data: backupCodeData,
       }),
     );
 
     // Enable MFA
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[MfaService.verifyTotpSetup] Internal service operation bypass', async (tx) =>
       tx.user.update({
         where: { id: userId },
         data: { mfaEnabled: true },
@@ -109,7 +109,7 @@ export class MfaService {
   }
 
   async verifyTotp(userId: string, token: string) {
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsSystem('[MfaService.verifyTotp] Internal service operation bypass', async (tx) =>
       tx.user.findUnique({ where: { id: userId } }),
     );
     if (!user || !user.totpSecret) {
@@ -127,7 +127,7 @@ export class MfaService {
   }
 
   async verifyBackupCode(userId: string, code: string) {
-    const backupCodes = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const backupCodes = await this.prisma.runAsSystem('[MfaService.verifyBackupCode] Internal service operation bypass', async (tx) =>
       tx.backupCode.findMany({
         where: { userId, used: false },
       }),
@@ -136,7 +136,7 @@ export class MfaService {
     for (const backup of backupCodes) {
       const isValid = await bcrypt.compare(code, backup.codeHash);
       if (isValid) {
-        await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        await this.prisma.runAsSystem('[MfaService.verifyBackupCode] Internal service operation bypass', async (tx) =>
           tx.backupCode.update({
             where: { id: backup.id },
             data: { used: true, usedAt: new Date() },

@@ -13,7 +13,7 @@ export class LinController {
   @Get('benchmarks')
   @ApiOperation({ summary: 'Get aggregated industry benchmarks' })
   async getBenchmarks() {
-    const benchmarks = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const benchmarks = await this.prisma.runAsSystem('[LinController.getBenchmarks] Global controller bypass', async (tx) =>
       tx.linBenchmark.findMany(),
     );
     return benchmarks;

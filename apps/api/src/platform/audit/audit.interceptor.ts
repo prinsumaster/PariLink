@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
@@ -10,6 +11,8 @@ import { AuditService } from '../audit/audit.service';
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(AuditInterceptor.name);
+
   constructor(private readonly auditService: AuditService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -30,17 +33,21 @@ export class AuditInterceptor implements NestInterceptor {
         const entityId = req.params?.id || data?.id || 'UNKNOWN';
         const entityType = this.inferEntityType(req.url);
 
-        await this.auditService.logEvent({
-          action: this.mapMethodToAction(method),
-          entity: entityType,
-          entityType: entityType,
-          entityId: entityId,
-          companyId: req.user.companyId,
-          userId: req.user.id,
-          afterValue: data, // The response object is usually the new state
-          correlationId: req['correlationId'],
-          source: 'API_INTERCEPTOR',
-        });
+        try {
+          await this.auditService.logEvent({
+            action: this.mapMethodToAction(method),
+            entity: entityType,
+            entityType: entityType,
+            entityId: entityId,
+            companyId: req.user.companyId,
+            userId: req.user.id,
+            afterValue: data, // The response object is usually the new state
+            correlationId: req['correlationId'],
+            source: 'API_INTERCEPTOR',
+          });
+        } catch (error) {
+          this.logger.error(`Failed to write audit log for ${entityType} ${entityId}`, error);
+        }
 
         return data;
       }),

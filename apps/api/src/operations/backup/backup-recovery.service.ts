@@ -37,7 +37,7 @@ export class BackupRecoveryService {
     const retentionDays = input.retentionDays || 30;
     const expiresAt = new Date(Date.now() + retentionDays * 86400000);
 
-    const job = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const job = await this.prisma.runAsSystem('[BackupRecoveryService.startBackupJob] Internal service operation bypass', async (tx) =>
       tx.backupJob.create({
         data: {
           companyId: input.companyId,
@@ -251,12 +251,12 @@ export class BackupRecoveryService {
 
   async purgeExpiredBackups(): Promise<{ purgedCount: number }> {
     const now = new Date();
-    const expired = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const expired = await this.prisma.runAsSystem('[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass', async (tx) =>
       tx.backupJob.findMany({ where: { expiresAt: { lt: now } } }),
     );
     const ids = expired.map((e) => e.id);
     if (ids.length > 0) {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass', async (tx) =>
         tx.backupJob.deleteMany({ where: { id: { in: ids } } }),
       );
       this.logger.log(

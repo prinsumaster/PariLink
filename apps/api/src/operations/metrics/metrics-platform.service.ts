@@ -80,7 +80,7 @@ export class MetricsPlatformService {
       if (filter.endTime) where.recordedAt.lte = filter.endTime;
     }
 
-    const records = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const records = await this.prisma.runAsSystem('[MetricsPlatformService.queryMetrics] Internal service operation bypass', async (tx) =>
       tx.platformMetric.findMany({
         where,
         orderBy: { recordedAt: 'asc' },
@@ -146,16 +146,16 @@ export class MetricsPlatformService {
     try {
       const [tripsCount, invoicesCount, loadsCount, driversCount] =
         await Promise.all([
-          this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
             tx.trip.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
             tx.invoice.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
             tx.load.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
             tx.driver.count({ where: companyId ? { companyId } : {} }),
           ),
         ]);
@@ -183,17 +183,17 @@ export class MetricsPlatformService {
   async getQueueMetrics(companyId?: string): Promise<Record<string, number>> {
     try {
       const [pending, completed, failed] = await Promise.all([
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
           tx.backgroundJob.count({
             where: { ...(companyId ? { companyId } : {}), status: 'PENDING' },
           }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
           tx.backgroundJob.count({
             where: { ...(companyId ? { companyId } : {}), status: 'COMPLETED' },
           }),
         ),
-        this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
           tx.backgroundJob.count({
             where: { ...(companyId ? { companyId } : {}), status: 'FAILED' },
           }),
@@ -220,7 +220,7 @@ export class MetricsPlatformService {
    */
   async getApiMetrics(companyId?: string): Promise<Record<string, unknown>> {
     try {
-      const logs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const logs = await this.prisma.runAsSystem('[MetricsPlatformService.getApiMetrics] Internal service operation bypass', async (tx) =>
         tx.apiAnalyticsLog.findMany({
           where: {
             ...(companyId ? { companyId } : {}),
@@ -316,7 +316,7 @@ export class MetricsPlatformService {
     companyId?: string,
   ): Promise<Record<string, unknown>> {
     try {
-      const activeCrons = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      const activeCrons = await this.prisma.runAsSystem('[MetricsPlatformService.getSchedulerMetrics] Internal service operation bypass', async (tx) =>
         tx.scheduledSync.count({
           where: {
             ...(companyId ? { connection: { companyId } } : {}),

@@ -40,7 +40,7 @@ export class BusinessRuleEngineService {
         ctx.payload.vehicleId &&
         ctx.payload.weight
       ) {
-        const vehicle = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        const vehicle = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
           tx.vehicle.findFirst({
             where: { id: ctx.payload.vehicleId },
           }),
@@ -60,7 +60,7 @@ export class BusinessRuleEngineService {
       // 2. Working Hours (HOS Compliance)
       if (rule.type === 'WORKING_HOURS' && ctx.payload.driverId) {
         // Mock check against recent trips
-        const recentTrips = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        const recentTrips = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
           tx.trip.count({
             where: {
               driverId: ctx.payload.driverId,
@@ -82,7 +82,7 @@ export class BusinessRuleEngineService {
         ctx.payload.isHazmat &&
         ctx.payload.vehicleId
       ) {
-        const vehicle = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+        const vehicle = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
           tx.vehicle.findFirst({
             where: { id: ctx.payload.vehicleId },
           }),

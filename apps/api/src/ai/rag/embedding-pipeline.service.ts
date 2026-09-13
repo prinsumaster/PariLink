@@ -45,7 +45,7 @@ export class EmbeddingPipelineService {
     this.logger.log(`Indexing document: ${title}`);
 
     // 1. Create Document Record
-    const doc = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const doc = await this.prisma.runAsSystem('[EmbeddingPipelineService.indexDocument] Internal service operation bypass', async (tx) =>
       tx.knowledgeDocument.create({
         data: { title, content, sourceType, metadata },
       }),
@@ -61,7 +61,7 @@ export class EmbeddingPipelineService {
     // 3. Generate Embeddings & Store Chunks
     for (const chunkText of chunks) {
       const vector = await this.getEmbedding(chunkText);
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[EmbeddingPipelineService.indexDocument] Internal service operation bypass', async (tx) =>
         tx.knowledgeChunk.create({
           data: {
             documentId: doc.id,

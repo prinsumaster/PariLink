@@ -336,7 +336,7 @@ export class KnowledgeGraphService {
     appId: string,
     graph: KnowledgeGraph,
   ) {
-    const app = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const app = await this.prisma.runAsSystem('[KnowledgeGraphService.buildMarketplaceAppGraph] Internal service operation bypass', async (tx) =>
       tx.marketplaceApp.findUnique({
         where: { id: appId },
         include: {

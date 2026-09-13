@@ -61,7 +61,7 @@ export class ExternalIdentityMappingService {
     priority = 0,
     rawData?: Record<string, any>,
   ) {
-    const master = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const master = await this.prisma.runAsSystem('[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass', async (tx) =>
       tx.masterRecord.findUnique({
         where: { id: masterRecordId },
       }),
@@ -70,7 +70,7 @@ export class ExternalIdentityMappingService {
       throw new NotFoundException('Golden record not found or has been merged');
     }
 
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass', async (tx) =>
       tx.externalReference.upsert({
         where: {
           masterRecordId_sourceSystem: { masterRecordId, sourceSystem },
@@ -96,7 +96,7 @@ export class ExternalIdentityMappingService {
    * Fetch all external identities for a Golden Record.
    */
   async getLinkedIdentities(masterRecordId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[ExternalIdentityMappingService.getLinkedIdentities] Internal service operation bypass', async (tx) =>
       tx.externalReference.findMany({
         where: { masterRecordId },
         orderBy: { priority: 'desc' },

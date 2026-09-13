@@ -34,7 +34,7 @@ export class WarehouseMasterService {
    * Add a zone to a warehouse
    */
   async createZone(warehouseId: string, data: any) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[WarehouseMasterService.createZone] Internal service operation bypass', async (tx) =>
       tx.warehouseZone.create({
         data: {
           ...data,
@@ -48,7 +48,7 @@ export class WarehouseMasterService {
    * Add a storage bin to a zone
    */
   async createBin(zoneId: string, data: any) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[WarehouseMasterService.createBin] Internal service operation bypass', async (tx) =>
       tx.warehouseBin.create({
         data: {
           ...data,

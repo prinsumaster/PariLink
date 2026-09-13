@@ -45,7 +45,7 @@ export class FusionEngineService {
 
     // Save the raw location data for historical mapping
     if (event.latitude !== undefined && event.longitude !== undefined) {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
         tx.vehicleLocation.create({
           data: {
             companyId: event.tenantId,
@@ -66,7 +66,7 @@ export class FusionEngineService {
     }
 
     // Now, retrieve the current Digital Twin snapshot for this vehicle
-    const twin = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const twin = await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
       tx.twinSnapshot.findUnique({
         where: {
           twinId_twinType: {
@@ -100,7 +100,7 @@ export class FusionEngineService {
     const nextVersion = twin ? twin.version + 1 : 1;
 
     // Update the Digital Twin in the Database
-    await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
       tx.twinSnapshot.upsert({
         where: {
           twinId_twinType: {

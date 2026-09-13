@@ -56,7 +56,7 @@ export class WorkspaceService {
   }
 
   async deleteSnapshot(id: string, userId: string) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[WorkspaceService.deleteSnapshot] Internal service operation bypass', async (tx) =>
       tx.workspaceSnapshot.delete({
         where: { id, userId }, // Ensure user owns it
       }),
@@ -65,7 +65,7 @@ export class WorkspaceService {
 
   // Preferences
   async updatePreferences(userId: string, preferences: any) {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[WorkspaceService.updatePreferences] Internal service operation bypass', async (tx) =>
       tx.user.update({
         where: { id: userId },
         data: { preferences },

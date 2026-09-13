@@ -36,7 +36,7 @@ export class CopilotService {
     );
 
     // 1. Role & Permission Verification
-    const user = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const user = await this.prisma.runAsSystem('[CopilotService.processRequest] Internal service operation bypass', async (tx) =>
       tx.user.findUnique({
         where: { id: req.userId },
         include: { role: true },

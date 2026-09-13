@@ -68,7 +68,7 @@ export class LinAnonymizationService {
 
   private async archiveEvent(eventType: string, anonymizedPayload: any) {
     try {
-      await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+      await this.prisma.runAsSystem('[LinAnonymizationService.archiveEvent] Internal service operation bypass', async (tx) =>
         tx.linEventArchive.create({
           data: {
             eventType,

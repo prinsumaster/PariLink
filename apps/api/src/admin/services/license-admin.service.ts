@@ -330,7 +330,7 @@ export class LicenseAdminService {
 
   // ─── List all subscription plans ────────────────────────────────────────────
   async listPlans() {
-    return this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    return this.prisma.runAsSystem('[LicenseAdminService.listPlans] Internal service operation bypass', async (tx) =>
       tx.subscriptionPlan.findMany({
         orderBy: { defaultMaxVehicles: 'asc' },
       }),
@@ -344,7 +344,7 @@ export class LicenseAdminService {
 
   // ─── List all tenants with license summary (for Super Admin Center) ──────────
   async listAllTenantsWithLicense() {
-    const companies = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const companies = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
       tx.company.findMany({
         include: {
           subscriptionPlan: true,
@@ -357,12 +357,12 @@ export class LicenseAdminService {
 
     const companyIds = companies.map((c) => c.id);
 
-    const configs = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const configs = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
       tx.tenantConfig.findMany({ where: { companyId: { in: companyIds } } }),
     );
     const configMap = new Map(configs.map((c) => [c.companyId, c]));
 
-    const vehicleCounts = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const vehicleCounts = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
       tx.vehicle.groupBy({
         by: ['companyId'],
         where: { companyId: { in: companyIds } },
@@ -373,7 +373,7 @@ export class LicenseAdminService {
       vehicleCounts.map((v) => [v.companyId, v._count]),
     );
 
-    const driverCounts = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const driverCounts = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
       tx.driver.groupBy({
         by: ['companyId'],
         where: { companyId: { in: companyIds } },

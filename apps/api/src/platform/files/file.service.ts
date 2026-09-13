@@ -36,7 +36,7 @@ export class FilePlatformService {
 
     // Here we can hook in ClamAV virus scanning, Image optimization (sharp), etc.
 
-    const document = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+    const document = await this.prisma.runAsSystem('[FilePlatformService.processUpload] Internal service operation bypass', async (tx) =>
       tx.document.create({
         data: {
           companyId: upload.companyId,

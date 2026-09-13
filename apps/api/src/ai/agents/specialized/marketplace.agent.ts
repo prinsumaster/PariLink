@@ -25,7 +25,7 @@ export class MarketplaceAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const apps = await this.prisma.runAsSystem('System operation or legacy bypass', async (tx) =>
+          const apps = await this.prisma.runAsSystem('[MarketplaceAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
             tx.marketplaceApp.findMany({
               where: {
                 OR: [
