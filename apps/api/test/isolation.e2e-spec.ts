@@ -1,84 +1,78 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
-describe('A1 Lock Monitor (Prisma runAsTenant)', () => {
+describe('A1 Lock Monitor (Real Database RLS)', () => {
   let prisma: PrismaService;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    prisma = moduleFixture.get(PrismaService);
+    // Drop NestJS mocks and connect directly to the real database
+    prisma = new PrismaService();
+    await prisma.onModuleInit();
   });
 
   afterAll(async () => {
-    await prisma.$disconnect();
+    await prisma.onModuleDestroy();
   });
 
-  it('runAsTenant should restrict visibility to only the given tenant (RLS lock)', async () => {
-    await prisma.runAsSystem('Setup dummy tenants', async (tx) => {
+  it('runAsTenant should strictly isolate data via Postgres RLS', async () => {
+    // 1. Seed test data using system bypass
+    await prisma.runAsSystem('[IsolationTest] Seed Data', async (tx) => {
       await tx.company.upsert({
-        where: { id: 'tenant-x' },
+        where: { id: 'tenant-a' },
         update: {},
-        create: { id: 'tenant-x', name: 'Tenant X' },
+        create: { id: 'tenant-a', name: 'Tenant A' },
       });
       await tx.company.upsert({
-        where: { id: 'tenant-y' },
+        where: { id: 'tenant-b' },
         update: {},
-        create: { id: 'tenant-y', name: 'Tenant Y' },
+        create: { id: 'tenant-b', name: 'Tenant B' },
+      });
+      await tx.customer.upsert({
+        where: { id: 'cust-a-123' },
+        update: {},
+        create: { id: 'cust-a-123', name: 'Cust A', companyId: 'tenant-a' },
+      });
+      await tx.customer.upsert({
+        where: { id: 'cust-b-456' },
+        update: {},
+        create: { id: 'cust-b-456', name: 'Cust B', companyId: 'tenant-b' },
       });
     });
 
-    // 2. Insert records using system bypass
-    await prisma.runAsSystem('Seeding test data for isolation test', async (tx) => {
-      await tx.customer.upsert({
-        where: { id: 'cust-x-123' },
-        update: {},
-        create: { id: 'cust-x-123', name: 'Cust X', companyId: 'tenant-x' },
-      });
-      await tx.customer.upsert({
-        where: { id: 'cust-y-456' },
-        update: {},
-        create: { id: 'cust-y-456', name: 'Cust Y', companyId: 'tenant-y' },
-      });
-    });
-
-    // 3. Test runAsTenant with tenant-x
-    await prisma.runAsTenant('tenant-x', async (tx) => {
+    // 2. Test runAsTenant with tenant-a
+    await prisma.runAsTenant('tenant-a', async (tx) => {
+      // Verify app.current_company_id is set
       const rlsCheck = await tx.$queryRaw<any>`SELECT current_setting('app.current_company_id', true) as cid`;
-      // Assert that runAsTenant correctly sets app.current_company_id — this
-      // is the live mechanism all 219 tenant_isolation_policy rows enforce.
-      // The bypass_rls GUC was removed from all policies in migration
-      // 20260902000000_drop_bypass_rls; reading it here always returns '' and
-      // proved nothing.
-      expect(rlsCheck[0].cid).toBe('tenant-x');
+      expect(rlsCheck[0].cid).toBe('tenant-a');
 
-
-      // Try findMany
-      const allCustomers = await tx.customer.findMany();
-      console.log('findMany allCustomers:', allCustomers);
-
-      const custY = await tx.customer.findUnique({
-        where: { id: 'cust-y-456' },
+      // Attempt to read own data (Should Succeed)
+      const custA = await (tx as any).customer.findUnique({
+        where: { id: 'cust-a-123' },
       });
-      console.log('custY:', custY);
-      expect(custY).toBeNull(); // The core isolation check
+      expect(custA).toBeDefined();
+      expect(custA?.id).toBe('cust-a-123');
 
-      const custX = await tx.customer.findUnique({
-        where: { id: 'cust-x-123' },
+      // ORM CROSS-TENANT READ (Should Fail/Return Null)
+      const custB = await (tx as any).customer.findUnique({
+        where: { id: 'cust-b-456' },
       });
-      expect(custX).toBeDefined();
-      expect(custX?.id).toBe('cust-x-123');
+      expect(custB).toBeNull();
+
+      // RAW SQL CROSS-TENANT READ (Should Return 0 rows due to RLS)
+      const rawCustB = await tx.$queryRaw<any>`SELECT * FROM "Customer" WHERE id = 'cust-b-456'`;
+      expect(rawCustB.length).toBe(0);
+
+      // GUC RE-POINT ATTACK (Should trigger Interceptor Exception)
+      expect(() => {
+        tx.$executeRawUnsafe(`SELECT set_config('app.current_company_id', 'tenant-b', true)`)
+      }).toThrow('Forbidden raw query pattern');
     });
 
-    // 4. Test runAsTenant with tenant-y
-    await prisma.runAsTenant('tenant-y', async (tx) => {
-      const custX = await tx.customer.findUnique({
-        where: { id: 'cust-x-123' },
+    // 3. Test runAsTenant with tenant-b
+    await prisma.runAsTenant('tenant-b', async (tx) => {
+      const custA = await (tx as any).customer.findUnique({
+        where: { id: 'cust-a-123' },
       });
-      expect(custX).toBeNull();
+      expect(custA).toBeNull();
     });
   });
 });

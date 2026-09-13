@@ -366,8 +366,39 @@ export class PrismaService
     return this.$transaction(async (tx) => {
       // Set the PostgreSQL local configuration variable for this transaction
       await tx.$executeRaw`SELECT set_config('app.current_company_id', ${companyId}, true)`;
+
+      // Wrap the transaction object to intercept raw SQL execution inside the callback
+      const safeTx = new Proxy(tx, {
+        get(target, prop, receiver) {
+          if (prop === '$executeRaw' || prop === '$executeRawUnsafe') {
+            return function (this: any, ...args: any[]) {
+              let queryStr = '';
+              const firstArg = args[0];
+              
+              if (Array.isArray(firstArg)) {
+                // Prisma.Sql template literal
+                queryStr = firstArg.join('');
+              } else if (firstArg && typeof firstArg.text === 'string') {
+                // Prisma.Sql object
+                queryStr = firstArg.text;
+              } else if (typeof firstArg === 'string') {
+                // Raw string
+                queryStr = firstArg;
+              }
+
+              if (/set_config\s*\(/i.test(queryStr)) {
+                throw new Error("Forbidden raw query pattern: session configuration injection is blocked by security interceptor");
+              }
+
+              return Reflect.get(target, prop, receiver).apply(this, args);
+            };
+          }
+          return Reflect.get(target, prop, receiver);
+        }
+      });
+
       // Execute the business logic within the RLS-constrained transaction
-      return callback(tx);
+      return callback(safeTx as any);
     });
   }
 

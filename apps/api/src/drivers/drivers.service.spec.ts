@@ -112,6 +112,15 @@ describe('DriversService', () => {
 
       expect(result.data).toHaveLength(1);
       expect(result.meta.total).toBe(1);
+      
+      // Strict assertion to prevent vacuous mutation tests
+      expect(mockTx.driver.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            companyId: 'company-1',
+          }),
+        }),
+      );
     });
 
     it('should filter by status when provided', async () => {
