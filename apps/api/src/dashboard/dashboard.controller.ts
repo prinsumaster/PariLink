@@ -20,7 +20,7 @@ export class ExecutiveDashboardController {
           where: {
             companyId,
             createdAt: { gte: today },
-            status: { in: ['GENERATED', 'PAID'] },
+            status: { in: ['ISSUED', 'OVERDUE', 'PAID'] },
           },
         }),
       ),

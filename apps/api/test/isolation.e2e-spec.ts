@@ -47,8 +47,14 @@ describe('A1 Lock Monitor (Prisma runAsTenant)', () => {
 
     // 3. Test runAsTenant with tenant-x
     await prisma.runAsTenant('tenant-x', async (tx) => {
-      const rlsCheck = await tx.$queryRaw<any>`SELECT current_setting('app.current_company_id', true) as cid, current_setting('app.bypass_rls', true) as bypass`;
-      console.log('RLS settings in tenant-x:', rlsCheck);
+      const rlsCheck = await tx.$queryRaw<any>`SELECT current_setting('app.current_company_id', true) as cid`;
+      // Assert that runAsTenant correctly sets app.current_company_id — this
+      // is the live mechanism all 219 tenant_isolation_policy rows enforce.
+      // The bypass_rls GUC was removed from all policies in migration
+      // 20260902000000_drop_bypass_rls; reading it here always returns '' and
+      // proved nothing.
+      expect(rlsCheck[0].cid).toBe('tenant-x');
+
 
       // Try findMany
       const allCustomers = await tx.customer.findMany();
