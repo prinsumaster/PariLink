@@ -28,31 +28,33 @@ describe('Enterprise Notification & Multi-Channel Alerting (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    const comp = await prisma.company.create({
-      data: { name: 'Notification Enterprise Test Corp' },
-    });
-    companyId = comp.id;
+    await prisma.runAsSystem('setup', async (tx) => {
+      const comp = await tx.company.create({
+        data: { name: 'Notification Enterprise Test Corp' },
+      });
+      companyId = comp.id;
 
-    const role = await prisma.role.create({
-      data: {
-        name: 'Notification Admin Role',
-        permissions: ['*'],
-        companyId,
-      },
-    });
+      const role = await tx.role.create({
+        data: {
+          name: 'Notification Admin Role',
+          permissions: ['*'],
+          companyId,
+        },
+      });
 
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    const user = await prisma.user.create({
-      data: {
-        email: testEmail,
-        password: hashedPassword,
-        firstName: 'Notif',
-        lastName: 'Admin',
-        companyId,
-        roleId: role.id,
-      },
+      const hashedPassword = await bcrypt.hash('password123', 10);
+      const user = await tx.user.create({
+        data: {
+          email: testEmail,
+          password: hashedPassword,
+          firstName: 'Notif',
+          lastName: 'Admin',
+          companyId,
+          roleId: role.id,
+        },
+      });
+      userId = user.id;
     });
-    userId = user.id;
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')

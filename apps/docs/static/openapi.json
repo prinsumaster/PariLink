@@ -952,6 +952,27 @@
         ]
       }
     },
+    "/api/v1/intelligence/fuel/root-cause": {
+      "get": {
+        "description": "Returns per-entry root-cause attribution. Isolates DRIVER (same vehicle+route, different drivers), MECHANICAL (same driver+route, different vehicles), ROUTE (same driver+vehicle, different routes). Returns INSUFFICIENT_DATA when no comparison group exists — never silently guesses.",
+        "operationId": "FuelIntelligenceController_getRootCause_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Fuel variance root-cause analysis",
+        "tags": [
+          "intelligence/fuel"
+        ]
+      }
+    },
     "/api/v1/data/export": {
       "post": {
         "operationId": "DataController_exportData_v1",
@@ -2803,6 +2824,35 @@
           }
         ],
         "summary": "Get Maintenance Schedules",
+        "tags": [
+          "maintenance"
+        ]
+      }
+    },
+    "/api/v1/vehicles/maintenance/kundali/{vehicleId}": {
+      "get": {
+        "operationId": "MaintenanceController_getVehicleKundali_v1",
+        "parameters": [
+          {
+            "name": "vehicleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Vehicle Service History (Kundali)",
         "tags": [
           "maintenance"
         ]
@@ -6430,6 +6480,45 @@
         ]
       }
     },
+    "/api/v1/trips/{id}/reviews": {
+      "post": {
+        "operationId": "TripsController_submitReview_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTripReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Submit a trip review",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
     "/api/v1/desks/my": {
       "get": {
         "operationId": "TripDesksController_getMyPendingDesks_v1",
@@ -6645,6 +6734,43 @@
         "summary": "Get fuel entries for a trip",
         "tags": [
           "trips-fuel"
+        ]
+      }
+    },
+    "/api/v1/routes/toll-estimate": {
+      "get": {
+        "operationId": "RoutesController_getTollEstimate_v1",
+        "parameters": [
+          {
+            "name": "originCity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "destinationCity",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get toll cost estimate for a route",
+        "tags": [
+          "routes"
         ]
       }
     },
@@ -22351,13 +22477,71 @@
           "loadIds"
         ]
       },
+      "CreateTripReviewDto": {
+        "type": "object",
+        "properties": {
+          "reviewerRole": {
+            "type": "string",
+            "enum": [
+              "DISPATCHER",
+              "LOADER",
+              "SAFETY_OFFICER",
+              "UNLOADER",
+              "FLEET_MANAGER"
+            ],
+            "description": "The role of the reviewer"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Rating from 1 to 5"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Optional comments about the trip"
+          }
+        },
+        "required": [
+          "reviewerRole",
+          "rating"
+        ]
+      },
       "CreateLoadingEventDto": {
         "type": "object",
         "properties": {}
       },
       "CreateFuelEntryDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "litres": {
+            "type": "number",
+            "description": "Litres of fuel filled",
+            "example": 180
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount paid (INR)",
+            "example": 15200
+          },
+          "pump": {
+            "type": "string",
+            "description": "Pump / station name",
+            "example": "HP Pump Nagpur"
+          },
+          "slipNo": {
+            "type": "string",
+            "description": "Fuel slip / bill number",
+            "example": "SLIP-20260910-001"
+          },
+          "filledAt": {
+            "type": "string",
+            "description": "Date/time of fill",
+            "example": "2026-09-10T10:30:00Z"
+          }
+        },
+        "required": [
+          "litres",
+          "amount"
+        ]
       },
       "CreatePlanDto": {
         "type": "object",

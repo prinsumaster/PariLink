@@ -199,3 +199,15 @@ The disaster recovery and restore paths documented above have been proven agains
 During the v0.1.0 RC deployment, the following discrepancies from the written procedure were observed:
 * **Missing Git Remote Configuration:** GitHub Actions and GHCR builds rely on the `origin` remote. If the deploy environment is cloned or initialized locally, you must explicitly run `git remote add origin <url>` before pushing tags, otherwise the CI workflows will not trigger and the GHCR images will remain unbuilt.
 * **Domain Configuration:** The `NEXT_PUBLIC_API_URL` and base URLs must be explicitly set to the live domain (e.g., `https://parilink.com`) in the production `.env` files. Leaving them as localhost breaks the client-side fetch calls in the standalone build.
+
+## 10. Connection Pool Limits
+
+**Max Replicas:** `max_replicas: 4`
+
+**Calculation:**
+* PostgreSQL default `max_connections` is `100`.
+* Reserved for superuser is `3`.
+* Idle baseline (migrations, psql sessions, internal workers) takes ~`13` connections, leaving an effective `84` connections for the app.
+* Each API instance uses `16` (App Pool) + `2` (System Pool) = `18` connections.
+* At `4` instances, the application will peak at `72` connections, leaving a safe headroom of `12-25` connections for maintenance and temporary spikes.
+* Running `5` instances uses `90` connections, leaving dangerous headroom (~`7`) and will likely cause connection drops.

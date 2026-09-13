@@ -24,23 +24,25 @@ describe('SSO Flow (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    company = await prisma.company.create({
-      data: { name: 'SSO Test Corp' },
-    });
+    await prisma.runAsSystem('e2e-setup', async tx => {
+      company = await tx.company.create({
+        data: { name: 'SSO Test Corp' },
+      });
 
-    oidcIdp = await prisma.identityProvider.create({
-      data: {
-        companyId: company.id,
-        name: 'Test OIDC',
-        type: 'OIDC',
-        status: 'ACTIVE',
-        issuer: 'http://localhost:8080/realms/test',
-        clientId: 'test-client',
-        clientSecret: 'secret',
-        authorizationEndpoint: 'http://localhost:8080/auth',
-        jitEnabled: true,
-        domainValidation: 'test.com',
-      },
+      oidcIdp = await tx.identityProvider.create({
+        data: {
+          companyId: company.id,
+          name: 'Test OIDC',
+          type: 'OIDC',
+          status: 'ACTIVE',
+          issuer: 'http://localhost:8080/realms/test',
+          clientId: 'test-client',
+          clientSecret: 'secret',
+          authorizationEndpoint: 'http://localhost:8080/auth',
+          jitEnabled: true,
+          domainValidation: 'test.com',
+        },
+      });
     });
   });
 

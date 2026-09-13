@@ -30,31 +30,46 @@ describe('Enterprise Document Management & Compliance (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    const comp = await prisma.company.create({
-      data: { name: 'Doc Enterprise Test Corp' },
-    });
-    companyId = comp.id;
+    await prisma.runAsSystem('setup', async (tx) => {
+      const comp = await tx.company.create({
+        data: { name: 'Doc Enterprise Test Corp' },
+      });
+      companyId = comp.id;
 
-    const role = await prisma.role.create({
-      data: {
-        name: 'Doc Admin Role',
-        permissions: ['*'],
-        companyId,
-      },
-    });
+      const role = await tx.role.create({
+        data: {
+          name: 'Doc Admin Role',
+          permissions: ['*'],
+          companyId,
+        },
+      });
 
-    const hashedPassword = await bcrypt.hash('password123', 10);
-    const user = await prisma.user.create({
-      data: {
-        email: testEmail,
-        password: hashedPassword,
-        firstName: 'Doc',
-        lastName: 'Admin',
-        companyId,
-        roleId: role.id,
-      },
+      const hashedPassword = await bcrypt.hash('password123', 10);
+      const user = await tx.user.create({
+        data: {
+          email: testEmail,
+          password: hashedPassword,
+          firstName: 'Doc',
+          lastName: 'Admin',
+          companyId,
+          roleId: role.id,
+        },
+      });
+      userId = user.id;
+
+      // Create a mock document in database for testing
+      const doc = await tx.document.create({
+        data: {
+          companyId,
+          type: 'BILL_OF_LADING',
+          fileName: 'bol_1001.pdf',
+          fileUrl: '/uploads/bol_1001.pdf',
+          uploadedById: userId,
+          status: 'ACTIVE',
+        },
+      });
+      documentId = doc.id;
     });
-    userId = user.id;
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
@@ -64,19 +79,6 @@ describe('Enterprise Document Management & Compliance (e2e)', () => {
         companyId,
       });
     accessToken = loginRes.body.access_token;
-
-    // Create a mock document in database for testing
-    const doc = await prisma.document.create({
-      data: {
-        companyId,
-        type: 'BILL_OF_LADING',
-        fileName: 'bol_1001.pdf',
-        fileUrl: '/uploads/bol_1001.pdf',
-        uploadedById: userId,
-        status: 'ACTIVE',
-      },
-    });
-    documentId = doc.id;
   });
 
   afterAll(async () => {

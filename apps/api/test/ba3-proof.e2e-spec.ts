@@ -60,10 +60,10 @@ describe('BA3 Proof', () => {
 
     const { PrismaService } = require('./../src/prisma/prisma.service');
     const prisma = app.get(PrismaService);
-    await prisma.invoice.update({
+    await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.invoice.update({
       where: { id: invoiceId },
       data: { status: 'PAID' }
-    });
+    }));
 
     // 4. Soft delete the customer
     await request(app.getHttpServer())

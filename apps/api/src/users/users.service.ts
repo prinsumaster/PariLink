@@ -34,17 +34,18 @@ export class UsersService {
         throw new ConflictException('Email already exists');
       }
 
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
+      const { password, ...rest } = createUserDto;
+      const hashedPassword = await bcrypt.hash(password, 12);
 
       const user = await tx.user.create({
         data: {
-          ...createUserDto,
+          ...rest,
           password: hashedPassword,
           companyId,
         },
       });
 
-      const { password, ...result } = user;
+      const { password: userPassword, ...result } = user;
 
       await this.auditService.logEvent({
         action: 'USER_CREATED',

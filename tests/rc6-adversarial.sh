@@ -199,8 +199,8 @@ STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $TOKEN
 [ "$STATUS" = "200" ] && pass "4.13 GET /vendors → 200" || fail "4.13 GET /vendors → $STATUS"
 
 # 4.14 GET roles
-STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$API/roles")
-[ "$STATUS" = "200" ] && pass "4.14 GET /roles → 200" || fail "4.14 GET /roles → $STATUS"
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$API/admin/roles")
+[ "$STATUS" = "200" ] && pass "4.14 GET /admin/roles → 200" || fail "4.14 GET /admin/roles → $STATUS"
 
 # 4.15 GET AI agents
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $TOKEN" "$API/ai/agents")

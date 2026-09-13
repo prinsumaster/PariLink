@@ -38,47 +38,47 @@ describe('BC0 - Portals Security (e2e)', () => {
     await app.init();
 
     // 1. Create Tenants
-    const tenantA = await prisma.company.create({ data: { name: 'Tenant A', status: 'ACTIVE' }});
-    const tenantB = await prisma.company.create({ data: { name: 'Tenant B', status: 'ACTIVE' }});
+    const tenantA = await prisma.runAsSystem('e2e-setup', async tx => tx.company.create({ data: { name: 'Tenant A', status: 'ACTIVE' }}));
+    const tenantB = await prisma.runAsSystem('e2e-setup', async tx => tx.company.create({ data: { name: 'Tenant B', status: 'ACTIVE' }}));
     tenantA_id = tenantA.id;
     tenantB_id = tenantB.id;
 
     // 2. Create Customers
-    const custA1 = await prisma.customer.create({ data: { name: 'Cust A1', email: `a1-${Date.now()}@test.com`, companyId: tenantA_id, status: 'ACTIVE', paymentTerms: 'NET_30' }});
-    const custA2 = await prisma.customer.create({ data: { name: 'Cust A2', email: `a2-${Date.now()}@test.com`, companyId: tenantA_id, status: 'ACTIVE', paymentTerms: 'NET_30' }});
-    const custB1 = await prisma.customer.create({ data: { name: 'Cust B1', email: `b1-${Date.now()}@test.com`, companyId: tenantB_id, status: 'ACTIVE', paymentTerms: 'NET_30' }});
+    const custA1 = await prisma.runAsSystem('setup', async tx => tx.customer.create({ data: { name: 'Cust A1', email: `a1-${Date.now()}@test.com`, companyId: tenantA_id, status: 'ACTIVE', paymentTerms: 'NET_30' }}));
+    const custA2 = await prisma.runAsSystem('setup', async tx => tx.customer.create({ data: { name: 'Cust A2', email: `a2-${Date.now()}@test.com`, companyId: tenantA_id, status: 'ACTIVE', paymentTerms: 'NET_30' }}));
+    const custB1 = await prisma.runAsSystem('setup', async tx => tx.customer.create({ data: { name: 'Cust B1', email: `b1-${Date.now()}@test.com`, companyId: tenantB_id, status: 'ACTIVE', paymentTerms: 'NET_30' }}));
     custA1_id = custA1.id;
     custA2_id = custA2.id;
     custB1_id = custB1.id;
 
     // 3. Create Loads
-    const loadA1 = await prisma.load.create({ data: { referenceNumber: 'REF-A1', companyId: tenantA_id, customerId: custA1_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }});
-    const loadA2 = await prisma.load.create({ data: { referenceNumber: 'REF-A2', companyId: tenantA_id, customerId: custA2_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }});
-    const loadB1 = await prisma.load.create({ data: { referenceNumber: 'REF-B1', companyId: tenantB_id, customerId: custB1_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }});
+    const loadA1 = await prisma.runAsSystem('setup', async tx => tx.load.create({ data: { referenceNumber: 'REF-A1', companyId: tenantA_id, customerId: custA1_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }}));
+    const loadA2 = await prisma.runAsSystem('setup', async tx => tx.load.create({ data: { referenceNumber: 'REF-A2', companyId: tenantA_id, customerId: custA2_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }}));
+    const loadB1 = await prisma.runAsSystem('setup', async tx => tx.load.create({ data: { referenceNumber: 'REF-B1', companyId: tenantB_id, customerId: custB1_id, status: 'OPEN', originAddress: 'A', originCity: 'CityA', originState: 'StateA', destinationAddress: 'B', destinationCity: 'CityB', destinationState: 'StateB', rate: 100, pickupDate: new Date(), deliveryDate: new Date() }}));
     loadA1_id = loadA1.id;
     loadA2_id = loadA2.id;
     loadB1_id = loadB1.id;
 
     // 3.5 Create Role with portals:access
-    const portalsRole = await prisma.role.create({
+    const portalsRole = await prisma.runAsSystem('setup', async tx => tx.role.create({
       data: {
         name: 'Portal User Role',
         companyId: tenantA_id,
         permissions: ['portals:access', 'portals:write', 'portals:read', 'claims:write']
       }
-    });
-    const portalsRoleB = await prisma.role.create({
+    }));
+    const portalsRoleB = await prisma.runAsSystem('setup', async tx => tx.role.create({
       data: {
         name: 'Portal User Role B',
         companyId: tenantB_id,
         permissions: ['portals:access', 'portals:write', 'portals:read', 'claims:write']
       }
-    });
+    }));
 
     // 4. Create Users for Customers and Login
     const hashed = await bcrypt.hash('password123', 10);
-    const userA1 = await prisma.user.create({ data: { email: `usera1-${Date.now()}@test.com`, password: hashed, firstName: 'A1', lastName: 'User', companyId: tenantA_id, customerId: custA1_id, status: 'ACTIVE', roleId: portalsRole.id }});
-    const userB1 = await prisma.user.create({ data: { email: `userb1-${Date.now()}@test.com`, password: hashed, firstName: 'B1', lastName: 'User', companyId: tenantB_id, customerId: custB1_id, status: 'ACTIVE', roleId: portalsRoleB.id }});
+    const userA1 = await prisma.runAsSystem('setup', async tx => tx.user.create({ data: { email: `usera1-${Date.now()}@test.com`, password: hashed, firstName: 'A1', lastName: 'User', companyId: tenantA_id, customerId: custA1_id, status: 'ACTIVE', roleId: portalsRole.id }}));
+    const userB1 = await prisma.runAsSystem('setup', async tx => tx.user.create({ data: { email: `userb1-${Date.now()}@test.com`, password: hashed, firstName: 'B1', lastName: 'User', companyId: tenantB_id, customerId: custB1_id, status: 'ACTIVE', roleId: portalsRoleB.id }}));
 
     const loginA1 = await request(app.getHttpServer()).post('/auth/login').send({ email: userA1.email, password: 'password123' });
     if (loginA1.status !== 200) console.error('LOGIN A1 FAILED:', loginA1.body);
@@ -93,10 +93,12 @@ describe('BC0 - Portals Security (e2e)', () => {
 
   afterAll(async () => {
     // Cleanup
-    await prisma.load.deleteMany({ where: { id: { in: [loadA1_id, loadA2_id, loadB1_id].filter(Boolean) } } });
-    await prisma.user.deleteMany({ where: { customerId: { in: [custA1_id, custB1_id].filter(Boolean) } } });
-    await prisma.customer.deleteMany({ where: { id: { in: [custA1_id, custA2_id, custB1_id].filter(Boolean) } } });
-    await prisma.company.deleteMany({ where: { id: { in: [tenantA_id, tenantB_id].filter(Boolean) } } });
+    await prisma.runAsSystem('cleanup', async tx => {
+      await tx.load.deleteMany({ where: { id: { in: [loadA1_id, loadA2_id, loadB1_id].filter(Boolean) } } });
+      await tx.user.deleteMany({ where: { customerId: { in: [custA1_id, custB1_id].filter(Boolean) } } });
+      await tx.customer.deleteMany({ where: { id: { in: [custA1_id, custA2_id, custB1_id].filter(Boolean) } } });
+      await tx.company.deleteMany({ where: { id: { in: [tenantA_id, tenantB_id].filter(Boolean) } } });
+    });
     await new Promise(r => setTimeout(r, 200));
     await app.close();
   });

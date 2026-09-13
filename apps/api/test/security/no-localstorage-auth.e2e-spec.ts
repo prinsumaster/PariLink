@@ -17,19 +17,17 @@ describe('Security: no raw localStorage auth reads in components', () => {
 
   // Patterns that are BANNED in component code (.tsx / .ts)
   const BANNED_PATTERNS = [
-    // bearer token reads by any common key name
-    /localStorage\.getItem\(['"`]token['"`]\)/,
-    /localStorage\.getItem\(['"`]access_token['"`]\)/,
-    /localStorage\.getItem\(['"`]auth_token['"`]\)/,
-    /localStorage\.getItem\(['"`]jwt['"`]\)/,
-    // role reads that could grant privilege
-    /localStorage\.getItem\(['"`]role['"`]\)/,
+    // Literal string access for tokens and roles
+    /(?:localStorage|sessionStorage)\.getItem\(['"`](?:token|access_token|auth_token|jwt|role)['"`]\)/,
+    // Dynamic access (non-literal first argument) which could be hiding a token key
+    /(?:localStorage|sessionStorage)\.getItem\((?!['"`])/
   ];
 
   // Files that are ALLOWED to touch localStorage (Zustand store internals, mobile-auth util, etc.)
   const ALLOWLIST = [
     'store/auth.ts',           // Zustand customStorage — intentional, cookie-coupled
     'lib/security/mobile-auth.ts', // Explicit secure wrapper — not raw auth
+    'lib/command-registry.ts', // Stores recent UI commands (non-auth dynamic key)
   ];
 
   function collectFiles(dir: string, exts: string[]): string[] {

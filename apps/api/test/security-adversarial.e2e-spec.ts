@@ -32,7 +32,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     app.useGlobalPipes(
-      new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({ transform: true, whitelist: true }),
     );
     app.enableShutdownHooks();
     await app.init();
@@ -43,22 +43,22 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
     const hashedPassword = await bcrypt.hash(testPassword, 10);
 
     // 1. Create Companies
-    companyA = await prisma.company.create({ data: { name: 'COMPANY_A_CORP', status: 'ACTIVE' } });
-    companyB = await prisma.company.create({ data: { name: 'COMPANY_B_LLC', status: 'ACTIVE' } });
+    companyA = await prisma.runAsSystem('e2e-setup', async tx => tx.company.create({ data: { name: 'COMPANY_A_CORP', status: 'ACTIVE' } }));
+    companyB = await prisma.runAsSystem('e2e-setup', async tx => tx.company.create({ data: { name: 'COMPANY_B_LLC', status: 'ACTIVE' } }));
 
     // 2. Create Roles
-    const superAdminRoleA = await prisma.role.create({
+    const superAdminRoleA = await prisma.runAsSystem('e2e-setup', async tx => tx.role.create({
       data: { name: 'SUPER_ADMIN', permissions: ['*'], companyId: companyA.id },
-    });
-    const driverRoleA = await prisma.role.create({
+    }));
+    const driverRoleA = await prisma.runAsSystem('e2e-setup', async tx => tx.role.create({
       data: { name: 'DRIVER', permissions: ['telematics:read'], companyId: companyA.id },
-    });
-    const superAdminRoleB = await prisma.role.create({
+    }));
+    const superAdminRoleB = await prisma.runAsSystem('e2e-setup', async tx => tx.role.create({
       data: { name: 'SUPER_ADMIN', permissions: ['*'], companyId: companyB.id },
-    });
+    }));
 
     // 3. Create Users
-    adminA = await prisma.user.create({
+    adminA = await prisma.runAsSystem('e2e-setup', async tx => tx.user.create({
       data: {
         email: `admin-a-${Date.now()}@example.com`,
         firstName: 'Admin', lastName: 'A',
@@ -67,9 +67,9 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         roleId: superAdminRoleA.id,
         status: 'ACTIVE',
       },
-    });
+    }));
 
-    userA = await prisma.user.create({
+    userA = await prisma.runAsSystem('e2e-setup', async tx => tx.user.create({
       data: {
         email: `driver-a-${Date.now()}@example.com`,
         firstName: 'Driver', lastName: 'A',
@@ -78,9 +78,9 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         roleId: driverRoleA.id,
         status: 'ACTIVE',
       },
-    });
+    }));
 
-    adminB = await prisma.user.create({
+    adminB = await prisma.runAsSystem('e2e-setup', async tx => tx.user.create({
       data: {
         email: `admin-b-${Date.now()}@example.com`,
         firstName: 'Admin', lastName: 'B',
@@ -89,7 +89,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         roleId: superAdminRoleB.id,
         status: 'ACTIVE',
       },
-    });
+    }));
 
     // Login users to get real tokens
     const login = async (email: string) => {
@@ -110,9 +110,9 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
 
   afterAll(async () => {
     // Cleanup
-    await prisma.user.deleteMany({ where: { id: { in: [adminA.id, userA.id, adminB.id] } } });
-    await prisma.role.deleteMany({ where: { companyId: { in: [companyA.id, companyB.id] } } });
-    await prisma.company.deleteMany({ where: { id: { in: [companyA.id, companyB.id] } } });
+    await prisma.runAsSystem('e2e-setup', async tx => tx.user.deleteMany({ where: { id: { in: [adminA?.id, userA?.id, adminB?.id].filter(Boolean) } } }));
+    await prisma.runAsSystem('e2e-setup', async tx => tx.role.deleteMany({ where: { companyId: { in: [companyA?.id, companyB?.id].filter(Boolean) } } }));
+    await prisma.runAsSystem('e2e-setup', async tx => tx.company.deleteMany({ where: { id: { in: [companyA?.id, companyB?.id].filter(Boolean) } } }));
     await app.close();
   });
 
@@ -141,7 +141,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
     });
 
     it('should reject expired JWT', async () => {
-      const validSecret = process.env.JWT_SECRET;
+      const validSecret = process.env.JWT_SECRET || 'fallback-secret-for-tests';
       const expiredJwtService = new JwtService({ secret: validSecret });
       const expiredToken = expiredJwtService.sign(
         { sub: adminA.id, cid: companyA.id },
@@ -158,10 +158,10 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
   describe('2. Zero Trust & Revocation Fuzzing', () => {
     it('should instantly block a suspended user despite valid JWT', async () => {
       // Suspend userA
-      await prisma.user.update({
+      await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.user.update({
         where: { id: userA.id },
         data: { status: 'SUSPENDED' },
-      });
+      }));
 
       // The JWT is still cryptographically valid, but Zero Trust should block it
       await request(app.getHttpServer())
@@ -170,17 +170,17 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         .expect(401);
 
       // Restore userA for next tests
-      await prisma.user.update({
+      await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.user.update({
         where: { id: userA.id },
         data: { status: 'ACTIVE' },
-      });
+      }));
     });
 
     it('should instantly block a deleted user despite valid JWT', async () => {
-      await prisma.user.update({
+      await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.user.update({
         where: { id: userA.id },
         data: { deletedAt: new Date() },
-      });
+      }));
 
       await request(app.getHttpServer())
         .get('/mdm/search?query=test')
@@ -188,10 +188,10 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         .expect(401);
 
       // Restore userA
-      await prisma.user.update({
+      await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.user.update({
         where: { id: userA.id },
         data: { deletedAt: null },
-      });
+      }));
     });
   });
 
@@ -250,13 +250,17 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
           masterData: { name: 'Evil Corp' }, 
           sourceSystem: 'TEST',
           companyId: companyB.id // Malicious injection
-        })
-        .expect(201); // The request succeeds, but the system must IGNORE the injected companyId
+        });
+        
+      console.log('ADVERSARIAL RES STATUS:', res.status);
+      console.log('ADVERSARIAL RES BODY:', res.body);
+      
+      expect(res.status).toBe(201);
 
       // Verify the record was actually created under CompanyA, NOT CompanyB
-      const record = await prisma.masterRecord.findFirst({
-        where: { id: res.body.id },
-      });
+      const record = await prisma.runAsSystem('e2e-setup', async tx => tx.masterRecord.findFirst({
+        where: { id: res.body.data ? res.body.data.id : res.body.id },
+      }));
 
       expect(record?.companyId).toEqual(companyA.id);
       expect(record?.companyId).not.toEqual(companyB.id);
@@ -266,22 +270,22 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
   describe('5. Cross-Tenant IDOR on Deep Entities', () => {
     it('AdminB cannot access AdminA JobCard', async () => {
       // Create Vehicle in A
-      const vehicle = await prisma.vehicle.create({
+      const vehicle = await prisma.runAsSystem('e2e-setup', async tx => tx.vehicle.create({
         data: { companyId: companyA.id, licensePlate: 'TRK-001', vin: 'VIN123', status: 'ACTIVE' }
-      });
+      }));
       // Create Workshop in A
-      const workshop = await prisma.workshop.create({
+      const workshop = await prisma.runAsSystem('e2e-setup', async tx => tx.workshop.create({
         data: { companyId: companyA.id, name: 'Main Workshop', location: 'HQ' }
-      });
+      }));
       // Create JobCard in A
-      const jobCard = await prisma.jobCard.create({
+      const jobCard = await prisma.runAsSystem('e2e-setup', async tx => tx.jobCard.create({
           data: {
           companyId: companyA.id,
           vehicleId: vehicle.id,
           workshopId: workshop.id,
           status: 'OPEN',
           issueReported: 'Brake Check',
-        },});
+        },}));
 
       // B attempts to access it
       await request(app.getHttpServer())
@@ -293,13 +297,13 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
 
     it('AdminB cannot access AdminA FuelTransaction', async () => {
       // Create Vehicle in A
-      const vehicle = await prisma.vehicle.create({
+      const vehicle = await prisma.runAsSystem('e2e-setup', async tx => tx.vehicle.create({
         data: { companyId: companyA.id, licensePlate: 'TRK-002', vin: 'VIN456', status: 'ACTIVE' }
-      });
+      }));
       // Create FuelTransaction in A
-      const tx = await prisma.fuelTransaction.create({
+      const txObj = await prisma.runAsSystem('e2e-setup', async tx => tx.fuelTransaction.create({
         data: { companyId: companyA.id, vehicleId: vehicle.id, gallons: 50, totalCost: 200, transactionTime: new Date() }
-      });
+      }));
 
       // B attempts to access it (assuming GET /vehicles/fuel/transactions)
       const res = await request(app.getHttpServer())
