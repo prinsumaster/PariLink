@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Play, CheckCircle2, XCircle, Clock, RotateCcw, ShieldAlert, Cpu } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useRealtimeEngine } from '@/hooks/use-realtime-engine';
 import { api } from '@/services/api';
 
+// @ts-ignore: reserved
 interface ExecutionStep {
   id: string;
   nodeId: string;

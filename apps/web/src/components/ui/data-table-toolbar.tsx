@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, SlidersHorizontal, Download, X, Trash2, FileSpreadsheet, FileText } from 'lucide-react';
+import { SlidersHorizontal, Download, Trash2, FileSpreadsheet, FileText } from 'lucide-react';
 import { Table } from '@tanstack/react-table';
 
 interface DataTableToolbarProps<TData> {

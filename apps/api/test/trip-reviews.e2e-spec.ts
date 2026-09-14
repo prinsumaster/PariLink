@@ -15,8 +15,10 @@ describe('TripReviews (e2e)', () => {
   let tenantId: string;
   let adminToken: string;
   let tripId: string;
-  let driverId: string;
-  let reviewerId: string;
+  // @ts-ignore: reserved for future use
+  let _driverId: string;
+  // @ts-ignore: reserved for future use
+  let _reviewerId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -54,7 +56,7 @@ describe('TripReviews (e2e)', () => {
         }
       })
     );
-    reviewerId = user.id;
+    _reviewerId = user.id;
 
     adminToken = jwt.sign(
       { sub: user.id, email: user.email, companyId: tenantId, permissions: ['trips:create', 'trips:update', 'trips:read'] },
@@ -67,7 +69,7 @@ describe('TripReviews (e2e)', () => {
         data: { companyId: tenantId, firstName: 'Bob', lastName: 'Driver', status: 'AVAILABLE' }
       })
     );
-    driverId = driver.id;
+    _driverId = driver.id;
 
     const trip = await prisma.runAsSystem('e2e-setup', (tx) => 
       tx.trip.create({
@@ -87,7 +89,7 @@ describe('TripReviews (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .send({})
       .expect(400)
-      .expect((res) => {
+      .expect((res: any) => {
         expect(res.body.message).toContain('reviewerRole must be one of the following values: DISPATCHER, LOADER, SAFETY_OFFICER, UNLOADER, FLEET_MANAGER');
         expect(res.body.message).toContain('rating should not be empty');
       });
@@ -226,7 +228,7 @@ describe('TripReviews (e2e)', () => {
     // Query TripReview directly with runAsTenant for Tenant A - should NOT see TenantB rows
     const tenantAReviews = await prisma.runAsTenant(tenantId, (tx: any) =>
       tx.tripReview.findMany()
-    );
+    ) as any[];
 
     // All returned rows must belong to Tenant A
     for (const r of tenantAReviews) {

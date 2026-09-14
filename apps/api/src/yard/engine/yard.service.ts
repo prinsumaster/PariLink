@@ -1,11 +1,10 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class YardService {
-  private readonly logger = new Logger(YardService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventStore: EventStoreService,

@@ -41,7 +41,8 @@ export class PlanningController {
   constructor(
     private readonly planning: PlanningService,
     private readonly exceptions: ExceptionService,
-    private readonly promises: CustomerPromiseService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _promises: CustomerPromiseService,
     private readonly kpi: DispatchKpiService,
   ) {}
 

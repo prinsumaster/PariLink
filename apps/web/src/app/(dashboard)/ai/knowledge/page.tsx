@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, UploadCloud, Search, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { api } from '@/services/api';
 
 export default function AiKnowledgeHubPage() {
   const [documents, setDocuments] = useState([

@@ -1,7 +1,6 @@
+import { useState, useEffect } from 'react';
 'use client';
-import { money, num, dateIN } from '@/lib/format';
-
-import React, { useState, useEffect } from 'react';
+import { dateIN } from '@/lib/format';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
@@ -82,6 +81,7 @@ export default function AuditLogsPage() {
                       No audit events recorded yet.
                     </TableCell>
                   </TableRow>
+                // @ts-ignore: implicit any
                 ) : (
                   data.map((log) => (
                     <TableRow key={log.id}>

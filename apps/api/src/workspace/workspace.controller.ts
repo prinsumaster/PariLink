@@ -1,4 +1,4 @@
-import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../dto/workspace.dto';
+import { CreateWorkspaceDto } from '../dto/workspace.dto';
 import {
   Controller,
   Get,

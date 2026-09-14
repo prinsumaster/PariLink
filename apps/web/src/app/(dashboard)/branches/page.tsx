@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import { RoleGuard } from '@/components/auth/role-guard';
-import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/status-badge';
 import Link from 'next/link';
 import {
@@ -25,7 +24,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
 
 interface Branch {
   id: string;

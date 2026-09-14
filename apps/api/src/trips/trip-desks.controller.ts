@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { TripDesksService } from './trip-desks.service';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';

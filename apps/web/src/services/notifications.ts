@@ -1,5 +1,5 @@
 import { api } from '@/services/api';
-import { Notification, NotificationPreferences, NotificationFilters, PaginatedNotifications } from '@/types/notifications';
+import { NotificationPreferences, NotificationFilters, PaginatedNotifications } from '@/types/notifications';
 
 export const notificationService = {
   getNotifications: async (filters: NotificationFilters): Promise<PaginatedNotifications> => {

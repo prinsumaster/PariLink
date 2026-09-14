@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import type {
-  StandardCloudEvent,
   PlatformEvent,
 } from '../../platform/events/event.service';
 
@@ -84,7 +83,7 @@ export class LinAnonymizationService {
     }
   }
 
-  private generalizeLocation(location: any): string {
+  private generalizeLocation(_location: any): string {
     // Stub implementation to generalize GPS into large geographic buckets
     return 'US-West';
   }

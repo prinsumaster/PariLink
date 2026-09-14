@@ -16,7 +16,6 @@ import { TyreManagementService } from './fleet/tyre-management.service';
 import { FleetOrchestratorService } from './fleet/fleet-orchestrator.service';
 import { FleetAnalyticsService } from './fleet/fleet-analytics.service';
 import { PlatformModule } from '../platform/platform.module';
-import { PermitsModule } from './permits/permits.module';
 import { WorkflowModule } from '../workflow/workflow.module';
 
 @Module({

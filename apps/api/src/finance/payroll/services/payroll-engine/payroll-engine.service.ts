@@ -6,7 +6,7 @@ import { PrismaService } from '../../../../prisma/prisma.service';
 export class PayrollEngineService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(companyId: string, userId: string, data: any) {
+  async create(companyId: string, _userId: string, data: any) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.payrollRun.create({
         data: { ...data, companyId },
@@ -47,7 +47,7 @@ export class PayrollEngineService {
     return item;
   }
 
-  async update(companyId: string, id: string, userId: string, data: any) {
+  async update(companyId: string, id: string, _userId: string, data: any) {
     await this.findOne(companyId, id); // verify access
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.payrollRun.updateMany({
@@ -57,7 +57,7 @@ export class PayrollEngineService {
     });
   }
 
-  async remove(companyId: string, id: string, userId: string) {
+  async remove(companyId: string, id: string, _userId: string) {
     await this.findOne(companyId, id);
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.payrollRun.deleteMany({

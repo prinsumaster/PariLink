@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class DriverTelemetryService {
-  private readonly logger = new Logger(DriverTelemetryService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async logLocation(

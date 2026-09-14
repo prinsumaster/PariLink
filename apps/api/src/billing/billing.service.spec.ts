@@ -9,7 +9,8 @@ import { AuditService } from '../platform/audit/audit.service';
 
 describe('BillingService', () => {
   let service: BillingService;
-  let prisma: jest.Mocked<PrismaService>;
+  // @ts-ignore: reserved for future use
+  let _prisma: jest.Mocked<PrismaService>;
 
   const mockTx = {
     load: { findFirst: jest.fn() },
@@ -20,8 +21,8 @@ describe('BillingService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
-    runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
+    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
   };
@@ -56,6 +57,11 @@ describe('BillingService', () => {
       await expect(
         service.generateInvoice('company-1', { loadId: 'load-999' }),
       ).rejects.toThrow(NotFoundException);
+      expect(mockTx.load.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ id: 'load-999', companyId: 'company-1' }),
+        }),
+      );
     });
 
     it('should throw BadRequestException when load is not DELIVERED', async () => {
@@ -143,7 +149,10 @@ describe('BillingService', () => {
 
       expect(mockTx.invoice.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ amount: 2500 }),
+          data: expect.objectContaining({
+            companyId: 'company-1',
+            amount: 2500,
+          }),
         }),
       );
     });

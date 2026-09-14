@@ -151,7 +151,8 @@ function IndiaFallback() {
   );
 }
 
-export function LiveMap({ vehicles = [], isLoading }: LiveMapProps) {
+// @ts-ignore: reserved
+export function LiveMap({ vehicles = [], isLoading: _isLoading }: LiveMapProps) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mapError, setMapError] = useState(false);
@@ -201,7 +202,7 @@ export function LiveMap({ vehicles = [], isLoading }: LiveMapProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 p-0 relative pt-[73px]">
+      <CardContent className="flex-1 h-full w-full p-0 relative pt-[73px]">
         {!mounted ? (
           <div className="w-full h-full bg-gray-100 dark:bg-gray-800 animate-pulse" />
         ) : mapError ? (

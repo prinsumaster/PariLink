@@ -1,5 +1,6 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   NotFoundException,
   BadRequestException,
@@ -9,8 +10,7 @@ import { EventStoreService } from '../../platform/digital-twin/event-store.servi
 
 @Injectable()
 export class InboundService {
-  private readonly logger = new Logger(InboundService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventStore: EventStoreService,

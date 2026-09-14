@@ -273,9 +273,12 @@ async function buildDailyBullets(prisma: PrismaService, companyId: string): Prom
 export class AiCopilotChatService {
   constructor(
     private prisma: PrismaService,
-    private copilot: CopilotService,
-    private orchestrator: AgentOrchestratorService,
-    private rag: EnterpriseRagService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _copilot: CopilotService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _orchestrator: AgentOrchestratorService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _rag: EnterpriseRagService,
   ) {}
 
   async getSessions(companyId: string, userId: string) {
@@ -312,7 +315,7 @@ export class AiCopilotChatService {
 
   async chat(
     companyId: string,
-    userId: string,
+    _userId: string,
     sessionId: string,
     userMessage: string,
   ) {
@@ -358,7 +361,7 @@ export class AiCopilotChatService {
 
   chatStream(
     companyId: string,
-    userId: string,
+    _userId: string,
     sessionId: string,
     userMessage: string,
   ): Observable<MessageEvent> {
@@ -423,7 +426,7 @@ export class AiCopilotChatService {
     });
   }
 
-  async getDailyBrief(companyId: string, userId: string) {
+  async getDailyBrief(companyId: string, _userId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

@@ -1,13 +1,3 @@
-/**
- * Security regression test: no component may read a Bearer token or role
- * directly from localStorage. All auth reads must go through:
- *  - api.ts (axios singleton reading useAuthStore.getState().token)
- *  - useAuthStore hook (Zustand with cookie-coupled customStorage)
- *
- * If this test fails, a component has re-introduced a raw localStorage auth bypass.
- */
-
-import { execSync } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 

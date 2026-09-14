@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth';
 import { Skeleton } from '@/components/ui/skeleton';
-import { WorkspaceShell } from '@/components/workspace/workspace-shell';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);

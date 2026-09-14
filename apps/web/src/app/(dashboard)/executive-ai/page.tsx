@@ -1,5 +1,4 @@
-import React from 'react';
-import { BrainCircuit, MessageSquare, TrendingUp } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
 export default function ExecutiveAiPage() {
   return (

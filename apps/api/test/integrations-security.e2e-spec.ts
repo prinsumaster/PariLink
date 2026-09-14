@@ -20,7 +20,8 @@ import { IntegrationAuthService } from '../src/integration/auth/auth.service';
 describe('Integrations Security Regression (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let authService: IntegrationAuthService;
+  // @ts-ignore: reserved for future use
+  let _authService: IntegrationAuthService;
   let tokenA: string;
   let tokenB: string;
   const uuid = crypto.randomUUID().substring(0, 8);
@@ -41,7 +42,7 @@ describe('Integrations Security Regression (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
-    authService = moduleFixture.get<IntegrationAuthService>(IntegrationAuthService);
+    _authService = moduleFixture.get<IntegrationAuthService>(IntegrationAuthService);
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,

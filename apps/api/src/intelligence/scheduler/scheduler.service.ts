@@ -8,8 +8,10 @@ export class AiSchedulerService {
   private readonly logger = new Logger(AiSchedulerService.name);
 
   constructor(
-    private predictionService: PredictionService,
-    private riskService: RiskService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _predictionService: PredictionService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _riskService: RiskService,
   ) {}
 
   // Example Cron job that would run nightly to recalculate risk scores

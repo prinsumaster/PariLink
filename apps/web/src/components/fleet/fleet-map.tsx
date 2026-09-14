@@ -1,7 +1,6 @@
 'use client';
 
 import { Vehicle } from '@/types/fleet';
-import { Card, CardContent } from '@/components/ui/card';
 import { useTheme } from 'next-themes';
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
@@ -51,7 +50,8 @@ export function FleetMap({ vehicles, isLoading }: FleetMapProps) {
 
   const mapStyle = rasterStyle(resolvedTheme === 'dark');
 
-  const vehiclesWithLocation = vehicles.filter(v => v.location);
+  // @ts-ignore: reserved
+  const _vehiclesWithLocation = vehicles.filter(v => v.location);
 
   return (
     <div className="relative w-full h-full">

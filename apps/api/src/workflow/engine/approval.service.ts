@@ -58,7 +58,7 @@ export class ApprovalEngineService {
     companyId: string,
     requestId: string,
     stepId: string,
-    userId: string,
+    _userId: string,
     decision: 'APPROVED' | 'REJECTED',
     comments?: string,
   ) {

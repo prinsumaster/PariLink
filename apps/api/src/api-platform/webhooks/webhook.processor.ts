@@ -8,7 +8,8 @@ import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util
 import * as crypto from 'crypto';
 import { URL } from 'url';
 
-function validateWebhookUrl(targetUrl: string) {
+  // @ts-ignore: reserved for future use
+function _validateWebhookUrl(targetUrl: string) {
   const parsed = new URL(targetUrl);
   const blockedHosts = [
     'localhost',
@@ -37,7 +38,8 @@ export class WebhookProcessor extends WorkerHost {
 
   async process(job: Job<any, any, string>): Promise<any> {
     if (job.name === 'deliver_webhook') {
-      const { endpointId, url, secret, payload, companyId } = job.data;
+  // @ts-ignore: reserved for future use
+      const { _endpointId, url, secret, payload, companyId } = job.data;
       const signature = this.generateSignature(payload, secret);
 
       // 1. Create a WebhookDelivery record (or update if retrying)

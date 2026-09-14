@@ -2,12 +2,13 @@
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCcw, ServerCrash } from 'lucide-react';
+import { RefreshCcw, ServerCrash } from 'lucide-react';
 
 // global-error must include html and body tags
 export default function GlobalError({
   error,
-  reset,
+  // @ts-ignore: reserved
+  reset: _reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;

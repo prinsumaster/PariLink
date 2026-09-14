@@ -18,7 +18,8 @@ export class FormEngine {
   private readonly logger = new Logger(FormEngine.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
   ) {}
 

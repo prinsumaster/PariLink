@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   NotFoundException,
   BadRequestException,
@@ -23,8 +24,7 @@ export interface MappingRule {
 
 @Injectable()
 export class DataMappingService {
-  private readonly logger = new Logger(DataMappingService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit?: AuditService,

@@ -15,10 +15,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
 import { api } from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
-import Link from "next/link"
 
 export default function InstalledAppsPage() {
   const router = useRouter();

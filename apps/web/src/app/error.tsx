@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { AlertTriangle, RefreshCw, Home, ServerCrash } from 'lucide-react';
+import { RefreshCw, Home, ServerCrash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/ui/motion';
-import Link from 'next/link';
 
 export default function GlobalError({
   error,

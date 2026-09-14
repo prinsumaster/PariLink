@@ -84,9 +84,9 @@ export class SalesforceConnector extends BaseConnector {
 
   async syncEntity(
     entityType: string,
-    credentials: any,
+    _credentials: any,
     lastSyncDate?: Date,
-    cursor?: string,
+    _cursor?: string,
   ): Promise<SyncResult> {
     this.logger.log(`Syncing Salesforce ${entityType} from ${lastSyncDate}`);
     // Deterministic sync response. Real sync logic dispatches a queue job and reads actual DB cursors.

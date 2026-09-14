@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DynamicStructuredTool } from '@langchain/core/tools';
 import { BaseAgent } from '../base.agent';
 import { LlmManagerService } from '../../platform/llm-manager.service';

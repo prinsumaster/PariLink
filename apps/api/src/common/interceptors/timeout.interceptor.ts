@@ -10,7 +10,7 @@ import { catchError, timeout } from 'rxjs/operators';
 
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  intercept(_context: ExecutionContext, next: CallHandler): Observable<any> {
     // 30 seconds default timeout for all API requests
     const timeoutDuration = 30000;
 

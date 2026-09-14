@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuthStore } from '@/store/auth';
-import { Role, Permission } from '@/types/auth';
+import { Role } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 import { ShieldAlert } from 'lucide-react';
@@ -17,7 +17,8 @@ interface RoleGuardProps {
 
 export function RoleGuard({ children, allowedRoles, requiredPermissions, fallback }: RoleGuardProps) {
   const { user, isAuthenticated } = useAuthStore();
-  const router = useRouter();
+  // @ts-ignore: reserved
+  const _router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

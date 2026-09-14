@@ -19,7 +19,8 @@ export interface GovernancePolicy {
 export class GovernanceService {
   private readonly logger = new Logger(GovernanceService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+    // @ts-ignore: DI dependency reserved for future use
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Evaluates if a given dataset can be exported based on its classification and sensitivity

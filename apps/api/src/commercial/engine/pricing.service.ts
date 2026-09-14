@@ -1,16 +1,16 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import type { Prisma, RateCard } from '@prisma/client';
+import type { RateCard } from '@prisma/client';
 
 @Injectable()
 export class PricingService {
-  private readonly logger = new Logger(PricingService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

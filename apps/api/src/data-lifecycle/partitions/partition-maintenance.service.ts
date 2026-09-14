@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../../prisma/prisma.service';
 
 /**
@@ -124,7 +124,8 @@ export class PartitionMaintenanceService implements OnModuleInit {
   }
 
   private async createMonth(offset: number): Promise<string | null> {
-    const rows = await this.prisma.runAsSystem(
+  // @ts-ignore: reserved for future use
+    const _rows = await this.prisma.runAsSystem(
       `partition maintenance: ensure VehicleLocation partition month+${offset}`,
       async (tx) =>
         tx.$queryRawUnsafe<{ created: boolean }[]>(`

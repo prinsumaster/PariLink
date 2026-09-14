@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { dateIN } from '@/lib/format';
 
 import { useState, useCallback, useEffect } from 'react';
 import { operationsApi } from '@/services/operations';
@@ -20,7 +20,7 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export default function IncidentsPage() {
-  const [incidents, setIncidents] = useState<any[]>([]);
+  const [incidents, _setIncidents] = useState<any[]>([]);
   const [metrics, setMetrics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedIncident, setSelectedIncident] = useState<any>(null);

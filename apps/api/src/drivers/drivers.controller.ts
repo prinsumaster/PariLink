@@ -10,7 +10,6 @@ import {
   Delete,
   Query,
   UseGuards,
-  Request,
   NotFoundException,
 } from '@nestjs/common';
 import { DriversService } from './drivers.service';

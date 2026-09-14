@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Send, Loader2, Sparkles, User, Bot } from 'lucide-react';
+import { Send, Loader2, User, Bot } from 'lucide-react';
 import { Button } from './button';
-import { Avatar, AvatarFallback, AvatarImage } from './avatar';
+import { Avatar, AvatarFallback } from './avatar';
 import { Textarea } from './textarea';
 
 export interface ChatMessage {

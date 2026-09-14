@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { GpsService } from './gps.service';
 import { GpsPingDto } from './gps.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';

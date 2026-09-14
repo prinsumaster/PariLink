@@ -1,9 +1,6 @@
 import {
   IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsNumber,
-  IsBoolean,
+  IsNotEmpty
 } from 'class-validator';
 
 export class EnvironmentVariables {

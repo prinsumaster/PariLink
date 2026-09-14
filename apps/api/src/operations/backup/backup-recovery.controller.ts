@@ -4,12 +4,10 @@ import {
   Post,
   Body,
   Param,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
-  BackupRecoveryService,
-  CreateBackupInput,
+  BackupRecoveryService
 } from './backup-recovery.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';

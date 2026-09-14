@@ -1,4 +1,4 @@
-import { CreateWebhookDto, UpdateWebhookDto } from '../dto/webhook.dto';
+import { CreateWebhookDto } from '../dto/webhook.dto';
 import {
   Controller,
   Post,

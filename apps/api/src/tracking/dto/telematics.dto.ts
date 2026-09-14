@@ -4,12 +4,9 @@ import {
   IsOptional,
   IsBoolean,
   IsArray,
-  IsEnum,
   IsNotEmpty,
-  ValidateNested,
   Min,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class VehicleTelemetryDto {

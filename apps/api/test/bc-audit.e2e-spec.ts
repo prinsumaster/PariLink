@@ -7,7 +7,8 @@ import { PrismaService } from './../src/prisma/prisma.service';
 describe('BC Tests - Security Audit', () => {
   let app: INestApplication;
   let adminToken: string;
-  let customer1Token: string;
+  // @ts-ignore: reserved for future use
+  let _customer1Token: string;
   let customer2Token: string;
   let loadForCustomer1: string;
 
@@ -91,7 +92,7 @@ describe('BC Tests - Security Audit', () => {
       const l1Res = await request(app.getHttpServer())
         .post('/api/v1/auth/login')
         .send({ email: `u1-bc-${suffix}@test.com`, password: 'password123' });
-      customer1Token = l1Res.body.access_token;
+      _customer1Token = l1Res.body.access_token;
     }
 
     const u2Res = await request(app.getHttpServer())

@@ -9,7 +9,8 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('TripsService', () => {
   let service: TripsService;
-  let eventEmitter: jest.Mocked<EventEmitter2>;
+  // @ts-ignore: reserved for future use
+  let _eventEmitter: jest.Mocked<EventEmitter2>;
 
   const mockTx = {
     trip: {
@@ -32,8 +33,8 @@ describe('TripsService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
-    runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
+    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
     updateWithOcc: jest.fn(),
@@ -59,7 +60,7 @@ describe('TripsService', () => {
       ],
     }).compile();
     service = module.get<TripsService>(TripsService);
-    eventEmitter = module.get(EventEmitter2);
+    _eventEmitter = module.get(EventEmitter2);
   });
 
   it('should be defined', () => {
@@ -114,6 +115,7 @@ describe('TripsService', () => {
       expect(mockTx.trip.create).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
+            companyId: 'company-1',
             startDate: new Date('2026-08-01'),
             endDate: new Date('2026-08-05'),
           }),
@@ -129,6 +131,11 @@ describe('TripsService', () => {
 
       const result = await service.findOne('company-1', 'trip-1');
       expect(result).toEqual(mockTrip);
+      expect(mockTx.trip.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', id: 'trip-1' }),
+        }),
+      );
     });
 
     it('should throw NotFoundException if trip not found', async () => {

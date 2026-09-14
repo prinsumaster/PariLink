@@ -28,8 +28,10 @@ describe('CP3 Anomaly Isolation (e2e)', () => {
     tenantBId = 'cp3-company-b-' + Date.now();
 
     await prisma.runAsSystem('setup CP3 HTTP', async (tx) => {
-      const companyA = await tx.company.create({ data: { id: tenantAId, name: 'CP3 Tenant A', email: 'a@example.com', taxId: 'TAX-A' } });
-      const companyB = await tx.company.create({ data: { id: tenantBId, name: 'CP3 Tenant B', email: 'b@example.com', taxId: 'TAX-B' } });
+  // @ts-ignore: reserved for future use
+      const _companyA = await tx.company.create({ data: { id: tenantAId, name: 'CP3 Tenant A', email: 'a@example.com', taxId: 'TAX-A' } });
+  // @ts-ignore: reserved for future use
+      const _companyB = await tx.company.create({ data: { id: tenantBId, name: 'CP3 Tenant B', email: 'b@example.com', taxId: 'TAX-B' } });
 
       const roleA = await tx.role.create({ data: { name: 'Admin', companyId: tenantAId, permissions: ['*'] } });
       const roleB = await tx.role.create({ data: { name: 'Admin', companyId: tenantBId, permissions: ['*'] } });
@@ -40,14 +42,16 @@ describe('CP3 Anomaly Isolation (e2e)', () => {
       const driverA = await tx.driver.create({ data: { userId: userA.id, companyId: tenantAId, status: 'ACTIVE', licenseNumber: 'DL-A', licenseExpiry: new Date('2030-01-01'), firstName: 'Driver', lastName: 'A' } });
       const vehicleA = await tx.vehicle.create({ data: { licensePlate: 'VA-1', make: 'M', model: 'M', year: 2020, status: 'ACTIVE', type: 'TRUCK', companyId: tenantAId } });
       const tripA = await tx.trip.create({ data: { tripNumber: `TRIPA-${Date.now()}`, companyId: tenantAId, status: 'DRAFT', vehicleId: vehicleA.id, driverId: driverA.id } });
-      const fuelA = await tx.fuelEntry.create({
+  // @ts-ignore: reserved for future use
+      const _fuelA = await tx.fuelEntry.create({
         data: { trip: { connect: { id: tripA.id } }, vehicle: { connect: { id: vehicleA.id } }, driver: { connect: { id: driverA.id } }, company: { connect: { id: tenantAId } }, litres: 100, amount: 100, variancePct: 35, filledAt: new Date() }
       });
 
       const driverB = await tx.driver.create({ data: { userId: userB.id, companyId: tenantBId, status: 'ACTIVE', licenseNumber: 'DL-B', licenseExpiry: new Date('2030-01-01'), firstName: 'Driver', lastName: 'B' } });
       const vehicleB = await tx.vehicle.create({ data: { licensePlate: 'VB-1', make: 'M', model: 'M', year: 2020, status: 'ACTIVE', type: 'TRUCK', companyId: tenantBId } });
       const tripB = await tx.trip.create({ data: { tripNumber: `TRIPB-${Date.now()}`, companyId: tenantBId, status: 'DRAFT', vehicleId: vehicleB.id, driverId: driverB.id } });
-      const fuelB = await tx.fuelEntry.create({
+  // @ts-ignore: reserved for future use
+      const _fuelB = await tx.fuelEntry.create({
         data: { trip: { connect: { id: tripB.id } }, vehicle: { connect: { id: vehicleB.id } }, driver: { connect: { id: driverB.id } }, company: { connect: { id: tenantBId } }, litres: 100, amount: 100, variancePct: 45, filledAt: new Date() }
       });
       const jwt = require('jsonwebtoken');

@@ -31,8 +31,6 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 import { mockDeep } from 'jest-mock-extended';
-import { PrismaClient } from '@prisma/client';
-
 const mockPrisma = mockDeep<any>();
 // Override runAsSystem and runAsTenant to pass the mock client back
 // Signature: runAsSystem(reason: string, callback: (tx) => Promise<T>)

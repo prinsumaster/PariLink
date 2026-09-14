@@ -12,7 +12,8 @@ export class CapacityPlanningAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -22,7 +23,7 @@ export class CapacityPlanningAgent extends BaseAgent {
       name: 'forecast_capacity',
       description:
         'Forecast fleet capacity requirements. Input: {"companyId": "string", "horizonDays": 14}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           shortfallPredicted: true,
           shortfallRegion: 'Midwest',

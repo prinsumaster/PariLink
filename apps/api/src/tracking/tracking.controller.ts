@@ -5,8 +5,7 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { TrackingService } from './tracking.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

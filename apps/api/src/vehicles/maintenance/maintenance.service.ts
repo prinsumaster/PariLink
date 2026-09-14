@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';

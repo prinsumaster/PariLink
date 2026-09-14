@@ -1,17 +1,16 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { dateIN } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
-import { aiApi } from '@/services/ai';
 import { 
 
-  ShieldCheck, AlertOctagon, CheckSquare, XSquare, 
-  Search, Filter, ShieldAlert
+  ShieldCheck, AlertOctagon, CheckSquare, 
+  Search, Filter
 } from 'lucide-react';
 
 export default function AiEvaluationDashboardPage() {
   const [reports, setReports] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     // In a real implementation this would fetch `aiApi.getComplianceReport()` or hallucination logs

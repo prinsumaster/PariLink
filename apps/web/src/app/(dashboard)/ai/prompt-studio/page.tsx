@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
-  FileCode2, Save, Play, Clock, Check, 
-  ChevronRight, Sparkles, SlidersHorizontal
+  FileCode2, Save, Play, Clock, SlidersHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

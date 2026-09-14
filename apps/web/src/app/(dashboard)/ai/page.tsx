@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { 
   Send, Plus, Sparkles, Bot, User, ChevronRight, 
   Loader2, BarChart3, Package, TruckIcon, Users, 
-  AlertTriangle, Star, Copy, RefreshCw, Zap
+  AlertTriangle, Star, RefreshCw, Zap
 } from 'lucide-react';
 import { format } from 'date-fns';
 

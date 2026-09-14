@@ -38,7 +38,7 @@ export class SamlService {
     }
   }
 
-  async validateResponse(idp: any, samlResponse: string, req: Request) {
+  async validateResponse(idp: any, samlResponse: string, _req: Request) {
     const saml = this.getSamlStrategy(idp);
     const proxyReq = {
       body: { SAMLResponse: samlResponse },

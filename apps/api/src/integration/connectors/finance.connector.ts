@@ -30,8 +30,8 @@ export class AccountingSoftwareConnector extends BaseConnector {
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
     payload: unknown,
   ): Promise<{
@@ -43,24 +43,24 @@ export class AccountingSoftwareConnector extends BaseConnector {
     return;
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, _body: unknown): Promise<unknown> {
     return { received: true };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { success: true };
   }
 
-  async healthCheck(credentials: Record<string, unknown>): Promise<boolean> {
+  async healthCheck(_credentials: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 
-  async testConnection(credentials: Record<string, unknown>): Promise<boolean> {
+  async testConnection(_credentials: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 }

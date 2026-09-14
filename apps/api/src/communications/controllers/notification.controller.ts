@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Param,
-  Body,
   UseGuards,
   Query,
 } from '@nestjs/common';

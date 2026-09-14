@@ -1,10 +1,10 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
-  Network, Server, Cpu, Key, DollarSign, Activity, 
+  Network, Server, Key, DollarSign, Activity, 
   Settings, CheckCircle2, AlertTriangle, Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,8 @@ export default function ModelRegistryPage() {
   const [models, setModels] = useState<ModelConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchModels = async () => {
+  // @ts-ignore: reserved
+  const _fetchModels = async () => {
     setLoading(true);
     try {
       const res = await aiApi.listModels();

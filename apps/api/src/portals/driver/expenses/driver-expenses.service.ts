@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class DriverExpensesService {
-  private readonly logger = new Logger(DriverExpensesService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async submitExpense(
@@ -14,7 +13,7 @@ export class DriverExpensesService {
     type: string,
     amount: number,
     date: string,
-    documentUrl?: string,
+    _documentUrl?: string,
   ) {
     if (!driverId) throw new UnauthorizedException('Driver context missing');
 

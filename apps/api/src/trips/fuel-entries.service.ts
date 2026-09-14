@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFuelEntryDto } from './dto/create-fuel-entry.dto';
 
@@ -22,7 +22,7 @@ export class FuelEntriesService {
 
       if (!trip) throw new NotFoundException('Trip not found');
       if (!trip.vehicleId || !trip.driverId) {
-        throw new Error('Trip must have a vehicle and driver assigned to add fuel');
+        throw new BadRequestException('Trip must have a vehicle and driver assigned to add fuel');
       }
 
       // Route key: copied from first Load at write-time. Null if no Load attached.

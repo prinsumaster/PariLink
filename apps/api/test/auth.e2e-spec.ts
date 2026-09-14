@@ -4,7 +4,6 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
-import * as crypto from 'crypto';
 import cookieParser from 'cookie-parser';
 
 describe('Authentication Flow (e2e)', () => {

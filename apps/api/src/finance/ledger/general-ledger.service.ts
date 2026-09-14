@@ -1,10 +1,9 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class GeneralLedgerService {
-  private readonly logger = new Logger(GeneralLedgerService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async createJournalEntry(

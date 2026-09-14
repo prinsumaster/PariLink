@@ -84,7 +84,8 @@ export class DeveloperService {
     userId: string,
     dto: UpdateDeveloperAppDto,
   ) {
-    const app = await this.getApp(companyId, id);
+  // @ts-ignore: reserved for future use
+    const _app = await this.getApp(companyId, id);
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.developerApp.update({
@@ -113,7 +114,8 @@ export class DeveloperService {
   }
 
   async rotateSecret(companyId: string, id: string, userId: string) {
-    const app = await this.getApp(companyId, id);
+  // @ts-ignore: reserved for future use
+    const _app = await this.getApp(companyId, id);
     const newSecret = this.generateClientSecret();
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>

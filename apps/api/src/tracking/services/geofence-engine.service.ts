@@ -1,12 +1,11 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { CreateGeofenceDto } from '../dto/telematics.dto';
 
 @Injectable()
 export class GeofenceEngineService {
-  private readonly logger = new Logger(GeofenceEngineService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,

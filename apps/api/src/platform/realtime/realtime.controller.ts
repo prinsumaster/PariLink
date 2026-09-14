@@ -1,4 +1,4 @@
-import { Controller, Sse, MessageEvent, UseGuards, Req } from '@nestjs/common';
+import { Controller, Sse, MessageEvent, Req } from '@nestjs/common';
 import { RealtimeService } from './realtime.service';
 import { Observable } from 'rxjs';
 // import { JwtAuthGuard } from '../../auth/jwt-auth.guard'; // Assume auth guard exists, keeping simple for demo

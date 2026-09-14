@@ -93,7 +93,7 @@ export class InvoicesService {
     companyId: string,
     invoiceId: string,
     payload: { amount: number; method?: string; referenceNumber?: string; paymentDate?: string; notes?: string },
-    userId?: string,
+    _userId?: string,
   ) {
     const { amount, method = 'NEFT', referenceNumber, paymentDate = new Date().toISOString(), notes } = payload;
     if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {

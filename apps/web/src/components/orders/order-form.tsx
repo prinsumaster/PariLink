@@ -13,8 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Save, X, Plus, Trash2 } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-
 const addressSchema = z.object({
   street: z.string().min(1, 'Street is required'),
   city: z.string().min(1, 'City is required'),
@@ -55,7 +53,8 @@ export function OrderForm({ initialData, isEdit }: OrderFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit, formState: { errors, isDirty } } = useForm<OrderFormValues>({
+  // @ts-ignore: reserved
+  const { register, control, handleSubmit, formState: { errors: _errors, isDirty } } = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: initialData ? {
       customer: initialData.customer,

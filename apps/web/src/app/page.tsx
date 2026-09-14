@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Truck, Shield, Zap, Activity, CheckCircle2, Globe2 } from 'lucide-react';
+import { ArrowRight, Truck, Zap, Activity, CheckCircle2, Globe2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {

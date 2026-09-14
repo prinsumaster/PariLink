@@ -37,8 +37,8 @@ describe('DispatchService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
-    runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
+    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
     updateWithOcc: jest.fn().mockResolvedValue({ status: 'IN_PROGRESS' }),

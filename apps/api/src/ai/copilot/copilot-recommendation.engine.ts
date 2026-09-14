@@ -19,9 +19,11 @@ export class CopilotRecommendationEngine {
   private readonly logger = new Logger(CopilotRecommendationEngine.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
-    private readonly prediction: PredictionEngineService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prediction: PredictionEngineService,
   ) {}
 
   /**

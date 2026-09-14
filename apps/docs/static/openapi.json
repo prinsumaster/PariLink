@@ -6154,6 +6154,224 @@
         ]
       }
     },
+    "/api/v1/desks/my": {
+      "get": {
+        "operationId": "TripDesksController_getMyPendingDesks_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get pending desks for the current user",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/desks": {
+      "get": {
+        "operationId": "TripDesksController_getTripDesks_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all desks for a trip",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/desks/{desk}/complete": {
+      "post": {
+        "operationId": "TripDesksController_completeDesk_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "desk",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Mark a desk as complete for a trip",
+        "tags": [
+          "trip-desks"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/loading": {
+      "get": {
+        "operationId": "LoadingEventsController_getEvents_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all loading events for a trip",
+        "tags": [
+          "loading-events"
+        ]
+      },
+      "post": {
+        "operationId": "LoadingEventsController_addEvent_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLoadingEventDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a loading/unloading event to a trip",
+        "tags": [
+          "loading-events"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/fuel": {
+      "post": {
+        "operationId": "FuelEntriesController_addFuel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFuelEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add a fuel entry to a trip",
+        "tags": [
+          "trips-fuel"
+        ]
+      },
+      "get": {
+        "operationId": "FuelEntriesController_getFuel_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get fuel entries for a trip",
+        "tags": [
+          "trips-fuel"
+        ]
+      }
+    },
     "/api/v1/trips": {
       "post": {
         "operationId": "TripsController_create_v1",
@@ -6464,6 +6682,16 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverScoreDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": ""
@@ -6516,224 +6744,6 @@
         "summary": "Submit a trip review",
         "tags": [
           "trips"
-        ]
-      }
-    },
-    "/api/v1/desks/my": {
-      "get": {
-        "operationId": "TripDesksController_getMyPendingDesks_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get pending desks for the current user",
-        "tags": [
-          "trip-desks"
-        ]
-      }
-    },
-    "/api/v1/trips/{id}/desks": {
-      "get": {
-        "operationId": "TripDesksController_getTripDesks_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get all desks for a trip",
-        "tags": [
-          "trip-desks"
-        ]
-      }
-    },
-    "/api/v1/trips/{id}/desks/{desk}/complete": {
-      "post": {
-        "operationId": "TripDesksController_completeDesk_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "desk",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Mark a desk as complete for a trip",
-        "tags": [
-          "trip-desks"
-        ]
-      }
-    },
-    "/api/v1/trips/{id}/loading": {
-      "get": {
-        "operationId": "LoadingEventsController_getEvents_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get all loading events for a trip",
-        "tags": [
-          "loading-events"
-        ]
-      },
-      "post": {
-        "operationId": "LoadingEventsController_addEvent_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateLoadingEventDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Add a loading/unloading event to a trip",
-        "tags": [
-          "loading-events"
-        ]
-      }
-    },
-    "/api/v1/trips/{id}/fuel": {
-      "post": {
-        "operationId": "FuelEntriesController_addFuel_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFuelEntryDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Add a fuel entry to a trip",
-        "tags": [
-          "trips-fuel"
-        ]
-      },
-      "get": {
-        "operationId": "FuelEntriesController_getFuel_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get fuel entries for a trip",
-        "tags": [
-          "trips-fuel"
         ]
       }
     },
@@ -22307,6 +22317,44 @@
           }
         }
       },
+      "CreateLoadingEventDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateFuelEntryDto": {
+        "type": "object",
+        "properties": {
+          "litres": {
+            "type": "number",
+            "description": "Litres of fuel filled",
+            "example": 180
+          },
+          "amount": {
+            "type": "number",
+            "description": "Amount paid (INR)",
+            "example": 15200
+          },
+          "pump": {
+            "type": "string",
+            "description": "Pump / station name",
+            "example": "HP Pump Nagpur"
+          },
+          "slipNo": {
+            "type": "string",
+            "description": "Fuel slip / bill number",
+            "example": "SLIP-20260910-001"
+          },
+          "filledAt": {
+            "type": "string",
+            "description": "Date/time of fill",
+            "example": "2026-09-10T10:30:00Z"
+          }
+        },
+        "required": [
+          "litres",
+          "amount"
+        ]
+      },
       "CreateTripDto": {
         "type": "object",
         "properties": {
@@ -22477,6 +22525,10 @@
           "loadIds"
         ]
       },
+      "DriverScoreDto": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateTripReviewDto": {
         "type": "object",
         "properties": {
@@ -22503,44 +22555,6 @@
         "required": [
           "reviewerRole",
           "rating"
-        ]
-      },
-      "CreateLoadingEventDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateFuelEntryDto": {
-        "type": "object",
-        "properties": {
-          "litres": {
-            "type": "number",
-            "description": "Litres of fuel filled",
-            "example": 180
-          },
-          "amount": {
-            "type": "number",
-            "description": "Amount paid (INR)",
-            "example": 15200
-          },
-          "pump": {
-            "type": "string",
-            "description": "Pump / station name",
-            "example": "HP Pump Nagpur"
-          },
-          "slipNo": {
-            "type": "string",
-            "description": "Fuel slip / bill number",
-            "example": "SLIP-20260910-001"
-          },
-          "filledAt": {
-            "type": "string",
-            "description": "Date/time of fill",
-            "example": "2026-09-10T10:30:00Z"
-          }
-        },
-        "required": [
-          "litres",
-          "amount"
         ]
       },
       "CreatePlanDto": {

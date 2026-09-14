@@ -3,10 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fleetService } from '@/services/fleet';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Circle, Plus, Trash2 } from 'lucide-react';
+import { Circle, Trash2 } from 'lucide-react';
 
 export function TyresPanel({ vehicleId }: { vehicleId: string }) {
   const queryClient = useQueryClient();

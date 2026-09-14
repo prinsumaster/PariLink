@@ -1,13 +1,11 @@
+import { useState } from 'react';
 'use client';
-
-import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/api';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { StatusBadge } from '@/components/status-badge';
 import { Download, RefreshCw, Calendar as CalendarIcon, Clock, UserCheck, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 

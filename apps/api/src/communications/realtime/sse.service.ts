@@ -9,7 +9,7 @@ export class SseService {
   // We use an RxJS Subject for MVP local instance pub/sub.
   private events$ = new Subject<{ userId: string; event: any }>();
 
-  subscribe(userId: string) {
+  subscribe(_userId: string) {
     // Returns an observable filtered by userId
     return this.events$.asObservable();
   }

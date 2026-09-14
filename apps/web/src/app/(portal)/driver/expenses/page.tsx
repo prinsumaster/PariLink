@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function DriverExpensesPage() {
   return (
     <div className="p-4 max-w-lg mx-auto">

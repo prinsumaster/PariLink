@@ -31,7 +31,7 @@ export class ProfitabilityEngine implements OnModuleInit, IAnalyticsProvider {
     return 'finance';
   }
 
-  async getAnalytics(companyId: string, timeframe: string): Promise<any> {
+  async getAnalytics(companyId: string, _timeframe: string): Promise<any> {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - 1); // 1 month timeframe
@@ -60,7 +60,7 @@ export class ProfitabilityEngine implements OnModuleInit, IAnalyticsProvider {
       // 1. Calculate Revenue (Sum of Invoices or Loads base freight)
       // For this implementation, we simulate revenue based on Load weight/distance
       let revenue = 0;
-      for (const load of trip.loads) {
+      for (const _load of trip.loads) {
         // Assume Pricing Engine returned $2.5/km
         revenue += tripDistance * 2.5;
       }
@@ -99,9 +99,9 @@ export class ProfitabilityEngine implements OnModuleInit, IAnalyticsProvider {
   }
 
   async getFleetProfitability(
-    companyId: string,
-    startDate: Date,
-    endDate: Date,
+    _companyId: string,
+    _startDate: Date,
+    _endDate: Date,
   ) {
     // Aggregates across all trips for the fleet
     // ...

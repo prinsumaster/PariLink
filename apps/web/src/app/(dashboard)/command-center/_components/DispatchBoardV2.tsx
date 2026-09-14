@@ -19,7 +19,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { api } from '@/services/api';
-import { Loader2, Package, MapPin, Truck, AlertTriangle } from 'lucide-react';
+import { Loader2, MapPin, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -91,7 +91,8 @@ function SortableLoadCard({ load }: { load: any }) {
   );
 }
 
-function BoardColumn({ id, title, loads }: { id: string, title: string, loads: any[] }) {
+// @ts-ignore: reserved
+function BoardColumn({ id: _id, title, loads }: { id: string, title: string, loads: any[] }) {
   return (
     <div className="flex flex-col w-[320px] shrink-0 bg-slate-100 dark:bg-slate-950/50 rounded-xl p-3 border border-slate-200 dark:border-slate-800">
       <div className="flex justify-between items-center mb-4 px-1">

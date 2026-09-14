@@ -25,8 +25,8 @@ describe('DriversService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (reason, cb) => cb(mockPrisma)),
-    runAsTenant: jest.fn((companyId: string, cb: (tx: any) => any) =>
+    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
     updateWithOcc: jest
@@ -132,6 +132,7 @@ describe('DriversService', () => {
       expect(mockTx.driver.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
+            companyId: 'company-1',
             status: 'AVAILABLE',
           }),
         }),
@@ -146,7 +147,10 @@ describe('DriversService', () => {
 
       expect(mockTx.driver.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ OR: expect.any(Array) }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            OR: expect.any(Array),
+          }),
         }),
       );
     });

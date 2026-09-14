@@ -15,7 +15,7 @@ export class EdiService {
 
   async generateX12(
     type: '214' | '990' | '210' | '997',
-    data: any,
+    _data: any,
   ): Promise<string> {
     this.logger.log(`Generating X12 payload for ${type}...`);
     // Scaffolded: X12 Serializer

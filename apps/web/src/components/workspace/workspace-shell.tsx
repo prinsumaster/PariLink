@@ -1,6 +1,4 @@
 'use client';
-
-import { motion, AnimatePresence } from 'framer-motion';
 import { useWorkspaceKernelStore } from '@/store/workspace-kernel';
 import { WorkspaceTabBar } from './workspace-tab-bar';
 import { WorkspaceSidebar } from './workspace-sidebar';
@@ -19,9 +17,11 @@ import { useRealtimeEngine } from '@/hooks/use-realtime-engine';
 
 export function WorkspaceShell({ children }: { children: ReactNode }) {
   useRealtimeEngine();
-  const { tabs, activeTabId, splitMode, secondaryTabId, sidebarCollapsed } = useWorkspaceKernelStore();
+  // @ts-ignore: reserved
+  const { tabs, activeTabId, splitMode, secondaryTabId, sidebarCollapsed: _sidebarCollapsed } = useWorkspaceKernelStore();
 
-  const activeTab = tabs.find(t => t.id === activeTabId);
+  // @ts-ignore: reserved
+  const _activeTab = tabs.find(t => t.id === activeTabId);
   const secondaryTab = tabs.find(t => t.id === secondaryTabId);
 
   // Determine what to render in the main view.

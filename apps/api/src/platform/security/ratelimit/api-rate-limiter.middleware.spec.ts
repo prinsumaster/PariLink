@@ -6,12 +6,13 @@ import { Request, Response } from 'express';
 
 describe('ApiRateLimiterMiddleware', () => {
   let middleware: ApiRateLimiterMiddleware;
-  let cacheManager: jest.Mocked<CacheManagerService>;
+  // @ts-ignore: reserved for future use
+  let _cacheManager: jest.Mocked<CacheManagerService>;
   let auditService: jest.Mocked<AuditService>;
   let mockRedisManager: any;
 
   beforeEach(() => {
-    cacheManager = {} as unknown as jest.Mocked<CacheManagerService>;
+    _cacheManager = {} as unknown as jest.Mocked<CacheManagerService>;
     auditService = {
       logEvent: jest.fn().mockResolvedValue(undefined),
     } as unknown as jest.Mocked<AuditService>;

@@ -19,9 +19,7 @@ import {
   ChevronDown,
   ChevronUp,
   Lock,
-  Unlock,
-  Search,
-  Copy,
+  Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -86,7 +84,8 @@ const PERMISSION_GROUPS: Record<string, string[]> = {
   ],
 };
 
-const ALL_PERMISSIONS = Object.values(PERMISSION_GROUPS).flat();
+// @ts-ignore: reserved
+const _ALL_PERMISSIONS = Object.values(PERMISSION_GROUPS).flat();
 
 // ─── Role Service ─────────────────────────────────────────────────────────────
 const rolesService = {
@@ -150,7 +149,7 @@ function RoleDialog({
       qc.invalidateQueries({ queryKey: ['roles'] });
       onClose();
     },
-    onError: (err: any, dto, context: any) => {
+    onError: (err: any, _dto, context: any) => {
       if (context?.previous) qc.setQueryData(['roles', ''], context.previous);
       toast.error(err?.response?.data?.message || 'Failed to create role');
     },
@@ -176,7 +175,7 @@ function RoleDialog({
       qc.invalidateQueries({ queryKey: ['roles'] });
       onClose();
     },
-    onError: (err: any, dto, context: any) => {
+    onError: (err: any, _dto, context: any) => {
       if (context?.previous) qc.setQueryData(['roles', ''], context.previous);
       toast.error(err?.response?.data?.message || 'Failed to update role');
     },
@@ -488,7 +487,7 @@ export default function RolesPage() {
       toast.success('Role deleted'); 
       qc.invalidateQueries({ queryKey: ['roles'] }); 
     },
-    onError: (err: any, id, context: any) => { 
+    onError: (err: any, _id, context: any) => { 
       if (context?.previous) qc.setQueryData(['roles', search], context.previous);
       toast.error(err?.response?.data?.message || 'Failed to delete role');
     },

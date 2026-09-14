@@ -1,5 +1,6 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   BadRequestException,
   NotFoundException,
@@ -11,8 +12,7 @@ import { AuditService } from '../../platform/audit/audit.service';
 
 @Injectable()
 export class EnterpriseIntegrationHubService {
-  private readonly logger = new Logger(EnterpriseIntegrationHubService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly registry: ConnectorRegistryService,

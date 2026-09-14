@@ -13,7 +13,7 @@ export class SamsaraTelematicsConnector extends BaseConnector {
     return !!(config.apiKey && config.region);
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     this.logger.log(`Authenticating with Samsara API Key`);
     return { authenticated: true };
   }
@@ -30,8 +30,8 @@ export class SamsaraTelematicsConnector extends BaseConnector {
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
     payload: unknown,
   ): Promise<{
@@ -46,25 +46,25 @@ export class SamsaraTelematicsConnector extends BaseConnector {
     return;
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     const b = body as { eventType?: string };
     return { event: b?.eventType || 'telematics.update', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { success: true };
   }
 
-  async healthCheck(credentials: Record<string, unknown>): Promise<boolean> {
+  async healthCheck(_credentials: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 
-  async testConnection(credentials: Record<string, unknown>): Promise<boolean> {
+  async testConnection(_credentials: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 }

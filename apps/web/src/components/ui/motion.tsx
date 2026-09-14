@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion, AnimatePresence, HTMLMotionProps } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const TRANSITION = { type: 'spring' as const, stiffness: 260, damping: 20 };
 

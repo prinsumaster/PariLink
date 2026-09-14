@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import {
-  PerformancePlatformService,
-  PerformanceProfileInput,
+  PerformancePlatformService
 } from './performance-platform.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';

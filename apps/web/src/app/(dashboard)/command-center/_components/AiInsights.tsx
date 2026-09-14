@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { ShieldAlert, AlertTriangle, Route, TrendingUp, Truck, Zap, Activity } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, TrendingUp, Truck, Zap, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Anomaly = {

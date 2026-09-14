@@ -81,7 +81,7 @@ export class BruteForceProtectionService implements OnModuleDestroy {
 
   async checkLoginAttempt(
     email: string,
-    ipAddress?: string,
+    _ipAddress?: string,
   ): Promise<LoginAttemptResult> {
     const key = email.toLowerCase();
     const now = Date.now();
@@ -116,7 +116,7 @@ export class BruteForceProtectionService implements OnModuleDestroy {
 
   async recordFailedAttempt(
     email: string,
-    ipAddress?: string,
+    _ipAddress?: string,
   ): Promise<LoginAttemptResult> {
     const key = email.toLowerCase();
     const now = Date.now();

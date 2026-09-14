@@ -3,15 +3,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { financeService } from '@/services/finance';
 import { RoleGuard } from '@/components/auth/role-guard';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { TrendingUp, TrendingDown, Truck, Info, IndianRupee } from 'lucide-react';
+import { TrendingUp, TrendingDown, IndianRupee } from 'lucide-react';
 import Link from 'next/link';
 
 export default function VehicleProfitabilityPage() {
-  const router = useRouter();
+  // @ts-ignore: reserved
+  const _router = useRouter();
 
   const { data: trucks, isLoading } = useQuery({
     queryKey: ['profitability-vehicles'],

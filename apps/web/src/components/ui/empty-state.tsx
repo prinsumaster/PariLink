@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from './button';
 import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';

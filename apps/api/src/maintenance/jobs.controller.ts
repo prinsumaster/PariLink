@@ -1,4 +1,3 @@
-import { CloseJobDto } from './dto/close-job.dto';
 import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 export class CreateJobDto {
   @IsString() @IsNotEmpty() description: string;
@@ -11,8 +10,7 @@ import {
   Get,
   Param,
   Body,
-  UseGuards,
-  NotFoundException,
+  UseGuards
 } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

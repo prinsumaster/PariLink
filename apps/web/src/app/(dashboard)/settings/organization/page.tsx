@@ -1,6 +1,4 @@
 'use client';
-
-import React from 'react';
 import { OrganizationSettingsForm } from '@/components/settings/organization-settings';
 import { SettingsLayout } from '@/components/settings/settings-layout';
 import { RoleGuard } from '@/components/auth/role-guard';

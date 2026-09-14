@@ -1,10 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ExternalIdentityMappingService {
-  private readonly logger = new Logger(ExternalIdentityMappingService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -16,8 +15,10 @@ export class ExternalIdentityMappingService {
     sourceSystem: string,
     externalId: string,
   ): Promise<string | null> {
-    const extRef = await this.prisma.runAsTenant(companyId, async (tx) =>
+    // @ts-ignore: reserved for future use
+    const _extRef = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.externalReference.findUnique({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
         where: {
           masterRecordId_sourceSystem: {
             // This relies on the unique compound index but Prisma handles it

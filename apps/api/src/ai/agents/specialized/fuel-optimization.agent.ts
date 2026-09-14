@@ -13,7 +13,8 @@ export class FuelOptimizationAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly fuelIntelligence: FuelIntelligenceService,
   ) {
     super(llmManager);
@@ -24,7 +25,7 @@ export class FuelOptimizationAgent extends BaseAgent {
       name: 'optimize_fuel_route',
       description:
         'Optimize fuel consumption for active trips. Input: {"companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           potentialSavings: 350.0,
           recommendations: [

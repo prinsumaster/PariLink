@@ -1,5 +1,4 @@
-import React from 'react';
-import { UserCircle, Shield, Target } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function DriverIntelligencePage() {
   return (

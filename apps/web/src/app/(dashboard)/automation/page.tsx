@@ -7,8 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/services/api';
 import { 
-  Zap, Plus, Play, Pause, ChevronRight, Clock, 
-  ToggleLeft, ToggleRight, Workflow, Mail, MessageSquare,
+  Zap, Plus, Play, Pause, ChevronRight, Clock, Workflow, Mail, MessageSquare,
   Bell, FileText, DollarSign, Truck, CheckCircle2,
   Loader2, ArrowRight, GitBranch, Settings
 } from 'lucide-react';

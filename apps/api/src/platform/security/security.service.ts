@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class SecurityContextService {
-  private readonly logger = new Logger(SecurityContextService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private readonly ENCRYPTION_KEY: string;
   private readonly IV_LENGTH = 16;
 

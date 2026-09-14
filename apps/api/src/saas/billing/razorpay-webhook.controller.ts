@@ -4,6 +4,7 @@ import {
   Req,
   Headers,
   BadRequestException,
+  // @ts-ignore: reserved for future use
   Logger,
 } from '@nestjs/common';
 import type { RawBodyRequest } from '@nestjs/common';
@@ -17,8 +18,7 @@ import { SecretsService } from '../../platform/security/secrets/secrets.service'
 @ApiTags('Razorpay Webhooks')
 @Controller('webhooks/razorpay')
 export class RazorpayWebhookController {
-  private readonly logger = new Logger(RazorpayWebhookController.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly billingService: BillingService,
     private readonly secretsService: SecretsService,

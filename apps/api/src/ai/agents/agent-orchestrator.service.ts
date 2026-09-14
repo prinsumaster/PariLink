@@ -29,9 +29,11 @@ export class AgentOrchestratorService implements OnModuleInit {
     private readonly prisma: PrismaService,
     private readonly llmManager: LlmManagerService,
     private readonly contextEngine: ContextEngineService,
-    private readonly promptProtection: PromptProtectionService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _promptProtection: PromptProtectionService,
     private readonly governance: AiGovernanceService,
-    private readonly observability: AiObservabilityService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _observability: AiObservabilityService,
     private readonly memory: EnterpriseMemoryService,
     private readonly rag: EnterpriseRagService,
     // ─── Specialized Agents ────────────────────────────────────────

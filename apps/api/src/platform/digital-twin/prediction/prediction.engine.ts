@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  EnterpriseGraphService,
-  TwinNode,
+  EnterpriseGraphService
 } from '../graph/enterprise-graph.service';
 import { PrismaService } from '../../../prisma/prisma.service';
 
@@ -19,7 +18,8 @@ export class PredictionEngine {
 
   constructor(
     private readonly graphService: EnterpriseGraphService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {}
 
   /**

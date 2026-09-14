@@ -10,7 +10,8 @@ import cookieParser from 'cookie-parser';
 describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let jwtService: JwtService;
+  // @ts-ignore: reserved for future use
+  let _jwtService: JwtService;
 
   let companyA: any;
   let companyB: any;
@@ -38,7 +39,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
     await app.init();
 
     prisma = app.get(PrismaService);
-    jwtService = app.get(JwtService);
+    _jwtService = app.get(JwtService);
 
     const hashedPassword = await bcrypt.hash(testPassword, 10);
 
@@ -314,7 +315,7 @@ describe('Adversarial Security & Cross-Tenant Fuzzing (e2e)', () => {
         .expect(200);
       
       // Ensure it does not leak
-      expect(res.body.find?.((t: any) => t.id === tx.id)).toBeUndefined();
+      expect(res.body.find?.((t: any) => t.id === txObj.id)).toBeUndefined();
     });
   });
 

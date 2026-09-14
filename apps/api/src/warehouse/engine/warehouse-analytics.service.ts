@@ -47,7 +47,7 @@ export class WarehouseAnalyticsService
   ): Promise<WarehouseAnalyticsResult> {
     this.logger.log(`Calculating WMS Analytics for Warehouse ${warehouseId}`);
 
-    return this.prisma.runAsTenant(companyId, async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (_tx) => {
       // Mock metrics generation. In a real system, these would aggregate `EventStore` streams
       // or `Inventory` / `Order` records over the requested period.
 

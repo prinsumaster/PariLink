@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 export class StripeBillingService {
   private readonly logger = new Logger(StripeBillingService.name);
 
-  async createCustomer(tenantId: string, email: string) {
+  async createCustomer(tenantId: string, _email: string) {
     this.logger.log(`Creating Stripe Customer for tenant ${tenantId}`);
     // Scaffolded: Stripe API integration
     return { customerId: `cus_${tenantId}_scaffold`, status: 'success' };

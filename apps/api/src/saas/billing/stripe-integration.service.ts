@@ -1,14 +1,14 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SecretsService } from '../../platform/security/secrets/secrets.service';
 
 @Injectable()
 export class StripeIntegrationService {
-  private readonly logger = new Logger(StripeIntegrationService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
-    private readonly prisma: PrismaService,
+    // @ts-ignore: reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly secretsService: SecretsService,
   ) {}
 

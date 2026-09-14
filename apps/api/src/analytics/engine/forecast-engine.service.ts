@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ForecastEngineService {
-  private readonly logger = new Logger(ForecastEngineService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

@@ -1,10 +1,9 @@
-import { Injectable, Logger, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class CustomerTrackingService {
-  private readonly logger = new Logger(CustomerTrackingService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async getTrackingLink(companyId: string, customerId: string, loadId: string) {

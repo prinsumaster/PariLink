@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useWorkspaceKernelStore } from '@/store/workspace-kernel';
 import { useActivityStore } from '@/store/activity';
 // We would import other entity stores here (useLoadStore, useDriverStore)
 
@@ -18,6 +17,7 @@ export function useRealtimeEngine() {
 
   useEffect(() => {
     // This connects to the future NestJS SSE endpoint
+    // @ts-ignore: reserved
     function connect() {
       if (eventSourceRef.current) return;
 

@@ -12,7 +12,8 @@ export class DispatchService {
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
-    private twilioService: TwilioService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _twilioService: TwilioService,
     private readonly auditService: AuditService,
     private readonly eventStore: EventStoreService,
   ) {}

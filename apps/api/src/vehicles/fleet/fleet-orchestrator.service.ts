@@ -113,7 +113,7 @@ export class FleetOrchestratorService {
   private async handleTripCompleted(
     companyId: string,
     tripId: string,
-    userId: string,
+    _userId: string,
   ) {
     // 1. Extract Trip Vehicle & Odometer
     const trip = await this.prisma.runAsTenant(companyId, async (tx) =>

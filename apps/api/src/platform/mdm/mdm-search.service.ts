@@ -18,7 +18,8 @@ export class MdmSearchService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly iam: IamPolicyEngineService, // Used for Data Governance/Permissions
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _iam: IamPolicyEngineService, // Used for Data Governance/Permissions
   ) {}
 
   /**
@@ -73,7 +74,7 @@ export class MdmSearchService {
   /**
    * Semantic search using AI (stub for when Vector extension is enabled)
    */
-  async semanticSearch(companyId: string, query: string) {
+  async semanticSearch(_companyId: string, _query: string) {
     this.logger.warn(
       'Semantic search requested but vector embeddings are not yet generated for MasterRecords',
     );

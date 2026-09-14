@@ -1,4 +1,4 @@
-import { money, num, dateIN } from '@/lib/format';
+import { dateIN } from '@/lib/format';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { GitCommit, Star } from 'lucide-react';
@@ -25,7 +25,7 @@ export function VersionTimeline({ versions, className, ...props }: VersionTimeli
 
   return (
     <div className={cn("relative pl-4 border-l-2 border-muted space-y-8", className)} {...props}>
-      {sortedVersions.map((ver, idx) => (
+      {sortedVersions.map((ver, _idx) => (
         <div key={ver.id} className="relative group">
           {/* Timeline Node */}
           <div 

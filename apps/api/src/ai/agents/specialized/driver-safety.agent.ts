@@ -12,7 +12,8 @@ export class DriverSafetyAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -22,7 +23,7 @@ export class DriverSafetyAgent extends BaseAgent {
       name: 'analyze_driver_safety',
       description:
         'Analyze safety score of drivers. Input: {"companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           atRiskDrivers: 1,
           details: [

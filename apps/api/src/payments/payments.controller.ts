@@ -1,4 +1,4 @@
-import { CreatePaymentsDto, UpdatePaymentsDto } from '../dto/payments.dto';
+import { CreatePaymentsDto } from '../dto/payments.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -8,8 +8,7 @@ import {
   Param,
   Body,
   Query,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

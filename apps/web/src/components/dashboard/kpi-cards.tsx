@@ -1,9 +1,9 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money, num } from '@/lib/format';
 
 import { KPIData } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, IndianRupee, Users } from 'lucide-react';
+import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, IndianRupee } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -94,7 +94,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {kpis.map((kpi, index) => (
-        <Card key={index} className="glass elevation-1 border-slate-200/60 dark:border-slate-800/60 transition-all duration-200 hover:elevation-3 hover:-translate-y-0.5 group">
+        <Card key={index} data-testid={`kpi-${kpi.title.toLowerCase().replace(/ /g, '-')}`} className="glass elevation-1 border-slate-200/60 dark:border-slate-800/60 transition-all duration-200 hover:elevation-3 hover:-translate-y-0.5 group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {kpi.title}

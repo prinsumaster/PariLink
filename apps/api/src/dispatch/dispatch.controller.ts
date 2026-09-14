@@ -1,6 +1,6 @@
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import { Controller, Get, Put, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import { DispatchService } from './dispatch.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';

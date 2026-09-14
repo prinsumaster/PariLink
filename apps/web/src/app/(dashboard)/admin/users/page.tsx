@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '@/services/admin';
 import { AdminFilters as FilterState } from '@/types/admin';
 import Link from 'next/link';
-import { Plus, Users, ShieldAlert } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import { UserTable } from '@/components/admin/user-table';
@@ -39,7 +39,7 @@ export default function UsersAdminPage() {
       });
       return { previousUsers };
     },
-    onError: (err, id, context) => {
+    onError: (_err, _id, context) => {
       if (context?.previousUsers) {
         queryClient.setQueryData(['users', filters], context.previousUsers);
       }
@@ -67,7 +67,7 @@ export default function UsersAdminPage() {
       });
       return { previousUsers };
     },
-    onError: (err, id, context) => {
+    onError: (_err, _id, context) => {
       if (context?.previousUsers) {
         queryClient.setQueryData(['users', filters], context.previousUsers);
       }

@@ -1,10 +1,10 @@
 "use client";
 
+// @ts-ignore: reserved
 import React, { useState } from 'react';
-import { X, Truck, User, MapPin, CheckCircle2, Clock, AlertTriangle, MessageSquare, DollarSign, PenSquare } from 'lucide-react';
+import { X, Truck, User, MapPin, CheckCircle2, Clock, DollarSign, PenSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
 import { useTrip } from '@/hooks';
 
 interface TripWorkspacePanelProps {

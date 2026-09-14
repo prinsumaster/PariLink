@@ -1,4 +1,4 @@
-import { CreateSsoDto, UpdateSsoDto } from '../dto/sso.dto';
+import { CreateSsoDto } from '../dto/sso.dto';
 import {
   Controller,
   Get,
@@ -6,7 +6,6 @@ import {
   Req,
   Res,
   Param,
-  UseGuards,
   Query,
   Body,
 } from '@nestjs/common';

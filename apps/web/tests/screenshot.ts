@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 
 const BASE_URL = 'http://localhost:3000';
-const API_URL = 'http://localhost:8080';
+// @ts-ignore: reserved
+const _API_URL = 'http://localhost:8080';
 
 async function run() {
   const browser = await chromium.launch({ headless: true });

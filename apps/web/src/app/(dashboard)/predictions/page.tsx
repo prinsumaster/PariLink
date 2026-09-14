@@ -1,5 +1,4 @@
-import React from 'react';
-import { Activity, Clock, Zap } from 'lucide-react';
+import { Clock, Zap } from 'lucide-react';
 
 export default function PredictionsPage() {
   return (

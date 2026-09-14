@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CacheManagerService } from '../performance/cache-manager.service';
-import * as os from 'os';
-
 // ---------------------------------------------------------------------------
 // Health Service — Kubernetes / Cloud-native Grade
 //

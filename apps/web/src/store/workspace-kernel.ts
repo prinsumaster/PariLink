@@ -78,7 +78,7 @@ const DEFAULT_PANELS: WorkspacePanel[] = [
 
 export const useWorkspaceKernelStore = create<WorkspaceKernelState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       // Tabs
       tabs: [],
       activeTabId: null,

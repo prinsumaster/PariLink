@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response, Request } from 'express';
-import { BulkImportService, ImportType, TEMPLATES } from './bulk-import.service';
+import { BulkImportService, ImportType } from './bulk-import.service';
 import { ApiTags, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 

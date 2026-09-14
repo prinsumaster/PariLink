@@ -1,6 +1,5 @@
 'use client';
-import React from 'react';
-import { Package, Truck, Home, Database, AlertCircle, Zap } from 'lucide-react';
+import { Package, Truck, Home, Database, AlertCircle } from 'lucide-react';
 
 export function DigitalTwin() {
   return (

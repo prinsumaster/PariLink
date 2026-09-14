@@ -6,12 +6,11 @@ import { IntegrationCard } from '@/components/integrations/integration-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, Webhook, Link2, Activity, Box } from 'lucide-react';
-import Link from 'next/link';
 
 export default function IntegrationsHomePage() {
   const [connections, setConnections] = useState<any[]>([]);
   const [catalogue, setCatalogue] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {

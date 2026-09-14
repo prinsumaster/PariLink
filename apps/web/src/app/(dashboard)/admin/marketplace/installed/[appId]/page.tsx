@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
-import { ArrowLeft, Save, RefreshCw, AlertCircle, Database, Network, BellRing } from "lucide-react"
+import { ArrowLeft, Save, RefreshCw, AlertCircle, Database, Network } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { HealthBadge } from "@/components/marketplace/health-badge"

@@ -1,12 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CacheManagerService } from '../../platform/performance/cache-manager.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class LiveFleetService {
-  private readonly logger = new Logger(LiveFleetService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheManagerService,

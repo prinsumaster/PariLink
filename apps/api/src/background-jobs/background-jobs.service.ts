@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class BackgroundJobsService {
-  private readonly logger = new Logger(BackgroundJobsService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async createJob(

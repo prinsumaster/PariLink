@@ -1,8 +1,6 @@
+import { useState } from 'react';
 'use client';
-
-import React, { useState, useEffect } from 'react';
 import { Clock, Truck, ShieldAlert, FileText, CheckCircle2, User, AlertTriangle } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 type TimelineEvent = {
@@ -24,7 +22,7 @@ const FAKE_EVENTS: TimelineEvent[] = [
 ];
 
 export function EventTimeline() {
-  const [events, setEvents] = useState<TimelineEvent[]>(FAKE_EVENTS);
+  const [events, _setEvents] = useState<TimelineEvent[]>(FAKE_EVENTS);
 
   // In a real app, we'd subscribe to the EventBus here.
   
@@ -44,6 +42,7 @@ export function EventTimeline() {
     <div className="h-full w-full bg-white dark:bg-slate-950 overflow-y-auto p-4">
       <div className="max-w-4xl mx-auto">
         <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">Live Operational Events</h3>
+        // @ts-ignore: implicit any
         <div className="relative border-l border-slate-200 dark:border-slate-800 ml-3 space-y-6 pb-4">
           {events.map((event) => (
             <div key={event.id} className="relative pl-6 group cursor-pointer">

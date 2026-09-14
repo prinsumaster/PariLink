@@ -7,7 +7,6 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import {
-  CreatePermissionGroupDto,
   CreateRoleTemplateDto,
   SimulatePermissionDto,
 } from '../dto/enterprise-admin.dto';

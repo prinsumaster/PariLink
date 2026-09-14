@@ -1,4 +1,4 @@
-import { IsObject, IsOptional, IsNotEmptyObject, IsString, IsBoolean, IsNumber } from 'class-validator';
+import { IsObject, IsNotEmptyObject } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateWorkspaceDto {

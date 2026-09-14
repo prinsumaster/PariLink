@@ -1,4 +1,4 @@
-import { CreateInvoicesDto, UpdateInvoicesDto } from '../dto/invoices.dto';
+import { CreateInvoicesDto } from '../dto/invoices.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -9,8 +9,7 @@ import {
   Param,
   Body,
   UseGuards,
-  Query,
-  Request,
+  Query
 } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

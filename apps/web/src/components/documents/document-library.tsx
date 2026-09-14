@@ -1,7 +1,7 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num, dateIN } from '@/lib/format';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Document, DocumentFilters } from '@/types/documents';
 import {
   flexRender,

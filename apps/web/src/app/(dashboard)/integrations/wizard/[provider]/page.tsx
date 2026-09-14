@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CheckCircle2, ChevronRight, Lock, KeyRound, Globe, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, Lock, KeyRound, Globe, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function ConnectionWizardPage({ params }: { params: { provider: string } }) {
   const router = useRouter();
   const provider = params.provider.toUpperCase();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [connectionId, setConnectionId] = useState<string | null>(null);
+  const [_connectionId, setConnectionId] = useState<string | null>(null);
 
   const steps = [
     { id: 1, title: 'Authentication', icon: Lock },

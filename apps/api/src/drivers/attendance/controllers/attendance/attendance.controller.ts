@@ -1,4 +1,4 @@
-import { CreateAttendanceDto, UpdateAttendanceDto } from '../dto/attendance.dto';
+import { CreateAttendanceDto } from '../dto/attendance.dto';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Controller,

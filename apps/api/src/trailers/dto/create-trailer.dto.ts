@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber, Min, IsNotEmpty } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNumber, Min } from 'class-validator';
 
 export class CreateTrailerDto {
   @ApiPropertyOptional({ example: 'Utility' })

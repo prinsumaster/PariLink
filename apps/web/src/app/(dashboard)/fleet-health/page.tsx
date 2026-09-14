@@ -1,5 +1,4 @@
-import React from 'react';
-import { Activity, Wrench, ShieldAlert } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 
 export default function FleetHealthPage() {
   return (

@@ -12,7 +12,6 @@ import {
   Briefcase,
   Activity,
   FileSpreadsheet,
-  Sparkles,
   MessageSquare,
   Zap,
   Store,

@@ -12,7 +12,8 @@ export class ShipmentDelayAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -22,7 +23,7 @@ export class ShipmentDelayAgent extends BaseAgent {
       name: 'analyze_delay_risk',
       description:
         'Analyze delay risk for a given trip. Input: {"tripId": "string", "companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           riskLevel: 'HIGH',
           predictedDelayMinutes: 45,

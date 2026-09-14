@@ -179,10 +179,10 @@ export class ElomOrchestratorService {
   }
 
   private async handleYardEntry(
-    companyId: string,
+    _companyId: string,
     vehicleId: string,
-    data: any,
-    userId: string,
+    _data: any,
+    _userId: string,
   ) {
     this.logger.log(
       `ELOM: Vehicle ${vehicleId} entered Yard. Checking pending maintenance.`,

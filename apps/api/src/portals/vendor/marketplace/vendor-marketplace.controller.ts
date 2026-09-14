@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
+import { IsNumber } from 'class-validator';
 import {
   Controller,
   Get,

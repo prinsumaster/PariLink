@@ -1,12 +1,12 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
 
   BarChart3, Brain, Activity, Clock, FileText, 
-  ThumbsUp, ShieldAlert, Zap
+  ThumbsUp, ShieldAlert
 } from 'lucide-react';
 
 export default function AiAnalyticsPage() {

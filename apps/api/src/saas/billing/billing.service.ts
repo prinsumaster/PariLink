@@ -36,8 +36,8 @@ export class BillingService {
   async upgradePlan(
     companyId: string,
     planId: string,
-    successUrl: string,
-    cancelUrl: string,
+    _successUrl: string,
+    _cancelUrl: string,
   ) {
     const company = await this.prisma.runAsTenant(companyId, (tx) =>
       tx.company.findUnique({ where: { id: companyId } }),

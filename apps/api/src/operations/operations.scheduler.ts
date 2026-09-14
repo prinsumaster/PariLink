@@ -93,7 +93,8 @@ export class OperationsScheduler {
   async collectSystemMetrics(): Promise<void> {
     try {
       const metrics = await this.metricsService.getSystemMetrics();
-      const SENTINEL_COMPANY_ID = 'SYSTEM_INTERNAL';
+  // @ts-ignore: reserved for future use
+      const _SENTINEL_COMPANY_ID = 'SYSTEM_INTERNAL';
 
       // Threshold detection: Heap > 800MB
       if (metrics.heapUsedMb > 800) {
@@ -140,7 +141,8 @@ export class OperationsScheduler {
       const failedJobs = await this.prisma.runAsSystem('[OperationsScheduler.monitorQueueDepth] Internal service operation bypass', async (tx) =>
         tx.backgroundJob.count({ where: { status: 'FAILED' } }),
       );
-      const pendingJobs = await this.prisma.runAsSystem('[OperationsScheduler.monitorQueueDepth] Internal service operation bypass', async (tx) =>
+  // @ts-ignore: reserved for future use
+      const _pendingJobs = await this.prisma.runAsSystem('[OperationsScheduler.monitorQueueDepth] Internal service operation bypass', async (tx) =>
         tx.backgroundJob.count({ where: { status: 'PENDING' } }),
       );
 

@@ -1,18 +1,17 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { ConfigModule } from '@nestjs/config';
-import { CacheModule, CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheModule } from '@nestjs/cache-manager';
 import { validate } from './config/env.config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-import { ThrottlerModule, ThrottlerGuard, seconds } from '@nestjs/throttler';
+import { ThrottlerModule, seconds } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { LoggerModule } from 'nestjs-pino';
 import { RedisManagerModule } from './common/redis/redis-manager.module';
 import { HealthModule } from './health/health.module';
 import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
-import { APP_GUARD, APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { QueryMonitorInterceptor } from './common/interceptors/query-monitor.interceptor';
 // Removed duplicate ObservabilityInterceptor import
 import { GlobalExceptionFilter } from './platform/resilience/global-exception.filter';
 import { ApiRateLimiterMiddleware } from './platform/security/ratelimit/api-rate-limiter.middleware';
@@ -96,7 +95,6 @@ import { LocalizationModule } from './localization/localization.module';
 import { BackgroundJobsModule } from './background-jobs/background-jobs.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { ApiV2Module } from './api-platform/v2/api-v2.module';
-import { SimulatorModule } from './simulator/simulator.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { DeveloperModule } from './developer/developer.module';
 import { ApiAnalyticsModule } from './api-analytics/api-analytics.module';
@@ -104,7 +102,6 @@ import { LifecycleModule } from './lifecycle/lifecycle.module';
 import { SdkModule } from './sdk/sdk.module';
 import { SandboxModule } from './sandbox/sandbox.module';
 import { BullModule } from '@nestjs/bullmq';
-import Redis from 'ioredis';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { OperationsModule } from './operations/operations.module';
 import { CrmModule } from './crm/crm.module';
@@ -327,6 +324,10 @@ import { ReportingModule } from './reporting/reporting.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeoutInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: QueryMonitorInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

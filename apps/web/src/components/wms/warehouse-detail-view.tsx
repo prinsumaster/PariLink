@@ -1,11 +1,11 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { Warehouse } from '@/types/wms';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, MapPin, Box, User, Clock, Layers } from 'lucide-react';
+import { MapPin, Box, User, Clock, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
 

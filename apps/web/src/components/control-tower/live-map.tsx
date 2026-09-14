@@ -1,9 +1,8 @@
+import { useMemo } from 'react';
 'use client';
-
-import React, { useMemo } from 'react';
 import Map from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
-import { ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import { useControlTowerStore } from '../../store/control-tower.store';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { rasterStyle } from '@/lib/map-style';

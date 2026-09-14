@@ -1,5 +1,4 @@
-import React from 'react';
-import { Truck, MapPin, CheckCircle, Clock, FileText, Phone } from 'lucide-react';
+import { Truck, MapPin, CheckCircle, FileText, Phone } from 'lucide-react';
 
 export default function CustomerTrackingPortal({ params }: { params: { id: string } }) {
   return (

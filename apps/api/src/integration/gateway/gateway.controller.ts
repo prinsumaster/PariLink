@@ -1,12 +1,10 @@
-import { CreateGatewayDto, UpdateGatewayDto } from '../dto/gateway.dto';
+import { CreateGatewayDto } from '../dto/gateway.dto';
 import {
   Controller,
   Post,
   Headers,
   Body,
   Param,
-  Get,
-  UseGuards,
   UnauthorizedException,
   Req,
 } from '@nestjs/common';

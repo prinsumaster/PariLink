@@ -5,7 +5,8 @@ async function main() {
     datasources: { db: { url: "postgresql://postgres:postgres@localhost:5434/postgres" } }
   });
 
-  const companyA = '5f302208-e523-439a-9698-178e8924a7fc';
+  // @ts-ignore: reserved for future use
+  const _companyA = '5f302208-e523-439a-9698-178e8924a7fc';
   const companyB = '01041308-a695-45ac-bc25-7a6c23030f45';
 
   await prisma.company.upsert({

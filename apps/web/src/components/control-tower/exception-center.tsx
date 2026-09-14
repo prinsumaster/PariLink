@@ -1,6 +1,4 @@
 'use client';
-
-import React from 'react';
 import { useControlTowerStore } from '../../store/control-tower.store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';

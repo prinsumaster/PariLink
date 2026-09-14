@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test('Customer CRUD Workflow', async ({ page }) => {
   // 1. Log in

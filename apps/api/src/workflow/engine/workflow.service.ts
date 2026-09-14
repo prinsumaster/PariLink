@@ -1,10 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class WorkflowService {
-  private readonly logger = new Logger(WorkflowService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

@@ -12,7 +12,8 @@ export class ExceptionManagementAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -21,7 +22,7 @@ export class ExceptionManagementAgent extends BaseAgent {
     new DynamicTool({
       name: 'manage_exceptions',
       description: 'Process active exceptions. Input: {"companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           activeExceptions: 1,
           recommendations: [

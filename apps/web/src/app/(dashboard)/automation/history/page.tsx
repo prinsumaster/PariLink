@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { api } from '@/services/api';
 import { Loader2, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';

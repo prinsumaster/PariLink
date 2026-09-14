@@ -5,7 +5,7 @@ import { Order } from '@/types/orders';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Package, MapPin, Calendar, CreditCard, Box, User, ArrowRight } from 'lucide-react';
+import { Package, Calendar, CreditCard, Box, User, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
 

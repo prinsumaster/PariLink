@@ -8,7 +8,8 @@ export class SimulatorService {
 
   constructor(
     private prisma: PrismaService,
-    private eventService: EventService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _eventService: EventService,
   ) {}
 
   async startSimulation(
@@ -53,7 +54,7 @@ export class SimulatorService {
     // Create random vehicles
     this.logger.log(`Generating ${options.vehicles} vehicles...`);
     const vehicles = await Promise.all(
-      Array.from({ length: options.vehicles }).map((_, i) =>
+      Array.from({ length: options.vehicles }).map((_, _i) =>
         this.prisma.runAsTenant(companyId, async (tx) =>
           tx.vehicle.create({
             data: {
@@ -70,7 +71,7 @@ export class SimulatorService {
 
     // Create random drivers
     const drivers = await Promise.all(
-      Array.from({ length: options.vehicles }).map((_, i) =>
+      Array.from({ length: options.vehicles }).map((_, _i) =>
         this.prisma.runAsTenant(companyId, async (tx) =>
           tx.driver.create({
             data: {

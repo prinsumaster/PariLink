@@ -29,13 +29,13 @@ export class WorkflowExecutorService extends WorkerHost {
     }
   }
 
-  private async executeDag(data: any) {
+  private async executeDag(_data: any) {
     // Scaffolded: DAG traversal and node execution
     this.logger.debug('Executing Workflow DAG with nodes and edges...');
     return { status: 'success', executedNodes: 2 };
   }
 
-  private async handleWebhookTrigger(data: any) {
+  private async handleWebhookTrigger(_data: any) {
     this.logger.debug('Handling Webhook Trigger...');
     return { status: 'success' };
   }

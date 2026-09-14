@@ -1,11 +1,10 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { aiApi } from '@/services/ai';
 import { 
-  Bot, Activity, CheckCircle2, AlertCircle, Shield, 
-  Workflow, Database, Cpu, Search, RefreshCw
+  Bot, Activity, Cpu, Search, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

@@ -91,9 +91,9 @@ export class QuickBooksConnector extends BaseConnector {
 
   async syncEntity(
     entityType: string,
-    credentials: any,
+    _credentials: any,
     lastSyncDate?: Date,
-    cursor?: string,
+    _cursor?: string,
   ): Promise<SyncResult> {
     this.logger.log(`Syncing QuickBooks ${entityType} from ${lastSyncDate}`);
     return {
@@ -104,7 +104,7 @@ export class QuickBooksConnector extends BaseConnector {
 
   async pushEvent(
     eventType: string,
-    payload: any,
+    _payload: any,
     credentials: any,
   ): Promise<boolean> {
     this.logger.log(`Pushing event to QuickBooks: ${eventType}`);

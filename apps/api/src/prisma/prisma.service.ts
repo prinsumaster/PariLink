@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaClient, Prisma } from '@prisma/client';
+import { queryMonitorStorage } from '../common/query-monitor.storage';
 
 @Injectable()
 export class PrismaService
@@ -166,6 +167,11 @@ export class PrismaService
 
   private setupSoftDeleteMiddleware() {
     this.$use(async (params, next) => {
+      const store = queryMonitorStorage.getStore();
+      if (store) {
+        store.count++;
+      }
+      
       if (!params.model) return next(params);
 
       const model = this.dmmfModels.get(params.model);

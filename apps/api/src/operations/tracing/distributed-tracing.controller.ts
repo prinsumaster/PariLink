@@ -133,7 +133,7 @@ export class DistributedTracingController {
       'Get full distributed trace with all child spans assembled in waterfall order (Trace Explorer)',
   })
   async getTrace(
-    @GetUser() user: { companyId: string },
+    @GetUser() _user: { companyId: string },
     @Param('traceId') traceId: string,
   ) {
     return this.tracingService.getTraceTree(traceId);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class DriverSettlementService {
     );
 
     if (!trip || trip.companyId !== companyId)
-      throw new Error('Trip not found');
+      throw new NotFoundException('Trip not found');
 
     let totalAdvance = 0;
     let totalToll = 0;

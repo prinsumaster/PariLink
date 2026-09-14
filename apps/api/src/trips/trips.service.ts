@@ -124,7 +124,7 @@ export class TripsService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new Error('Trip creation rejected by business rules.');
+        throw new BadRequestException('Trip creation rejected by business rules.');
       }
 
       await this.auditService.logEvent(
@@ -448,7 +448,7 @@ export class TripsService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new Error('Load assignment rejected by business rules.');
+        throw new BadRequestException('Load assignment rejected by business rules.');
       }
 
       // Verify that all loads are unassigned before assigning them

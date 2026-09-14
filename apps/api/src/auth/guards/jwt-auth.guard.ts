@@ -12,7 +12,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleRequest<TUser = any>(err: any, user: any, info: any): TUser {
+  handleRequest<TUser = any>(err: any, user: any, _info: any): TUser {
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication required');
     }

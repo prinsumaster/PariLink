@@ -48,7 +48,8 @@ export class OperationsDashboardService {
     private readonly prisma: PrismaService,
     private readonly healthService: EnterpriseHealthService,
     private readonly metricsService: MetricsPlatformService,
-    private readonly incidentService: IncidentManagementService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _incidentService: IncidentManagementService,
     private readonly performanceService: PerformancePlatformService,
   ) {}
 
@@ -144,7 +145,7 @@ export class OperationsDashboardService {
   }
 
   private async getTopApiConsumers(
-    companyId?: string,
+    _companyId?: string,
   ): Promise<
     { companyId: string; companyName: string; requestCount: number }[]
   > {

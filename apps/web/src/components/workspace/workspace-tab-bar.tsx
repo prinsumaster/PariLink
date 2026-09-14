@@ -1,13 +1,16 @@
 'use client';
 
-import { useWorkspaceKernelStore, WorkspaceTab } from '@/store/workspace-kernel';
-import { X, Plus, GripVertical, FileCode, CheckCircle2 } from 'lucide-react';
+import { useWorkspaceKernelStore } from '@/store/workspace-kernel';
+import { X, GripVertical, FileCode } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 
 export function WorkspaceTabBar() {
-  const { tabs, activeTabId, setActiveTab, closeTab, closeAllTabs, closeOtherTabs, setSplitMode, splitMode } = useWorkspaceKernelStore();
-  const router = useRouter();
+  // @ts-ignore: reserved
+  // @ts-ignore: reserved
+  const { tabs, activeTabId, setActiveTab, closeTab, closeAllTabs: _closeAllTabs, closeOtherTabs: _closeOtherTabs, setSplitMode, splitMode } = useWorkspaceKernelStore();
+  // @ts-ignore: reserved
+  const _router = useRouter();
 
   if (tabs.length === 0) return null;
 

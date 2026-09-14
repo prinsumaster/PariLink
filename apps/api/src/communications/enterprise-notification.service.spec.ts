@@ -19,10 +19,10 @@ describe('Enterprise Notification Orchestrator Service', () => {
   const mockPrisma: any = {
     runAsTenant: jest
       .fn()
-      .mockImplementation(async (tenantId, cb) => await cb(mockPrisma)),
+      .mockImplementation(async (_tenantId, cb) => await cb(mockPrisma)),
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (reason, cb) => await cb(mockPrisma)),
+      .mockImplementation(async (_reason, cb) => await cb(mockPrisma)),
     notificationTemplate: {
       findFirst: jest.fn().mockResolvedValue(null),
       findMany: jest.fn().mockResolvedValue([

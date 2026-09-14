@@ -11,7 +11,8 @@ export class PluginRuntimeManager {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly permissionValidator: PermissionValidator,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _permissionValidator: PermissionValidator,
   ) {}
 
   /**

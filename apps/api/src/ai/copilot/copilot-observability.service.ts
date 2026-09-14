@@ -7,14 +7,15 @@ export class CopilotObservabilityService {
   private readonly logger = new Logger(CopilotObservabilityService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
   ) {}
 
   async logRequest(
     req: any,
     intent: any,
-    result: any,
+    _result: any,
     latencyMs: number,
     confidence: number,
   ) {

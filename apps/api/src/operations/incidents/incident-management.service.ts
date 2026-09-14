@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -40,8 +40,7 @@ export interface PostmortemInput {
 
 @Injectable()
 export class IncidentManagementService {
-  private readonly logger = new Logger(IncidentManagementService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,

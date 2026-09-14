@@ -9,7 +9,8 @@ import cookieParser from 'cookie-parser';
 describe('Unlock Admin', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let cookies: string[];
+  // @ts-ignore: reserved for future use
+  let _cookies: string[];
   let accessToken: string;
 
   beforeAll(async () => {

@@ -14,10 +14,12 @@ export class WmsOrchestratorService {
   private readonly logger = new Logger(WmsOrchestratorService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
     private readonly lifecycle: LifecycleEngineService,
-    private readonly invoicesService: InvoicesService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _invoicesService: InvoicesService,
   ) {}
 
   @OnEvent('EventStore.*')

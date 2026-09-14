@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { api } from '@/services/api';

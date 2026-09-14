@@ -15,7 +15,8 @@ export class BusinessRuleEngineService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly cache: CacheManagerService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _cache: CacheManagerService,
   ) {}
 
   /**

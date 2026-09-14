@@ -13,6 +13,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  timeout: 60000,
+  expect: { timeout: 30000 },
   globalSetup: require.resolve('./tests/global.setup'),
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -76,13 +78,15 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'cd ../api && npm run start:prod',
+      command: 'cd ../api && npm run start:dev',
       port: 8080,
+      timeout: 120000,
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: 'npm run start',
+      command: 'npm run dev',
       port: 3000,
+      timeout: 120000,
       reuseExistingServer: !process.env.CI,
     }
   ],

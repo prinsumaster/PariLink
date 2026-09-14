@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ReportFilters as FilterState } from '@/types/reports';
-import { BarChart3, Download, Calendar, Filter } from 'lucide-react';
+import { BarChart3, Download, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Select, 

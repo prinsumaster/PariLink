@@ -21,7 +21,8 @@ describe('BC0 - Portals Security (e2e)', () => {
   let loadB1_id: string;
   
   let tokenA1: string;
-  let tokenB1: string;
+  // @ts-ignore: reserved for future use
+  let _tokenB1: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -88,7 +89,7 @@ describe('BC0 - Portals Security (e2e)', () => {
     const loginB1 = await request(app.getHttpServer()).post('/auth/login').send({ email: userB1.email, password: 'password123' });
     if (loginB1.status !== 200) console.error('LOGIN B1 FAILED:', loginB1.body);
     expect(loginB1.status).toBe(200);
-    tokenB1 = loginB1.body.access_token;
+    _tokenB1 = loginB1.body.access_token;
   });
 
   afterAll(async () => {

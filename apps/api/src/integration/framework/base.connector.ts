@@ -16,7 +16,7 @@ export abstract class BaseConnector {
   /**
    * Establish a persistent connection if needed (e.g. WebSockets)
    */
-  async connect(credentials: Record<string, unknown>): Promise<boolean> {
+  async connect(_credentials: Record<string, unknown>): Promise<boolean> {
     return true; // Default implementation
   }
 

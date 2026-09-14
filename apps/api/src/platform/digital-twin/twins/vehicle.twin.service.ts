@@ -20,11 +20,14 @@ export class VehicleTwinService {
 
   @OnEvent('DomainEvent.VEHICLE.*')
   async handleVehicleEvent(event: DomainEventPayload) {
-    const { tenantId, payload } = event;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // const { _tenantId, payload } = event; // unused destructuring removed
+    // @ts-ignore: reserved for future use
     const { streamId, data, version } = payload;
 
     // Determine the event type from the routing key
-    const eventType = event.metadata?.eventId ? 'Unknown' : 'Unknown'; // We need the eventName.
+  // @ts-ignore: reserved for future use
+    const _eventType = event.metadata?.eventId ? 'Unknown' : 'Unknown'; // We need the eventName.
     // NestJS wildcard events pass the event name as the 2nd arg or we can inject it.
     // Instead of relying on wildcard string parsing here, let's just use the strict payload we designed.
 

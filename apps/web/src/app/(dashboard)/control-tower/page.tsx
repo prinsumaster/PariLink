@@ -1,6 +1,5 @@
+import { useState, useEffect } from 'react';
 'use client';
-
-import React, { useEffect, useState } from 'react';
 import { useControlTowerStore } from '../../../store/control-tower.store';
 import { LiveMap } from '../../../components/control-tower/live-map';
 import { EventStream } from '../../../components/control-tower/event-stream';
@@ -20,6 +19,7 @@ export default function ControlTowerPage() {
     // Setup CMD+K shortcut
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        // @ts-ignore: implicit any
         e.preventDefault();
         setCmdOpen((open) => !open);
       }

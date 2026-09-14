@@ -19,7 +19,8 @@ export class SyncEngineProcessor extends WorkerHost {
   constructor(
     private prisma: PrismaService,
     private factory: ConnectorFactoryService,
-    private crypto: CryptoService,
+    // @ts-ignore: DI dependency reserved for future use
+    private _crypto: CryptoService,
   ) {
     super();
   }

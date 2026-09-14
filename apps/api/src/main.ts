@@ -1,7 +1,7 @@
 // import './tracer';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe, VersioningType, ForbiddenException } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
@@ -102,7 +102,7 @@ async function bootstrap() {
   app.useWebSocketAdapter(redisIoAdapter);
 
   // ── Payload Limits (Enterprise Bulk Operations)
-  const rawBodyBuffer = (req: any, res: any, buf: Buffer) => {
+  const rawBodyBuffer = (req: any, _res: any, buf: Buffer) => {
     if (buf && buf.length) {
       req.rawBody = buf;
     }
@@ -255,7 +255,7 @@ async function bootstrap() {
   });
 
   // Hardcoded health check for scripts
-  app.getHttpAdapter().get('/api/v1/health', (req: any, res: any) => {
+  app.getHttpAdapter().get('/api/v1/health', (_req: any, res: any) => {
     res.status(200).send('OK');
   });
 

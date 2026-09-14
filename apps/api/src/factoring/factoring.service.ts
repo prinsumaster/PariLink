@@ -112,7 +112,7 @@ export class FactoringService {
     });
   }
 
-  async connectStripe(companyId: string) {
+  async connectStripe(_companyId: string) {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new ServiceUnavailableException(
         'Stripe integration is not configured for Factoring.',

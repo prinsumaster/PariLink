@@ -36,7 +36,7 @@ export class RazorpayService {
 
   async createSubscription(
     planId: string,
-    customerId: string,
+    _customerId: string,
     totalCount = 12,
   ) {
     const razorpay = await this.getClient();

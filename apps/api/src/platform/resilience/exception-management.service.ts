@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventStoreService } from '../digital-twin/event-store.service';
 import { LifecycleEngineService } from '../lifecycle/lifecycle-engine.service';
 import { PrismaService } from '../../prisma/prisma.service';

@@ -12,7 +12,7 @@ interface CommandCenterProps {
 
 export const CommandCenter: React.FC<CommandCenterProps> = ({ open, setOpen }) => {
   const { socket } = useControlTowerStore();
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
 
   // Close on escape is handled by CmdK natively, but we ensure state sync
   useEffect(() => {

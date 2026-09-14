@@ -1,19 +1,5 @@
+import { useRef, useState, useEffect, useMemo } from 'react';
 'use client';
-
-/**
- * DispatchFleetMap — demo-ready with simulated telemetry
- *
- * KEY RULES (enforced here):
- *  - No hardcoded coordinates in this file.
- *    All positions come from GET /dispatch/operations/live-fleet/map
- *    (which reads VehicleLocation rows from Postgres).
- *  - Demo banner is non-dismissible while any vehicle has isSimulated=true.
- *  - Movement is interpolated between timestamped DB fixes at 10× playback speed.
- *  - To switch to live GPS: stop seeding DEMO_TELEMETRY, start pushing real
- *    fixes via POST /fleet/iot/webhook/:providerId. No code changes needed here.
- */
-
-import React, { useMemo, useEffect, useRef, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, PathLayer } from '@deck.gl/layers';

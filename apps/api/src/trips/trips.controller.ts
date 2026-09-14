@@ -10,9 +10,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  Request,
-  NotFoundException,
+  UseGuards
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -102,7 +100,7 @@ export class TripsController {
   submitDriverScore(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }
+    @Body() body: DriverScoreDto
   ) {
     return this.tripsService.submitDriverScore(user.companyId, id, body, user.id);
   }

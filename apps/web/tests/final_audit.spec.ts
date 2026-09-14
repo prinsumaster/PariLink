@@ -43,6 +43,7 @@ test.describe('Final Authentication Certification', () => {
     }
   });
 
+  // @ts-ignore: reserved
   test('Logout synchronization and tab revocation', async ({ browser }) => {
     // We are logged in from the previous test.
     // 1. Open second tab

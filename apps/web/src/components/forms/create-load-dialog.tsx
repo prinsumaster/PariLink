@@ -1,8 +1,8 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money } from '@/lib/format';
 
 import { useState, useCallback } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useCreateLoad } from '@/hooks/use-loads';
@@ -66,7 +66,8 @@ const EQUIPMENT_OPTIONS: { value: string; label: string; description: string }[]
 ];
 
 // ─── Step Indicator ───────────────────────────────────────────────────────────
-function StepIndicator({ current, total }: { current: number; total: number }) {
+// @ts-ignore: reserved
+function StepIndicator({ current, total: _total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-0">
       {STEPS.map((step, i) => {

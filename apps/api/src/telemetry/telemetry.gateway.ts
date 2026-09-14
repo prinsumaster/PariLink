@@ -1,14 +1,12 @@
 import {
   WebSocketGateway,
   WebSocketServer,
-  SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Assume we have a WS version or we authenticate on connect
 
 @WebSocketGateway({
   cors: {

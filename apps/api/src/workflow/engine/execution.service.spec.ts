@@ -9,16 +9,18 @@ import { getQueueToken } from '@nestjs/bullmq';
 
 describe('ExecutionEngineService', () => {
   let service: ExecutionEngineService;
-  let prismaService: PrismaService;
-  let workflowQueue: any;
+  // @ts-ignore: reserved for future use
+  let _prismaService: PrismaService;
+  // @ts-ignore: reserved for future use
+  let _workflowQueue: any;
 
   const mockPrismaService = {
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (reason, cb) => cb(mockPrismaService)),
+      .mockImplementation(async (_reason, cb) => cb(mockPrismaService)),
     runAsTenant: jest
       .fn()
-      .mockImplementation(async (tenantId, cb) => cb(mockPrismaService)),
+      .mockImplementation(async (_tenantId, cb) => cb(mockPrismaService)),
     workflowExecution: {
       create: jest.fn(),
       findUnique: jest.fn(),
@@ -74,8 +76,8 @@ describe('ExecutionEngineService', () => {
     }).compile();
 
     service = module.get<ExecutionEngineService>(ExecutionEngineService);
-    prismaService = module.get<PrismaService>(PrismaService);
-    workflowQueue = module.get(getQueueToken('workflow_execution'));
+    _prismaService = module.get<PrismaService>(PrismaService);
+    _workflowQueue = module.get(getQueueToken('workflow_execution'));
 
     // Manual onModuleInit trigger
     service.onModuleInit();

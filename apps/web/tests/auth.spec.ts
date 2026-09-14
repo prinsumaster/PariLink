@@ -50,6 +50,7 @@ test.describe('Authentication Lifecycle Audit', () => {
     await expect(sharedPage.locator('text=Sign In')).toHaveCount(0);
   });
 
+  // @ts-ignore: reserved
   test('4. Open new tab shares session', async ({ browser }) => {
     const newPage = await sharedContext.newPage();
     await newPage.goto('http://localhost:3001/dashboard');

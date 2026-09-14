@@ -21,7 +21,8 @@ export class CommandGateway {
 
   private readonly logger = new Logger(CommandGateway.name);
 
-  constructor(private readonly bpm?: ProcessEngine) {}
+    // @ts-ignore: DI dependency reserved for future use
+  constructor(private readonly _bpm?: ProcessEngine) {}
 
   @SubscribeMessage('dispatch_action')
   async handleDispatchAction(

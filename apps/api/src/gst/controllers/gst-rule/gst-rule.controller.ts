@@ -1,4 +1,4 @@
-import { CreateGstRuleDto, UpdateGstRuleDto } from '../dto/gst-rule.dto';
+import { CreateGstRuleDto } from '../dto/gst-rule.dto';
 import {
   Controller,
   Get,

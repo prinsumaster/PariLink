@@ -87,7 +87,7 @@ describe('RouteToll (e2e)', () => {
     // We query RouteTollRate via runAsTenant for Tenant A
     const tenantARates = await prisma.runAsTenant(tenantA.companyId, (tx: any) =>
       tx.routeTollRate.findMany()
-    );
+    ) as any[];
 
     expect(tenantARates.length).toBeGreaterThan(0);
     for (const r of tenantARates) {

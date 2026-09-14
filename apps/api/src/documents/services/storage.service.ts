@@ -43,7 +43,7 @@ export class StorageService implements StorageAdapter {
   async upload(
     file: Buffer,
     filename: string,
-    mimeType: string,
+    _mimeType: string,
     tenantId: string,
   ): Promise<string> {
     // In a production enterprise system, this dynamically resolves the tenant's preferred storage backend.
@@ -92,8 +92,8 @@ export class StorageService implements StorageAdapter {
 
   async getSignedUrl(
     fileUrl: string,
-    tenantId: string,
-    expiresInSeconds = 3600,
+    _tenantId: string,
+    _expiresInSeconds = 3600,
   ): Promise<string> {
     // Enterprise feature: Generate temporary access signatures for private documents
     // When connected to AWS S3, this returns a presigned URL.

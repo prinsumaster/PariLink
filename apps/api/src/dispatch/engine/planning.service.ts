@@ -4,7 +4,6 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { AuditService } from '../../platform/audit/audit.service';
 
 function getDeterministicDistance(loadId: string, vehicleId: string): number {
   let hash = 0;

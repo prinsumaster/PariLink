@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export interface SettlementContext {
@@ -33,14 +33,14 @@ export class SettlementEngine {
       });
 
       if (trips.length === 0) {
-        throw new Error('No valid trips found for settlement');
+        throw new BadRequestException('No valid trips found for settlement');
       }
 
       // 2. Validate that NO trips are already settled
       const alreadySettled = trips.filter((t) => t.settlementId !== null);
       if (alreadySettled.length > 0) {
         this.logger.error(`Attempt to double-settle trips: ${alreadySettled.map(t => t.id).join(', ')}`);
-        throw new Error('One or more trips are already settled');
+        throw new BadRequestException('One or more trips are already settled');
       }
 
       let grossPay = 0;

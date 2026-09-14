@@ -42,7 +42,7 @@ export function ProofOfDeliveryDialog({ load, open, onOpenChange }: ProofOfDeliv
     resolver: zodResolver(podSchema) as any,
   });
 
-  const onSubmit = (data: PodFormValues) => {
+  const onSubmit = (_data: PodFormValues) => {
     if (!hasSignature && files.length === 0) {
       toast.error('Please provide either a signature or upload a POD document/photo.');
       return;

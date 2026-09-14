@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Lock, Unlock, ShieldAlert, Mail, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Lock, Unlock, ShieldAlert, Mail, MoreHorizontal, Edit } from 'lucide-react';
 import { 
   DropdownMenu,
   DropdownMenuContent,

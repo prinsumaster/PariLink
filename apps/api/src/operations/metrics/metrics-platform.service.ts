@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -25,11 +25,11 @@ export interface MetricSeries {
 
 @Injectable()
 export class MetricsPlatformService {
-  private readonly logger = new Logger(MetricsPlatformService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
-    private readonly auditService: AuditService,
+    // @ts-ignore: reserved for future use
+    private readonly _auditService: AuditService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 

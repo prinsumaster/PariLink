@@ -1,5 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 /**
  * Interface representing a Digital Worker capable of executing a graph node.
@@ -27,7 +26,7 @@ export class DigitalWorkerRegistry {
   getWorker(name: string): IDigitalWorker {
     const worker = this.workers.get(name);
     if (!worker) {
-      throw new Error(`Digital Worker '${name}' not found in registry.`);
+      throw new NotFoundException(`Digital Worker '${name}' not found in registry.`);
     }
     return worker;
   }

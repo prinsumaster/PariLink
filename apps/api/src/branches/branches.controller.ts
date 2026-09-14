@@ -9,8 +9,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { BranchesService } from './branches.service';
 import { CreateBranchDto } from './dto/create-branch.dto';

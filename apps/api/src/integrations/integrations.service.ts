@@ -1,8 +1,7 @@
 import {
   Injectable,
   Logger,
-  BadRequestException,
-  NotImplementedException,
+  BadRequestException
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -21,42 +20,42 @@ interface IntegrationAdapter {
 
 class SapAdapter implements IntegrationAdapter {
   async syncEntity(
-    entityType: string,
-    entityData: Record<string, unknown>,
-    config: Record<string, unknown>,
+    _entityType: string,
+    _entityData: Record<string, unknown>,
+    _config: Record<string, unknown>,
   ): Promise<boolean> {
     // Mock SAP OData call
     return true;
   }
-  async checkHealth(config: Record<string, unknown>): Promise<boolean> {
+  async checkHealth(_config: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 }
 
 class OracleAdapter implements IntegrationAdapter {
   async syncEntity(
-    entityType: string,
-    entityData: Record<string, unknown>,
-    config: Record<string, unknown>,
+    _entityType: string,
+    _entityData: Record<string, unknown>,
+    _config: Record<string, unknown>,
   ): Promise<boolean> {
     // Mock Oracle ERP Cloud call
     return true;
   }
-  async checkHealth(config: Record<string, unknown>): Promise<boolean> {
+  async checkHealth(_config: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 }
 
 class DynamicsAdapter implements IntegrationAdapter {
   async syncEntity(
-    entityType: string,
-    entityData: Record<string, unknown>,
-    config: Record<string, unknown>,
+    _entityType: string,
+    _entityData: Record<string, unknown>,
+    _config: Record<string, unknown>,
   ): Promise<boolean> {
     // Mock Dynamics 365 Dataverse call
     return true;
   }
-  async checkHealth(config: Record<string, unknown>): Promise<boolean> {
+  async checkHealth(_config: Record<string, unknown>): Promise<boolean> {
     return true;
   }
 }

@@ -1,4 +1,4 @@
-import { CreateAdminSsoDto, UpdateAdminSsoDto } from '../dto/admin-sso.dto';
+import { CreateAdminSsoDto } from '../dto/admin-sso.dto';
 import {
   Controller,
   Get,

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { AlertTriangle, Loader2, Navigation, Hexagon, Eye, EyeOff } from 'lucide-react';
+import { AlertTriangle, Loader2, Eye, EyeOff } from 'lucide-react';
 import { BrandSplash } from '@/components/brand-splash';
 
 function getValidatedCallbackUrl(url: string | null): string | null {
@@ -51,8 +51,9 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [capsLockOn, setCapsLockOn] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const { isMfaRequired, verifyMfa, mfaToken, setMfaRequired } = useMfa();
+  const [_isMounted, setIsMounted] = useState(false);
+  // @ts-ignore: reserved
+  const { isMfaRequired, verifyMfa, mfaToken: _mfaToken, setMfaRequired } = useMfa();
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema) as any,

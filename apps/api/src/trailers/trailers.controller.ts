@@ -9,8 +9,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { TrailersService } from './trailers.service';
 import { CreateTrailerDto } from './dto/create-trailer.dto';

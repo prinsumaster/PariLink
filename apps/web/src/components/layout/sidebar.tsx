@@ -12,21 +12,15 @@ import {
   Bot,
   X,
   Package,
-  Building2,
   DollarSign,
   BarChart3,
   FileText,
-  CreditCard,
-  Boxes,
   ChevronDown,
   ChevronRight,
   Zap,
   UsersRound,
   Warehouse,
-  BookOpen,
-  Bell,
-  Store,
-  Navigation,
+  Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WorkspaceSelector } from './workspace-selector';
@@ -164,6 +158,7 @@ function NavGroup({ item, pathname }: { item: NavItem; pathname: string }) {
     return (
       <Link
         href={item.href}
+        data-testid={`nav-link-${item.name.toLowerCase().replace(/ /g, '-')}`}
         className={cn(
           'group flex items-center gap-2.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors',
           isActive
@@ -203,6 +198,7 @@ function NavGroup({ item, pathname }: { item: NavItem; pathname: string }) {
               <Link
                 key={child.href}
                 href={child.href}
+                data-testid={`nav-link-${child.name.toLowerCase().replace(/ /g, '-')}`}
                 className={cn(
                   'flex items-center px-3 py-1.5 text-sm rounded-md transition-colors',
                   isChildActive

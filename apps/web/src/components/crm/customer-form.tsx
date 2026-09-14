@@ -63,7 +63,8 @@ export function CustomerForm({ initialData, isEdit }: CustomerFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit, setValue, watch, formState: { errors, isDirty } } = useForm<CustomerFormValues>({
+  // @ts-ignore: reserved
+  const { register, control, handleSubmit, setValue, watch, formState: { errors: _errors, isDirty } } = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: initialData ? {
       companyName: initialData.companyName,

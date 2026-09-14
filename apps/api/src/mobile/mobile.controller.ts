@@ -1,4 +1,4 @@
-import { CreateMobileDto, UpdateMobileDto } from '../dto/mobile.dto';
+import { CreateMobileDto } from '../dto/mobile.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
@@ -9,8 +9,6 @@ import {
   Body,
   Param,
   UseGuards,
-  Request,
-  UseInterceptors,
   UploadedFile,
   BadRequestException,
 } from '@nestjs/common';
@@ -29,7 +27,6 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { PlatformFileInterceptor } from '../platform/files/file.interceptor';
-import { extname } from 'path';
 
 @ApiTags('mobile')
 @ApiBearerAuth()

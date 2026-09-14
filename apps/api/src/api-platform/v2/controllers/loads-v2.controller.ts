@@ -7,15 +7,13 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
-  Version,
+  UseGuards
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
   ApiOAuth2,
-  ApiHeader,
   ApiSecurity,
 } from '@nestjs/swagger';
 import { ApiV2AuthGuard } from '../guards/api-v2-auth.guard';

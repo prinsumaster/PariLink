@@ -164,7 +164,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             <StaggerContainer>
             {rows.length ? (
-              rowVirtualizer.getVirtualItems().map((virtualRow, index) => {
+              rowVirtualizer.getVirtualItems().map((virtualRow, _index) => {
                 const row = rows[virtualRow.index];
                 return (
                   <StaggerItem key={row.id}>

@@ -1,11 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CacheManagerService } from '../../platform/performance/cache-manager.service';
 
 @Injectable()
 export class ControlTowerService {
-  private readonly logger = new Logger(ControlTowerService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheManagerService,

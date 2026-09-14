@@ -1,4 +1,4 @@
-import { CreatePreferencesDto, UpdatePreferencesDto } from '../dto/preferences.dto';
+import { CreatePreferencesDto } from '../dto/preferences.dto';
 import { Controller, Get, Put, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';

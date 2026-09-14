@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { dateIN } from '@/lib/format';
 
 import { Trip } from '@/types/trips';
 import dynamic from 'next/dynamic';
@@ -19,7 +19,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Clock, Calendar, CheckCircle, Truck, FileText, Activity, Send } from 'lucide-react';
+import { MapPin, Calendar, CheckCircle, Truck, Activity, Send } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { StatusFlip } from '@/components/motion';
@@ -28,7 +28,6 @@ import { toast } from 'sonner';
 import { TripDesksPanel } from './trip-desks-panel';
 import { TripReviewsPanel } from './trip-reviews-panel';
 import { LoadingEventsPanel } from './loading-events-panel';
-import { useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -144,10 +143,10 @@ export function TripDetailView({ trip }: TripDetailViewProps) {
                   <div>
                     <div className="text-sm font-medium text-gray-500">Assignments</div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Driver: {trip.driver ? `${trip.driver.firstName} ${trip.driver.lastName}` : trip.driverId || 'Unassigned'}
+                      Driver: <span data-testid="trip-detail-driver-name">{trip.driver ? `${trip.driver.firstName || ''} ${trip.driver.lastName || ''}`.trim() : (trip.driverId ? `ID: ${trip.driverId.slice(0, 8)}` : 'Unassigned')}</span>
                     </div>
                     <div className="text-sm text-gray-900 dark:text-white">
-                      Vehicle: {trip.vehicle ? trip.vehicle.licensePlate : trip.vehicleId || 'Unassigned'}
+                      Vehicle: <span data-testid="trip-detail-vehicle-plate">{trip.vehicle ? (trip.vehicle.licensePlate || 'Unknown') : (trip.vehicleId ? `ID: ${trip.vehicleId.slice(0, 8)}` : 'Unassigned')}</span>
                     </div>
                   </div>
                 </div>

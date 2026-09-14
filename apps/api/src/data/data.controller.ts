@@ -3,11 +3,8 @@ import { GetUser } from '../auth/decorators/get-user.decorator';
 import {
   Controller,
   Post,
-  Get,
   Body,
-  Param,
   UseGuards,
-  Request,
   Res,
 } from '@nestjs/common';
 import { ExportService } from './export.service';
@@ -22,7 +19,8 @@ import type { Response } from 'express';
 export class DataController {
   constructor(
     private readonly exportService: ExportService,
-    private readonly importService: ImportService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _importService: ImportService,
   ) {}
 
   @Post('export')

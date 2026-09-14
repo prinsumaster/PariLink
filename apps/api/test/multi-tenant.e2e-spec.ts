@@ -10,7 +10,8 @@ describe('Multi-Tenant Isolation (e2e)', () => {
   let tenantAToken: string;
   let tenantBToken: string;
   let tenantALoadId: string;
-  let tenantACompanyId: string;
+  // @ts-ignore: reserved for future use
+  let _tenantACompanyId: string;
   let tenantACustomerId: string;
 
   beforeAll(async () => {
@@ -35,7 +36,7 @@ describe('Multi-Tenant Isolation (e2e)', () => {
     const coB = await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.company.create({ data: { name: `E2E-TenantB-${Date.now()}` } })
     );
-    tenantACompanyId = coA.id;
+    _tenantACompanyId = coA.id;
 
     // Customer for tenant-a (using real UUID)
     const cust = await prisma.runAsSystem('e2e-setup', (tx) =>

@@ -18,7 +18,7 @@ describe('Enterprise Document Management & Compliance Services', () => {
   const mockPrisma: any = {
     runAsTenant: jest
       .fn()
-      .mockImplementation(async (tenantId, cb) => await cb(mockPrisma)),
+      .mockImplementation(async (_tenantId, cb) => await cb(mockPrisma)),
     documentFolder: {
       findUnique: jest.fn().mockResolvedValue({
         id: 'f-1',

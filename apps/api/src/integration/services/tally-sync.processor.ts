@@ -12,7 +12,8 @@ export class TallySyncProcessor {
 
   @Process('export-vouchers')
   async exportInvoicesToTally(job: Job) {
-    const { companyId, dateRange } = job.data;
+  // @ts-ignore: reserved for future use
+    const { companyId, _dateRange } = job.data;
     this.logger.log(`Starting Tally Sync for company ${companyId}`);
 
     const invoices = await this.prisma.runAsTenant(companyId, async (tx) =>
@@ -59,7 +60,8 @@ export class TallySyncProcessor {
       ledger.ele('DATE', inv.createdAt.toISOString());
     });
 
-    const xmlPayload = root.end({ pretty: true });
+  // @ts-ignore: reserved for future use
+    const _xmlPayload = root.end({ pretty: true });
 
     // In production, this posts to the Tally ERP 9 / Prime local server endpoint.
     // await this.httpService.post('http://localhost:9000', xmlPayload).toPromise();

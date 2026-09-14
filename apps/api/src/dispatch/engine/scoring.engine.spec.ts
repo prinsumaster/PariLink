@@ -1,6 +1,5 @@
 import {
   ScoringEngine,
-  DEFAULT_SCORING_WEIGHTS,
   CandidateInput,
 } from './scoring.engine';
 

@@ -5,8 +5,7 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
-  Version,
+  UseGuards
 } from '@nestjs/common';
 import {
   ApiTags,

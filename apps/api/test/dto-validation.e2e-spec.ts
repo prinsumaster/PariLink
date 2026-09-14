@@ -3,8 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
-import * as bcrypt from 'bcryptjs';
-
 describe('DTO Validation Regression (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;

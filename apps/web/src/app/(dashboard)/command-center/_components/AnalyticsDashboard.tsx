@@ -1,7 +1,6 @@
 'use client';
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
-import { TrendingUp, Truck, Users, Activity, Fuel, Clock, Star, AlertTriangle, CheckCircle as CheckCircle2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { TrendingUp, Truck, Users, Fuel, Clock, Star, AlertTriangle, CheckCircle as CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const REVENUE_DATA = [

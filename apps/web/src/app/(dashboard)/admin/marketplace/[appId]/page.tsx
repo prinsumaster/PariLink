@@ -1,6 +1,4 @@
 "use client"
-
-import * as React from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft, CheckCircle, Download, ExternalLink, Globe, HelpCircle, Shield, Info, ShieldAlert, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"

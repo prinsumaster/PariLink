@@ -39,7 +39,8 @@ export interface VrpSolution {
 export class VrpSolverService {
   private readonly logger = new Logger(VrpSolverService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+    // @ts-ignore: DI dependency reserved for future use
+  constructor(private readonly _prisma: PrismaService) {}
 
   /**
    * Approximates distance between two points using the Haversine formula.

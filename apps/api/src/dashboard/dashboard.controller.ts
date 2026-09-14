@@ -63,36 +63,31 @@ export class ExecutiveDashboardController {
 
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    const [activeLoads, todayDeliveries, totalVehicles, activeVehicles, revenueTodayRes, revenueMonthRes] = await Promise.all([
-      this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.load.count({ where: { companyId, status: { notIn: ['DELIVERED', 'CANCELLED'] } } })
-      ),
-      this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.load.count({ where: { companyId, status: 'DELIVERED', updatedAt: { gte: today } } })
-      ),
-      this.prisma.runAsTenant(companyId, async (tx) =>
-        tx.vehicle.count({ where: { companyId } })
-      ),
-      this.prisma.runAsTenant(companyId, async (tx) =>
+    const [
+      activeLoads,
+      todayDeliveries,
+      totalVehicles,
+      activeVehicles,
+      revenueTodayRes,
+      revenueMonthRes
+    ] = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return Promise.all([
+        tx.trip.count({ where: { companyId, status: { in: ['DISPATCHED', 'IN_TRANSIT'] } } }),
+        tx.load.count({ where: { companyId, status: 'DELIVERED', updatedAt: { gte: today } } }),
+        tx.vehicle.count({ where: { companyId } }),
         tx.vehicle.count({
           where: { companyId, tripsVehicle: { some: { status: 'IN_TRANSIT' } } },
-        })
-      ),
-      this.prisma.runAsTenant(companyId, async (tx) => {
-        const result = await tx.invoice.aggregate({
+        }),
+        tx.invoice.aggregate({
           _sum: { amount: true },
           where: { companyId, createdAt: { gte: today }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
-        });
-        return result;
-      }),
-      this.prisma.runAsTenant(companyId, async (tx) => {
-        const result = await tx.invoice.aggregate({
+        }),
+        tx.invoice.aggregate({
           _sum: { amount: true },
           where: { companyId, createdAt: { gte: firstDayOfMonth }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
-        });
-        return result;
-      }),
-    ]);
+        }),
+      ]);
+    });
 
     const revenueToday = revenueTodayRes._sum?.amount || 0;
     const revenueMonth = revenueMonthRes._sum?.amount || 0;
@@ -138,12 +133,12 @@ export class ExecutiveDashboardController {
   }
 
   @Get('alerts')
-  async getAlerts(@Req() req: any) {
+  async getAlerts(@Req() _req: any) {
     return []; // Return empty array to prevent 404
   }
 
   @Get('ai/recommendations')
-  async getAIRecommendations(@Req() req: any) {
+  async getAIRecommendations(@Req() _req: any) {
     return []; // Return empty array to prevent 404
   }
 
@@ -152,22 +147,26 @@ export class ExecutiveDashboardController {
     const companyId = req.user?.companyId;
     if (!companyId) return [];
     
-    // Fetch loads, map to ShipmentSummary
-    const loads = await this.prisma.runAsTenant(companyId, async (tx) => 
-      tx.load.findMany({
-        where: { companyId, status: { notIn: ['DELIVERED', 'CANCELLED'] } },
+    // Fetch trips instead of loads to match the KPI tile "Live trips in progress"
+    const trips = await this.prisma.runAsTenant(companyId, async (tx) => 
+      tx.trip.findMany({
+        where: { companyId, status: { in: ['DISPATCHED', 'IN_TRANSIT'] } },
+        include: { loads: true },
         take: 50,
         orderBy: { createdAt: 'desc' }
       })
     );
-    return loads.map(load => ({
-      id: load.id,
-      trackingNumber: load.referenceNumber || load.id.slice(0,8).toUpperCase(),
-      status: load.status,
-      origin: `${load.originCity}, ${load.originState}`,
-      destination: `${load.destinationCity}, ${load.destinationState}`,
-      eta: new Date().toISOString(),
-      slaStatus: 'MET'
-    }));
+    return trips.map(trip => {
+      const load = trip.loads?.[0];
+      return {
+        id: trip.id,
+        trackingNumber: trip.tripNumber,
+        status: trip.status,
+        origin: load ? `${load.originCity}, ${load.originState}` : 'TBD',
+        destination: load ? `${load.destinationCity}, ${load.destinationState}` : 'TBD',
+        eta: trip.eta ? new Date(trip.eta).toISOString() : new Date().toISOString(),
+        slaStatus: 'MET'
+      };
+    });
   }
 }

@@ -6,13 +6,14 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('WorkflowService', () => {
   let service: WorkflowService;
-  let prismaService: PrismaService;
+  // @ts-ignore: reserved for future use
+  let _prismaService: PrismaService;
 
   const mockPrismaService = {
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (reason, cb) => cb(mockPrismaService)),
-    runAsTenant: jest.fn((companyId, callback) => callback(mockTx)),
+      .mockImplementation(async (_reason, cb) => cb(mockPrismaService)),
+    runAsTenant: jest.fn((_companyId, callback) => callback(mockTx)),
   };
 
   const mockTx = {
@@ -53,7 +54,7 @@ describe('WorkflowService', () => {
     }).compile();
 
     service = module.get<WorkflowService>(WorkflowService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    _prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
@@ -129,6 +130,7 @@ describe('WorkflowService', () => {
 
       expect(mockTx.workflowRule.findMany).toHaveBeenCalledWith({
         where: {
+          companyId,
           entityType: dto.entityType,
           trigger: dto.trigger,
           isActive: true,

@@ -52,7 +52,7 @@ export class OidcService {
     return url;
   }
 
-  async validateCallback(idp: any, input: any, req: Request) {
+  async validateCallback(idp: any, _input: any, req: Request) {
     const client = await this.getClient(idp);
     const params = client.callbackParams(req);
 

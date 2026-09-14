@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 
 export interface StandardCloudEvent {
   id: string; // UUID

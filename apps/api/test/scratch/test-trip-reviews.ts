@@ -30,7 +30,8 @@ async function bootstrap() {
   }));
 
   const tokenA = jwt.sign({ sub: userA.id, email: userA.email, companyId: tenantA.id, permissions: ['trips:create', 'trips:update', 'trips:read'] }, { secret: config.get('JWT_SECRET') });
-  const tokenB = jwt.sign({ sub: userB.id, email: userB.email, companyId: tenantB.id, permissions: ['trips:create', 'trips:update', 'trips:read'] }, { secret: config.get('JWT_SECRET') });
+  // @ts-ignore: reserved for future use
+  const _tokenB = jwt.sign({ sub: userB.id, email: userB.email, companyId: tenantB.id, permissions: ['trips:create', 'trips:update', 'trips:read'] }, { secret: config.get('JWT_SECRET') });
 
   const driverA = await prisma.runAsSystem('System operation or legacy bypass', async (tx: any) => await tx.driver.create({
     data: { companyId: tenantA.id, firstName: 'Driver', lastName: 'A', status: 'AVAILABLE' }

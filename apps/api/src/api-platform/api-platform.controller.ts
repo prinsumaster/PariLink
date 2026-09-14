@@ -5,8 +5,7 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { ApiPlatformService } from './api-platform.service';
 import { CreateApiKeyDto, CreateWebhookDto } from './dto/api-platform.dto';

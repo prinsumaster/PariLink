@@ -60,7 +60,8 @@ function validateLicensePlate(plate: string | undefined): string | null {
 // ─── Parser ───────────────────────────────────────────────────────────────────
 
 function parseFile(buffer: Buffer, originalName: string): Record<string, unknown>[] {
-  const ext = originalName.split('.').pop()?.toLowerCase();
+  // @ts-ignore: reserved for future use
+  const _ext = originalName.split('.').pop()?.toLowerCase();
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' });
@@ -87,7 +88,7 @@ export class BulkImportService {
 
   async import(
     companyId: string,
-    userId: string,
+    _userId: string,
     type: ImportType,
     buffer: Buffer,
     originalName: string,
@@ -165,7 +166,8 @@ export class BulkImportService {
     const plate = (row['licensePlate'] as string)?.trim();
     const make = (row['make'] as string)?.trim();
     const type = (row['type'] as string)?.trim() || 'TRUCK';
-    const ownershipType = (row['ownershipType'] as string)?.trim() || 'OWNED';
+  // @ts-ignore: reserved for future use
+    const _ownershipType = (row['ownershipType'] as string)?.trim() || 'OWNED';
 
     // Required field validation
     if (!plate) { errors.push('licensePlate is required'); }

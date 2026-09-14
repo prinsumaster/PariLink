@@ -30,10 +30,10 @@ describe('Enterprise Administration Platform Services', () => {
   const mockPrisma: any = {
     runAsTenant: jest
       .fn()
-      .mockImplementation(async (tenantId, cb) => await cb(mockPrisma)),
+      .mockImplementation(async (_tenantId, cb) => await cb(mockPrisma)),
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (reason, cb) => await cb(mockPrisma)),
+      .mockImplementation(async (_reason, cb) => await cb(mockPrisma)),
     company: {
       count: jest.fn().mockResolvedValue(10),
       findMany: jest
@@ -405,6 +405,17 @@ describe('Enterprise Administration Platform Services', () => {
   describe('FeatureFlagAdminService', () => {
     it('should trigger kill switch on a flag', async () => {
       await featureFlagService.triggerKillSwitch('comp-1', 'flag-1', 'admin-1');
+      // Verify ownership check runs before update (scoped by companyId)
+      expect(mockPrisma.featureFlag.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            id: 'flag-1',
+            OR: expect.arrayContaining([
+              expect.objectContaining({ companyId: 'comp-1' }),
+            ]),
+          }),
+        }),
+      );
       expect(mockPrisma.featureFlag.update).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({ isEnabled: false }),

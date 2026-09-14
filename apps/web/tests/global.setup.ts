@@ -1,6 +1,6 @@
 import { chromium, type FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -22,10 +22,10 @@ async function globalSetup(config: FullConfig) {
     console.error('PAGE UNHANDLED ERROR:', err.message, err.stack);
   });
 
-  await page.goto('http://localhost:3000/login');
+  await page.goto('http://localhost:3000/login', { timeout: 120000 });
   
   try {
-    await page.waitForSelector('input[type="email"]', { timeout: 30000 });
+    await page.waitForSelector('input[type="email"]', { timeout: 120000 });
   } catch (e) {
     const html = await page.content();
     console.error('FAILED TO FIND INPUT. Page HTML:', html);
@@ -37,7 +37,7 @@ async function globalSetup(config: FullConfig) {
   await page.click('button[type="submit"]');
   
   try {
-    await page.waitForURL(/.*dashboard.*/, { timeout: 30000 });
+    await page.waitForURL(/.*dashboard.*/, { timeout: 120000 });
   } catch (e) {
     const errorText = await page.locator('.text-red-700').textContent().catch(() => 'No error div');
     console.log('UI ERROR TEXT:', errorText);

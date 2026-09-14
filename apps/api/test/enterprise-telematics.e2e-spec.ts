@@ -10,7 +10,8 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
   let prisma: PrismaService;
   let accessToken: string;
   let companyId: string;
-  let userId: string;
+  // @ts-ignore: reserved for future use
+  let _userId: string;
   let vehicleId: string;
   let geofenceId: string;
   let ruleId: string;
@@ -56,7 +57,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
           roleId: role.id,
         },
       });
-      userId = user.id;
+      _userId = user.id;
 
       const vehicle = await tx.vehicle.create({
         data: {

@@ -1,7 +1,8 @@
 "use client";
 
+// @ts-ignore: reserved
 import React, { useState } from 'react';
-import { Truck, Clock, AlertCircle, CheckCircle, Package } from 'lucide-react';
+import { Truck, Clock, AlertCircle, Package } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 

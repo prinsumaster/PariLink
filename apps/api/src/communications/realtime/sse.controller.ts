@@ -1,4 +1,4 @@
-import { Controller, Sse, MessageEvent, UseGuards, Req } from '@nestjs/common';
+import { Controller, Sse, MessageEvent, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';

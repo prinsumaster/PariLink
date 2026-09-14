@@ -25,7 +25,7 @@ export class RefineryAIWorker implements IDigitalWorker {
     };
   }
 
-  async rollbackTask(taskId: string, context: any): Promise<void> {
+  async rollbackTask(taskId: string, _context: any): Promise<void> {
     this.logger.warn(`[OilPack] Refinery_AI rolling back task: ${taskId}`);
     // Custom compensation logic
   }
@@ -86,7 +86,7 @@ export class OilManufacturingPack extends PariLinkPlugin {
       {
         id: 'barrel_throughput_efficiency',
         name: 'Barrel Throughput Efficiency',
-        calculate: (tenantData: any) => {
+        calculate: (_tenantData: any) => {
           // Custom domain logic
           return 94.5;
         },

@@ -1,12 +1,11 @@
-import { IsString, IsNumber, IsOptional, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
 import {
   Controller,
   Get,
   Post,
   Body,
   Param,
-  UseGuards,
-  UnauthorizedException,
+  UseGuards
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';

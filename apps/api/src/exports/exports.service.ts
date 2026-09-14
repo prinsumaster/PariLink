@@ -1,8 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AsyncParser } from 'json2csv';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Injectable()
 export class ExportsService {
@@ -35,7 +32,7 @@ export class ExportsService {
 
   private async processExportAsync(
     companyId: string,
-    userId: string,
+    _userId: string,
     exportId: string,
     entityType: string,
   ) {

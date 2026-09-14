@@ -10,7 +10,8 @@ export class SearchService {
       return { results: [] };
     }
 
-    const searchQuery = `%${query}%`;
+  // @ts-ignore: reserved for future use
+    const _searchQuery = `%${query}%`;
 
     // Perform parallel searches across domains
     const [loads, trips, customers, vehicles, drivers, invoices, documents] =

@@ -13,7 +13,6 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { MarketplaceCoreService } from './marketplace-core.service';

@@ -42,11 +42,11 @@ export class BpmAnalyticsService implements OnModuleInit, IAnalyticsProvider {
   async getProcessAnalytics(
     companyId: string,
     processDefinitionId: string,
-    periodDays = 30,
+    _periodDays = 30,
   ): Promise<ProcessAnalyticsResult> {
     this.logger.log(`Evaluating BPM Analytics for ${processDefinitionId}`);
 
-    return this.prisma.runAsTenant(companyId, async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (_tx) => {
       // Mock metrics generation. In reality, these aggregate via the EventStore
       // over 'PROCESS_INSTANCE' streams matching the definitionId.
 

@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, UnauthorizedException} from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class CustomerAnalyticsService {
-  private readonly logger = new Logger(CustomerAnalyticsService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async getDashboardKpis(companyId: string, customerId: string) {

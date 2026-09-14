@@ -8,7 +8,7 @@ import {
 export class SlackProvider {
   private readonly logger = new Logger(SlackProvider.name);
 
-  async send(to: string, payload: any): Promise<any> {
+  async send(to: string, _payload: any): Promise<any> {
     if (!process.env.SLACK_BOT_TOKEN) {
       this.logger.error(
         `Slack provider is not configured. Failed to send to ${to}`,

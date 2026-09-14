@@ -9,7 +9,8 @@ export class AnomalyDetectionService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly aiProvider: MockAIProvider,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _aiProvider: MockAIProvider,
   ) {}
 
   /**

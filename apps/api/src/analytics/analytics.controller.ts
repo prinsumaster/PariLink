@@ -1,10 +1,9 @@
-import { CreateAnalyticsDto, UpdateAnalyticsDto } from '../dto/analytics.dto';
+import { CreateAnalyticsDto } from '../dto/analytics.dto';
 import {
   ServiceUnavailableException,
   Controller,
   Get,
   Query,
-  Param,
   UseGuards,
   Post,
   Body,
@@ -72,7 +71,7 @@ export class AnalyticsController {
   @RequirePermissions('analytics:read')
   @ApiOperation({ summary: 'SSE stream for real-time Business Health Pulse' })
   streamBusinessHealthPulse(
-    @GetUser() user: AuthenticatedUser,
+    @GetUser() _user: AuthenticatedUser,
   ): Observable<MessageEvent> {
     // Queries the latest snapshot every 5 seconds and streams it
     return interval(5000).pipe(
@@ -137,8 +136,8 @@ export class AnalyticsController {
   @RequirePermissions('analytics:read')
   @ApiOperation({ summary: 'Generate a report export' })
   exportReport(
-    @GetUser() user: AuthenticatedUser,
-    @Body() data: { reportType: string; format: 'PDF' | 'EXCEL' | 'CSV' },
+    @GetUser() _user: AuthenticatedUser,
+    @Body() _data: { reportType: string; format: 'PDF' | 'EXCEL' | 'CSV' },
   ) {
     if (!process.env.AWS_S3_BUCKET && !process.env.GCP_STORAGE_BUCKET) {
       throw new ServiceUnavailableException(

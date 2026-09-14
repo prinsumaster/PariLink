@@ -1,5 +1,4 @@
 import { chromium } from 'playwright';
-import * as fs from 'fs';
 
 async function main() {
   const browser = await chromium.launch();

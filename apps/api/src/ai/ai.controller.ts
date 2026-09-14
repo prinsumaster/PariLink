@@ -6,7 +6,6 @@ import {
   Param,
   UseGuards,
   Query,
-  Delete,
   Sse,
   MessageEvent,
   UseInterceptors,

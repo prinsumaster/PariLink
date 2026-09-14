@@ -1,4 +1,4 @@
-import { CreateAnnouncementDto, UpdateAnnouncementDto } from '../dto/announcement.dto';
+import { CreateAnnouncementDto } from '../dto/announcement.dto';
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';

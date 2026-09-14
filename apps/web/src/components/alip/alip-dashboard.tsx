@@ -1,11 +1,11 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { useQuery } from '@tanstack/react-query';
 import { alipService } from '@/services/alip';
 import { AnomalyLog } from './anomaly-log';
 import { PredictiveInsights } from './predictive-insights';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Activity, Cpu, Network, ShieldAlert } from 'lucide-react';
 
 

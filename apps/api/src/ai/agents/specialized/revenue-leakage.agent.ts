@@ -12,7 +12,8 @@ export class RevenueLeakageAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -22,7 +23,7 @@ export class RevenueLeakageAgent extends BaseAgent {
       name: 'audit_revenue_leakage',
       description:
         'Audit unbilled detention and accessorials. Input: {"companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           unbilledRevenueFound: 1250.0,
           recommendations: [

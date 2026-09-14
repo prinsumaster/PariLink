@@ -17,7 +17,7 @@ export class FeatureFlagService {
     return true;
   }
 
-  async getTenantFlags(tenantId: string) {
+  async getTenantFlags(_tenantId: string) {
     return {
       ai_copilot: true,
       workflow_builder: true,

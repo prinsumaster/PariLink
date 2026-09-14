@@ -1,8 +1,8 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money, num } from '@/lib/format';
 
 import { useLoad, useUpdateLoad, useDeleteLoad } from '@/hooks/use-loads';
-import { useCustomers, useDrivers, useVehicles } from '@/hooks';
+import { useDrivers } from '@/hooks';
 import { StatusBadge } from '@/components/status-badge';
 import { ActivityTimeline } from '@/components/activity-timeline';
 import { FileUpload } from '@/components/file-upload';
@@ -15,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   ArrowLeft, Package, MapPin, Calendar, DollarSign,
-  Truck, User, FileText, MoreHorizontal, Edit, AlertTriangle, ClipboardCheck
+  Truck, FileText, Edit, AlertTriangle, ClipboardCheck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';

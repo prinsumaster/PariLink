@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { 
   Hash, Plus, Send, Smile, Paperclip, 
   MessageSquare, ChevronDown, Check, X,
-  Loader2, Search, AtSign, Circle
+  Loader2, AtSign, Circle
 } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import { useAuthStore } from '@/store/auth';

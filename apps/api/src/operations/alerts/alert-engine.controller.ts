@@ -1,13 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Param,
-  Query,
   UseGuards,
 } from '@nestjs/common';
-import { AlertEngineService, AlertTriggerInput } from './alert-engine.service';
+import { AlertEngineService } from './alert-engine.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';

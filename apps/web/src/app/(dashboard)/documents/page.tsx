@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { documentService } from '@/services/documents';
 import { DocumentFilters as FilterState, Document } from '@/types/documents';
 import { RoleGuard } from '@/components/auth/role-guard';
-import { FolderOpen, Upload, Trash2 } from 'lucide-react';
+import { FolderOpen, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 

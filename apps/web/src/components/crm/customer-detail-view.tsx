@@ -1,11 +1,11 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money, dateIN } from '@/lib/format';
 
 import { Customer } from '@/types/crm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, MapPin, CreditCard, Users, Briefcase, Globe, Mail, Phone, BarChart3 } from 'lucide-react';
+import { MapPin, CreditCard, Users, Briefcase, Globe, Mail, Phone, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 import { RoleGuard } from '@/components/auth/role-guard';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';

@@ -10,7 +10,8 @@ export class DriverScoringService {
 
   @OnEvent('Alert.Triggered')
   async handleAlert(event: any) {
-    const { tenantId, payload } = event;
+  // @ts-ignore: reserved for future use
+    const { _tenantId, payload } = event;
     const { alertId, ruleType } = payload;
 
     if (ruleType !== 'SPEEDING' && ruleType !== 'HARSH_BRAKING') return;

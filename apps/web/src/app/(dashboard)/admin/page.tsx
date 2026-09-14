@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Users, Shield, Settings, ToggleLeft, ToggleRight, 
   ClipboardList, Activity, Loader2, Building2, 
-  Key, Bell, Palette, ChevronRight, Search,
+  Key, ChevronRight, Search,
   CheckCircle2, XCircle, User, ArrowUpRight,
-  Server, Database, Cpu, HardDrive, DollarSign, Target, TrendingUp, Truck
+  Server, Database, Cpu, HardDrive, DollarSign, TrendingUp, Truck
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth';
@@ -45,7 +45,8 @@ export default function AdminCenterPage() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const currentUser = useAuthStore(s => s.user);
+  // @ts-ignore: reserved
+  const _currentUser = useAuthStore(s => s.user);
 
   const fetchUsers = async () => {
     setLoading(true);

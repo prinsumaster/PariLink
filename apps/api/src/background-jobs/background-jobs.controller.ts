@@ -4,8 +4,7 @@ import {
   Post,
   Param,
   Query,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { BackgroundJobsService } from './background-jobs.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

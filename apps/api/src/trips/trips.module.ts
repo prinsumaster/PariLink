@@ -11,7 +11,7 @@ import { FuelEntriesService } from './fuel-entries.service';
 
 @Module({
   imports: [WorkflowModule],
-  controllers: [TripsController, TripDesksController, LoadingEventsController, FuelEntriesController],
+  controllers: [TripDesksController, LoadingEventsController, FuelEntriesController, TripsController],
   providers: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],
   exports: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],
 })

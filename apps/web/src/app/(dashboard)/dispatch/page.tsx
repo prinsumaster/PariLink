@@ -15,7 +15,8 @@ export default function DispatchPage() {
   // Replay State
   const [locations, setLocations] = useState<any[]>([]);
   const [progress, setProgress] = useState(0);
-  const loads = [{ id: 'LOD-9402', referenceNumber: 'LOD-9402', status: 'IN_TRANSIT', originCity: 'Austin, TX', destinationCity: 'Dallas, TX', rate: 1250 }];
+  // @ts-ignore: reserved
+  const _loads = [{ id: 'LOD-9402', referenceNumber: 'LOD-9402', status: 'IN_TRANSIT', originCity: 'Austin, TX', destinationCity: 'Dallas, TX', rate: 1250 }];
   const vehicles = [
     { id: 'v1', licensePlate: 'TX-8492', make: 'Freightliner', model: 'Cascadia', status: 'IN_SERVICE' },
     { id: 'v2', licensePlate: 'CA-1122', make: 'Volvo', model: 'VNL', status: 'AVAILABLE' }
@@ -83,7 +84,7 @@ export default function DispatchPage() {
         style={{ width: '100%', height: '100%' }}
         interactiveLayerIds={['markers']}
       >
-        {vehicles.map((v, i) => {
+        {vehicles.map((v, _i) => {
           if (locations.length < 2) return null;
           
           const segmentCount = locations.length - 1;

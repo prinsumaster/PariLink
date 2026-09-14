@@ -2,7 +2,6 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { NotificationOrchestratorService } from '../../communications/engine/notification-orchestrator.service';
-import { NotificationPriority } from '../../communications/dto/notification.dto';
 import {
   VehicleTelemetryDto,
   CreateAlertRuleDto,
@@ -207,7 +206,7 @@ export class TelematicsIngestionService {
     );
   }
 
-  async deleteAlertRule(companyId: string, id: string, userId: string) {
+  async deleteAlertRule(companyId: string, id: string, _userId: string) {
     const rule = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.alertRule.findFirst({ where: { id, companyId } }),
     );
@@ -315,7 +314,8 @@ export class TelematicsIngestionService {
         ),
       ]);
 
-    const alertsByType = await this.prisma.runAsTenant(companyId, async (tx) =>
+  // @ts-ignore: reserved for future use
+    const _alertsByType = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.alert.groupBy({
         by: ['ruleId'],
         where: { companyId, status: { in: ['NEW', 'ACKNOWLEDGED'] } },

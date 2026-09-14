@@ -11,7 +11,8 @@ import * as crypto from 'crypto';
   const clientSecret = 'super_secret_' + Date.now();
   const secretHash = crypto.createHash('sha256').update(clientSecret).digest('hex');
 
-  const client = await prisma.$executeRaw`
+  // @ts-ignore: reserved for future use
+  const _client = await prisma.$executeRaw`
     INSERT INTO "OAuthClient" ("id", "name", "clientId", "clientSecret", "companyId", "scopes", "redirectUris", "createdAt", "updatedAt")
     VALUES (${crypto.randomUUID()}, 'Test Client', ${clientId}, ${secretHash}, ${company!.id}, '[]', '[]', NOW(), NOW())
   `;

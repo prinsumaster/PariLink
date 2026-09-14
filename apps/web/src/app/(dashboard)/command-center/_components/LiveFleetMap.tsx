@@ -1,9 +1,8 @@
+import { useMemo } from 'react';
 'use client';
-
-import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import DeckGL from '@deck.gl/react';
-import { ScatterplotLayer, IconLayer } from '@deck.gl/layers';
+import { ScatterplotLayer } from '@deck.gl/layers';
 import Map from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { api } from '@/services/api';
@@ -18,6 +17,7 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0
 };
+// @ts-ignore: reserved
 
 export function LiveFleetMap({ selectedTrip }: { selectedTrip: string | null }) {
   const { theme } = useTheme();

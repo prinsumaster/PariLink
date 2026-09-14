@@ -43,7 +43,8 @@ export class EnterpriseHealthService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly auditService: AuditService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _auditService: AuditService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 

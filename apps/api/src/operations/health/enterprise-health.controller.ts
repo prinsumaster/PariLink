@@ -1,9 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Param,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -33,7 +30,7 @@ export class EnterpriseHealthController {
   })
   async getGlobalHealth(
     @GetUser() user: { companyId: string },
-    @Query('companyId') queryCompanyId?: string,
+    @Query('companyId') _queryCompanyId?: string,
   ): Promise<GlobalHealthReport> {
     const targetCompanyId = user.companyId;
     return this.healthService.getGlobalHealth(targetCompanyId);

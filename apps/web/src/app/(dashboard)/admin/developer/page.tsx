@@ -1,10 +1,7 @@
 "use client"
-
-import * as React from "react"
-import { Plus, Terminal, Code2, Rocket, Globe } from "lucide-react"
+import { Plus, Terminal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { useRouter } from "next/navigation"
 
 export default function DeveloperPortalPage() {

@@ -1,4 +1,3 @@
-import React from 'react';
 import { WorkflowBuilder } from './workflow-builder';
 import { Button } from '@/components/ui/button';
 import { Plus, Play, History, Download, Settings2 } from 'lucide-react';

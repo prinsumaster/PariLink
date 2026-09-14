@@ -8,7 +8,6 @@ import {
   IsString,
   IsNotEmpty,
   IsOptional,
-  IsObject,
   IsArray,
   IsDateString,
   IsNumber,
@@ -97,7 +96,8 @@ export class ScheduleDockDto {
 export class WarehouseController {
   constructor(
     private readonly masterData: WarehouseMasterService,
-    private readonly inventory: InventoryService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _inventory: InventoryService,
     private readonly inbound: InboundService,
     private readonly outbound: OutboundService,
     private readonly dockScheduler: DockSchedulerService,

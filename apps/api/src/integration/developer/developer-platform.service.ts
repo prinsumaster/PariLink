@@ -1,5 +1,6 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   NotFoundException,
   BadRequestException,
@@ -13,8 +14,7 @@ import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util
 
 @Injectable()
 export class DeveloperPlatformService {
-  private readonly logger = new Logger(DeveloperPlatformService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,

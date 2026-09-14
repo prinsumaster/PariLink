@@ -2,7 +2,6 @@ import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { parse } from 'json2csv';
 import * as archiver from 'archiver';
-import * as crypto from 'crypto';
 import { Response } from 'express';
 
 @Injectable()

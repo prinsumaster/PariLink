@@ -1,7 +1,7 @@
 'use client';
 
 import { Alert } from '@/types/dashboard';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BellRing, CheckCircle2, AlertOctagon, AlertTriangle, Info } from 'lucide-react';
 import { dashboardService } from '@/services/dashboard';

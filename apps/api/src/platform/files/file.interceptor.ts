@@ -2,8 +2,6 @@ import { UseInterceptors, BadRequestException, Logger } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { extname } from 'path';
-import * as crypto from 'crypto';
-
 // ---------------------------------------------------------------------------
 // PlatformFileInterceptor — Enterprise Security Hardened
 //

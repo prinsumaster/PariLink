@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { Play, Pause, XCircle, FileText, UserPlus, Truck } from 'lucide-react';
+import { Pause, XCircle, FileText, UserPlus, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface OperationsPanelProps {

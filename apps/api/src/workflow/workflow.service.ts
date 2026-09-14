@@ -10,7 +10,6 @@ import {
   ImportRulesDto,
 } from './dto/workflow.dto';
 import { ConditionEngineService } from './engine/condition.service';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class WorkflowService {
@@ -44,6 +43,7 @@ export class WorkflowService {
   async getRules(companyId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       return tx.workflowRule.findMany({
+        where: { companyId },
         orderBy: { priority: 'desc' },
       });
     });
@@ -233,7 +233,8 @@ export class WorkflowService {
 
   async importRules(companyId: string, dto: ImportRulesDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const createdRules = [];
+  // @ts-ignore: reserved for future use
+      const _createdRules = [];
       const skippedRules = [];
 
       const existingRules = await tx.workflowRule.findMany({
@@ -290,6 +291,7 @@ export class WorkflowService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const rules = await tx.workflowRule.findMany({
         where: {
+          companyId,
           entityType: dto.entityType,
           trigger: dto.trigger,
           isActive: true,

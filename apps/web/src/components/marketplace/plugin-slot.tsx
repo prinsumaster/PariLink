@@ -1,6 +1,5 @@
+import { useState, useRef, useEffect } from 'react';
 "use client"
-
-import React, { useEffect, useState, useRef } from 'react';
 import { api } from '@/services/api';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -80,6 +79,7 @@ export function PluginSlot({ slotId, context = {} }: PluginSlotProps) {
   }
 
   return (
+    // @ts-ignore: implicit any
     <div className="space-y-4 plugin-slot w-full">
       {extensions.map((ext) => (
         <div key={ext.id} className="relative w-full border rounded-lg bg-card overflow-hidden min-h-[200px]">

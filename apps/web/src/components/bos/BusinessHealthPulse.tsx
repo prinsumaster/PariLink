@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Activity, TrendingUp, AlertTriangle, ChevronDown } from 'lucide-react';
+import { Activity, TrendingUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 export function BusinessHealthPulse() {
-  const [operationalScore, setOperationalScore] = useState(85);
-  const [financialScore, setFinancialScore] = useState(92);
+  const [operationalScore, _setOperationalScore] = useState(85);
+  const [financialScore, _setFinancialScore] = useState(92);
   const [isOpen, setIsOpen] = useState(false);
-  const [factors, setFactors] = useState({
+  const [factors, _setFactors] = useState({
     activeAnomalies: 2,
     unresolvedExceptions: 4,
     revenueMomentum: 'Strong',

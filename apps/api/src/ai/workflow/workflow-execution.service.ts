@@ -47,7 +47,8 @@ export class WorkflowExecutionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly llmManager: LlmManagerService,
-    private readonly observability: AiObservabilityService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _observability: AiObservabilityService,
   ) {}
 
   /**

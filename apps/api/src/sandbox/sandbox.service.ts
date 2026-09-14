@@ -7,7 +7,7 @@ export class SandboxService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async generateMockData(companyId: string, userId: string) {
+  async generateMockData(companyId: string, _userId: string) {
     this.logger.log(`Generating mock data for company ${companyId}`);
 
     // Check if we already have mock data generated to prevent duplicates

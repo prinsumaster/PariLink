@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CreditCard, Download, Activity, ExternalLink, ShieldCheck, Zap } from 'lucide-react';
+import { CreditCard, Download, Activity, ShieldCheck, Zap } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { settingsService } from '@/services/settings';
 import { toast } from 'sonner';
 
 export default function BillingPortalPage() {
-  const [isYearly, setIsYearly] = useState(true);
+  const [_isYearly, _setIsYearly] = useState(true);
 
   const { data: billingInfo, isLoading } = useQuery({
     queryKey: ['billing', 'info'],

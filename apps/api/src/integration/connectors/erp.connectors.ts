@@ -30,7 +30,7 @@ export class SapConnector extends BaseConnector {
 
   async sync(
     companyId: string,
-    credentials: Record<string, unknown>,
+    _credentials: Record<string, unknown>,
     entityType: string,
     payload: unknown,
   ): Promise<{
@@ -50,7 +50,7 @@ export class SapConnector extends BaseConnector {
     };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     this.logger.log(`[SAP ERP] Received OData event notification`);
     const b = body as { d?: { event?: string } };
     return {
@@ -62,8 +62,8 @@ export class SapConnector extends BaseConnector {
   async send(
     endpoint: string,
     method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     this.logger.log(`[SAP ERP] Executing ${method} ${endpoint}`);
     return { status: 200, data: { success: true, endpoint } };
@@ -89,7 +89,7 @@ export class OracleErpConnector extends BaseConnector {
     return !!(config?.clientId && config?.clientSecret && config?.instanceUrl);
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     this.logger.log(`[Oracle ERP] Authenticating via OAuth2...`);
     return {
       accessToken: `oracle_access_${Date.now()}`,
@@ -99,10 +99,10 @@ export class OracleErpConnector extends BaseConnector {
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -112,16 +112,16 @@ export class OracleErpConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     const b = body as { eventType?: string };
     return { event: b?.eventType || 'oracle.erp.event', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { ok: true } };
   }
@@ -151,16 +151,16 @@ export class Dynamics365Connector extends BaseConnector {
     );
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     this.logger.log(`[Dynamics 365] Authenticating with Azure AD...`);
     return { accessToken: `dyn_access_${Date.now()}`, tokenType: 'Bearer' };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -172,16 +172,16 @@ export class Dynamics365Connector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     const b = body as { MessageName?: string };
     return { event: b?.MessageName || 'dynamics.event', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { value: [] } };
   }
@@ -214,10 +214,10 @@ export class TallyConnector extends BaseConnector {
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -229,15 +229,15 @@ export class TallyConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS', format: 'XML' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'tally.voucher.created', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { response: 'SUCCESS' } };
   }
@@ -266,15 +266,15 @@ export class ZohoBooksConnector extends BaseConnector {
     );
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { accessToken: `zoho_access_${Date.now()}`, expiresIn: 3600 };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -284,16 +284,16 @@ export class ZohoBooksConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     const b = body as { event_type?: string };
     return { event: b?.event_type || 'zoho.entity.changed', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { code: 0, message: 'success' } };
   }
@@ -318,15 +318,15 @@ export class XeroConnector extends BaseConnector {
     return !!(config?.clientId && config?.clientSecret && config?.tenantId);
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { accessToken: `xero_access_${Date.now()}`, expiresIn: 1800 };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -336,16 +336,16 @@ export class XeroConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     const b = body as { events?: { eventType?: string }[] };
     return { event: b?.events?.[0]?.eventType || 'xero.event', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { Status: 'OK' } };
   }

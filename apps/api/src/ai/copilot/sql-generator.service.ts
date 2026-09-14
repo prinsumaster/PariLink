@@ -7,9 +7,6 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { StringOutputParser } from '@langchain/core/output_parsers';
-import { RunnableSequence } from '@langchain/core/runnables';
-import { Prisma } from '@prisma/client';
 import { validateGeneratedSql } from './sql-validator';
 
 @Injectable()

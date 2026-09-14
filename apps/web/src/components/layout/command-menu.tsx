@@ -12,7 +12,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { 
-  Settings, Users, Truck, Package, Activity, Zap, FileText, 
+  Settings, Truck, FileText, 
   PlusCircle, LayoutDashboard, BarChart3, Building2, Map, CreditCard
 } from 'lucide-react';
 

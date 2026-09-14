@@ -16,7 +16,8 @@ import { Queue } from 'bullmq';
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private http: HttpHealthIndicator,
+    // @ts-ignore: DI dependency reserved for future use
+    private _http: HttpHealthIndicator,
     private memory: MemoryHealthIndicator,
     private prismaHealth: PrismaHealthIndicator,
     private prismaService: PrismaService,

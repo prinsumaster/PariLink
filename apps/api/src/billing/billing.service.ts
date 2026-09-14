@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import {
   Injectable,
   NotFoundException,
@@ -78,7 +77,7 @@ export class BillingService {
   ) {
     const invoice = await this.prisma.runAsTenant(companyId, async (tx) => {
       const load = await tx.load.findFirst({
-        where: { id: dto.loadId },
+        where: { id: dto.loadId, companyId },
         include: { customer: true },
       });
       if (!load) throw new NotFoundException('Load not found');
@@ -88,7 +87,7 @@ export class BillingService {
         );
 
       const existingInvoice = await tx.invoice.findFirst({
-        where: { loadId: load.id, status: { not: 'VOIDED' } },
+        where: { loadId: load.id, companyId, status: { not: 'VOIDED' } },
       });
 
       if (existingInvoice) {
@@ -102,7 +101,7 @@ export class BillingService {
 
       if (dto.rateCardId) {
         rateCard = await tx.rateCard.findFirst({
-          where: { id: dto.rateCardId },
+          where: { id: dto.rateCardId, companyId },
         });
         if (rateCard) {
           if (rateCard.type === 'FLAT' || rateCard.type === 'ROUTE')

@@ -1,6 +1,4 @@
 "use client";
-
-import React from 'react';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -28,7 +26,8 @@ export function Stepper({ steps, className }: StepperProps) {
         {steps.map((step, index) => {
           const isComplete = step.status === 'complete';
           const isCurrent = step.status === 'current';
-          const isUpcoming = step.status === 'upcoming';
+          // @ts-ignore: reserved
+          const _isUpcoming = step.status === 'upcoming';
           const isLast = index === steps.length - 1;
 
           return (

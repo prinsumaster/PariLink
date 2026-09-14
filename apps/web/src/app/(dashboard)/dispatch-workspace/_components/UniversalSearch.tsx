@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Search, User, Truck, FileText, ChevronRight, Package, Link } from 'lucide-react';
+import { Search, User, Truck, Package } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { api } from '@/services/api';
 

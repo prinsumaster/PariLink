@@ -25,8 +25,10 @@ export class SimulationService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly networkState: NetworkStateService,
-    private readonly optimizer: HeuristicOptimizerService,
-    private readonly vrpSolver: VrpSolverService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _optimizer: HeuristicOptimizerService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _vrpSolver: VrpSolverService,
   ) {}
 
   /**

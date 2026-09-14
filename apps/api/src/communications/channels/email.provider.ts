@@ -8,7 +8,7 @@ import {
 export class EmailProvider {
   private readonly logger = new Logger(EmailProvider.name);
 
-  async send(to: string, payload: any): Promise<any> {
+  async send(to: string, _payload: any): Promise<any> {
     if (!process.env.SENDGRID_API_KEY) {
       this.logger.error(
         `Email provider is not configured. Failed to send to ${to}`,

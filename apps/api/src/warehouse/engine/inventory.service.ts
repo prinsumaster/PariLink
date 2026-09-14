@@ -1,5 +1,6 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   NotFoundException,
   BadRequestException,
@@ -10,8 +11,7 @@ import { WorkflowService } from '../../workflow/workflow.service';
 
 @Injectable()
 export class InventoryService {
-  private readonly logger = new Logger(InventoryService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventStore: EventStoreService,

@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { KnowledgeGraphService } from './knowledge/knowledge-graph.service';
 import { ContextEngineService } from './context/context-engine.service';
 import { MockAIProvider } from './providers/mock-ai.provider';

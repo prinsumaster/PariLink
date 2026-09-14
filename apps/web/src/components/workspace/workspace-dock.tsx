@@ -6,7 +6,8 @@ import { Bot, MessageSquare, FolderTree, History, X, Settings2 } from 'lucide-re
 import { Button } from '@/components/ui/button';
 
 export function WorkspaceDock() {
-  const { panels, togglePanel, setPanelWidth, closeAllPanels } = useWorkspaceKernelStore();
+  // @ts-ignore: reserved
+  const { panels, togglePanel: _togglePanel, setPanelWidth, closeAllPanels } = useWorkspaceKernelStore();
   const openPanel = panels.find(p => p.isOpen);
 
   if (!openPanel) return null;

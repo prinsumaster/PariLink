@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { alipService } from '@/services/alip';
 import { ALIPAnomaly } from '@/types/alip';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

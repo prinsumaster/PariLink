@@ -1,4 +1,4 @@
-import { CreatePermitDto, UpdatePermitDto } from '../dto/permit.dto';
+import { CreatePermitDto } from '../dto/permit.dto';
 import {
   Controller,
   Get,
@@ -8,7 +8,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../../auth/guards/jwt-auth.guard';

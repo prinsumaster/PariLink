@@ -1,4 +1,4 @@
-import { CreateWorkflowDto, UpdateWorkflowDto } from '../dto/workflow.dto';
+import { CreateWorkflowDto } from '../dto/workflow.dto';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import {

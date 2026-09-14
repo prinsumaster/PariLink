@@ -4,7 +4,6 @@ import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as crypto from 'crypto';
 import { spawn } from 'child_process';
-import * as util from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
 export interface CreateBackupInput {

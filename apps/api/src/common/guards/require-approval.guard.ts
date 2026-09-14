@@ -35,9 +35,11 @@ export class RequireApprovalGuard implements CanActivate {
       );
     }
 
-    const payload = request.body || {};
+  // @ts-ignore: reserved for future use
+    const _payload = request.body || {};
     const resourceId = request.params.id || 'bulk';
-    const action = request.method;
+  // @ts-ignore: reserved for future use
+    const _action = request.method;
     const resourceType = request.url.split('/')[2] || 'unknown';
 
     // 1. Create the Maker/Checker Approval Request

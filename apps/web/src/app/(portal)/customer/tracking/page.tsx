@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function CustomerTrackingPage() {
   return (
     <div className="flex flex-col h-full bg-slate-100">

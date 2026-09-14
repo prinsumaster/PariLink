@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
@@ -67,7 +68,7 @@ export class VehiclesService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new Error('Vehicle creation rejected by business rules.');
+        throw new BadRequestException('Vehicle creation rejected by business rules.');
       }
 
       // 3. Audit Logging
@@ -291,7 +292,7 @@ export class VehiclesService {
         if (
           ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')
         ) {
-          throw new Error('Vehicle update rejected by business rules.');
+          throw new BadRequestException('Vehicle update rejected by business rules.');
         }
 
         // Audit Logging

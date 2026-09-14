@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.describe('Action Motion Proofs', () => {
   test.setTimeout(120000);

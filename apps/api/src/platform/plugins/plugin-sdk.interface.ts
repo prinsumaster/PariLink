@@ -34,10 +34,10 @@ export abstract class PariLinkPlugin {
   abstract getManifest(): PluginManifest;
 
   // Lifecycle Hooks
-  async onInstall(companyId: string): Promise<void> {}
-  async onActivate(companyId: string): Promise<void> {}
-  async onDeactivate(companyId: string): Promise<void> {}
-  async onUninstall(companyId: string): Promise<void> {}
+  async onInstall(_companyId: string): Promise<void> {}
+  async onActivate(_companyId: string): Promise<void> {}
+  async onDeactivate(_companyId: string): Promise<void> {}
+  async onUninstall(_companyId: string): Promise<void> {}
 
   // Extension Registrations
   registerAiWorkers?(): IDigitalWorker[];

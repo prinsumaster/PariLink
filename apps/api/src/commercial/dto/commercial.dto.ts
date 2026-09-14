@@ -1,5 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsDateString, IsArray, ValidateNested, IsBoolean, IsObject } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNumber, IsOptional, IsDateString, IsArray, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRateCardDto {

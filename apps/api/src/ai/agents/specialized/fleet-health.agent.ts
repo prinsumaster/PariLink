@@ -12,7 +12,8 @@ export class FleetHealthAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-    private readonly prisma: PrismaService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _prisma: PrismaService,
   ) {
     super(llmManager);
   }
@@ -21,7 +22,7 @@ export class FleetHealthAgent extends BaseAgent {
     new DynamicTool({
       name: 'check_fleet_health',
       description: 'Evaluate health of fleet. Input: {"companyId": "string"}',
-      func: async (input: string) => {
+      func: async (_input: string) => {
         return JSON.stringify({
           criticalAlerts: 2,
           recommendations: [

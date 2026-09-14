@@ -163,7 +163,7 @@ export class MobileService {
     userId: string,
     queueData: any[],
   ) {
-    return this.prisma.runAsTenant(companyId, async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (_tx) => {
       // Basic conflict resolution / queue processor
       // Loops through queued actions (e.g., location pings, status updates) and processes them sequentially
       this.logger.log(

@@ -20,7 +20,7 @@
  * upsert) instead of 1000.
  */
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Queue, Job } from 'bullmq';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../../prisma/prisma.service';
@@ -50,8 +50,7 @@ export interface TelemetryJob {
  */
 @Injectable()
 export class TelemetryIngressProducer {
-  private readonly logger = new Logger(TelemetryIngressProducer.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(@InjectQueue(TELEMETRY_QUEUE) private readonly queue: Queue) {}
 
   /**
@@ -94,9 +93,9 @@ export class TelemetryIngressProducer {
  */
 @Processor(TELEMETRY_QUEUE, { concurrency: 4 })
 export class TelemetryIngressWorker extends WorkerHost {
-  private readonly logger = new Logger(TelemetryIngressWorker.name);
   private static readonly CHUNK = 500;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {
     super();
   }

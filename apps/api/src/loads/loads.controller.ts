@@ -9,8 +9,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards,
-  Request,
+  UseGuards
 } from '@nestjs/common';
 import { LoadsService } from './loads.service';
 import { CreateLoadDto } from './dto/create-load.dto';

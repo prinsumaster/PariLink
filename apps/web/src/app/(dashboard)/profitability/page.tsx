@@ -17,7 +17,7 @@ const formatCurrency = (amount: number, currency: string = 'INR') => {
 };
 
 export default function ProfitabilityPage() {
-  const [page, setPage] = useState(1);
+  const [page, _setPage] = useState(1);
   const limit = 20;
 
   const { data: summary, isError: isSummaryError, isLoading: isLoadingSummary } = useQuery<any>({

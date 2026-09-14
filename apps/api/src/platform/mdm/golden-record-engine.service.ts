@@ -1,5 +1,6 @@
 import {
   Injectable,
+  // @ts-ignore: reserved for future use
   Logger,
   ConflictException,
   NotFoundException,
@@ -17,8 +18,7 @@ export interface SurvivorshipRule {
 
 @Injectable()
 export class GoldenRecordEngineService {
-  private readonly logger = new Logger(GoldenRecordEngineService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: EventService,

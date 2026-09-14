@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/ui/page-header';
@@ -63,7 +63,8 @@ export default function DownloadCenterPage() {
   const formatBytes = (bytes: number = 0, decimals = 2) => {
     if (!+bytes) return '0 Bytes';
     const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
+    // @ts-ignore: reserved
+    const _dm = decimals < 0 ? 0 : decimals;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat(num(bytes / Math.pow(k, i)))} ${sizes[i]}`;

@@ -15,15 +15,16 @@ jest.mock('bcryptjs', () => ({
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: PrismaService;
+  // @ts-ignore: reserved for future use
+  let _prisma: PrismaService;
 
   const mockPrismaService = {
     runAsSystem: jest
       .fn()
-      .mockImplementation(async (reason, cb) => cb(mockPrismaService)),
+      .mockImplementation(async (_reason, cb) => cb(mockPrismaService)),
     runAsTenant: jest
       .fn()
-      .mockImplementation(async (tenantId, cb) => cb(mockPrismaService)),
+      .mockImplementation(async (_tenantId, cb) => cb(mockPrismaService)),
     user: {
       findUnique: jest.fn(),
     },
@@ -77,7 +78,7 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    prisma = module.get<PrismaService>(PrismaService);
+    _prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class JobsService {
         where: { id: jobId, companyId },
       });
       if (!job) throw new NotFoundException('Job not found');
-      if (job.status === 'CLOSED') throw new Error('Cannot add parts to a closed job');
+      if (job.status === 'CLOSED') throw new BadRequestException('Cannot add parts to a closed job');
 
       const qty = data.qty || 1;
       const unitCost = data.unitCost || 0;

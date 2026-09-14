@@ -1,10 +1,6 @@
 import {
   IsOptional,
-  IsString,
-  IsNumber,
-  IsBoolean,
-  IsDateString,
-  IsEnum,
+  IsString
 } from 'class-validator';
 
 export class CreateGstTaxRuleDto {

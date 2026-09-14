@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import Redis from 'ioredis';
 

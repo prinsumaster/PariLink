@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 
@@ -6,7 +6,8 @@ import { AuditService } from '../../platform/audit/audit.service';
 export class DashboardAdminService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly audit: AuditService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _audit: AuditService,
   ) {}
 
   async getDashboardSummary(companyId: string, isSuperAdmin: boolean = false) {

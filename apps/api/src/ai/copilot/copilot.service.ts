@@ -19,9 +19,11 @@ export class CopilotService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly security: SecurityContextService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _security: SecurityContextService,
     private readonly bpm: ProcessEngine,
-    private readonly eventStore: EventStoreService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _eventStore: EventStoreService,
     private readonly observability: CopilotObservabilityService,
     private readonly sqlGenerator: SqlGeneratorService,
   ) {}
@@ -171,7 +173,7 @@ export class CopilotService {
     };
   }
 
-  private async generateSummary(companyId: string, intent: any) {
+  private async generateSummary(_companyId: string, _intent: any) {
     return {
       response:
         "Today's operations encountered 2 delays and 1 breakdown. 450 loads were delivered.",

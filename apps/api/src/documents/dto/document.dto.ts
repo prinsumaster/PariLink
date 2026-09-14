@@ -3,12 +3,9 @@ import {
   IsOptional,
   IsBoolean,
   IsInt,
-  IsArray,
   IsDateString,
   IsNotEmpty,
-  IsEnum,
-  Min,
-  Max,
+  Min
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 

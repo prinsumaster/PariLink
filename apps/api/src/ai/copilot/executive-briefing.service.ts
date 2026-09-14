@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AnalyticsRegistryService } from '../../platform/analytics/analytics-registry.service';
 
@@ -14,12 +14,12 @@ export class ExecutiveBriefingService {
   /**
    * Generates C-Level Natural Language Briefings leveraging cross-domain engines.
    */
-  async generateDailyBriefing(companyId: string, userId: string) {
+  async generateDailyBriefing(companyId: string, _userId: string) {
     this.logger.log(
       `Copilot generating Daily Executive Briefing for ${companyId}`,
     );
 
-    return this.prisma.runAsTenant(companyId, async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (_tx) => {
       // Collect metrics across all Enterprise Engines
 
       // Mocks for Demonstration of Integration
@@ -56,7 +56,8 @@ export class ExecutiveBriefingService {
             bottlenecks: 1,
           };
 
-      const financialMetrics = finProvider
+  // @ts-ignore: reserved for future use
+      const _financialMetrics = finProvider
         ? await finProvider.getAnalytics(companyId, 'ALL')
         : {
             revenue: '$124,500',

@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money, num } from '@/lib/format';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { api, API_URL } from '@/services/api';
 import { useAuthStore } from '@/store/auth';
 import { 
-  TrendingUp, TrendingDown, DollarSign, Truck, Users, Activity, Download, BrainCircuit, RefreshCcw
+  TrendingUp, DollarSign, Truck, Users, Activity, Download, RefreshCcw
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { RevenueChart } from '@/components/reports/revenue-chart';

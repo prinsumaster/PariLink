@@ -23,7 +23,8 @@ export class SimulationEngine {
   private readonly logger = new Logger(SimulationEngine.name);
 
   constructor(
-    private readonly graphService: EnterpriseGraphService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _graphService: EnterpriseGraphService,
     private readonly predictionEngine: PredictionEngine,
   ) {}
 

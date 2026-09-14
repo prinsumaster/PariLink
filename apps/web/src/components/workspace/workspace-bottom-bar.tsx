@@ -1,7 +1,7 @@
 'use client';
 
 import { useWorkspaceKernelStore } from '@/store/workspace-kernel';
-import { Terminal, Download, Activity, Bell, X, Maximize2, Minimize2 } from 'lucide-react';
+import { Terminal, Download, Activity, Bell, X, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 

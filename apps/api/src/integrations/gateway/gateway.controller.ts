@@ -1,14 +1,8 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
   UseGuards,
-  Req,
-  Param,
-  HttpStatus,
-  HttpException,
-  Header,
+  Req
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { PrismaService } from '../../prisma/prisma.service';

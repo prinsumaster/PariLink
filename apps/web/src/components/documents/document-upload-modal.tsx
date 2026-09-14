@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { num } from '@/lib/format';
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -79,11 +79,11 @@ export function DocumentUploadModal({ isOpen, onClose }: DocumentUploadModalProp
       resetAndClose();
       return { previousDocs, optimisticId: optimisticDoc.id };
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (_data, _variables, _context) => {
       toast.success('Document uploaded successfully');
       queryClient.invalidateQueries({ queryKey: ['documents'] });
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       toast.error('Failed to upload document');
       if (context?.previousDocs) {
         queryClient.setQueryData(['documents', { page: 1, limit: 20 }], context.previousDocs);

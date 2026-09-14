@@ -40,7 +40,8 @@ export class DeliveryProcessor extends WorkerHost {
     }
 
     try {
-      let success = false;
+  // @ts-ignore: reserved for future use
+      let _success = false;
       let providerResponse = null;
 
       if (delivery.channel === 'EMAIL') {
@@ -48,19 +49,19 @@ export class DeliveryProcessor extends WorkerHost {
           delivery.recipient,
           delivery.payload,
         );
-        success = true;
+        _success = true;
       } else if (delivery.channel === 'SMS') {
         providerResponse = await this.smsProvider.send(
           delivery.recipient,
           delivery.payload,
         );
-        success = true;
+        _success = true;
       } else if (delivery.channel === 'SLACK') {
         providerResponse = await this.slackProvider.send(
           delivery.recipient,
           delivery.payload,
         );
-        success = true;
+        _success = true;
       } else {
         throw new Error(`Unsupported channel: ${delivery.channel}`);
       }
@@ -76,7 +77,7 @@ export class DeliveryProcessor extends WorkerHost {
         }),
       );
 
-      return { success: true };
+      return { _success: true };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

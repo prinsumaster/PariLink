@@ -11,8 +11,9 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Truck, CheckCircle2, ShieldAlert, Clock } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { StatusBadge } from '@/components/status-badge';
 
 interface DriverTableProps {
   drivers: Driver[];
@@ -22,23 +23,7 @@ interface DriverTableProps {
   onFiltersChange: (filters: DriverFilters) => void;
 }
 
-const getStatusBadge = (status: Driver['status']) => {
-  switch (status) {
-    case 'AVAILABLE':
-    case 'ONLINE':
-      return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"><CheckCircle2 className="mr-1 h-3 w-3" /> {status}</Badge>;
-    case 'DRIVING':
-    case 'IN_TRIP':
-      return <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"><Truck className="mr-1 h-3 w-3" /> {status}</Badge>;
-    case 'RESTING':
-    case 'ON_LEAVE':
-      return <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"><Clock className="mr-1 h-3 w-3" /> {status.replace('_', ' ')}</Badge>;
-    case 'OFFLINE':
-      return <Badge variant="secondary">{status}</Badge>;
-    default:
-      return <Badge variant="outline">{status}</Badge>;
-  }
-};
+
 
 const getRiskBadge = (rating?: string) => {
   if (!rating) return <span className="text-gray-400">N/A</span>;
@@ -80,7 +65,7 @@ export function DriverTable({ drivers, total, isLoading, filters, onFiltersChang
       {
         accessorKey: 'status',
         header: 'Status',
-        cell: ({ row }) => getStatusBadge(row.getValue('status')),
+        cell: ({ row }) => <StatusBadge status={row.getValue('status')} />,
       },
       {
         accessorKey: 'phone',

@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 export class OrdersController {
   
   @Get()
-  async getOrders(@Req() req: any, @Query() query: any) {
+  async getOrders(@Req() _req: any, @Query() query: any) {
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 20;
     

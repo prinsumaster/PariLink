@@ -5,7 +5,8 @@ import { IGpsProvider } from './gps-adapter.interface';
 export class LocoNavService implements IGpsProvider {
   private readonly logger = new Logger(LocoNavService.name);
   private apiKey!: string;
-  private baseUrl = 'https://api.loconav.com/v1';
+  // @ts-ignore: reserved for future use
+  private _baseUrl = 'https://api.loconav.com/v1';
 
   constructor() {
     if (process.env.LOCONAV_API_KEY) {

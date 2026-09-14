@@ -31,7 +31,7 @@ export class LoadingEventsService {
     });
   }
 
-  async addEvent(companyId: string, tripId: string, data: CreateLoadingEventDto, user: AuthenticatedUser) {
+  async addEvent(companyId: string, tripId: string, data: CreateLoadingEventDto, _user: AuthenticatedUser) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trip = await tx.trip.findFirst({
         where: { id: tripId, companyId },

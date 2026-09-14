@@ -78,7 +78,8 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await this.prisma.runAsSystem('[AuthService.register] Internal service operation bypass', async (tx) => {
+  // @ts-ignore: reserved for future use
+    const _result = await this.prisma.runAsSystem('[AuthService.register] Internal service operation bypass', async (tx) => {
       // 1. Create company
       const company = await tx.company.create({
         data: { name: companyName, status: 'ACTIVE' },

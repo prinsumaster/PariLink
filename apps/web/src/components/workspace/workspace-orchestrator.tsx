@@ -3,12 +3,10 @@
 import { useWorkspaceKernelStore, WorkspaceOverlay } from '@/store/workspace-kernel';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import dynamic from 'next/dynamic';
 import { Loader2, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
 // Fallback loader for dynamic components
-const Fallback = () => (
+// @ts-ignore: reserved
+const _Fallback = () => (
   <div className="flex h-40 items-center justify-center">
     <Loader2 className="h-6 w-6 animate-spin text-primary" />
   </div>

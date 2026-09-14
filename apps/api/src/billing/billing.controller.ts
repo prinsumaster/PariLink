@@ -8,7 +8,6 @@ import {
   Param,
   Patch,
   UseGuards,
-  Request,
   Query,
 } from '@nestjs/common';
 import { BillingService } from './billing.service';

@@ -12,15 +12,15 @@ export class GpsProviderConnector extends BaseConnector {
     return !!(config?.apiKey && config?.providerType); // e.g., GEOTAB, LOCONAV, WHEELSEYE, TRACCAR
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { token: `gps_token_${Date.now()}` };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
     entityType: string,
-    payload: unknown,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -32,15 +32,15 @@ export class GpsProviderConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'gps.location.update', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { success: true } };
   }
@@ -65,15 +65,15 @@ export class FuelCardConnector extends BaseConnector {
     return !!(config?.merchantId && config?.apiKey && config?.network); // HPCL, BPCL, IOCL
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { status: 'AUTHENTICATED' };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -85,15 +85,15 @@ export class FuelCardConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'fuel.transaction.completed', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { status: 'OK' } };
   }
@@ -118,15 +118,15 @@ export class FastagConnector extends BaseConnector {
     return !!(config?.acquirerBank && config?.merchantKey && config?.walletId);
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { token: `fastag_netc_${Date.now()}` };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -138,15 +138,15 @@ export class FastagConnector extends BaseConnector {
     return { recordsProcessed: 1, status: 'SUCCESS' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'fastag.toll.deduction', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { balance: 5000, status: 'ACTIVE' } };
   }
@@ -171,7 +171,7 @@ export class EwayBillConnector extends BaseConnector {
     return !!(config?.gstin && config?.username && config?.password);
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return {
       authToken: `nic_eway_auth_${Date.now()}`,
       sek: `secret_key_${Date.now()}`,
@@ -179,10 +179,10 @@ export class EwayBillConnector extends BaseConnector {
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -198,15 +198,15 @@ export class EwayBillConnector extends BaseConnector {
     };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'ewaybill.status.changed', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { success: true } };
   }
@@ -236,15 +236,15 @@ export class GstConnector extends BaseConnector {
     );
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { token: `gstn_irn_token_${Date.now()}` };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -260,15 +260,15 @@ export class GstConnector extends BaseConnector {
     };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'gst.einvoice.generated', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { gstinValid: true } };
   }
@@ -293,15 +293,15 @@ export class SmsGatewayConnector extends BaseConnector {
     return !!(config?.apiKey && config?.senderId && config?.provider); // TWILIO, GUPSHUP, MSG91
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { ok: true };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -311,15 +311,15 @@ export class SmsGatewayConnector extends BaseConnector {
     return { messageId: `sms_${Date.now()}`, status: 'SENT' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'sms.delivery.status', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { sent: true } };
   }
@@ -344,15 +344,15 @@ export class EmailGatewayConnector extends BaseConnector {
     return !!(config?.apiKey && config?.fromEmail); // SENDGRID, SES, POSTMARK
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { ok: true };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -362,15 +362,15 @@ export class EmailGatewayConnector extends BaseConnector {
     return { messageId: `email_${Date.now()}`, status: 'QUEUED' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'email.event', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { accepted: true } };
   }
@@ -399,15 +399,15 @@ export class WhatsAppConnector extends BaseConnector {
     );
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { ok: true };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -417,15 +417,15 @@ export class WhatsAppConnector extends BaseConnector {
     return { wamid: `wamid.HBg${Date.now()}`, status: 'SENT' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'whatsapp.message.received', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { success: true } };
   }
@@ -450,15 +450,15 @@ export class PaymentGatewayConnector extends BaseConnector {
     return !!(config?.keyId && config?.keySecret && config?.provider); // RAZORPAY, STRIPE, CASHFREE
   }
 
-  async authenticate(credentials: Record<string, unknown>): Promise<unknown> {
+  async authenticate(_credentials: Record<string, unknown>): Promise<unknown> {
     return { ok: true };
   }
 
   async sync(
-    companyId: string,
-    credentials: Record<string, unknown>,
-    entityType: string,
-    payload: unknown,
+    _companyId: string,
+    _credentials: Record<string, unknown>,
+    _entityType: string,
+    _payload: unknown,
   ): Promise<{
     recordsProcessed?: number;
     status?: string;
@@ -470,15 +470,15 @@ export class PaymentGatewayConnector extends BaseConnector {
     return { transactionId: `pay_${Date.now()}`, status: 'SETTLED' };
   }
 
-  async receiveWebhook(headers: unknown, body: unknown): Promise<unknown> {
+  async receiveWebhook(_headers: unknown, body: unknown): Promise<unknown> {
     return { event: 'payment.captured', data: body };
   }
 
   async send(
-    endpoint: string,
-    method: string,
-    credentials: Record<string, unknown>,
-    data?: unknown,
+    _endpoint: string,
+    _method: string,
+    _credentials: Record<string, unknown>,
+    _data?: unknown,
   ): Promise<unknown> {
     return { status: 200, data: { id: `order_${Date.now()}` } };
   }

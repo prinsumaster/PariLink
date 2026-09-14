@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { money } from '@/lib/format';
 
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,9 +21,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { useEffect } from 'react';
-
-
 const invoiceFormSchema = z.object({
   customerId: z.string().min(1, 'Customer ID is required'),
   customerName: z.string().min(1, 'Customer Name is required'),
@@ -54,7 +51,8 @@ export function InvoiceForm({ initialData, isEdit }: InvoiceFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { register, control, handleSubmit, setValue, watch, formState: { errors, isDirty } } = useForm<InvoiceFormValues>({
+  // @ts-ignore: reserved
+  const { register, control, handleSubmit, setValue, watch, formState: { errors: _errors, isDirty } } = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: initialData ? {
       customerId: initialData.customerId,

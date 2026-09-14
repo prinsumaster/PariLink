@@ -1,5 +1,5 @@
 'use client';
-import { money, num, dateIN } from '@/lib/format';
+import { dateIN } from '@/lib/format';
 
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,8 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Truck, MapPin, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-
 
 interface TripTableProps {
   trips: Trip[];
@@ -113,7 +111,7 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
   return (
     <div className="w-full">
       <div className="overflow-x-auto w-full">
-        <table className="w-full text-sm text-left">
+        <table data-testid="trips-data-table" className="w-full text-sm text-left">
           <thead className="text-xs text-slate-500 uppercase bg-slate-50/50 dark:bg-slate-800/50 dark:text-slate-400 border-b border-slate-200/60 dark:border-slate-800/60 backdrop-blur-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -155,6 +153,7 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
               table.getRowModel().rows.map((row) => (
                 <tr 
                   key={row.id} 
+                  data-testid={`trip-row-${row.id}`}
                   onClick={() => router.push(`/trips/${row.original.id}`)}
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 cursor-pointer transition-all duration-200 hover:elevation-1"
                 >

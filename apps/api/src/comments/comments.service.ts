@@ -57,7 +57,7 @@ export class CommentsService {
     });
   }
 
-  async deleteComment(companyId: string, authorId: string, commentId: string) {
+  async deleteComment(companyId: string, _authorId: string, commentId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const comment = await tx.comment.findUnique({ where: { id: commentId } });
       if (!comment || comment.companyId !== companyId) {

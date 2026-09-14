@@ -10,8 +10,6 @@ import { RoleGuard } from '@/components/auth/role-guard';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DriverCompliance } from './driver-compliance';
 import { DriverSafetyAnalytics } from './driver-safety-analytics';
-import { useQuery } from '@tanstack/react-query';
-import { driverService } from '@/services/drivers';
 
 interface DriverDetailViewProps {
   driver: Driver;

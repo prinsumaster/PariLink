@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { driverService } from '@/services/drivers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ShieldAlert, Zap, AlertTriangle, Coffee, Timer, Fuel, CheckCircle, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, Coffee, Timer, Fuel, CheckCircle, TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
 import { dateIN } from '@/lib/format';
 
 interface DriverSafetyAnalyticsProps {

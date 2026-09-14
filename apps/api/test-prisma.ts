@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { PrismaService } from './src/prisma/prisma.service';
 
 async function main() {

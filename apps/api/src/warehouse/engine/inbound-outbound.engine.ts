@@ -10,9 +10,11 @@ export class InboundOutboundEngine {
 
   constructor(
     private readonly eventStore: EventStoreService,
-    private readonly lifecycle: LifecycleEngineService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _lifecycle: LifecycleEngineService,
     private readonly resourceOrchestrator: ResourceOrchestratorService,
-    private readonly aiPrediction: PredictionEngineService,
+  // @ts-ignore: DI dependency reserved for future use
+    private readonly _aiPrediction: PredictionEngineService,
   ) {}
 
   /**

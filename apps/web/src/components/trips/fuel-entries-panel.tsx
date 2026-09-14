@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Fuel, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Fuel } from 'lucide-react';
 
 export function FuelEntriesPanel({ tripId }: { tripId: string }) {
   const queryClient = useQueryClient();

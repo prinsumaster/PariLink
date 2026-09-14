@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShieldAlert, Map } from 'lucide-react';
 
 export default function ControlTowerRiskOverlay() {

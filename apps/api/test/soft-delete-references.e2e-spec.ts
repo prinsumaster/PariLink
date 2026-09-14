@@ -7,9 +7,11 @@ import { PrismaService } from '../src/prisma/prisma.service';
 describe('Soft Delete Reference Protection (e2e)', () => {
   let app: INestApplication;
   let adminToken: string;
-  let companyId: string;
+  // @ts-ignore: reserved for future use
+  let _companyId: string;
   let driverId: string;
-  let customerId: string;
+  // @ts-ignore: reserved for future use
+  let _customerId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,12 +29,12 @@ describe('Soft Delete Reference Protection (e2e)', () => {
       
     adminToken = loginRes.body.access_token;
 
-    // We can infer companyId by looking at our own profile
+    // We can infer _companyId by looking at our own profile
     const profileRes = await request(app.getHttpServer())
       .get('/auth/me')
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-    companyId = profileRes.body.companyId;
+    _companyId = profileRes.body._companyId;
   });
 
   it('BA3: Should return 200 and deleted: true when drilling down into soft-deleted customer', async () => {

@@ -1,10 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class VehicleLifecycleService {
-  private readonly logger = new Logger(VehicleLifecycleService.name);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async getFleetStatus(companyId: string) {

@@ -7,7 +7,6 @@ import {
   IsDateString,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 
 export class CreateFuelEntryDto {
   @ApiProperty({ description: 'Litres of fuel filled', example: 180 })

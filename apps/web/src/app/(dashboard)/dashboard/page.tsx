@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { dashboardService } from '@/services/dashboard';
 import { DashboardFilters as FilterState } from '@/types/dashboard';
-import { useWebSocket } from '@/hooks/use-websocket';
-
 import { DashboardFilters } from '@/components/dashboard/dashboard-filters';
 import { KPICards } from '@/components/dashboard/kpi-cards';
 import dynamic from 'next/dynamic';
@@ -33,7 +31,8 @@ export default function DashboardPage() {
     dateRange: { start: new Date().toISOString(), end: new Date().toISOString() }
   });
 
-  const queryClient = useQueryClient();
+  // @ts-ignore: reserved
+  const _queryClient = useQueryClient();
 
   // Queries
   const { data: kpis, isLoading: isLoadingKPIs } = useQuery({
