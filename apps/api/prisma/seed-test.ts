@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL
+});
 
 async function main() {
   const hash = await bcrypt.hash('password123', 10);
@@ -74,7 +76,7 @@ async function main() {
   const bDriver = await prisma.driver.create({
     data: { firstName: 'B', lastName: 'Driver', status: 'ACTIVE', companyId: compB.id }
   });
-  const bTrip = await prisma.trip.create({
+  await prisma.trip.create({
     data: { tripNumber: 'TRIP-B-1', vehicleId: bVehicle.id, driverId: bDriver.id, status: 'PLANNED', companyId: compB.id }
   });
   const bLoad = await prisma.load.create({
@@ -89,10 +91,10 @@ async function main() {
   const bInvoice = await prisma.invoice.create({
     data: { invoiceNumber: 'INV-B-1', customerId: bCustomer.id, amount: 100, status: 'DRAFT', companyId: compB.id }
   });
-  const bPayment = await prisma.payment.create({
+  await prisma.payment.create({
     data: { invoiceId: bInvoice.id, amount: 100, method: 'CASH', paymentDate: new Date(), companyId: compB.id }
   });
-  const bDoc = await prisma.document.create({
+  await prisma.document.create({
     data: { type: 'BOL', fileName: 'b.pdf', fileUrl: 'http://example.com/b', entityType: 'LOAD', entityId: bLoad.id, companyId: compB.id }
   });
 

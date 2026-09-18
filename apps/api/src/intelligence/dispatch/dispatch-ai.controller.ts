@@ -1,8 +1,7 @@
-import { Controller, Post, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Param, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { DispatchAiService } from './dispatch-ai.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { TenantInterceptor } from '../../platform/security/tenant.interceptor';
-import { UseInterceptors } from '@nestjs/common';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 
@@ -24,5 +23,12 @@ export class DispatchAiController {
       loadId,
       userId,
     );
+  }
+
+  @Get('recommendations')
+  @RequirePermissions('dispatch:ai:read')
+  async getOptimalAssignments(@Req() req: any) {
+    const { companyId } = req.user;
+    return this.dispatchAiService.getOptimalAssignments(companyId);
   }
 }

@@ -1,4 +1,6 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { TenantCacheInterceptor } from '../interceptors/tenant-cache.interceptor';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -56,56 +58,82 @@ export class ExecutiveDashboardController {
   }
 
   @Get('kpis')
+  @UseInterceptors(TenantCacheInterceptor)
+  @CacheKey('dashboard_kpis')
+  @CacheTTL(60000)
   async getKPIs(@Req() req: any) {
     const companyId = req.user.companyId;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
     const [
-      activeLoads,
-      todayDeliveries,
-      totalVehicles,
-      activeVehicles,
+      totalBookings,
       revenueTodayRes,
-      revenueMonthRes
+      outstandingRes,
+      activeVehicles,
+      topClientsAgg,
+      recentLoads,
     ] = await this.prisma.runAsTenant(companyId, async (tx) => {
       return Promise.all([
-        tx.trip.count({ where: { companyId, status: { in: ['DISPATCHED', 'IN_TRANSIT'] } } }),
-        tx.load.count({ where: { companyId, status: 'DELIVERED', updatedAt: { gte: today } } }),
-        tx.vehicle.count({ where: { companyId } }),
-        tx.vehicle.count({
-          where: { companyId, tripsVehicle: { some: { status: 'IN_TRANSIT' } } },
+        tx.load.count({ where: { companyId, deletedAt: null } }),
+        tx.invoice.aggregate({
+          _sum: { amount: true },
+          where: { companyId, createdAt: { gte: today } },
         }),
         tx.invoice.aggregate({
           _sum: { amount: true },
-          where: { companyId, createdAt: { gte: today }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
+          where: { companyId, status: { not: 'PAID' } },
         }),
-        tx.invoice.aggregate({
+        tx.vehicle.count({ where: { companyId, status: 'IN_SERVICE' } }),
+        tx.invoice.groupBy({
+          by: ['customerId'],
           _sum: { amount: true },
-          where: { companyId, createdAt: { gte: firstDayOfMonth }, status: { in: ['ISSUED', 'OVERDUE', 'PAID'] } },
+          where: { companyId },
+          orderBy: { _sum: { amount: 'desc' } },
+          take: 5,
         }),
+        tx.load.findMany({
+          where: { companyId, deletedAt: null },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          include: {
+            lorryReceipts: { select: { lrNumber: true }, take: 1 }
+          }
+        })
       ]);
     });
 
-    const revenueToday = revenueTodayRes._sum?.amount || 0;
-    const revenueMonth = revenueMonthRes._sum?.amount || 0;
-    const fleetUtilization = totalVehicles > 0 ? Math.round((activeVehicles / totalVehicles) * 100) : 0;
+    const topClientIds = topClientsAgg.map(c => c.customerId);
+    const customers = await this.prisma.runAsTenant(companyId, async (tx) => 
+      tx.customer.findMany({ where: { id: { in: topClientIds } }, select: { id: true, name: true } })
+    );
+    
+    const topClients = topClientsAgg.map(tc => {
+       const customer = customers.find(c => c.id === tc.customerId);
+       return {
+         id: tc.customerId,
+         name: customer?.name || 'Unknown',
+         amount: tc._sum.amount || 0
+       };
+    });
+
+    const recentBookings = recentLoads.map(load => ({
+      id: load.id,
+      lrNumber: load.lorryReceipts?.[0]?.lrNumber || null,
+      originCity: load.originCity,
+      destinationCity: load.destinationCity,
+      rate: load.rate,
+      status: load.status,
+      createdAt: load.createdAt,
+    }));
 
     return {
-      activeShipments: { value: activeLoads, change: 5, trend: 'up' },
-      deliveriesToday: { value: todayDeliveries, change: 0, trend: 'neutral' },
-      fleetUtilization: { value: fleetUtilization, change: 2, trend: 'up' },
-      delayedShipments: { value: 0, change: -1, trend: 'down' },
-      revenue: { value: revenueMonth, change: 12, trend: 'up' },
-      profitMargin: { value: 15, change: 1, trend: 'up' },
-      fuelEfficiency: { value: 6.2, change: 0, trend: 'neutral' },
-      maintenanceAlerts: { value: 0, change: 0, trend: 'neutral' },
-      vehiclesOnline: { value: activeVehicles, total: totalVehicles },
-      driversOnline: { value: activeVehicles, total: totalVehicles }, // Approx
-      averageEtaMinutes: { value: 45, change: -5, trend: 'down' },
-      revenueToday: { value: revenueToday, change: 8, trend: 'up' },
+      totalBookings,
+      revenueToday: revenueTodayRes._sum?.amount || 0,
+      outstanding: outstandingRes._sum?.amount || 0,
+      activeVehicles,
+      topClients,
+      recentBookings
     };
   }
 

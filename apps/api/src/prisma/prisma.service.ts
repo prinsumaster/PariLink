@@ -373,27 +373,47 @@ export class PrismaService
       // Set the PostgreSQL local configuration variable for this transaction
       await tx.$executeRaw`SELECT set_config('app.current_company_id', ${companyId}, true)`;
 
-      // Wrap the transaction object to intercept raw SQL execution inside the callback
+      // Wrap the transaction object to intercept raw SQL execution inside the callback.
+      //
+      // SECURITY NOTE (2026-09-17): A raw set_config('app.current_company_id', ...) call
+      // inside a runAsTenant transaction can repoint tenant context mid-transaction,
+      // allowing cross-tenant data access. This was confirmed exploitable at the database
+      // level via BOTH $executeRawUnsafe AND $queryRawUnsafe:
+      //   - $executeRawUnsafe: intercepted since original implementation
+      //   - $queryRawUnsafe: gap discovered and closed here — SqlGeneratorService uses this
+      //     method with LLM-influenced SQL and CopilotService is live in the DI container
+      //     (registered in AiModule, imported by AppModule) even though no HTTP controller
+      //     currently calls it. One method call away from being active.
+      // All four raw-query methods are now intercepted uniformly.
+      const INTERCEPTED_RAW_METHODS = new Set([
+        '$executeRaw',
+        '$executeRawUnsafe',
+        '$queryRaw',
+        '$queryRawUnsafe',
+      ]);
+
       const safeTx = new Proxy(tx, {
         get(target, prop, receiver) {
-          if (prop === '$executeRaw' || prop === '$executeRawUnsafe') {
+          if (typeof prop === 'string' && INTERCEPTED_RAW_METHODS.has(prop)) {
             return function (this: any, ...args: any[]) {
               let queryStr = '';
               const firstArg = args[0];
               
               if (Array.isArray(firstArg)) {
-                // Prisma.Sql template literal
+                // Prisma.Sql template literal — strings[] joined with param placeholders
                 queryStr = firstArg.join('');
               } else if (firstArg && typeof firstArg.text === 'string') {
                 // Prisma.Sql object
                 queryStr = firstArg.text;
               } else if (typeof firstArg === 'string') {
-                // Raw string
+                // Raw string ($executeRawUnsafe / $queryRawUnsafe)
                 queryStr = firstArg;
               }
 
               if (/set_config\s*\(/i.test(queryStr)) {
-                throw new Error("Forbidden raw query pattern: session configuration injection is blocked by security interceptor");
+                throw new Error(
+                  'Forbidden raw query pattern: session configuration injection is blocked by security interceptor'
+                );
               }
 
               return Reflect.get(target, prop, receiver).apply(this, args);

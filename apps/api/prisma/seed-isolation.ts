@@ -7,7 +7,9 @@
  */
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  datasourceUrl: process.env.SYSTEM_DATABASE_URL || process.env.DATABASE_URL
+});
 
 async function seedTenant(
   companyId: string,
@@ -141,8 +143,12 @@ async function seedTenant(
 
 async function main() {
   console.log('Seeding isolation test data...');
-  await seedTenant('tenant-a', 'a');
-  await seedTenant('tenant-b', 'b');
+  const a = await prisma.user.findUnique({ where: { email: 'admin_a@parilink.com' } });
+  const b = await prisma.user.findUnique({ where: { email: 'admin_b@parilink.com' } });
+  if (!a || !b) throw new Error('Run seed-test.ts first to create admin_a and admin_b');
+  
+  await seedTenant(a.companyId, 'a');
+  await seedTenant(b.companyId, 'b');
   console.log('Done. Row counts should be identical on re-run (upsert).');
 }
 

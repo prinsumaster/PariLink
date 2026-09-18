@@ -1,8 +1,8 @@
 import { api } from '@/services/api';
-import { KPIData, LiveVehicle, Alert, AIRecommendation, ShipmentSummary, DashboardFilters } from '@/types/dashboard';
+import { TransporterMetrics, LiveVehicle, Alert, AIRecommendation, ShipmentSummary, DashboardFilters } from '@/types/dashboard';
 
 export const dashboardService = {
-  getKPIs: async (filters?: DashboardFilters): Promise<KPIData> => {
+  getKPIs: async (filters?: DashboardFilters): Promise<TransporterMetrics> => {
     const { data } = await api.get('/dashboard/kpis', { params: filters });
     return data;
   },

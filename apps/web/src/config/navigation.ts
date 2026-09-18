@@ -7,28 +7,13 @@ import {
   CreditCard,
   FileText,
   Settings,
-  Building2,
   Users2,
   Briefcase,
   Activity,
   FileSpreadsheet,
-  MessageSquare,
-  Zap,
-  Store,
-  Download,
-  GitBranch,
-  Server,
   ShieldCheck,
   FolderOpen,
-  Monitor,
-  AlertTriangle,
-  DatabaseBackup,
-  Bot,
-  Brain,
-  FileCode2,
-  DollarSign,
-  LineChart,
-  Crown,
+  CheckCircle,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -46,6 +31,7 @@ export interface NavGroup {
 }
 
 export const navigationConfig: NavGroup[] = [
+  /* HIDING LogOS Workspace and Enterprise AI Platform for transporter persona
   {
     title: 'LogOS Workspace',
     items: [
@@ -122,6 +108,7 @@ export const navigationConfig: NavGroup[] = [
       },
     ],
   },
+  */
   {
     title: 'Overview',
     items: [
@@ -136,14 +123,9 @@ export const navigationConfig: NavGroup[] = [
     title: 'Operations',
     items: [
       {
-        title: 'Bookings',
+        title: 'Booking',
         href: '/loads',
         icon: Package,
-      },
-      {
-        title: 'Trips',
-        href: '/trips',
-        icon: MapPin,
       },
       {
         title: 'Bilty (LR)',
@@ -156,9 +138,19 @@ export const navigationConfig: NavGroup[] = [
         icon: Truck,
       },
       {
+        title: 'Trips',
+        href: '/trips',
+        icon: MapPin,
+      },
+      {
         title: 'Tracking',
         href: '/tracking',
         icon: Activity,
+      },
+      {
+        title: 'POD',
+        href: '/pod',
+        icon: CheckCircle,
       },
     ],
   },
@@ -178,6 +170,23 @@ export const navigationConfig: NavGroup[] = [
     ],
   },
   {
+    title: 'Relationships',
+    items: [
+      {
+        title: 'Customers',
+        href: '/customers',
+        icon: Briefcase,
+      },
+      /*
+      {
+        title: 'Vendors',
+        href: '/vendors',
+        icon: Building2,
+      },
+      */
+    ],
+  },
+  {
     title: 'Financials',
     items: [
       {
@@ -191,49 +200,56 @@ export const navigationConfig: NavGroup[] = [
         icon: CreditCard,
       },
       {
-        title: 'Ledger',
+        title: 'Accounts',
         href: '/ledger',
         icon: FileSpreadsheet,
       },
     ],
   },
   {
-    title: 'Relationships',
+    title: 'Files & Data',
     items: [
       {
-        title: 'Customers',
-        href: '/customers',
-        icon: Briefcase,
+        title: 'Documents',
+        href: '/documents',
+        icon: FolderOpen,
       },
       {
-        title: 'Vendors',
-        href: '/vendors',
-        icon: Building2,
+        title: 'Reports',
+        href: '/reports',
+        icon: FileText,
       },
     ],
   },
   {
     title: 'Platform',
     items: [
+      /* HIDING App Marketplace for transporter persona
       {
         title: 'App Marketplace',
         href: '/admin/marketplace',
         icon: Store,
       },
+      */
       {
         title: 'Admin Console',
         href: '/admin',
         icon: ShieldCheck,
         children: [
+          /* HIDING Subscription Center
           { title: 'Subscription Center', href: '/admin/subscriptions', icon: Crown },
+          */
           { title: 'Users', href: '/admin/users', icon: Users2 },
           { title: 'Roles', href: '/admin/roles', icon: Settings },
+          /* HIDING Branches 
           { title: 'Branches', href: '/branches', icon: Building2 },
-          { title: 'Company Settings', href: '/settings', icon: Settings },
+          */
+          { title: 'Settings', href: '/settings', icon: Settings },
         ],
       },
     ],
   },
+  /* HIDING SRE & Observability for transporter persona
   {
     title: 'SRE & Observability',
     items: [
@@ -265,4 +281,5 @@ export const navigationConfig: NavGroup[] = [
       },
     ],
   },
+  */
 ];

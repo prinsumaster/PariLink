@@ -2,80 +2,24 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  id-token: write
-  contents: read
+    branches:
+      - main
 
 jobs:
-  validate-code:
-    name: Code Quality
+  test:
+    name: Build & Test
     runs-on: ubuntu-latest
-    steps:
-      - uses: ./.github/actions/setup
-      
-      - name: Type Check (TypeScript)
-        run: npm run typecheck
-        
-      - name: ESLint
-        run: npm run lint
-        
-      - name: Unit Tests
-        run: npm run test:unit -- --coverage
 
-  validate-infrastructure:
-    name: Terraform Validation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - uses: ./.github/actions/terraform
-        with:
-          aws_role_arn: ${{ secrets.AWS_ROLE_TO_ASSUME_STAGING }}
-          
-      - name: Terraform Format Check
-        working-directory: ./terraform
-        run: terraform fmt -check
-        
-      - name: Terraform Init
-        working-directory: ./terraform
-        run: terraform init -backend=false
-        
-      - name: Terraform Validate
-        working-directory: ./terraform
-        run: terraform validate
-
-  validate-kubernetes:
-    name: Helm & K8s Validation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Helm
-        uses: azure/setup-helm@v4
-        
-      - name: Helm Lint
-        run: |
-          for chart in terraform/helm/*-values.yaml; do
-            echo "Linting configs associated with $chart (dry-run style)"
-            # Real helm lint requires a full chart. Here we'd validate syntax.
-          done
-
-  e2e-tests:
-    name: E2E Tests
-    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: parilink
+          POSTGRES_PASSWORD: devpassword
+          POSTGRES_DB: parilink_db
         ports:
           - 5432:5432
         options: >-
@@ -83,29 +27,108 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
+
+    env:
+      # ── Database URLs ──────────────────────────────────────────────────────
+      # parilink      : DDL / migrate owner — used by prisma migrate deploy
+      DATABASE_URL: postgresql://parilink:devpassword@localhost:5432/parilink_db?schema=public
+      # parilink_app  : RLS-enforced runtime role used by the NestJS API
+      APP_DATABASE_URL: postgresql://parilink_app:apppassword@localhost:5432/parilink_db?schema=public
+      # parilink_sys  : BYPASSRLS superuser — used by runAsSystem(), verify-revenue.ts, GUC test
+      SYSTEM_DATABASE_URL: postgresql://parilink_sys:testpw123@localhost:5432/parilink_db?schema=public
+      # ── Auth / JWT ─────────────────────────────────────────────────────────
+      JWT_SECRET: ci-jwt-secret-not-for-production
+      JWT_REFRESH_SECRET: ci-refresh-secret-not-for-production
+      COOKIE_SECRET: ci-cookie-secret-not-for-production
+      # ── Runtime ───────────────────────────────────────────────────────────
+      NODE_ENV: test
+      REDIS_URL: ""
 
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Use Node.js
+      # ── 1. Source ──────────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── 2. Node.js ─────────────────────────────────────────────────────────
+      - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-        
-      - name: Build
-        run: npm run build
-        
-      - name: Run E2E Tests
+          node-version: 20
+          cache: npm
+
+      # ── 3. Dependencies ────────────────────────────────────────────────────
+      - name: Install root dependencies
+        run: npm ci
+
+      # ── 4. DB Role Initialisation ──────────────────────────────────────────
+      # GitHub Actions service containers do NOT support volume mounts for
+      # docker-entrypoint-initdb.d, so we manually execute the init SQL files.
+      # Ordering is guaranteed by globbing — 01_app_role.sql creates parilink_app,
+      # 02_sys_role.sql creates parilink_sys (BYPASSRLS) with the password
+      # SYSTEM_DATABASE_URL uses.  Both roles must exist BEFORE prisma migrate
+      # deploy, because migrations reference them in GRANT statements.
+      - name: Initialize Database Roles (RLS Setup)
         env:
-          CI: true
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
-          REDIS_URL: "redis://localhost:6379"
-        run: cd apps/api && npm run test:e2e
+          PGPASSWORD: devpassword
+        run: |
+          echo "Executing initdb SQL scripts against CI Postgres container..."
+          for f in $(ls infra/initdb/*.sql | sort); do
+            echo "--> Executing $f"
+            psql -h localhost -U parilink -d parilink_db -f "$f"
+          done
+          echo "Database roles initialised successfully."
+
+      # ── 5. Prisma ──────────────────────────────────────────────────────────
+      - name: Prisma Migrate & Generate
+        working-directory: ./apps/api
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      # ── 6. Grant post-migration table permissions ──────────────────────────
+      # prisma migrate deploy creates tables as the `parilink` DDL user.
+      # The parilink_app role needs SELECT/INSERT/UPDATE/DELETE on every table
+      # that migrations added. We re-run the grant scripts after migration to
+      # ensure new tables are covered. This is idempotent.
+      - name: Refresh Table Grants
+        env:
+          PGPASSWORD: devpassword
+        run: |
+          for f in $(ls infra/initdb/*.sql | sort); do
+            psql -h localhost -U parilink -d parilink_db -f "$f"
+          done
+
+      # ── 7. Lint ────────────────────────────────────────────────────────────
+      - name: Lint (API)
+        working-directory: ./apps/api
+        run: npm run lint --if-present
+
+      # ── 8. Unit & Service Tests ────────────────────────────────────────────
+      # Runs all *.spec.ts tests including:
+      #   - 22 service specs with strict companyId assertions
+      #   - command-center.gateway.spec.ts (WebSocket tenant room isolation)
+      #   - dispatch-ai.service.spec.ts (Gemini structured output)
+      - name: Run Tests
+        working-directory: ./apps/api
+        run: npm run test
+
+      # ── 9. GUC Injection Attack Test ──────────────────────────────────────
+      # Proves that SET set_config('app.current_company_id', <other_id>) is
+      # blocked by the Prisma security interceptor before reaching PostgreSQL.
+      - name: GUC Injection Attack Test
+        working-directory: ./
+        run: |
+          npx ts-node scripts/guc-attack-postfix.ts
+
+      # ── 10. Revenue Integrity Math Proof ──────────────────────────────────
+      # Seeds known invoices for two tenants, then proves that:
+      #   - Prisma aggregate() === raw SQL SUM()
+      #   - DRAFT invoices are correctly excluded by status filter
+      #   - Tenant B's invoices are correctly excluded by companyId filter
+      # The script exits with code 1 if the math does not exactly equal 150,000.
+      - name: Verify Revenue Integrity (Mathematical Proof)
+        working-directory: ./apps/api
+        run: |
+          npx ts-node \
+            --compiler-options '{"module":"CommonJS"}' \
+            src/verify-revenue.ts

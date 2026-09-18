@@ -61,3 +61,26 @@ The IoT webhook cleanup (`cleanup_iot.ts`) from this same session is the canonic
 **Context:** The current authentication implementation uses a strict IP-based rate limiter that triggers a hard lockout on violations.
 **Reality Check (Post-Deploy):** This implementation still reflects reality. It successfully mitigates brute-force attacks but introduces an accepted risk of DoS via IP spoofing or NAT overlap.
 **Milestone:** This is an accepted risk for v1.0. In the v1.1 milestone, the hard lockout mechanism will be migrated to a progressive delay/CAPTCHA system or account-level scoped lockout to reduce DoS surface area.
+
+---
+
+### ADR-SEC-002: GUC Tenant Re-point via `set_config` — Finding, Fix, and Ongoing Risk
+**Status**: Confirmed Finding → Fixed (2026-09-17)
+
+**Finding:**
+Raw `set_config('app.current_company_id', <tenantB>, true)` inside a Prisma transaction is sufficient to repoint RLS context mid-transaction, bypassing PostgreSQL Row-Level Security and allowing cross-tenant data access. This was confirmed exploitable at the raw database level via both `$executeRawUnsafe` **and** `$queryRawUnsafe`.
+
+**Evidence (both vectors confirmed by `scripts/guc-attack.ts`):**
+- `$executeRawUnsafe` repoint: `belonging to B` jumped from 0 → 1 inside the same transaction
+- `$queryRawUnsafe` repoint: identical result — `SELECT set_config(...)` parameterized form also succeeded
+
+**Root cause of gap:**
+The `runAsTenant` Proxy interceptor in `apps/api/src/prisma/prisma.service.ts` originally only intercepted `$executeRaw` and `$executeRawUnsafe`. The `$queryRaw` and `$queryRawUnsafe` methods — used by `SqlGeneratorService` to execute LLM-generated SQL inside `runAsTenant` — were not guarded.
+
+**Fix applied (2026-09-17):**
+The Proxy interceptor was extended to uniformly cover all four raw-query methods: `$executeRaw`, `$executeRawUnsafe`, `$queryRaw`, `$queryRawUnsafe`. Any `set_config(` in the query string now throws `Forbidden raw query pattern: session configuration injection is blocked by security interceptor`.
+
+Post-fix verification: `scripts/guc-attack-postfix.ts` confirmed `REPOINT CALL BLOCKED` and `belonging to B` stayed at 0.
+
+**Ongoing risk:**
+`CopilotService` is **live in the NestJS DI container** (registered in `AiModule` → imported by `AppModule`) and is injected into `AiCopilotChatService`. The only current protection is that `AiCopilotChatService` never calls `this._copilot.processRequest()`. If a developer wires `CopilotService` to an HTTP route, user-controlled input will flow through `SqlGeneratorService` → `$queryRawUnsafe`. The `runAsTenant` interceptor (this fix) is the structural backstop, backed by `sql-validator.ts` which bans `SET` and `SET_CONFIG` keywords. **Verify both are still in place before wiring any HTTP route to `CopilotService`.**

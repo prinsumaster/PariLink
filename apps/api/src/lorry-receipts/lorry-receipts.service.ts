@@ -245,4 +245,35 @@ export class LorryReceiptsService {
 </div></body></html>`;
     });
   }
+
+  /** Manual E-Way Bill number entry — stores user-provided number; no NIC portal call. */
+  async updateEwayBill(companyId: string, id: string, ewayBillNumber: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const lr = await tx.lorryReceipt.findFirst({ where: { id, companyId } });
+      if (!lr) throw new NotFoundException('Lorry Receipt not found');
+      return tx.lorryReceipt.update({
+        where: { id },
+        data: { ewayBillNumber: ewayBillNumber.trim() || null },
+      });
+    });
+  }
+
+  /** Aggregate GST collected across all LRs for this company. */
+  async gstSummary(companyId: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const rows = await tx.lorryReceipt.groupBy({
+        by: ['companyId'],
+        where: { companyId },
+        _sum: { gstAmount: true, freightAmount: true, totalAmount: true },
+        _count: { id: true },
+      });
+      const r = rows[0] ?? { _sum: { gstAmount: 0, freightAmount: 0, totalAmount: 0 }, _count: { id: 0 } };
+      return {
+        totalLrs: r._count.id,
+        totalFreight: r._sum.freightAmount ?? 0,
+        totalGstCollected: r._sum.gstAmount ?? 0,
+        totalBilled: r._sum.totalAmount ?? 0,
+      };
+    });
+  }
 }

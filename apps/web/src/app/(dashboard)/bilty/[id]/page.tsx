@@ -1,17 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { biltyService } from '@/services/bilty';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { api } from '@/services/api';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Download, Printer, Send, FileText } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Download, Printer, Send, FileText, AlertCircle, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function BiltyDetailPage({ params }: { params: { id: string } }) {
   const [copyType, setCopyType] = useState('OFFICE');
   const [isDownloading, setIsDownloading] = useState(false);
+  const [ewayInput, setEwayInput] = useState('');
+  const [ewayLoading, setEwayLoading] = useState(false);
+  const qc = useQueryClient();
 
   const { data: lr, isLoading } = useQuery({
     queryKey: ['bilty', params.id],
@@ -212,6 +217,72 @@ export default function BiltyDetailPage({ params }: { params: { id: string } }) 
               </div>
             </div>
            </div>
+        </CardContent>
+      </Card>
+
+      {/* E-Way Bill — Manual Entry Only */}
+      <Card className="border-amber-200 dark:border-amber-800">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            E-Way Bill
+            <Badge variant="outline" className="text-amber-700 border-amber-300 bg-amber-50 dark:bg-amber-950/30 text-xs font-normal">
+              Manual entry — portal integration coming soon
+            </Badge>
+          </CardTitle>
+          <CardDescription className="flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+            <span>
+              Enter the E-Way Bill number as generated on the{' '}
+              <a href="https://ewaybillgst.gov.in" target="_blank" rel="noopener noreferrer" className="underline text-blue-600">
+                NIC e-way bill portal
+              </a>
+              . This system does <strong>not</strong> generate or file e-way bills automatically.
+            </span>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm text-slate-500 mb-1">Current E-Way Bill No.</p>
+              <p className="font-mono text-base font-semibold">{lr.ewayBillNumber || <span className="text-muted-foreground font-normal">Not entered</span>}</p>
+            </div>
+            <div className="flex gap-2 items-end">
+              <div>
+                <p className="text-sm text-slate-500 mb-1">Update E-Way Bill Number</p>
+                <Input
+                  id="eway-bill-input"
+                  placeholder="e.g. 281001234567"
+                  value={ewayInput}
+                  onChange={(e) => setEwayInput(e.target.value)}
+                  className="w-52 font-mono"
+                  maxLength={15}
+                />
+              </div>
+              <Button
+                id="eway-bill-save-btn"
+                variant="outline"
+                size="sm"
+                disabled={ewayLoading || !ewayInput.trim()}
+                onClick={async () => {
+                  setEwayLoading(true);
+                  try {
+                    await api.patch(`/lorry-receipts/${params.id}/eway-bill`, {
+                      ewayBillNumber: ewayInput.trim(),
+                    });
+                    toast.success('E-Way Bill number saved');
+                    setEwayInput('');
+                    qc.invalidateQueries({ queryKey: ['bilty', params.id] });
+                  } catch {
+                    toast.error('Failed to save E-Way Bill number');
+                  } finally {
+                    setEwayLoading(false);
+                  }
+                }}
+              >
+                <Save className="h-4 w-4 mr-1" /> Save
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

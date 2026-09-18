@@ -199,6 +199,17 @@ describe('BillingService', () => {
       expect(result.status).toBe('SENT');
       expect(mockTx.journalEntry.create).toHaveBeenCalledTimes(1);
       expect(mockTx.account.upsert).toHaveBeenCalledTimes(2);
+      // ── Strict tenant-isolation assertions ──────────────────────────────
+      expect(mockTx.invoice.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', id: 'invoice-1' }),
+        }),
+      );
+      expect(mockTx.invoice.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', id: 'invoice-1' }),
+        }),
+      );
     });
   });
 });

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
 'use client';
+
+import { useState, useEffect } from 'react';
 import { useControlTowerStore } from '../../../store/control-tower.store';
 import { LiveMap } from '../../../components/control-tower/live-map';
 import { EventStream } from '../../../components/control-tower/event-stream';

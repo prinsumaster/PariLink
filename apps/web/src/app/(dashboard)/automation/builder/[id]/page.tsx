@@ -1,5 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
 'use client';
+
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ReactFlow,

@@ -41,10 +41,10 @@ async function main() {
 
   // 4 Users
   const users = [
-    { id: 'demo-user-1', email: 'admin@vanguard.com', first: 'Sarah', last: 'Connor', role: 'demo-role-admin' },
-    { id: 'demo-user-2', email: 'dispatch@vanguard.com', first: 'Marcus', last: 'Wright', role: 'demo-role-dispatch' },
-    { id: 'demo-user-3', email: 'finance@vanguard.com', first: 'Miles', last: 'Dyson', role: 'demo-role-finance' },
-    { id: 'demo-user-4', email: 'ops@vanguard.com', first: 'Kyle', last: 'Reese', role: 'demo-role-dispatch' },
+    { id: 'demo-user-1', email: 'admin@vanguard.com', first: 'Rajiv', last: 'Sharma', role: 'demo-role-admin' },
+    { id: 'demo-user-2', email: 'dispatch@vanguard.com', first: 'Anil', last: 'Verma', role: 'demo-role-dispatch' },
+    { id: 'demo-user-3', email: 'finance@vanguard.com', first: 'Sunita', last: 'Desai', role: 'demo-role-finance' },
+    { id: 'demo-user-4', email: 'ops@vanguard.com', first: 'Vikram', last: 'Singh', role: 'demo-role-dispatch' },
   ];
 
   for (const u of users) {
@@ -64,10 +64,11 @@ async function main() {
     });
   }
 
-  // 6 Drivers
+  // 8 Drivers (Indian)
   const driverNames = [
-    { f: 'Raj', l: 'Patel' }, { f: 'John', l: 'Smith' }, { f: 'David', l: 'Miller' },
-    { f: 'Miguel', l: 'Rodriguez' }, { f: 'James', l: 'Wilson' }, { f: 'Amit', l: 'Kumar' }
+    { f: 'Ramesh', l: 'Patel' }, { f: 'Suresh', l: 'Kumar' }, { f: 'Amit', l: 'Singh' },
+    { f: 'Rajesh', l: 'Sharma' }, { f: 'Vikram', l: 'Yadav' }, { f: 'Prakash', l: 'Mishra' },
+    { f: 'Sunil', l: 'Deshmukh' }, { f: 'Vijay', l: 'Chauhan' }
   ];
   
   const createdDrivers = [];
@@ -86,8 +87,12 @@ async function main() {
     createdDrivers.push(d);
   }
 
-  // 8 Vehicles
-  const vehiclePlates = ['IL-VG100', 'IL-VG101', 'IL-VG102', 'IL-VG103', 'IN-VG200', 'IN-VG201', 'WI-VG300', 'WI-VG301'];
+  // 15 Vehicles (Indian RTO Plates)
+  const vehiclePlates = [
+    'MH-12-CD-5678', 'MH-14-AB-1234', 'GJ-01-EF-9012', 'GJ-05-XY-3456', 'KA-05-MN-7890',
+    'KA-01-PQ-2345', 'DL-01-ZA-1111', 'DL-09-BC-2222', 'UP-16-RS-3333', 'HR-26-TU-4444',
+    'TN-09-VW-5555', 'TS-07-XY-6666', 'WB-02-ZA-7777', 'MP-09-BC-8888', 'RJ-14-EF-9999'
+  ];
   const createdVehicles = [];
   for (let i=0; i<vehiclePlates.length; i++) {
     const v = await prisma.vehicle.upsert({
@@ -96,8 +101,8 @@ async function main() {
       create: {
         id: `demo-vehicle-${i}`,
         companyId: company.id,
-        make: i < 4 ? 'Freightliner' : 'Volvo',
-        model: 'Cascadia',
+        make: i % 2 === 0 ? 'Tata Motors' : 'Ashok Leyland',
+        model: i % 2 === 0 ? 'Prima 4028.S' : 'Blaze 4220',
         licensePlate: vehiclePlates[i],
         type: 'TRUCK',
         status: 'IN_SERVICE'
@@ -106,61 +111,55 @@ async function main() {
     createdVehicles.push(v);
   }
 
-  // 3 Trailers
-  const trailerPlates = ['TR-900', 'TR-901', 'TR-902'];
-  const createdTrailers = [];
-  for (let i=0; i<trailerPlates.length; i++) {
-    const t = await prisma.vehicle.upsert({
-      where: { id: `demo-trailer-${i}` },
-      update: {},
-      create: {
-        id: `demo-trailer-${i}`,
-        companyId: company.id,
-        make: 'Wabash',
-        model: 'Dry Van 53',
-        licensePlate: trailerPlates[i],
-        type: 'TRAILER',
-        status: 'IN_SERVICE'
-      }
-    });
-    createdTrailers.push(t);
-  }
-
-  // 12 Customers (Realistic Freight Names)
+  // 8 Customers (Indian Freight)
   const customerNames = [
-    'J.B. Hunt Transport', 'C.H. Robinson', 'XPO Logistics', 'Knight-Swift Transportation',
-    'Schneider National', 'Landstar System', 'Old Dominion Freight Line', 'TFI International',
-    'Estes Express Lines', 'ArcBest', 'Werner Enterprises', 'Saia LTL Freight'
+    'Bhonsle Transport', 'Gupta Roadways', 'Krishna Logistics', 'Verma Transport',
+    'Real Cargo', 'Balaji Logistics', 'Maharaja Freight', 'Tirupati Carriers'
   ];
   const createdCustomers = [];
   for (let i=0; i<customerNames.length; i++) {
+    const gstin = `27AAAAA000${i}A1Z5`;
     const c = await prisma.customer.upsert({
       where: { id: `demo-cust-${i}` },
-      update: { name: customerNames[i] },
+      update: { name: customerNames[i], taxId: gstin },
       create: {
         id: `demo-cust-${i}`,
         companyId: company.id,
         name: customerNames[i],
+        taxId: gstin,
         status: 'ACTIVE'
       }
     });
     createdCustomers.push(c);
   }
 
-  // 20 Loads
+  // Accounts (Financial Integrity)
+  const bankAcc = await prisma.account.upsert({
+    where: { companyId_code: { companyId: company.id, code: 'BANK-01' } },
+    update: {},
+    create: { id: 'demo-acc-bank', companyId: company.id, name: 'HDFC Current Account', code: 'BANK-01', type: 'ASSET' }
+  });
+  const arAcc = await prisma.account.upsert({
+    where: { companyId_code: { companyId: company.id, code: 'AR-01' } },
+    update: {},
+    create: { id: 'demo-acc-ar', companyId: company.id, name: 'Accounts Receivable', code: 'AR-01', type: 'ASSET' }
+  });
+
+  // 25 Loads (Indian Corridors)
   const createdLoads = [];
   const statuses = ['PENDING', 'PLANNED', 'DISPATCHED', 'IN_TRANSIT', 'DELIVERED'];
   const routes = [
-    { o: 'Chicago, IL', d: 'Atlanta, GA' },
-    { o: 'Dallas, TX', d: 'Houston, TX' },
-    { o: 'Los Angeles, CA', d: 'Phoenix, AZ' },
-    { o: 'Denver, CO', d: 'Salt Lake City, UT' },
-    { o: 'Seattle, WA', d: 'Portland, OR' }
+    { o: 'Mumbai, MH', d: 'Delhi, DL' },
+    { o: 'Pune, MH', d: 'Nagpur, MH' },
+    { o: 'Ahmedabad, GJ', d: 'Surat, GJ' },
+    { o: 'Delhi, DL', d: 'Jaipur, RJ' },
+    { o: 'Bengaluru, KA', d: 'Chennai, TN' }
   ];
-  for (let i=0; i<20; i++) {
+  for (let i=0; i<25; i++) {
     const route = routes[i % 5];
     const [oCity, oState] = route.o.split(', ');
     const [dCity, dState] = route.d.split(', ');
+    const rate = 15000 + (i * 4000); // 15k to 1.1L
     
     const l = await prisma.load.upsert({
       where: { id: `demo-load-${i}` },
@@ -168,32 +167,34 @@ async function main() {
         originCity: oCity,
         originState: oState,
         destinationCity: dCity,
-        destinationState: dState
+        destinationState: dState,
+        rate: rate,
       },
       create: {
         id: `demo-load-${i}`,
         companyId: company.id,
-        customerId: createdCustomers[i % 12].id,
+        customerId: createdCustomers[i % 8].id,
         referenceNumber: `LD-2026-${1000 + i}`,
-        originAddress: '100 Distribution Way',
+        originAddress: 'MIDC Industrial Area',
         originCity: oCity,
         originState: oState,
-        destinationAddress: '200 Logistics Blvd',
+        destinationAddress: 'Transport Nagar',
         destinationCity: dCity,
         destinationState: dState,
         pickupDate: new Date(),
-        deliveryDate: new Date(Date.now() + 86400000 * 2),
-        rate: 1500 + (i * 100),
+        deliveryDate: new Date(Date.now() + 86400000 * 3),
+        rate: rate,
+        weight: 15000 + (i * 100),
         status: statuses[i % 5]
       }
     });
     createdLoads.push(l);
   }
 
-  // 10 Trips
+  // 15 Trips
   const createdTrips = [];
   const tripStatuses = ['PLANNED', 'DISPATCHED', 'IN_TRANSIT', 'COMPLETED'];
-  for (let i=0; i<10; i++) {
+  for (let i=0; i<15; i++) {
     const t = await prisma.trip.upsert({
       where: { tripNumber: `TRP-2026-${1000 + i}` },
       update: {},
@@ -201,47 +202,156 @@ async function main() {
         id: `demo-trip-${i}`,
         companyId: company.id,
         tripNumber: `TRP-2026-${1000 + i}`,
-        driverId: createdDrivers[i % 6].id,
-        vehicleId: createdVehicles[i % 8].id,
-        trailerId: createdTrailers[i % 3].id,
+        driverId: createdDrivers[i % 8].id,
+        vehicleId: createdVehicles[i % 15].id,
         status: tripStatuses[i % 4],
         startDate: new Date(),
       }
     });
     createdTrips.push(t);
 
-    // Link trip to load if possible
+    // Link trip to load
     await prisma.load.update({
       where: { id: createdLoads[i].id },
       data: { tripId: t.id }
     });
   }
 
-  // 15 Invoices
-  const invStatuses = ['DRAFT', 'SENT', 'PAID', 'OVERDUE'];
-  for (let i=0; i<15; i++) {
-    const invDate = new Date();
-    if (invStatuses[i % 4] === 'OVERDUE') invDate.setDate(invDate.getDate() - 30);
-    
-    await prisma.invoice.upsert({
-      where: { companyId_invoiceNumber: { companyId: company.id, invoiceNumber: `INV-2026-${1000 + i}` } },
+  // Sequence for LR
+  const year = '25-26';
+  await prisma.lrSequence.upsert({
+    where: { companyId_financialYear: { companyId: company.id, financialYear: year } },
+    update: {},
+    create: {
+      companyId: company.id,
+      financialYear: year,
+      lastNumber: 25
+    }
+  });
+
+  // Lorry Receipts for first 20 loads
+  for (let i=0; i<20; i++) {
+    const load = createdLoads[i];
+    const lrNumber = `PL/${year}/${String(i+1).padStart(5,'0')}`;
+    const cust = createdCustomers[i % 8];
+
+    await prisma.lorryReceipt.upsert({
+      where: { companyId_lrNumber: { companyId: company.id, lrNumber } },
       update: {},
       create: {
-        id: `demo-inv-${i}`,
+        id: `demo-lr-${i}`,
         companyId: company.id,
-        customerId: createdCustomers[i % 12].id,
-        loadId: createdLoads[i].id,
-        invoiceNumber: `INV-2026-${1000 + i}`,
-        amount: 1500 + (i * 100),
-        status: invStatuses[i % 4],
-        dueDate: invDate
+        loadId: load.id,
+        lrNumber,
+        consignorName: cust.name,
+        consignorGstin: cust.taxId,
+        consigneeName: 'Reliance Retail',
+        consigneeGstin: '27AAAAA0009A1Z5',
+        fromStation: load.originCity,
+        toStation: load.destinationCity,
+        vehicleId: createdVehicles[i % 15].id,
+        vehicleNumber: createdVehicles[i % 15].licensePlate,
+        goodsDescription: 'FMCG Goods',
+        packagesCount: 150,
+        packingType: 'Cartons',
+        actualWeightKg: load.weight,
+        chargedWeightKg: load.weight,
+        freightAmount: load.rate,
+        hamaliCharges: 0,
+        otherCharges: 0,
+        gstAmount: 0,
+        totalAmount: load.rate,
+        paymentType: 'TOPAY',
+        status: load.status === 'DELIVERED' ? 'DELIVERED' : 'ISSUED'
       }
     });
   }
 
-  // VehicleLocation history for 3 vehicles
-  const baseLat = 41.8781; // Chicago
-  const baseLng = -87.6298;
+  // 20 Invoices
+  const invStatuses = ['DRAFT', 'SENT', 'PAID', 'OVERDUE', 'PAID']; // skew towards paid
+  for (let i=0; i<20; i++) {
+    const load = createdLoads[i];
+    const invDate = new Date();
+    const st = invStatuses[i % 5];
+    if (st === 'OVERDUE') invDate.setDate(invDate.getDate() - 30);
+    
+    const inv = await prisma.invoice.upsert({
+      where: { companyId_invoiceNumber: { companyId: company.id, invoiceNumber: `INV-2026-${1000 + i}` } },
+      update: { amount: load.rate, balanceDue: st === 'PAID' ? 0 : load.rate, status: st },
+      create: {
+        id: `demo-inv-${i}`,
+        companyId: company.id,
+        customerId: load.customerId,
+        loadId: load.id,
+        invoiceNumber: `INV-2026-${1000 + i}`,
+        amount: load.rate,
+        balanceDue: st === 'PAID' ? 0 : load.rate,
+        amountPaid: st === 'PAID' ? load.rate : 0,
+        status: st,
+        dueDate: invDate
+      }
+    });
+
+    if (st === 'PAID') {
+      const p = await prisma.payment.upsert({
+        where: { id: `demo-pay-${i}` },
+        update: { amount: load.rate },
+        create: {
+          id: `demo-pay-${i}`,
+          companyId: company.id,
+          invoiceId: inv.id,
+          amount: load.rate,
+          method: 'NEFT',
+          paymentDate: new Date(),
+          referenceNumber: `UTR-${100000+i}`
+        }
+      });
+
+      // Journal Entry
+      const je = await prisma.journalEntry.upsert({
+        where: { id: `demo-je-${i}` },
+        update: {},
+        create: {
+          id: `demo-je-${i}`,
+          companyId: company.id,
+          referenceType: 'PAYMENT',
+          referenceId: p.id,
+          description: `Payment received for ${inv.invoiceNumber}`,
+          status: 'POSTED'
+        }
+      });
+
+      await prisma.journalLine.upsert({
+        where: { id: `demo-jl-dr-${i}` },
+        update: { debit: load.rate },
+        create: {
+          id: `demo-jl-dr-${i}`,
+          companyId: company.id,
+          entryId: je.id,
+          accountId: bankAcc.id,
+          debit: load.rate,
+          credit: 0
+        }
+      });
+
+      await prisma.journalLine.upsert({
+        where: { id: `demo-jl-cr-${i}` },
+        update: { credit: load.rate },
+        create: {
+          id: `demo-jl-cr-${i}`,
+          companyId: company.id,
+          entryId: je.id,
+          accountId: arAcc.id,
+          debit: 0,
+          credit: load.rate
+        }
+      });
+    }
+  }
+
+  // VehicleLocation history (Mumbai, Pune approx)
+  const baseLat = 19.0760; // Mumbai
+  const baseLng = 72.8777;
   for (let v=0; v<3; v++) {
     for (let p=0; p<10; p++) {
       const locId = `demo-loc-${v}-${p}`;
@@ -249,8 +359,8 @@ async function main() {
       await prisma.vehicleLocation.upsert({
         where: { id_gpsTimestamp: { id: locId, gpsTimestamp: ts } },
         update: {
-          latitude: baseLat + (v * 0.1) + (p * 0.05),
-          longitude: baseLng - (v * 0.1) - (p * 0.05),
+          latitude: baseLat + (v * 0.1) + (p * 0.01),
+          longitude: baseLng + (v * 0.1) + (p * 0.01),
           gpsTimestamp: ts
         },
         create: {
@@ -259,11 +369,11 @@ async function main() {
           vehicleId: createdVehicles[v].id,
           provider: 'DEMO',
           providerVehicleId: `EXT-${createdVehicles[v].id}`,
-          latitude: baseLat + (v * 0.1) + (p * 0.05),
-          longitude: baseLng - (v * 0.1) - (p * 0.05),
-          speed: 55,
+          latitude: baseLat + (v * 0.1) + (p * 0.01),
+          longitude: baseLng + (v * 0.1) + (p * 0.01),
+          speed: 45,
           heading: 90,
-          gpsTimestamp: new Date(Date.now() - (10 - p) * 60000)
+          gpsTimestamp: ts
         }
       });
     }

@@ -163,6 +163,12 @@ describe('DriversService', () => {
 
       const result = await service.findOne('company-1', 'driver-1');
       expect(result).toEqual(expect.objectContaining(mockDriver));
+      // ── Strict tenant-isolation assertion ──────────────────────────────
+      expect(mockTx.driver.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', id: 'driver-1' }),
+        }),
+      );
     });
 
     it('should throw NotFoundException if driver not found', async () => {
@@ -190,6 +196,12 @@ describe('DriversService', () => {
       const result = await service.remove('company-1', 'driver-1');
       expect(result.status).toBe('TERMINATED');
       expect(result.deletedAt).toBeDefined();
+      // ── Strict tenant-isolation assertion ──────────────────────────────
+      expect(mockTx.driver.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', id: 'driver-1' }),
+        }),
+      );
     });
 
     it('should throw NotFoundException if driver not found', async () => {

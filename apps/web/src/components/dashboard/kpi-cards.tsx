@@ -1,14 +1,13 @@
 'use client';
 import { money, num } from '@/lib/format';
 
-import { KPIData } from '@/types/dashboard';
+import { TransporterMetrics } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowDown, ArrowUp, Minus, TrendingUp, Truck, AlertTriangle, Clock, IndianRupee } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Package, Truck, FileSpreadsheet, IndianRupee } from 'lucide-react';
 
 
 interface KPICardsProps {
-  data?: KPIData;
+  data?: TransporterMetrics;
   isLoading: boolean;
 }
 
@@ -16,7 +15,7 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
   if (isLoading || !data) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="animate-pulse glass border-slate-200/60 dark:border-slate-800/60">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded"></div>
@@ -24,7 +23,6 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
             </CardHeader>
             <CardContent>
               <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded mb-2"></div>
-              <div className="h-3 w-32 bg-slate-200 dark:bg-slate-800 rounded"></div>
             </CardContent>
           </Card>
         ))}
@@ -34,60 +32,24 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
 
   const kpis = [
     {
-      title: 'Fleet Health',
-      value: `${data.fleetUtilization.value}%`,
-      change: `${data.fleetUtilization.change}%`,
-      trend: data.fleetUtilization.trend,
-      icon: TrendingUp,
+      title: 'Total Bookings',
+      value: num(data.totalBookings),
+      icon: Package,
     },
     {
-      title: 'Daily Revenue',
-      value: `${money(data.revenue.value / 1000)}k`,
-      change: `${data.revenue.change}%`,
-      trend: data.revenue.trend,
+      title: "Today's Billing",
+      value: money(data.revenueToday),
       icon: IndianRupee,
     },
     {
-      title: 'Profit Margin',
-      value: `${data.profitMargin.value}%`,
-      change: `${data.profitMargin.change}%`,
-      trend: data.profitMargin.trend,
-      icon: TrendingUp,
+      title: 'Outstanding',
+      value: money(data.outstanding),
+      icon: FileSpreadsheet,
     },
     {
-      title: 'Fuel Efficiency',
-      value: `${data.fuelEfficiency.value} kmpl`,
-      change: `${data.fuelEfficiency.change}%`,
-      trend: data.fuelEfficiency.trend,
-      icon: Minus,
-    },
-    {
-      title: 'Active Shipments',
-      value: num(data.activeShipments.value),
-      change: `${data.activeShipments.change}%`,
-      trend: data.activeShipments.trend,
+      title: 'Active Vehicles',
+      value: num(data.activeVehicles),
       icon: Truck,
-    },
-    {
-      title: 'Delayed Shipments',
-      value: num(data.delayedShipments.value),
-      change: `${data.delayedShipments.change}%`,
-      trend: data.delayedShipments.trend, // If up, bad.
-      icon: AlertTriangle,
-    },
-    {
-      title: 'Average ETA',
-      value: `${data.averageEtaMinutes.value}m`,
-      change: `${data.averageEtaMinutes.change}m`,
-      trend: data.averageEtaMinutes.trend,
-      icon: Clock,
-    },
-    {
-      title: 'Revenue Today',
-      value: money(data.revenueToday.value),
-      change: `${data.revenueToday.change}%`,
-      trend: data.revenueToday.trend,
-      icon: IndianRupee,
     },
   ];
 
@@ -105,17 +67,6 @@ export function KPICards({ data, isLoading }: KPICardsProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-slate-900 dark:text-white">{kpi.value}</div>
-            <p className="text-xs flex items-center mt-1">
-              {kpi.trend === 'up' && <ArrowUp className="h-3 w-3 mr-1 text-green-500" />}
-              {kpi.trend === 'down' && <ArrowDown className="h-3 w-3 mr-1 text-red-500" />}
-              {kpi.trend === 'neutral' && <Minus className="h-3 w-3 mr-1 text-gray-500" />}
-              <span className={cn(
-                kpi.trend === 'up' ? 'text-green-600 dark:text-green-500 font-medium' : 
-                kpi.trend === 'down' ? 'text-red-600 dark:text-red-500 font-medium' : 'text-slate-500 font-medium'
-              )}>
-                {kpi.change}
-              </span>
-            </p>
           </CardContent>
         </Card>
       ))}

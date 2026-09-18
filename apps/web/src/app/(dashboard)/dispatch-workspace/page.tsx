@@ -1,5 +1,6 @@
+'use client';
+
 import { useState } from 'react';
-"use client";
 import { KanbanDispatchBoard } from './_components/KanbanDispatchBoard';
 import { UniversalSearch } from './_components/UniversalSearch';
 import { TripWorkspacePanel } from './_components/TripWorkspacePanel';

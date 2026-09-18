@@ -98,6 +98,23 @@ describe('DispatchService', () => {
       expect(result.metrics.pendingLoadsCount).toBe(1);
       expect(result.metrics.availableDriversCount).toBe(1);
       expect(result.metrics.activeTripsCount).toBe(1);
+
+      // ── Strict tenant-isolation assertions ──────────────────────────────
+      expect(mockTx.load.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1' }),
+        }),
+      );
+      expect(mockTx.driver.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1' }),
+        }),
+      );
+      expect(mockTx.trip.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1' }),
+        }),
+      );
     });
   });
 

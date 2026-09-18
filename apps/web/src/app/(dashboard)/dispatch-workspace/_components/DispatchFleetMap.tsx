@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
 'use client';
+
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, PathLayer } from '@deck.gl/layers';

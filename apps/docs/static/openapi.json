@@ -852,6 +852,20 @@
         ]
       }
     },
+    "/api/v1/intelligence/dispatch/recommendations": {
+      "get": {
+        "operationId": "DispatchAiController_getOptimalAssignments_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "DispatchAi"
+        ]
+      }
+    },
     "/api/v1/intelligence/drivers/{id}/score": {
       "get": {
         "operationId": "DriverIntelligenceController_getDriverScore_v1",
@@ -20938,6 +20952,55 @@
           }
         ],
         "summary": "Update LR status (ISSUED→IN_TRANSIT→DELIVERED)",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/lorry-receipts/{id}/eway-bill": {
+      "patch": {
+        "operationId": "LorryReceiptsController_updateEwayBill_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Save manually entered E-Way Bill number on an LR (manual entry only — NIC portal integration not implemented)",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
+    "/api/v1/lorry-receipts/summary/gst": {
+      "get": {
+        "operationId": "LorryReceiptsController_gstSummary_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "GST summary — total GST collected across all LRs for this company (computed from stored LR data, not GST portal)",
         "tags": [
           "lorry-receipts"
         ]

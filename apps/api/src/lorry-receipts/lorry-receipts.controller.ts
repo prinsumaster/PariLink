@@ -98,4 +98,24 @@ export class LorryReceiptsController {
   ) {
     return this.lorryReceiptsService.updateStatus(user.companyId, id, dto);
   }
+
+  @Patch(':id/eway-bill')
+  @RequirePermissions('documents:update')
+  @ApiOperation({
+    summary: 'Save manually entered E-Way Bill number on an LR (manual entry only — NIC portal integration not implemented)',
+  })
+  updateEwayBill(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: { ewayBillNumber: string },
+  ) {
+    return this.lorryReceiptsService.updateEwayBill(user.companyId, id, body.ewayBillNumber ?? '');
+  }
+
+  @Get('summary/gst')
+  @RequirePermissions('documents:read')
+  @ApiOperation({ summary: 'GST summary — total GST collected across all LRs for this company (computed from stored LR data, not GST portal)' })
+  gstSummary(@GetUser() user: AuthenticatedUser) {
+    return this.lorryReceiptsService.gstSummary(user.companyId);
+  }
 }

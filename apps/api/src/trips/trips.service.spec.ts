@@ -190,7 +190,10 @@ describe('TripsService', () => {
       const result = await service.remove('company-1', 'trip-1');
 
       expect(mockTx.load.updateMany).toHaveBeenCalledWith(
-        expect.objectContaining({ data: { tripId: null, status: 'PENDING' } }),
+        expect.objectContaining({
+          where: expect.objectContaining({ companyId: 'company-1', tripId: 'trip-1' }),
+          data: { tripId: null, status: 'PENDING' },
+        }),
       );
       expect(result.status).toBe('CANCELLED');
     });

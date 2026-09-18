@@ -1,16 +1,26 @@
-export interface KPIData {
-  activeShipments: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  deliveriesToday: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  fleetUtilization: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  delayedShipments: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  revenue: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  profitMargin: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  fuelEfficiency: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  maintenanceAlerts: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  vehiclesOnline: { value: number; total: number };
-  driversOnline: { value: number; total: number };
-  averageEtaMinutes: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
-  revenueToday: { value: number; change: number; trend: 'up' | 'down' | 'neutral' };
+export interface TransporterMetrics {
+  totalBookings: number;
+  revenueToday: number;
+  outstanding: number;
+  activeVehicles: number;
+  topClients: TopClient[];
+  recentBookings: RecentBooking[];
+}
+
+export interface TopClient {
+  id: string;
+  name: string;
+  amount: number;
+}
+
+export interface RecentBooking {
+  id: string;
+  lrNumber: string | null;
+  originCity: string;
+  destinationCity: string;
+  rate: number;
+  status: string;
+  createdAt: string;
 }
 
 export interface LiveVehicle {

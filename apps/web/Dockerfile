@@ -18,7 +18,7 @@ COPY apps/api/package.json ./apps/api/package.json
 COPY apps/mobile/package.json ./apps/mobile/package.json
 COPY packages/plugin-sdk/package.json ./packages/plugin-sdk/package.json
 # Install all workspace dependencies exactly as host
-RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+RUN npm ci --legacy-peer-deps
 
 # Builder Stage
 FROM base AS builder
@@ -29,7 +29,7 @@ COPY --from=deps /app/packages/plugin-sdk/node_module[s] ./packages/plugin-sdk/n
 # Copy plugin-sdk source
 COPY packages/plugin-sdk ./packages/plugin-sdk
 # Build plugin-sdk first
-RUN cd packages/plugin-sdk && npx tsc || true
+RUN cd packages/plugin-sdk && npx tsc
 # Copy web app source
 COPY apps/web ./apps/web
 # Build Next.js

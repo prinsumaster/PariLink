@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
 'use client';
+
+import { useMemo } from 'react';
 import Map from 'react-map-gl/maplibre';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer } from '@deck.gl/layers';
