@@ -36,6 +36,7 @@ import {
   WhatsAppConnector,
   PaymentGatewayConnector,
 } from './connectors/logistics.connectors';
+import { MapboxConnector } from './connectors/mapbox.connector';
 
 // Hub & Developer Platform Services and Controllers
 import { EnterpriseIntegrationHubService } from './hub/enterprise-integration-hub.service';
@@ -95,6 +96,7 @@ import { DeveloperPlatformController } from './developer/developer-platform.cont
     EmailGatewayConnector,
     WhatsAppConnector,
     PaymentGatewayConnector,
+    MapboxConnector,
   ],
   exports: [
     ConnectorRegistryService,
@@ -132,6 +134,7 @@ export class IntegrationModule implements OnModuleInit {
     private readonly email: EmailGatewayConnector,
     private readonly whatsapp: WhatsAppConnector,
     private readonly payments: PaymentGatewayConnector,
+    private readonly mapbox: MapboxConnector,
   ) {}
 
   onModuleInit() {
@@ -154,5 +157,6 @@ export class IntegrationModule implements OnModuleInit {
     this.registry.registerConnector(this.email);
     this.registry.registerConnector(this.whatsapp);
     this.registry.registerConnector(this.payments);
+    this.registry.registerConnector(this.mapbox);
   }
 }

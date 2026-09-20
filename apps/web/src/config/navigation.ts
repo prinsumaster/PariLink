@@ -14,6 +14,22 @@ import {
   ShieldCheck,
   FolderOpen,
   CheckCircle,
+  MessageSquare,
+  Bot,
+  Download,
+  Zap,
+  Brain,
+  FileCode2,
+  Server,
+  LineChart,
+  DollarSign,
+  Store,
+  Crown,
+  Building2,
+  Monitor,
+  GitBranch,
+  AlertTriangle,
+  DatabaseBackup,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -31,7 +47,6 @@ export interface NavGroup {
 }
 
 export const navigationConfig: NavGroup[] = [
-  /* HIDING LogOS Workspace and Enterprise AI Platform for transporter persona
   {
     title: 'LogOS Workspace',
     items: [
@@ -40,7 +55,6 @@ export const navigationConfig: NavGroup[] = [
         href: '/command-center',
         icon: LayoutDashboard,
       },
-
       {
         title: 'Messaging',
         href: '/chat',
@@ -224,13 +238,11 @@ export const navigationConfig: NavGroup[] = [
   {
     title: 'Platform',
     items: [
-      /* HIDING App Marketplace for transporter persona
       {
         title: 'App Marketplace',
         href: '/admin/marketplace',
         icon: Store,
       },
-      */
       {
         title: 'Admin Console',
         href: '/admin',
@@ -249,7 +261,6 @@ export const navigationConfig: NavGroup[] = [
       },
     ],
   },
-  /* HIDING SRE & Observability for transporter persona
   {
     title: 'SRE & Observability',
     items: [
@@ -281,5 +292,4 @@ export const navigationConfig: NavGroup[] = [
       },
     ],
   },
-  */
 ];
