@@ -1,0 +1,354 @@
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	﻿2026-09-21T12:20:18.3445792Z ##[group]Run aquasecurity/trivy-action@master
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446018Z with:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446151Z   scan-type: fs
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446277Z   trivyignores: .trivyignore
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446417Z   ignore-unfixed: true
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446549Z   format: sarif
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446671Z   output: trivy-results.sarif
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446813Z   severity: CRITICAL,HIGH
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3446942Z   exit-code: 1
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447056Z   scan-ref: .
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447172Z   vuln-type: os,library
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447346Z   cache-dir: /home/runner/work/PariLink/PariLink/.cache/trivy
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447538Z   list-all-pkgs: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447663Z   version: v0.74.0
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447783Z   cache: true
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3447905Z   skip-setup-trivy: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3449679Z   token-setup-trivy: ***
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3449815Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3488561Z ##[start-action display=Install Trivy;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3577083Z ##[group]Run aquasecurity/setup-trivy@81e514348e19b6112ce2a7e3ecbafe19c1e1f567
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3577329Z with:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3577445Z   version: v0.74.0
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3577564Z   cache: true
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3579318Z   token: ***
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3579468Z   github-server-url: https://github.com
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3579649Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3586790Z ##[start-action display=Binary dir;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.binary-dir]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3606328Z ##[group]Run # `path` is passed via env to avoid script injection. As a result, shell
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3606694Z ^[[36;1m# `path` is passed via env to avoid script injection. As a result, shell^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3606991Z ^[[36;1m# variables (e.g. $HOME) and `~` inside it are NOT expanded. We validate it to:^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3607281Z ^[[36;1m#   1. fail early with a clear message instead of silently creating a directory^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3607523Z ^[[36;1m#      literally named `$HOME`;^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3607737Z ^[[36;1m#   2. reject newlines, which could otherwise inject extra lines into the^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3608004Z ^[[36;1m#      `$GITHUB_OUTPUT` file (and thus poison the `dir` output).^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3608332Z ^[[36;1mcase "${INPUT_PATH}" in^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3608476Z ^[[36;1m  *'$'* | *'~'*)^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3608981Z ^[[36;1m    echo "::error::The 'path' input must be a literal path. Shell variables (e.g. \$HOME, \$USER) and '~' are not expanded. Use a GitHub expression that is resolved before the step runs, a relative path, or leave 'path' empty to use the default (\$HOME/.local/bin)." >&2^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3609496Z ^[[36;1m    exit 1^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3609617Z ^[[36;1m    ;;^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3609731Z ^[[36;1m  *[$'\n\r']*)^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3609926Z ^[[36;1m    echo "::error::The 'path' input must not contain newline characters." >&2^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3610139Z ^[[36;1m    exit 1^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3633480Z ^[[36;1m    ;;^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3633652Z ^[[36;1mesac^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3634057Z ^[[36;1m# Default path. Keep `$HOME/.local/bin` in sync with the `path` input description above.^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3634376Z ^[[36;1mecho "dir=${INPUT_PATH:-$HOME/.local/bin}/trivy-bin" >> "$GITHUB_OUTPUT"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3669539Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3669748Z env:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3669861Z   INPUT_PATH: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.3669978Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4109169Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.binary-dir;outcome=success;conclusion=success;duration_ms=52]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4112336Z ##[start-action display=Check the version for caching;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4116877Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4118543Z ##[start-action display=Restore Trivy binary from cache;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.cache]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151118Z ##[group]Run actions/cache/restore@9255dc7a253b0ccc959486e2bca901246202afeb
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151350Z with:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151480Z   path: /home/runner/.local/bin/trivy-bin
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151650Z   key: trivy-binary-v0.74.0-Linux-X64
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151812Z   enableCrossOsArchive: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4151959Z   fail-on-cache-miss: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4152125Z   lookup-only: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.4152287Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:18.6147301Z Cache hit for: trivy-binary-v0.74.0-Linux-X64
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.5296743Z Received 46188620 of 46188620 (100.0%), 60.5 MBs/sec
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.5297188Z Cache Size: ~44 MB (46188620 B)
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.5323965Z [command]/usr/bin/tar -xf /home/runner/work/_temp/59a8c18f-9e2f-476c-b1a6-7e8cac6ee065/cache.tzst -P -C /home/runner/work/PariLink/PariLink --use-compress-program unzstd
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.6953733Z Cache restored successfully
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7026578Z Cache restored from key: trivy-binary-v0.74.0-Linux-X64
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7124167Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.cache;outcome=success;conclusion=success;duration_ms=1300]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7126370Z ##[start-action display=Checkout install script;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__actions_checkout]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7130436Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__actions_checkout;outcome=skipped;conclusion=skipped;duration_ms=0]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7132286Z ##[start-action display=Install Trivy;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run_2]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7134623Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7135946Z ##[start-action display=Add Trivy binary to $GITHUB_PATH;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run_3]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7146115Z ##[group]Run echo "${BINARY_DIR}" >> "$GITHUB_PATH"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7146338Z ^[[36;1mecho "${BINARY_DIR}" >> "$GITHUB_PATH"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7175988Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7176175Z env:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7176305Z   BINARY_DIR: /home/runner/.local/bin/trivy-bin
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7176469Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7225921Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__run_3;outcome=success;conclusion=success;duration_ms=8]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7227287Z ##[start-action display=Save Trivy binary to cache;id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__actions_cache]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7231360Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7239147Z ##[end-action id=__aquasecurity_trivy-action.__aquasecurity_setup-trivy;outcome=success;conclusion=success;duration_ms=1375]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7240483Z ##[start-action display=Get current date;id=__aquasecurity_trivy-action.date]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7249639Z ##[group]Run echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7249874Z ^[[36;1mecho "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7277245Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7277436Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7331974Z ##[end-action id=__aquasecurity_trivy-action.date;outcome=success;conclusion=success;duration_ms=9]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7333181Z ##[start-action display=Restore DB from cache;id=__aquasecurity_trivy-action.__actions_cache]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7354302Z ##[group]Run actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7354499Z with:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7354644Z   path: /home/runner/work/PariLink/PariLink/.cache/trivy
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7354823Z   key: cache-trivy-2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355102Z   restore-keys: cache-trivy-
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355240Z   enableCrossOsArchive: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355383Z   fail-on-cache-miss: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355511Z   lookup-only: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355628Z   save-always: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.7355748Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9478074Z Cache not found for input keys: cache-trivy-2026-09-21, cache-trivy-
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9537646Z ##[end-action id=__aquasecurity_trivy-action.__actions_cache;outcome=success;conclusion=success;duration_ms=220]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9540949Z ##[start-action display=Set GitHub Path;id=__aquasecurity_trivy-action.__run]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9552561Z ##[group]Run echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9552794Z ^[[36;1mecho "$GITHUB_ACTION_PATH" >> $GITHUB_PATH^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9582591Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9582766Z env:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9582948Z   GITHUB_ACTION_PATH: /home/runner/work/_actions/aquasecurity/trivy-action/master
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9583179Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9632563Z ##[end-action id=__aquasecurity_trivy-action.__run;outcome=success;conclusion=success;duration_ms=9]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9633911Z ##[start-action display=Clear Trivy Envs file;id=__aquasecurity_trivy-action.__run_2]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9643015Z ##[group]Run rm -f trivy_envs.txt
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9643191Z ^[[36;1mrm -f trivy_envs.txt^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9643416Z ^[[36;1mtouch trivy_envs.txt^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9668344Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9668610Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9731666Z ##[end-action id=__aquasecurity_trivy-action.__run_2;outcome=success;conclusion=success;duration_ms=9]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9734574Z ##[start-action display=Set Trivy environment variables;id=__aquasecurity_trivy-action.__run_3]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9744179Z ##[group]Run # Note: There is currently no way to distinguish between undefined variables and empty strings in GitHub Actions.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9744656Z ^[[36;1m# Note: There is currently no way to distinguish between undefined variables and empty strings in GitHub Actions.^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9745011Z ^[[36;1m# This limitation affects how we handle default values and empty inputs.^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9745303Z ^[[36;1m# For more information, see: https://github.com/actions/runner/issues/924^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9745513Z ^[[36;1m^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9745708Z ^[[36;1m# The following logic implements the configuration priority described in the README:^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9745937Z ^[[36;1m#^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746045Z ^[[36;1m# Inputs^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746168Z ^[[36;1m# Environment Variables^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746308Z ^[[36;1m# Config File^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746432Z ^[[36;1m# Defaults^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746544Z ^[[36;1m#^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9746765Z ^[[36;1m# As noted above defaults are awkward to handle as GitHub Actions will inject those values as the input^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9747121Z ^[[36;1m# if the caller doesn't provide them, thus if the input matches the default we don't set it as we^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9747607Z ^[[36;1m# can't tell the difference.  Plus if we did set it when it was the default value then it could potentially^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9747994Z ^[[36;1m# override an external environment variable, or something in the callers configuration file, which then wouldn't^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9748471Z ^[[36;1m# match the configuration priority that is documented.^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9748660Z ^[[36;1mset_env_var_if_provided() {^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9748807Z ^[[36;1m  local var_name="$1"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9748947Z ^[[36;1m  local input_value="$2"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9749092Z ^[[36;1m  local default_value="$3"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9749229Z ^[[36;1m^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9749392Z ^[[36;1m  if [ -n "$input_value" ] && [ "$input_value" != "$default_value" ]; then^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9749647Z ^[[36;1m    # If action was provided with explicit input by the caller set that^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750021Z ^[[36;1m    # Use printf %q to safely escape special characters and prevent command injection^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750302Z ^[[36;1m    printf 'export %s=%q\n' "$var_name" "$input_value" >> trivy_envs.txt^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750496Z ^[[36;1m  fi^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750601Z ^[[36;1m}^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750704Z ^[[36;1m^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9750859Z ^[[36;1m# Set environment variables, handling those with default values^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9751169Z ^[[36;1m# cf. https://aquasecurity.github.io/trivy/latest/docs/configuration/#environment-variables^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9751457Z ^[[36;1mset_env_var_if_provided "TRIVY_INPUT" "$INPUT_INPUT" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9751688Z ^[[36;1mset_env_var_if_provided "TRIVY_EXIT_CODE" "$INPUT_EXIT_CODE" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9751948Z ^[[36;1mset_env_var_if_provided "TRIVY_IGNORE_UNFIXED" "$INPUT_IGNORE_UNFIXED" "false"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9752225Z ^[[36;1mset_env_var_if_provided "TRIVY_PKG_TYPES" "$INPUT_VULN_TYPE" "os,library"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9752537Z ^[[36;1mset_env_var_if_provided "TRIVY_SEVERITY" "$INPUT_SEVERITY" "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9752824Z ^[[36;1mset_env_var_if_provided "TRIVY_FORMAT" "$INPUT_FORMAT" "table"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9753055Z ^[[36;1mset_env_var_if_provided "TRIVY_TEMPLATE" "$INPUT_TEMPLATE" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9753282Z ^[[36;1mset_env_var_if_provided "TRIVY_OUTPUT" "$INPUT_OUTPUT" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9753510Z ^[[36;1mset_env_var_if_provided "TRIVY_SKIP_DIRS" "$INPUT_SKIP_DIRS" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9753749Z ^[[36;1mset_env_var_if_provided "TRIVY_SKIP_FILES" "$INPUT_SKIP_FILES" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9753983Z ^[[36;1mset_env_var_if_provided "TRIVY_TIMEOUT" "$INPUT_TIMEOUT" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9754229Z ^[[36;1mset_env_var_if_provided "TRIVY_IGNORE_POLICY" "$INPUT_IGNORE_POLICY" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9754476Z ^[[36;1mset_env_var_if_provided "TRIVY_QUIET" "$INPUT_HIDE_PROGRESS" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9754730Z ^[[36;1mset_env_var_if_provided "TRIVY_LIST_ALL_PKGS" "$INPUT_LIST_ALL_PKGS" "false"^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9754987Z ^[[36;1mset_env_var_if_provided "TRIVY_SCANNERS" "$INPUT_SCANNERS" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9755219Z ^[[36;1mset_env_var_if_provided "TRIVY_CONFIG" "$INPUT_TRIVY_CONFIG" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9755446Z ^[[36;1mset_env_var_if_provided "TRIVY_TF_VARS" "$INPUT_TF_VARS" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9755683Z ^[[36;1mset_env_var_if_provided "TRIVY_DOCKER_HOST" "$INPUT_DOCKER_HOST" ""^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781043Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781219Z env:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781325Z   INPUT_INPUT: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781440Z   INPUT_EXIT_CODE: 1
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781567Z   INPUT_IGNORE_UNFIXED: true
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781703Z   INPUT_VULN_TYPE: os,library
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781839Z   INPUT_SEVERITY: CRITICAL,HIGH
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9781976Z   INPUT_FORMAT: sarif
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782098Z   INPUT_TEMPLATE: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782226Z   INPUT_OUTPUT: trivy-results.sarif
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782368Z   INPUT_SKIP_DIRS: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782583Z   INPUT_SKIP_FILES: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782700Z   INPUT_TIMEOUT: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782813Z   INPUT_IGNORE_POLICY: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9782935Z   INPUT_HIDE_PROGRESS: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783057Z   INPUT_LIST_ALL_PKGS: false
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783184Z   INPUT_SCANNERS: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783298Z   INPUT_TRIVY_CONFIG: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783415Z   INPUT_TF_VARS: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783528Z   INPUT_DOCKER_HOST: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9783645Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9830026Z ##[end-action id=__aquasecurity_trivy-action.__run_3;outcome=success;conclusion=success;duration_ms=9]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9832016Z ##[start-action display=Run Trivy;id=__aquasecurity_trivy-action.__run_4]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9840678Z ##[group]Run entrypoint.sh
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9840831Z ^[[36;1mentrypoint.sh^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9865998Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866287Z env:
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866397Z   INPUT_SCAN_TYPE: fs
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866523Z   INPUT_IMAGE_REF: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866639Z   INPUT_SCAN_REF: .
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866763Z   INPUT_TRIVYIGNORES: .trivyignore
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9866906Z   INPUT_GITHUB_PAT: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9867034Z   INPUT_LIMIT_SEVERITIES_FOR_SARIF: 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9867227Z   TRIVY_CACHE_DIR: /home/runner/work/PariLink/PariLink/.cache/trivy
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9867420Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9929738Z Found ignorefile '.trivyignore':
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9937015Z # Trivy Ignore File
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9937158Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9937233Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9938928Z # Reason: These Ruby vulnerabilities come from `node_modules/lunr-languages/build/stopwords-filter/Gemfile.lock`. They are build tools for a transitive dependency and are never executed at runtime or exposed to user input.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9939830Z CVE-2020-10663
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9940009Z CVE-2020-8130
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9940172Z CVE-2021-31799
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9940275Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9940344Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9940702Z # Reason: browserslist is a build tool for CSS compilation. It is not exposed to untrusted input at runtime.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9941099Z CVE-2026-73088
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9941283Z CVE-2026-73089
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9941405Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9941477Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9941857Z # Reason: js-yaml is used by tooling (Docusaurus) at build time to parse configurations, not untrusted user YAML at runtime.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942130Z CVE-2026-84375
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942195Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942241Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942493Z # Reason: base64-url is an indirect dependency and out of bounds read risk is negligible for this application's usage context.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942769Z GHSA-j4mr-9xw3-c9jx
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942932Z NSWG-ECO-434
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9942996Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9943045Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9943385Z # Reason: passport-saml is deprecated and has no fixed version for this CVE. Migration to @node-saml/passport-saml is required but cannot be done automatically via npm audit.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9943747Z CVE-2025-54419
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9943852Z CVE-2022-25648
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9943960Z CVE-2022-47318
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944064Z CVE-2013-0269
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944170Z CVE-2024-22363
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944274Z CVE-2023-30533
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944374Z CVE-2026-34043
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944483Z GHSA-5c6j-r48x-rmvq
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944594Z CVE-2024-7774
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944696Z CVE-2026-84375
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944800Z GHSA-j4mr-9xw3-c9jx
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9944914Z NSWG-ECO-434
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945016Z CVE-2025-54419
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945077Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945123Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945384Z # Reason: Accept risks for these dependencies as they are difficult to update without breaking changes, or used in safe contexts.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945673Z CVE-2025-68665
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9945929Z CVE-2026-45134
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946033Z CVE-2026-77037
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946135Z CVE-2026-77078
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946239Z CVE-2026-82333
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946344Z CVE-2026-75604
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946450Z GHSA-2xp9-vwfh-vxw4
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946566Z GHSA-rgj7-g3m4-5g8c
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946691Z CVE-2026-83604
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946803Z CVE-2026-83605
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9946905Z CVE-2026-83607
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947007Z CVE-2026-83608
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947112Z CVE-2026-83613
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947214Z CVE-2026-83614
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947331Z CVE-2026-83615
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947433Z CVE-2026-83616
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947540Z CVE-2026-83619
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947644Z GHSA-5p4m-2wfm-xmqj
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947755Z CVE-2026-59870
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947857Z CVE-2026-77037
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9947959Z CVE-2026-77078
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9948212Z CVE-2026-82333
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9948505Z CVE-2026-75604
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9948672Z GHSA-2xp9-vwfh-vxw4
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9948858Z GHSA-rgj7-g3m4-5g8c
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9948968Z 
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9949041Z # Date: 2026-09-21
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9949346Z # Reason: @xmldom/xmldom 0.7.13 is a transitive dependency of xml-crypto and xml-encryption
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9949933Z # (both pinned ^0.7.x by @node-saml/node-saml). We force the top-level dep to 0.9.12 via
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9950483Z # npm overrides, but the legacy 0.7.x lockfile entries remain and Trivy still flags them.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9950966Z # Real exposure is negligible: xmldom here processes SAML XML from trusted Identity Providers
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9951390Z # configured by system admins, not from untrusted user input.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9951595Z CVE-2026-34601
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9951703Z CVE-2026-41672
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9951812Z CVE-2026-41673
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9951916Z CVE-2026-41674
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9952022Z CVE-2026-41675
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9952151Z Building SARIF report with all severities
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:19.9952318Z Running Trivy with options: trivy fs .
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:20.0292517Z 2026-09-21T12:20:20Z	INFO	[vulndb] Need to update DB
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:20.0292948Z 2026-09-21T12:20:20Z	INFO	[vulndb] Downloading vulnerability DB...
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:20.0293256Z 2026-09-21T12:20:20Z	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:24.9525619Z 1.91 MiB / 114.87 MiB [->____________________________________________________________] 1.66% ? p/s ?10.14 MiB / 114.87 MiB [----->_______________________________________________________] 8.83% ? p/s ?20.83 MiB / 114.87 MiB [---------->_________________________________________________] 18.14% ? p/s ?31.86 MiB / 114.87 MiB [------------->_________________________________] 27.74% 49.99 MiB p/s ETA 1s43.58 MiB / 114.87 MiB [----------------->_____________________________] 37.94% 49.99 MiB p/s ETA 1s55.80 MiB / 114.87 MiB [---------------------->________________________] 48.58% 49.99 MiB p/s ETA 1s68.57 MiB / 114.87 MiB [---------------------------->__________________] 59.69% 50.71 MiB p/s ETA 0s81.81 MiB / 114.87 MiB [--------------------------------->_____________] 71.22% 50.71 MiB p/s ETA 0s95.46 MiB / 114.87 MiB [--------------------------------------->_______] 83.10% 50.71 MiB p/s ETA 0s111.02 MiB / 114.87 MiB [-------------------------------------------->_] 96.65% 52.00 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 52.00 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 52.00 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 49.06 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 49.06 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 49.06 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 45.90 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 45.90 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 45.90 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 42.93 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 42.93 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 42.93 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-------------------------------------------->] 100.00% 40.16 MiB p/s ETA 0s114.87 MiB / 114.87 MiB [-----------------------------------------------] 100.00% 26.66 MiB p/s 4.5s2026-09-21T12:20:24Z	INFO	[vulndb] Artifact successfully downloaded	repo="mirror.gcr.io/aquasec/trivy-db:2"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.0428405Z 2026-09-21T12:20:25Z	INFO	[vuln] Vulnerability scanning is enabled
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.0428950Z 2026-09-21T12:20:25Z	INFO	[secret] Secret scanning is enabled
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.0429770Z 2026-09-21T12:20:25Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.0430543Z 2026-09-21T12:20:25Z	INFO	[secret] Please see https://trivy.dev/docs/v0.74/guide/scanner/secret#recommendation for faster secret detection
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8250579Z 2026-09-21T12:20:25Z	INFO	[npm] Run "npm install" to collect the license information of packages	dir="apps/api/node_modules"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8339869Z 2026-09-21T12:20:25Z	INFO	[npm] Run "npm install" to collect the license information of packages	dir="connectors/loconav-connector/node_modules"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8340958Z 2026-09-21T12:20:25Z	INFO	[npm] Run "npm install" to collect the license information of packages	dir="evidence/loop-11.6/PL-runAsSystem/node_modules"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8341749Z 2026-09-21T12:20:25Z	INFO	[npm] Run "npm install" to collect the license information of packages	dir="node_modules"
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8927717Z 2026-09-21T12:20:25Z	INFO	Suppressing dependencies for development and testing. To display them, try the '--include-dev-deps' flag.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8946265Z 2026-09-21T12:20:25Z	INFO	Number of language-specific files	num=4
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.8946684Z 2026-09-21T12:20:25Z	INFO	[npm] Detecting vulnerabilities...
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9346060Z ##[error]Process completed with exit code 1.
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9352324Z ##[end-action id=__aquasecurity_trivy-action.__run_4;outcome=failure;conclusion=failure;duration_ms=5951]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9355008Z ##[start-action display=Remove Trivy Envs file;id=__aquasecurity_trivy-action.__run_5]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9366997Z ##[group]Run rm -f trivy_envs.txt
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9367193Z ^[[36;1mrm -f trivy_envs.txt^[[0m
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9397039Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:25.9397233Z ##[endgroup]
+Trivy Vulnerability Scanner	Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:26.0434354Z ##[end-action id=__aquasecurity_trivy-action.__run_5;outcome=success;conclusion=success;duration_ms=107]
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	﻿2026-09-21T12:20:26.0486148Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0486865Z ##[group]Run github/codeql-action/upload-sarif@v3
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0487036Z with:
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0487156Z   sarif_file: trivy-results.sarif
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0487330Z   checkout_path: /home/runner/work/PariLink/PariLink
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0488895Z   token: ***
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0489006Z   matrix: null
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0489134Z   wait-for-processing: true
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.0489273Z ##[endgroup]
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.1946068Z Job run UUID is d257caed-36ff-4eb7-a893-1e6c3eb0d38e.
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.1980009Z ##[warning]CodeQL Action v3 will be deprecated in December 2026. Please update all occurrences of the CodeQL Action in your workflow files to v4. For more information, see https://github.blog/changelog/2025-10-28-upcoming-deprecation-of-codeql-action-v3/
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.7591583Z Post-processing sarif files: ["trivy-results.sarif"]
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.7592257Z Validating trivy-results.sarif
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:26.7801576Z Adding fingerprints to SARIF file. See https://docs.github.com/en/code-security/reference/code-scanning/sarif-support-for-code-scanning#data-for-preventing-duplicated-alerts for more information.
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:27.0153072Z ##[group]Uploading code scanning results
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:27.0242030Z Uploading results
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:27.4209077Z Successfully uploaded results
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:27.4209574Z ##[endgroup]
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:27.4212930Z ##[group]Waiting for processing to finish
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:32.6772402Z Analysis upload status is complete.
+Trivy Vulnerability Scanner	Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:32.6773495Z ##[endgroup]
+Trivy Vulnerability Scanner	Post Upload Trivy scan results to GitHub Security tab	﻿2026-09-21T12:20:32.9020306Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Trivy Vulnerability Scanner	Post Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:32.9021016Z Post job cleanup.
+Trivy Vulnerability Scanner	Post Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:33.0817371Z ##[group]Uploading combined SARIF debug artifact
+Trivy Vulnerability Scanner	Post Upload Trivy scan results to GitHub Security tab	2026-09-21T12:20:33.0817958Z ##[endgroup]
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	﻿2026-09-21T12:20:33.1077876Z Post job cleanup.
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:33.1081473Z ##[start-action display=Restore DB from cache;id=__4f880c74-b0ae-4d9f-a73a-9579dfcf5520.__actions_cache]
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:33.1083097Z ##[end-action id=__4f880c74-b0ae-4d9f-a73a-9579dfcf5520.__actions_cache;outcome=skipped;conclusion=skipped;duration_ms=0]
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:33.1084195Z ##[start-action display=Install Trivy;id=__4f880c74-b0ae-4d9f-a73a-9579dfcf5520.__aquasecurity_setup-trivy]
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:33.1134409Z Post job cleanup.
+Trivy Vulnerability Scanner	Post Run Trivy vulnerability scanner in fs mode	2026-09-21T12:20:33.1137399Z ##[end-action id=__4f880c74-b0ae-4d9f-a73a-9579dfcf5520.__aquasecurity_setup-trivy;outcome=success;conclusion=success;duration_ms=5]
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	﻿2026-09-21T12:20:33.1173516Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1174190Z Post job cleanup.
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1756188Z [command]/usr/bin/git version
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1788679Z git version 2.55.0
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1815109Z Temporarily overriding HOME='/home/runner/work/_temp/a24860cd-5795-446c-91f4-6868ee54afa1' before making global git config changes
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1816021Z Adding repository directory to the temporary git global config as a safe directory
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1819115Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/PariLink/PariLink
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1851056Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.1878773Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2113474Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2156733Z http.https://github.com/.extraheader
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2159090Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2189139Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2398002Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Trivy Vulnerability Scanner	Post Run actions/checkout@v4	2026-09-21T12:20:33.2429807Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Trivy Vulnerability Scanner	Complete job	﻿2026-09-21T12:20:33.2730676Z Cleaning up orphan processes
+Trivy Vulnerability Scanner	Complete job	2026-09-21T12:20:33.2919232Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, github/codeql-action/upload-sarif@v3. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

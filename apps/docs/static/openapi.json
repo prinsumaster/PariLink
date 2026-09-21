@@ -4509,6 +4509,52 @@
         ]
       }
     },
+    "/api/v1/warehouse/{id}/zones": {
+      "post": {
+        "operationId": "WarehouseController_createZone_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
+    "/api/v1/warehouse/zones/{zoneId}/bins": {
+      "post": {
+        "operationId": "WarehouseController_createBin_v1",
+        "parameters": [
+          {
+            "name": "zoneId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Warehouse"
+        ]
+      }
+    },
     "/api/v1/warehouse/{id}/topology": {
       "get": {
         "operationId": "WarehouseController_getTopology_v1",
