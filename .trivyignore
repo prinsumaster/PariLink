@@ -78,7 +78,7 @@ CVE-2026-41675
 
 # Date: 2026-09-21
 # Reason: xlsx vulnerabilities (CVE-2024-XXXX etc.) have no patched version on npm (SheetJS no longer publishes there). However, our API endpoint at bulk-import.controller.ts is authenticated and only used by authorized tenants.
-# CVE-2024-41139
+CVE-2024-41139
 
 # Date: 2026-09-21
 # Reason: expr-eval is a transitive dependency of langchain. The vulnerabilities (CVE-2025-12735, CVE-2025-13204) involve prototype pollution and arbitrary code execution when evaluating untrusted mathematical expressions. We do not use langchain's math evaluation features with untrusted user input.
