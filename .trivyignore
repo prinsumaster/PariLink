@@ -19,3 +19,7 @@ CVE-2026-84375
 # Reason: base64-url is an indirect dependency and out of bounds read risk is negligible for this application's usage context.
 GHSA-j4mr-9xw3-c9jx
 NSWG-ECO-434
+
+# Date: 2026-09-21
+# Reason: passport-saml is deprecated and has no fixed version for this CVE. Migration to @node-saml/passport-saml is required but cannot be done automatically via npm audit.
+CVE-2025-54419
