@@ -47,19 +47,29 @@ export default function WarehouseMasterPage() {
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-5 space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-6 rounded-xl border border-border bg-card">
-            <Building2 className="h-8 w-8 text-blue-500 mb-4" />
-            <h3 className="font-semibold text-lg">Central Hub</h3>
-            <p className="text-sm text-muted-foreground">New York, NY</p>
-            <div className="mt-4 flex gap-2">
-              <span className="px-2 py-1 bg-muted rounded text-xs font-medium">3 Zones</span>
-              <span className="px-2 py-1 bg-muted rounded text-xs font-medium">120 Bins</span>
-            </div>
+        {isLoading ? (
+          <div className="text-sm text-muted-foreground">Loading warehouses...</div>
+        ) : !data?.data || data.data.length === 0 ? (
+          <EmptyState
+            icon={Building2}
+            title="No Warehouses Found"
+            description="You don't have any warehouses configured yet."
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {data.data.map((wh: any) => (
+              <div key={wh.id} className="p-6 rounded-xl border border-border bg-card">
+                <Building2 className="h-8 w-8 text-blue-500 mb-4" />
+                <h3 className="font-semibold text-lg">{wh.name}</h3>
+                <p className="text-sm text-muted-foreground">{wh.code}</p>
+                <div className="mt-4 flex gap-2">
+                  <span className="px-2 py-1 bg-muted rounded text-xs font-medium">{wh.zones?.length || 0} Zones</span>
+                  <span className="px-2 py-1 bg-muted rounded text-xs font-medium">Active</span>
+                </div>
+              </div>
+            ))}
           </div>
-          
-          {/* Add empty state if needed */}
-        </div>
+        )}
       </div>
     </div>
   );
