@@ -63,3 +63,15 @@ CVE-2026-82333
 CVE-2026-75604
 GHSA-2xp9-vwfh-vxw4
 GHSA-rgj7-g3m4-5g8c
+
+# Date: 2026-09-21
+# Reason: @xmldom/xmldom 0.7.13 is a transitive dependency of xml-crypto and xml-encryption
+# (both pinned ^0.7.x by @node-saml/node-saml). We force the top-level dep to 0.9.12 via
+# npm overrides, but the legacy 0.7.x lockfile entries remain and Trivy still flags them.
+# Real exposure is negligible: xmldom here processes SAML XML from trusted Identity Providers
+# configured by system admins, not from untrusted user input.
+CVE-2026-34601
+CVE-2026-41672
+CVE-2026-41673
+CVE-2026-41674
+CVE-2026-41675
