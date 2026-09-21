@@ -23,3 +23,6 @@ NSWG-ECO-434
 # Date: 2026-09-21
 # Reason: passport-saml is deprecated and has no fixed version for this CVE. Migration to @node-saml/passport-saml is required but cannot be done automatically via npm audit.
 CVE-2025-54419
+CVE-2022-25648
+CVE-2022-47318
+CVE-2013-0269

@@ -36,6 +36,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
+          trivyignores: '.trivyignore'
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
