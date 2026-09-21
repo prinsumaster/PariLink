@@ -30,7 +30,7 @@ export class InboundService {
       items: { sku: string; expectedQty: number }[];
     },
   ) {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const receipt = await tx.inboundReceipt.create({
         data: {
           companyId,
@@ -72,7 +72,7 @@ export class InboundService {
     receivedItems: { itemId: string; qty: number; damagedQty: number }[],
     userId: string,
   ) {
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
       const receipt = await tx.inboundReceipt.findUnique({
         where: { id: receiptId, companyId },
         include: { items: true },

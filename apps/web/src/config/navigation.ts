@@ -147,6 +147,16 @@ export const navigationConfig: NavGroup[] = [
         icon: FileText,
       },
       {
+        title: 'Warehouse',
+        href: '/warehouse',
+        icon: Building2,
+        children: [
+          { title: 'Master', href: '/warehouse', icon: Building2 },
+          { title: 'Inbound', href: '/warehouse/inbound', icon: Download },
+          { title: 'Outbound', href: '/warehouse/outbound', icon: Package },
+        ]
+      },
+      {
         title: 'Dispatch',
         href: '/dispatch',
         icon: Truck,

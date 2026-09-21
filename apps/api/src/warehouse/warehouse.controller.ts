@@ -26,18 +26,45 @@ import { InventoryOptimizerService } from './engine/inventory-optimizer.service'
 
 export class CreateWarehouseDto {
   @IsString() @IsNotEmpty() name!: string;
-  @IsOptional() @IsString() location?: string;
+  @IsString() @IsNotEmpty() code!: string;
+  @IsString() @IsNotEmpty() address!: string;
+  @IsString() @IsNotEmpty() city!: string;
+  @IsString() @IsNotEmpty() state!: string;
+}
+
+export class CreateAsnItemDto {
+  @IsString() @IsNotEmpty() sku!: string;
+  @IsNumber() @IsPositive() expectedQty!: number;
 }
 
 export class CreateAsnDto {
   @IsString() @IsNotEmpty() warehouseId!: string;
   @IsString() @IsNotEmpty() reference!: string;
-  @IsArray() @IsNotEmpty() items!: unknown[];
+  @IsOptional() @IsString() loadId?: string;
+  @IsString() @IsNotEmpty() asnNumber!: string;
+  @IsString() @IsNotEmpty() expectedDate!: string;
+  
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => CreateAsnItemDto)
+  items!: CreateAsnItemDto[];
+}
+
+export class ReceiveGoodsItemDto {
+  @IsString() @IsNotEmpty() itemId!: string;
+  @IsNumber() @IsPositive() qty!: number;
+  @IsNumber() damagedQty!: number; // Can be 0
 }
 
 export class ReceiveGoodsDto {
   @IsString() @IsNotEmpty() stagingBinId!: string;
-  @IsArray() @IsNotEmpty() items!: unknown[];
+  
+  @IsArray()
+  @ArrayNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => ReceiveGoodsItemDto)
+  items!: ReceiveGoodsItemDto[];
 }
 
 // Cross-checked against the Prisma models, not guessed.
@@ -117,6 +144,26 @@ export class WarehouseController {
     @Body() data: CreateWarehouseDto,
   ) {
     return this.masterData.createWarehouse(user.companyId, data);
+  }
+
+  @Post(':id/zones')
+  @RequirePermissions('warehouse:write')
+  createZone(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() data: any,
+  ) {
+    return this.masterData.createZone(user.companyId, id, data);
+  }
+
+  @Post('zones/:zoneId/bins')
+  @RequirePermissions('warehouse:write')
+  createBin(
+    @GetUser() user: AuthenticatedUser,
+    @Param('zoneId') zoneId: string,
+    @Body() data: any,
+  ) {
+    return this.masterData.createBin(user.companyId, zoneId, data);
   }
 
   @Get(':id/topology')

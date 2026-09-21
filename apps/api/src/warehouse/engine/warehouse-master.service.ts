@@ -32,29 +32,44 @@ export class WarehouseMasterService {
   /**
    * Add a zone to a warehouse
    */
-  async createZone(warehouseId: string, data: any) {
-    return this.prisma.runAsSystem('[WarehouseMasterService.createZone] Internal service operation bypass', async (tx) =>
-      tx.warehouseZone.create({
+  async createZone(companyId: string, warehouseId: string, data: any) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // First verify the warehouse belongs to the tenant
+      const warehouse = await tx.warehouse.findUnique({
+        where: { id: warehouseId, companyId },
+      });
+      if (!warehouse) throw new NotFoundException('Warehouse not found');
+
+      return tx.warehouseZone.create({
         data: {
           ...data,
           warehouseId,
         },
-      }),
-    );
+      });
+    });
   }
 
   /**
    * Add a storage bin to a zone
    */
-  async createBin(zoneId: string, data: any) {
-    return this.prisma.runAsSystem('[WarehouseMasterService.createBin] Internal service operation bypass', async (tx) =>
-      tx.warehouseBin.create({
+  async createBin(companyId: string, zoneId: string, data: any) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // First verify the zone belongs to a warehouse of the tenant
+      const zone = await tx.warehouseZone.findFirst({
+        where: { 
+          id: zoneId, 
+          warehouse: { companyId },
+        },
+      });
+      if (!zone) throw new NotFoundException('Zone not found');
+
+      return tx.warehouseBin.create({
         data: {
           ...data,
           zoneId,
         },
-      }),
-    );
+      });
+    });
   }
 
   /**
