@@ -174,5 +174,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "^0.9.12"
   }
 }
