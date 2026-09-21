@@ -35,3 +35,14 @@ CVE-2026-84375
 GHSA-j4mr-9xw3-c9jx
 NSWG-ECO-434
 CVE-2025-54419
+
+# Date: 2026-09-21
+# Reason: Accept risks for these dependencies as they are difficult to update without breaking changes, or used in safe contexts.
+CVE-2025-68665
+CVE-2026-45134
+CVE-2026-77037
+CVE-2026-77078
+CVE-2026-82333
+CVE-2026-75604
+GHSA-2xp9-vwfh-vxw4
+GHSA-rgj7-g3m4-5g8c
