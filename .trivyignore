@@ -1,0 +1,21 @@
+# Trivy Ignore File
+
+# Date: 2026-09-21
+# Reason: These Ruby vulnerabilities come from `node_modules/lunr-languages/build/stopwords-filter/Gemfile.lock`. They are build tools for a transitive dependency and are never executed at runtime or exposed to user input.
+CVE-2020-10663
+CVE-2020-8130
+CVE-2021-31799
+
+# Date: 2026-09-21
+# Reason: browserslist is a build tool for CSS compilation. It is not exposed to untrusted input at runtime.
+CVE-2026-73088
+CVE-2026-73089
+
+# Date: 2026-09-21
+# Reason: js-yaml is used by tooling (Docusaurus) at build time to parse configurations, not untrusted user YAML at runtime.
+CVE-2026-84375
+
+# Date: 2026-09-21
+# Reason: base64-url is an indirect dependency and out of bounds read risk is negligible for this application's usage context.
+GHSA-j4mr-9xw3-c9jx
+NSWG-ECO-434
