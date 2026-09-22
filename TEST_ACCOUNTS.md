@@ -84,3 +84,25 @@ All DB verification uses:
 
 Local native Postgres (psql -h localhost -p 5433) is a separate instance with
 accumulated E2E test data. It does not represent what the running API serves.
+
+---
+
+## AWS ARN Exposure (oidc-diagnostic.yml)
+
+AWS account ID `121546003161` and role name `parilink-github-actions-deploy-production`
+were hardcoded in plaintext in `.github/workflows/oidc-diagnostic.yml` and remain in
+git history commits `d964bbb` and `e1fd0f6` (2026-08-12).
+
+**Repo visibility:** PUBLIC — confirmed via `gh repo view --json visibility` on 2026-09-22.
+
+**Action taken:** Both occurrences redacted in the current file (replaced with REDACTED).
+Committed as part of the workflow ARN cleanup commit. History NOT purged — the prior
+force-push caused TruffleHog "BASE and HEAD are same" breakage that required multiple
+sessions to untangle; an account ID + role name (not a credential) does not justify
+repeating that cost.
+
+**Residual exposure:** The ARN is still visible in commits `d964bbb` and `e1fd0f6`
+in the public repo's git history. Anyone who can see those commits knows the AWS
+account ID and role name. The OIDC diagnostic ran twice and failed — the trust policy
+appears to be correctly restrictive. The role should be reviewed by the AWS account
+owner to confirm the trust policy does not allow assumption from arbitrary repos.
