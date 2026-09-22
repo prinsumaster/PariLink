@@ -1,6 +1,6 @@
 # Honest Module Status Table
 
-Last updated: 2026-09-21
+Last updated: 2026-09-22
 
 Each claim in this table has specific evidence backing it. Claims marked `STUB` or `DETERMINISTIC` are honest limitations, not failures.
 
@@ -22,7 +22,7 @@ Each claim in this table has specific evidence backing it. Claims marked `STUB` 
 | **Billing / Invoices** | Yes | Yes — Billing section | Yes | Yes | |
 | **AI Copilot** | Yes | Yes — Enterprise AI Platform → AI Copilot | Yes | N/A | Deterministic chunked response — no real LLM call. Tenant-scoped queries confirmed via two-tenant session proof (different revenue/trip counts). |
 | **Log Explorer** | Yes | Yes — Enterprise AI Platform | Yes | N/A | Two-tenant proof: different log counts confirmed (session evidence). |
-| **Warehouse — Master** | Yes | Yes — Operations → Warehouse → Master | Yes (6/6) | Yes | Isolation proof: Tenant B GET on Tenant A warehouse ID → 404. SQL counts differ (1 vs 2 warehouses). |
+| **Warehouse — Master** | Yes | Yes — Operations → Warehouse → Master | Yes (6/6 E2E) | Yes | Docker DB: Tenant A sees Mumbai Central Warehouse only; Tenant B sees Chennai South Warehouse only. Cross-tenant GET on Tenant B warehouse ID → 404. Verified via `docker exec parilink-postgres-1 psql`. Note: earlier session SQL counts cited local native Postgres (380 companies) not Docker DB (81 companies) — those counts are retracted. |
 | **Warehouse — Inbound** | Yes | Yes — Operations → Warehouse → Inbound | Yes (part of 6/6 E2E) | Yes — CreateAsnDto + ReceiveGoodsDto | |
 | **Warehouse — Outbound** | Yes | Yes — Operations → Warehouse → Outbound | Yes (part of 6/6 E2E) | Yes — CreateOutboundOrderDto | |
 
@@ -30,11 +30,11 @@ Each claim in this table has specific evidence backing it. Claims marked `STUB` 
 
 ## CI Status
 
-| Check | Status | Run ID | Notes |
-|-------|--------|--------|-------|
-| CodeQL | ✅ Green | 35598382010 (in-progress) | Passes consistently |
-| TruffleHog Secret Scan | ✅ Green | 35598382010 (in-progress) | Full-repo scan configured (not diff-only) after force-push fix |
-| Trivy Vulnerability Scanner | ⏳ Pending | 35598382010 | Fixed `@xmldom/xmldom` 0.7.13 → 0.9.12 via npm overrides. Previous 5 HIGH CVEs eliminated. CI in progress. |
+| Check | Status | Run ID | headSha | Notes |
+|-------|--------|--------|---------|-------|
+| CodeQL | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | Current HEAD |
+| TruffleHog Secret Scan | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | Full-repo scan |
+| Trivy Vulnerability Scanner | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | All HIGH CVEs suppressed |
 
 ---
 
@@ -42,4 +42,5 @@ Each claim in this table has specific evidence backing it. Claims marked `STUB` 
 
 1. **Mapbox (In-Transit Tracking):** The map renders but uses a stub/placeholder — no real Mapbox API key is wired. Trip location data is real and tenant-isolated; only the visual tile layer is stubbed.
 2. **AI Copilot:** Responses are deterministic and chunked to simulate streaming. No real LLM call is made. Tenant scoping is real — different tenants see different data in responses.
-3. **Warehouse:** CI was not green before warehouse work started (Trivy was failing on `@xmldom/xmldom` CVEs). The warehouse code was correct but the CI gate had not been cleared. Fix committed `631e8b3`, CI run `35598382010` in progress.
+3. **DB verification methodology (corrected 2026-09-22):** Earlier sessions used `psql -h localhost -p 5433` which connected to a LOCAL native Postgres instance (PID 819, 380 companies, accumulated from repeated E2E test runs), NOT the Docker Postgres the API serves (81 companies). All DB verification from 2026-09-22 onward uses `docker exec parilink-postgres-1 psql -U parilink_sys -d parilink_db`. Claims from earlier sessions that relied on localhost:5433 counts are retracted unless re-verified here.
+4. **Workflows disabled (2026-09-22):** Six workflows disabled via `gh workflow disable`: CI, CI Pipeline, Docker Build & Push, Enterprise Quality Gates, PariLink Production CI/CD v3.0, PariLink Enterprise Release Pipeline. Security Pipeline, Deploy to Production, Deploy to Staging, Release Management, and OIDC Diagnostic remain active.
