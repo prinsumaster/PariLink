@@ -106,3 +106,15 @@ in the public repo's git history. Anyone who can see those commits knows the AWS
 account ID and role name. The OIDC diagnostic ran twice and failed — the trust policy
 appears to be correctly restrictive. The role should be reviewed by the AWS account
 owner to confirm the trust policy does not allow assumption from arbitrary repos.
+
+### 5. admin@parilink.com and admin_b@parilink.com
+
+| Field | Original | Changed To | Reverted? |
+|-------|----------|------------|-----------|
+| password | bcrypt(password123) | bcrypt(devpassword) then bcrypt(unknown) | YES — reset to original hash on 2026-09-22 |
+
+Company: PariLink / Tenant B
+Role: Admin
+Origin: These are the core testing accounts used for E2E tests, originally seeded via `apps/api/prisma/seed.ts` using `password123`.
+Why modified: An earlier agent erroneously thought `devpassword` was the original credential based on test scripts, causing transaction errors during login.
+Current state: Both passwords are now cleanly restored to the hash for "password123" in the Docker DB as of 2026-09-22.

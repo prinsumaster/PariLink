@@ -57,6 +57,7 @@ model Company {
   vehicles                   Vehicle[]
   apiCredentials             ApiCredential[]
   vendors                    Vendor[]
+  parts                      Part[]
   vendorBills                VendorBill[]
   lorryReceipts              LorryReceipt[]
   lrSequences                LrSequence[]
@@ -517,6 +518,7 @@ model Vendor {
   vendorBills    VendorBill[]
   Contract       Contract[]
   TenderBid      TenderBid[]
+  parts          Part[]
   users          User[]
 
   masterRecordId String?
@@ -4157,6 +4159,8 @@ model JobCard {
   totalCost     Float?
   workDone      String?
   closedAt      DateTime?
+  odometer      Float?
+  openedAt      DateTime      @default(now())
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
@@ -4164,6 +4168,7 @@ model JobCard {
   mechanic      Mechanic?     @relation(fields: [mechanicId], references: [id])
   workshop      Workshop      @relation(fields: [workshopId], references: [id])
   JobPart       JobPart[]
+  maintenanceJobs MaintenanceJob[]
 
   @@index([companyId, vehicleId])
   @@index([companyId, status])
@@ -4600,6 +4605,8 @@ model MaintenanceJob {
   vehicle    Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   trip       Trip?     @relation(fields: [tripId], references: [id])
   vendor     Vendor?   @relation(fields: [vendorId], references: [id])
+  jobCardId  String?
+  jobCard    JobCard?  @relation(fields: [jobCardId], references: [id], onDelete: Cascade)
   parts      JobPart[]
 
   @@index([companyId])
@@ -4623,8 +4630,30 @@ model JobPart {
   vendorId         String?
   JobCard          JobCard?       @relation(fields: [jobCardId], references: [id])
   jobCardId        String?
+  Part             Part?          @relation(fields: [partId], references: [id])
+  partId           String?
 
   @@index([companyId, maintenanceJobId])
+}
+
+model Part {
+  id           String    @id @default(uuid())
+  companyId    String
+  name         String
+  sku          String?
+  unitCost     Float     @default(0)
+  quantity     Float     @default(0)
+  reorderLevel Float?
+  vendorId     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor       Vendor?   @relation(fields: [vendorId], references: [id])
+  JobPart      JobPart[]
+
+  @@index([companyId])
+  @@index([companyId, sku])
 }
 
 model DriverScore {

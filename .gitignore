@@ -70,3 +70,6 @@ apps/api/change-password.ts
 apps/api/seed-warehouse-detailed.ts
 apps/api/test-warehouse-isolation.ts
 test-api.ts
+
+apps/api/scratch/
+apps/web/scratch/

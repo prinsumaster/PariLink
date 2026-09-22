@@ -1,0 +1,13 @@
+--- apps/api/src/workshop/workshop.service.ts
++++ apps/api/src/workshop/workshop.service.ts
+@@ -23,6 +23,10 @@
+     });
+   }
+ 
++  async getAllParts(companyId: string) {
++    return this.prisma.runAsTenant(companyId, async (tx) => {
++      return tx.part.findMany();
++    });
++  }
++
+   async getJobCard(companyId: string, id: string) {

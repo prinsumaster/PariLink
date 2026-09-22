@@ -21088,6 +21088,275 @@
           "bilty"
         ]
       }
+    },
+    "/api/v1/workshop/job-cards": {
+      "post": {
+        "operationId": "WorkshopController_createJobCard_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      },
+      "get": {
+        "operationId": "WorkshopController_getAllJobCards_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}": {
+      "get": {
+        "operationId": "WorkshopController_getJobCard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/parts": {
+      "post": {
+        "operationId": "WorkshopController_createPart_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      },
+      "get": {
+        "operationId": "WorkshopController_getAllParts_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/parts/{id}": {
+      "get": {
+        "operationId": "WorkshopController_getPart_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/vendors": {
+      "get": {
+        "operationId": "WorkshopController_getAllVendors_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      },
+      "post": {
+        "operationId": "WorkshopController_createVendor_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVendorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/tyre-logs": {
+      "get": {
+        "operationId": "WorkshopController_getAllTyreLogs_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      },
+      "post": {
+        "operationId": "WorkshopController_createTyreLog_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTyreLogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-parts": {
+      "post": {
+        "operationId": "WorkshopController_createJobPart_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJobPartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
     }
   },
   "info": {
@@ -23429,8 +23698,7 @@
             "type": "string"
           },
           "type": {
-            "type": "string",
-            "example": "CARRIER"
+            "type": "string"
           },
           "paymentTerms": {
             "type": "string"
@@ -24892,6 +25160,145 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "CreateJobCardDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string"
+          },
+          "workshopId": {
+            "type": "string"
+          },
+          "mechanicId": {
+            "type": "string"
+          },
+          "issueReported": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "totalCost": {
+            "type": "number"
+          },
+          "workDone": {
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "odometer": {
+            "type": "number"
+          },
+          "openedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "vehicleId",
+          "workshopId",
+          "issueReported"
+        ]
+      },
+      "CreatePartDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string"
+          },
+          "unitCost": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "reorderLevel": {
+            "type": "number"
+          },
+          "vendorId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateTyreLogDto": {
+        "type": "object",
+        "properties": {
+          "tyreId": {
+            "type": "string"
+          },
+          "vehicleId": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "oldPosition": {
+            "type": "string"
+          },
+          "newPosition": {
+            "type": "string"
+          },
+          "odometer": {
+            "type": "number"
+          },
+          "treadDepthMm": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "cost": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "tyreId",
+          "action"
+        ]
+      },
+      "CreateJobPartDto": {
+        "type": "object",
+        "properties": {
+          "maintenanceJobId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "qty": {
+            "type": "number"
+          },
+          "unitCost": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "vendorId": {
+            "type": "string"
+          },
+          "jobCardId": {
+            "type": "string"
+          },
+          "partId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "maintenanceJobId",
+          "name",
+          "unitCost",
+          "amount"
         ]
       }
     }
