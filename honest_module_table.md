@@ -32,9 +32,9 @@ Each claim in this table has specific evidence backing it. Claims marked `STUB` 
 
 | Check | Status | Run ID | headSha | Notes |
 |-------|--------|--------|---------|-------|
-| CodeQL | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | Current HEAD |
-| TruffleHog Secret Scan | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | Full-repo scan |
-| Trivy Vulnerability Scanner | ✅ Green | 35601194620 | 321ef11ee915f806aec37cb06d3c084785b2db18 | All HIGH CVEs suppressed |
+| CodeQL | ✅ Green | 35734768132 | 8dbf563c57ea1179045782f91dbe815111e991ab | Current HEAD |
+| TruffleHog Secret Scan | ✅ Green | 35734768132 | 8dbf563c57ea1179045782f91dbe815111e991ab | Full-repo scan |
+| Trivy Vulnerability Scanner | ✅ Green | 35734768132 | 8dbf563c57ea1179045782f91dbe815111e991ab | All HIGH CVEs suppressed |
 
 ---
 
