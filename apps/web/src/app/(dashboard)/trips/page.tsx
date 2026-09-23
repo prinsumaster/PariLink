@@ -11,8 +11,12 @@ import { Button } from '@/components/ui/button';
 import { TripTable } from '@/components/trips/trip-table';
 import { TripFilters } from '@/components/trips/trip-filters';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { GenerateInvoiceDialog } from '@/components/trips/generate-invoice-dialog';
+import { FileText } from 'lucide-react';
 
 export default function TripsPage() {
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isInvoiceDialogOpen, setIsInvoiceDialogOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     page: 1,
     limit: 20,
@@ -34,6 +38,11 @@ export default function TripsPage() {
           <Button variant="outline" className="flex items-center transition-all hover:bg-slate-100 dark:hover:bg-slate-800">
             <Download className="mr-2 h-4 w-4" /> Export
           </Button>
+          {selectedIds.length > 0 && (
+            <Button onClick={() => setIsInvoiceDialogOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:shadow-md transition-all">
+              <FileText className="mr-2 h-4 w-4" /> Generate Invoice ({selectedIds.length})
+            </Button>
+          )}
           <RoleGuard allowedRoles={['SUPER_ADMIN', 'ORG_ADMIN', 'DISPATCHER', 'OPERATIONS']} fallback={null}>
             <Link href="/trips/new" passHref>
               <Button className="flex items-center bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md transition-all">
@@ -53,8 +62,16 @@ export default function TripsPage() {
           isLoading={isLoading || isFetching}
           filters={filters}
           onFiltersChange={setFilters}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
         />
       </div>
+
+      <GenerateInvoiceDialog 
+        open={isInvoiceDialogOpen} 
+        onOpenChange={setIsInvoiceDialogOpen} 
+        selectedTrips={selectedIds} 
+      />
     </div>
   );
 }

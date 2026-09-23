@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Truck, MapPin, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 interface TripTableProps {
@@ -20,6 +21,8 @@ interface TripTableProps {
   isLoading: boolean;
   filters: TripFilters;
   onFiltersChange: (filters: TripFilters) => void;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 const getStatusBadge = (status: Trip['status']) => {
@@ -38,11 +41,48 @@ const getStatusBadge = (status: Trip['status']) => {
   }
 };
 
-export function TripTable({ trips, total, isLoading, filters, onFiltersChange }: TripTableProps) {
+export function TripTable({ trips, total, isLoading, filters, onFiltersChange, selectedIds = [], onSelectionChange }: TripTableProps) {
   const router = useRouter();
+
+  const handleSelectAll = (checked: boolean) => {
+    if (!onSelectionChange) return;
+    if (checked) {
+      onSelectionChange(trips.map(t => t.id));
+    } else {
+      onSelectionChange([]);
+    }
+  };
+
+  const handleSelectOne = (id: string, checked: boolean) => {
+    if (!onSelectionChange) return;
+    if (checked) {
+      onSelectionChange([...selectedIds, id]);
+    } else {
+      onSelectionChange(selectedIds.filter(s => s !== id));
+    }
+  };
 
   const columns = useMemo<ColumnDef<Trip>[]>(
     () => [
+      ...(onSelectionChange ? [{
+        id: 'select',
+        header: () => (
+          <Checkbox
+            checked={trips.length > 0 && selectedIds.length === trips.length}
+            onCheckedChange={handleSelectAll}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }: any) => (
+          <div onClick={e => e.stopPropagation()}>
+            <Checkbox
+              checked={selectedIds.includes(row.original.id)}
+              onCheckedChange={(checked) => handleSelectOne(row.original.id, checked as boolean)}
+              aria-label="Select row"
+            />
+          </div>
+        ),
+      }] : []),
       {
         accessorKey: 'tripNumber',
         header: 'Trip #',
@@ -96,7 +136,7 @@ export function TripTable({ trips, total, isLoading, filters, onFiltersChange }:
         ),
       }
     ],
-    []
+    [selectedIds, trips, onSelectionChange]
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library

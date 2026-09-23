@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CreateRateCardDto } from './dto/create-rate-card.dto';
-import { GenerateInvoiceDto } from './dto/generate-invoice.dto';
+import { GenerateInvoiceDto, GenerateInvoiceFromTripsDto } from './dto/generate-invoice.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -53,6 +53,48 @@ export class BillingController {
     @Body() dto: GenerateInvoiceDto,
   ) {
     return this.billingService.generateInvoice(user.companyId, dto, user.id);
+  }
+
+  @Post('invoices/generate-from-trips')
+  @RequirePermissions('billing:write')
+  @ApiOperation({ summary: 'Generate a draft invoice from completed trips' })
+  generateInvoiceFromTrips(
+    @GetUser() user: AuthenticatedUser,
+    @Body() dto: GenerateInvoiceFromTripsDto,
+  ) {
+    return this.billingService.generateInvoiceFromTrips(user.companyId, dto, user.id);
+  }
+
+  @Get('invoices/overdue')
+  @RequirePermissions('billing:read')
+  @ApiOperation({ summary: 'Get all overdue invoices' })
+  getOverdueInvoices(@GetUser() user: AuthenticatedUser) {
+    return this.billingService.getOverdueInvoices(user.companyId);
+  }
+
+  @Get('invoices')
+  @RequirePermissions('billing:read')
+  @ApiOperation({ summary: 'Get all invoices' })
+  getInvoices(@GetUser() user: AuthenticatedUser) {
+    return this.billingService.getInvoices(user.companyId);
+  }
+
+  @Get('invoices/:id')
+  @RequirePermissions('billing:read')
+  @ApiOperation({ summary: 'Get an invoice by ID' })
+  getInvoiceById(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.billingService.getInvoiceById(user.companyId, id);
+  }
+
+  @Patch('invoices/:id/status')
+  @RequirePermissions('billing:write')
+  @ApiOperation({ summary: 'Update invoice status (SENT, PAID, CANCELLED)' })
+  updateInvoiceStatus(
+    @GetUser() user: AuthenticatedUser, 
+    @Param('id') id: string,
+    @Body() body: { status: string; paymentRef?: string }
+  ) {
+    return this.billingService.updateInvoiceStatus(user.companyId, id, body.status, user.id, body.paymentRef);
   }
 
   @Patch('invoices/:id/approve')

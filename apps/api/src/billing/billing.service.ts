@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRateCardDto } from './dto/create-rate-card.dto';
-import { GenerateInvoiceDto } from './dto/generate-invoice.dto';
+import { GenerateInvoiceDto, GenerateInvoiceFromTripsDto } from './dto/generate-invoice.dto';
 import * as crypto from 'crypto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -181,6 +181,181 @@ export class BillingService {
     this.eventEmitter.emit('invoice.created', invoice);
 
     return invoice;
+  }
+
+  async generateInvoiceFromTrips(
+    companyId: string,
+    dto: GenerateInvoiceFromTripsDto,
+    userId?: string,
+  ) {
+    const invoice = await this.prisma.runAsTenant(companyId, async (tx) => {
+      // Fetch trips with their invoice line items to check if already invoiced
+      const trips = await tx.trip.findMany({
+        where: { id: { in: dto.tripIds }, companyId },
+        include: { invoiceLineItems: true, loads: true }
+      });
+
+      if (trips.length !== dto.tripIds.length) {
+        throw new BadRequestException('One or more trips could not be found.');
+      }
+
+      for (const trip of trips) {
+        if (trip.status !== 'COMPLETED') {
+          throw new BadRequestException(`Trip ${trip.tripNumber} is not COMPLETED.`);
+        }
+        if (trip.invoiceLineItems && trip.invoiceLineItems.length > 0) {
+          throw new BadRequestException(`Trip ${trip.tripNumber} has already been invoiced.`);
+        }
+        // Verify trip belongs to customer (by checking its loads)
+        const hasOtherCustomer = trip.loads.some(l => l.customerId !== dto.customerId);
+        if (hasOtherCustomer) {
+           throw new BadRequestException(`Trip ${trip.tripNumber} contains loads for a different customer.`);
+        }
+      }
+
+      // Compute subtotals from trip rates
+      let subtotal = 0;
+      const lineItemsData = trips.map(trip => {
+        const amt = trip.rate || 0;
+        subtotal += amt;
+        return {
+          description: `Freight for Trip ${trip.tripNumber}`,
+          quantity: 1,
+          unitPrice: amt,
+          amount: amt,
+          type: 'LINE_HAUL',
+          trip: { connect: { id: trip.id } }
+        };
+      });
+
+      // Simple GST calculation logic (e.g. 18% total split evenly for IGST or CGST/SGST, here assumed 9% CGST 9% SGST for demo)
+      const cgst = subtotal * 0.09;
+      const sgst = subtotal * 0.09;
+      const igst = 0;
+      const tax = cgst + sgst + igst;
+      const grandTotal = subtotal + tax;
+
+      const invoiceNumber = `INV-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+
+      const generatedInvoice = await tx.invoice.create({
+        data: {
+          companyId,
+          customerId: dto.customerId,
+          invoiceNumber,
+          amount: grandTotal, // for backwards compat with existing 'amount' field
+          subtotal,
+          cgst,
+          sgst,
+          igst,
+          tax,
+          grandTotal,
+          balanceDue: grandTotal,
+          status: 'DRAFT',
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Net 30 default
+          lineItems: {
+            create: lineItemsData as any,
+          },
+        },
+        include: { lineItems: true },
+      });
+
+      // Audit and Event Store logs
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Billing',
+          entityType: 'Invoice',
+          entityId: generatedInvoice.id,
+          action: 'INVOICE_GENERATED_FROM_TRIPS',
+          details: { amount: generatedInvoice.grandTotal, tripIds: dto.tripIds },
+          source: 'BILLING_SERVICE',
+        },
+        null,
+        tx,
+      );
+
+      await this.eventStore.append({
+        tenantId: companyId,
+        streamType: 'INVOICE',
+        streamId: generatedInvoice.id,
+        eventType: 'InvoiceGenerated',
+        payload: { amount: generatedInvoice.grandTotal, tripIds: dto.tripIds },
+        userId,
+      });
+
+      return generatedInvoice;
+    });
+
+    this.eventEmitter.emit('invoice.created', invoice);
+    return invoice;
+  }
+
+  async getInvoices(companyId: string) {
+    return this.prisma.invoice.findMany({
+      where: { companyId },
+      include: { customer: true },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
+  async getInvoiceById(companyId: string, id: string) {
+    const invoice = await this.prisma.invoice.findFirst({
+      where: { id, companyId },
+      include: { 
+        customer: true, 
+        lineItems: { include: { trip: true, jobCard: true } }
+      }
+    });
+    if (!invoice) throw new NotFoundException('Invoice not found');
+    return invoice;
+  }
+
+  async getOverdueInvoices(companyId: string) {
+    return this.prisma.invoice.findMany({
+      where: {
+        companyId,
+        status: 'SENT',
+        dueDate: { lt: new Date() }
+      },
+      include: { customer: true },
+      orderBy: { dueDate: 'asc' }
+    });
+  }
+
+  async updateInvoiceStatus(companyId: string, id: string, status: string, userId: string, paymentRef?: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const invoice = await tx.invoice.findFirst({ where: { id, companyId } });
+      if (!invoice) throw new NotFoundException('Invoice not found');
+      
+      const updateData: any = { status };
+      if (status === 'PAID') {
+        updateData.amountPaid = invoice.grandTotal;
+        updateData.balanceDue = 0;
+        updateData.paidAt = new Date();
+        if (paymentRef) updateData.paymentRef = paymentRef;
+      }
+      
+      const updated = await tx.invoice.update({
+        where: { id },
+        data: updateData
+      });
+
+      await this.auditService.logEvent(
+        {
+          companyId,
+          entity: 'Billing',
+          entityType: 'Invoice',
+          entityId: id,
+          action: 'UPDATE_STATUS',
+          details: { status, paymentRef },
+          source: 'API',
+        },
+        null,
+        tx,
+      );
+
+      return updated;
+    });
   }
 
   async approveInvoice(companyId: string, invoiceId: string, userId?: string) {

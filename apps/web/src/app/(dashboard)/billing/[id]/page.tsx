@@ -3,7 +3,7 @@ import { money } from '@/lib/format';
 
 import React from 'react';
 
-import { useInvoice, useApproveInvoice } from '@/hooks';
+import { useInvoice, useApproveInvoice, useUpdateInvoiceStatus } from '@/hooks';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,6 +23,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   const { id } = React.use(params);
   const { data: invoice, isLoading, isError } = useInvoice(id);
   const { mutate: approve, isPending: isApproving } = useApproveInvoice();
+  const { mutate: updateStatus, isPending: isUpdating } = useUpdateInvoiceStatus();
 
   if (isLoading) {
     return (
@@ -88,6 +89,27 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
               <CheckCircle className="h-4 w-4" />
               {isApproving ? 'Approving...' : 'Approve & Send'}
             </Button>
+          )}
+          {invoice.status === 'SENT' && (
+            <>
+              <Button
+                onClick={() => updateStatus({ id: invoice.id, status: 'PAID' }, { onSuccess: () => toast.success('Invoice marked as PAID') })}
+                disabled={isUpdating}
+                className="bg-blue-600 hover:bg-blue-700 gap-2"
+              >
+                <CheckCircle className="h-4 w-4" />
+                {isUpdating ? 'Updating...' : 'Mark PAID'}
+              </Button>
+              <Button
+                onClick={() => updateStatus({ id: invoice.id, status: 'CANCELLED' }, { onSuccess: () => toast.success('Invoice CANCELLED') })}
+                disabled={isUpdating}
+                variant="destructive"
+                className="gap-2"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                Cancel Invoice
+              </Button>
+            </>
           )}
           <Button variant="outline" size="sm" className="gap-2">
             <Download className="h-4 w-4" />

@@ -112,6 +112,20 @@ export function useApproveInvoice() {
   const qc = useQueryClient();
   return useMutation({ mutationFn: billingService.approveInvoice, onSuccess: () => qc.invalidateQueries({ queryKey: invoiceKeys.all }) });
 }
+export function useGenerateInvoiceFromTrips() {
+  const qc = useQueryClient();
+  return useMutation({ mutationFn: billingService.generateInvoiceFromTrips, onSuccess: () => qc.invalidateQueries({ queryKey: invoiceKeys.all }) });
+}
+export function useUpdateInvoiceStatus() {
+  const qc = useQueryClient();
+  return useMutation({ 
+    mutationFn: ({ id, status, paymentRef }: { id: string; status: string; paymentRef?: string }) => billingService.updateInvoiceStatus(id, status, paymentRef), 
+    onSuccess: (_, variables) => {
+      qc.invalidateQueries({ queryKey: invoiceKeys.all });
+      qc.invalidateQueries({ queryKey: invoiceKeys.detail(variables.id) });
+    }
+  });
+}
 
 // ─── Payments ─────────────────────────────────────────────────────────────────
 export const paymentKeys = {

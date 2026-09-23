@@ -211,6 +211,7 @@ model Trip {
   fuelExpenses      Float?
   otherExpenses     Float?
   notes             String?
+  rate              Float             @default(0)
   settlementId      String?
   settlement        Settlement?       @relation(fields: [settlementId], references: [id])
   createdAt         DateTime          @default(now())
@@ -233,6 +234,7 @@ model Trip {
   DriverScore      DriverScore[]
   TripExpense      TripExpense[]
   tripReviews      TripReview[]
+  invoiceLineItems InvoiceLineItem[]
 
   @@index([companyId, status])
   @@index([driverId])
@@ -416,8 +418,13 @@ model Invoice {
   grandTotal    Float             @default(0)
   amountPaid    Float             @default(0)
   balanceDue    Float             @default(0)
+  cgst          Float             @default(0)
+  sgst          Float             @default(0)
+  igst          Float             @default(0)
   status        String            @default("DRAFT")
   dueDate       DateTime?
+  paymentRef    String?
+  paidAt        DateTime?
   notes         String?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
@@ -431,6 +438,7 @@ model Invoice {
 
   @@unique([companyId, invoiceNumber])
   @@index([companyId, status])
+  @@index([companyId, status, dueDate])
   @@index([customerId])
   @@index([loadId])
   @@index([companyId, deletedAt])
@@ -461,11 +469,17 @@ model InvoiceLineItem {
   unitPrice   Float
   amount      Float
   type        String   @default("LINE_HAUL")
+  tripId      String?
+  jobCardId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  trip        Trip?    @relation(fields: [tripId], references: [id])
+  jobCard     JobCard? @relation(fields: [jobCardId], references: [id])
 
   @@index([invoiceId])
+  @@index([tripId])
+  @@index([jobCardId])
 }
 
 model Customer {
@@ -4182,9 +4196,10 @@ model JobCard {
   parts           JobCardPart[]
   mechanic        Mechanic?              @relation(fields: [mechanicId], references: [id])
   workshop        Workshop               @relation(fields: [workshopId], references: [id])
-  JobPart         JobPart[]
-  maintenanceJobs MaintenanceJob[]
-  statusHistory   JobCardStatusHistory[]
+  JobPart          JobPart[]
+  maintenanceJobs  MaintenanceJob[]
+  statusHistory    JobCardStatusHistory[]
+  invoiceLineItems InvoiceLineItem[]
 
   @@index([companyId, vehicleId, openedAt])
   @@index([companyId, status])

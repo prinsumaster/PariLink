@@ -137,16 +137,22 @@ export const vendorsService = {
 
 export const billingService = {
   listInvoices: (params: ListParams = {}) =>
-    api.get<PaginatedResponse<Invoice>>('/invoices', { params }).then(r => r.data),
+    api.get<PaginatedResponse<Invoice>>('/billing/invoices', { params }).then(r => r.data),
 
   getInvoice: (id: string) =>
-    api.get<Invoice>(`/invoices/${id}`).then(r => r.data),
+    api.get<Invoice>(`/billing/invoices/${id}`).then(r => r.data),
 
   generateInvoice: (dto: { loadId: string }) =>
     api.post<Invoice>('/billing/invoices', dto).then(r => r.data),
 
+  generateInvoiceFromTrips: (dto: { customerId: string, tripIds: string[] }) =>
+    api.post<Invoice>('/billing/invoices/generate-from-trips', dto).then(r => r.data),
+
   approveInvoice: (id: string) =>
     api.patch<Invoice>(`/billing/invoices/${id}/approve`).then(r => r.data),
+
+  updateInvoiceStatus: (id: string, status: string, paymentRef?: string) =>
+    api.patch<Invoice>(`/billing/invoices/${id}/status`, { status, paymentRef }).then(r => r.data),
 };
 
 // ─── Payments ─────────────────────────────────────────────────────────────────
