@@ -30,6 +30,7 @@ import {
   GitBranch,
   AlertTriangle,
   DatabaseBackup,
+  Wrench,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -190,6 +191,11 @@ export const navigationConfig: NavGroup[] = [
         title: 'Drivers',
         href: '/drivers',
         icon: Users,
+      },
+      {
+        title: 'Workshop',
+        href: '/workshop',
+        icon: Wrench,
       },
     ],
   },

@@ -125,6 +125,7 @@ import { MlFeatureStoreModule } from './intelligence/feature-store/feature-store
 import { AiSchedulerModule } from './intelligence/scheduler/scheduler.module';
 import { TelemetryProcessorModule } from './intelligence/telemetry-processor/telemetry-processor.module';
 import { ReportingModule } from './reporting/reporting.module';
+import { WorkshopModule } from './workshop/workshop.module';
 
 @Module({
   imports: [
@@ -318,6 +319,7 @@ import { ReportingModule } from './reporting/reporting.module';
     TelemetryModule,
     FleetModule,
     LorryReceiptsModule,
+    WorkshopModule,
   ],
   providers: [
     ApiRateLimiterMiddleware,

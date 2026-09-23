@@ -123,7 +123,7 @@ function KundaliCard({ entry }: { entry: KundaliEntry }) {
 }
 
 async function fetchKundali(vehicleId: string): Promise<KundaliEntry[]> {
-  const res = await api.get(`/maintenance/kundali/${vehicleId}`);
+  const res = await api.get(`/vehicles/maintenance/kundali/${vehicleId}`);
   return res.data;
 }
 
