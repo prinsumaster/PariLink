@@ -14,10 +14,10 @@ The PariLink Version 1.0.0 release changelog contained massive claims about the 
 | **Live Operations health checks/alerting** | ✅ REAL AND WORKING | Real `@nestjs/terminus` endpoints (`/health/readiness`, `/health/liveness`) tracking memory, DB, Redis, BullMQ. Alert Engine triggers on `GpsPing.Received`. |
 | **Enterprise Licensing Engine** | ✅ REAL AND WORKING | `LicenseService` and `LicenseCapacityGuard` enforce subscription limits (e.g., max vehicles) directly via DB checks and throw HTTP 402 if exceeded. |
 | **Tenant Onboarding Wizard** | ✅ REAL AND WORKING | React UI exists and successfully POSTs to backend `/saas/tenant/onboarding/complete` to provision defaults. |
-| **Logistics/Load Generation Engine** | ⚠️ STUB / PARTIAL | Schema and code exist, but fail validation tests. It is present but not robustly working. |
+| **Logistics/Load Generation Engine** | ✅ REAL AND WORKING | Works successfully when passing the full strict DTO (origin/destination addresses, dates, and reference). |
 | **Real-time Dispatch/Trips** | ⚠️ STUB / PARTIAL | Workflows are implemented but rely on mocked/incomplete states. |
 | **AI Agent dispatch functionality** | ⚠️ STUB / PARTIAL | LangChain implementation is present but falls back to `MockChatModel` returning a hardcoded dummy string. No LLM credentials exist. No Agent database models exist. |
-| **Analytics/BI data warehouse export** | ⚠️ STUB / PARTIAL | Daily Prisma snapshotting exists. However, data warehouse export endpoints (S3, BigQuery) immediately return a hardcoded "PROCESSING" response. |
+| **Analytics/BI data warehouse export** | ⚠️ STUB / PARTIAL | Daily Prisma snapshotting exists. However, data warehouse export endpoints return a 503 "Cloud storage for analytics exports is not configured" error. Untested with actual cloud storage configured. |
 | **Cross-docking Engine** | ❌ FABRICATED | Contains complex math logic in `inbound-outbound.engine.ts`, but no Prisma models exist to back this up. Purely simulated. |
 | **Sales Demo Mode** | ❌ FABRICATED | The "Sales Demo Mode" UI clicks a button, sleeps for 3 seconds (`setTimeout`), and displays a "Demo environment provisioned" toast. No backend seeding exists. |
 
