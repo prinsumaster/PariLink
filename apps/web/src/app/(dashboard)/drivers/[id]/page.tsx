@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { DriverDetailView } from '@/components/drivers/driver-detail-view';
 import { RoleGuard } from '@/components/auth/role-guard';
+import { DriverScorecardPanel } from '@/components/drivers/driver-scorecard-panel';
 
 export default function DriverDetailPage() {
   const { id } = useParams();
@@ -58,6 +59,7 @@ export default function DriverDetailPage() {
         </div>
 
         <DriverDetailView driver={driver} />
+        <DriverScorecardPanel driverId={id as string} overallScore={driver.overallScore} />
       </div>
     </RoleGuard>
   );

@@ -9,8 +9,10 @@ import { LoadingEventsController } from './loading-events.controller';
 import { FuelEntriesController } from './fuel-entries.controller';
 import { FuelEntriesService } from './fuel-entries.service';
 
+import { PlatformModule } from '../platform/platform.module';
+
 @Module({
-  imports: [WorkflowModule],
+  imports: [WorkflowModule, PlatformModule],
   controllers: [TripDesksController, LoadingEventsController, FuelEntriesController, TripsController],
   providers: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],
   exports: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],

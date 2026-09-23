@@ -78,4 +78,11 @@ export class DriversController {
   remove(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.driversService.remove(user.companyId, id);
   }
+
+  @Get(':id/score')
+  @RequirePermissions('drivers:read')
+  @ApiOperation({ summary: 'Get a driver score scorecard and history' })
+  getScore(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.driversService.getDriverScore(user.companyId, id);
+  }
 }

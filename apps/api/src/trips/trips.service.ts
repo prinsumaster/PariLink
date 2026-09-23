@@ -1,7 +1,7 @@
 import { createDefaultTripDesks } from "./trip-desks.util";
 
 import { AuditService } from '../platform/audit/audit.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, ReviewRole } from '@prisma/client';
 import {
   getPaginationParams,
   createPaginationResponse,
@@ -11,6 +11,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -21,6 +22,7 @@ import { CreateTripReviewDto } from './dto/create-trip-review.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import * as crypto from 'crypto';
 import { EventStoreService } from '../platform/digital-twin/event-store.service';
+import { IamPolicyEngineService } from '../platform/iam/iam-policy-engine.service';
 
 @Injectable()
 export class TripsService {
@@ -30,6 +32,7 @@ export class TripsService {
     private eventEmitter: EventEmitter2,
     private workflow: WorkflowService,
     private readonly eventStore: EventStoreService,
+    private readonly iam: IamPolicyEngineService,
   ) {}
 
   async create(companyId: string, createTripDto: CreateTripDto) {
@@ -683,11 +686,41 @@ export class TripsService {
       });
     });
   }
-  async submitReview(companyId: string, tripId: string, reviewerId: string, dto: CreateTripReviewDto) {
+  async getTripReviews(companyId: string, tripId: string) {
+    return this.prisma.tripReview.findMany({
+      where: { companyId, tripId },
+      orderBy: { createdAt: 'asc' }
+    });
+  }
+
+  async submitReview(companyId: string, tripId: string, reviewerId: string, roleId: string, dto: CreateTripReviewDto) {
+    // 1. Role-based RBAC Enforcements
+    let requiredPermission = 'trips:update';
+    if (dto.reviewerRole === ReviewRole.DISPATCHER) requiredPermission = 'dispatch:manage';
+    if (dto.reviewerRole === ReviewRole.FLEET_MANAGER) requiredPermission = 'fleet:write';
+    if (dto.reviewerRole === ReviewRole.WORKSHOP_MECHANIC) requiredPermission = 'workshop:mechanic';
+    if (dto.reviewerRole === ReviewRole.GATE_SECURITY) requiredPermission = 'workshop:gate';
+    if (dto.reviewerRole === ReviewRole.CUSTOMER_CONTACT) requiredPermission = 'admin:manage'; // Customer fallback to admin
+
+    const [resource, action] = requiredPermission.split(':');
+    
+    const auth = await this.iam.authorize({
+      userId: reviewerId,
+      companyId,
+      roleId: roleId,
+      resource,
+      action
+    });
+
+    if (!auth.granted) {
+      throw new ForbiddenException(`You do not have the ${requiredPermission} permission required to submit a ${dto.reviewerRole} review.`);
+    }
+
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trip = await tx.trip.findFirst({ where: { id: tripId, companyId } });
       if (!trip) throw new NotFoundException('Trip not found');
       if (!trip.driverId) throw new BadRequestException('Trip has no driver assigned');
+      if (trip.status !== 'COMPLETED') throw new BadRequestException('Reviews can only be submitted after the trip is COMPLETED.');
 
       const existing = await tx.tripReview.findFirst({
         where: { tripId: tripId, reviewerRole: dto.reviewerRole }
@@ -710,24 +743,59 @@ export class TripsService {
       });
 
       if (allReviews.length === 5) {
-        const avg = allReviews.reduce((sum, r) => sum + r.rating, 0) / 5;
+        // Calculate mileage efficiency (actual distance / fuel used)
+        const distance = trip.actualDistance || trip.estimatedDistance || 0;
+        const fuel = trip.fuelExpenses || 0;
+        let mileageScore = 5.0; // Default if no fuel data
+        
+        if (fuel > 0 && distance > 0) {
+           const actualKmL = distance / fuel;
+           const EXPECTED_KM_LITER = 5.0;
+           // Max 5 points, Min 1 point
+           mileageScore = Math.min(5, Math.max(1, (actualKmL / EXPECTED_KM_LITER) * 5));
+        }
+
+        const scores: any = {
+           dispatcherScore: allReviews.find(r => r.reviewerRole === ReviewRole.DISPATCHER)?.rating || 0,
+           fleetManagerScore: allReviews.find(r => r.reviewerRole === ReviewRole.FLEET_MANAGER)?.rating || 0,
+           workshopScore: allReviews.find(r => r.reviewerRole === ReviewRole.WORKSHOP_MECHANIC)?.rating || 0,
+           securityScore: allReviews.find(r => r.reviewerRole === ReviewRole.GATE_SECURITY)?.rating || 0,
+           customerScore: allReviews.find(r => r.reviewerRole === ReviewRole.CUSTOMER_CONTACT)?.rating || 0,
+           mileageScore,
+        };
+        
+        const avgRoleScore = (scores.dispatcherScore + scores.fleetManagerScore + scores.workshopScore + scores.securityScore + scores.customerScore) / 5;
+        // Total score factors in the mileage score (e.g. 70% role, 30% mileage)
+        const total = (avgRoleScore * 0.7) + (mileageScore * 0.3);
         
         await tx.driverScore.create({
           data: {
             companyId,
             driverId: trip.driverId,
             tripId: trip.id,
-            total: avg,
+            ...scores,
+            total,
             ratedBy: 'SYSTEM_AGGREGATE',
             ratedAt: new Date(),
           }
+        });
+
+        // Update the driver's overall running average score
+        const driverScores = await tx.driverScore.findMany({
+          where: { driverId: trip.driverId }
+        });
+        const runningTotal = driverScores.reduce((sum, ds) => sum + ds.total, 0) / driverScores.length;
+        
+        await tx.driver.update({
+          where: { id: trip.driverId },
+          data: { overallScore: runningTotal }
         });
 
         this.eventEmitter.emit('driver.score.updated', {
           companyId,
           driverId: trip.driverId,
           tripId: trip.id,
-          score: avg
+          score: runningTotal
         });
       }
 

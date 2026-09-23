@@ -545,6 +545,7 @@ model Driver {
   licenseState    String?
   licenseExpiry   DateTime?
   status          String            @default("AVAILABLE")
+  overallScore    Float             @default(0)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   deletedAt       DateTime?
@@ -4694,9 +4695,12 @@ model DriverScore {
   tripId         String
   onTime         Boolean   @default(true)
   podUploaded    Boolean   @default(true)
-  fuelScore      Float     @default(0)
-  damageScore    Float     @default(0)
-  behaviourScore Float     @default(0)
+  dispatcherScore Float?
+  fleetManagerScore Float?
+  workshopScore  Float?
+  securityScore  Float?
+  customerScore  Float?
+  mileageScore   Float?
   total          Float     @default(0)
   ratedBy        String?
   ratedAt        DateTime?
@@ -4826,6 +4830,9 @@ enum ReviewRole {
   SAFETY_OFFICER
   UNLOADER
   FLEET_MANAGER
+  WORKSHOP_MECHANIC
+  GATE_SECURITY
+  CUSTOMER_CONTACT
 }
 
 model TripReview {
@@ -4846,6 +4853,7 @@ model TripReview {
   @@unique([tripId, reviewerRole])
   @@index([companyId, tripId])
   @@index([companyId, reviewerId])
+  @@index([companyId, tripId, reviewerRole])
 }
 
 model RouteTollRate {

@@ -113,6 +113,13 @@ export class TripsController {
     @Param('id') id: string,
     @Body() body: CreateTripReviewDto
   ) {
-    return this.tripsService.submitReview(user.companyId, id, user.id, body);
+    return this.tripsService.submitReview(user.companyId, id, user.id, user.roleId, body);
+  }
+
+  @Get(':id/reviews')
+  @RequirePermissions('trips:read')
+  @ApiOperation({ summary: 'Get all reviews for a trip' })
+  getReviews(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.tripsService.getTripReviews(user.companyId, id);
   }
 }

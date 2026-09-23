@@ -1,4 +1,4 @@
-import { IsNumber, IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsNumber, IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
 export class DriverScoreDto {
   @IsBoolean()
   @IsNotEmpty()
@@ -9,14 +9,26 @@ export class DriverScoreDto {
   podUploaded: boolean;
 
   @IsNumber()
-  @IsNotEmpty()
-  fuelScore: number;
+  @IsOptional()
+  dispatcherScore?: number;
 
   @IsNumber()
-  @IsNotEmpty()
-  damageScore: number;
+  @IsOptional()
+  fleetManagerScore?: number;
 
   @IsNumber()
-  @IsNotEmpty()
-  behaviourScore: number;
+  @IsOptional()
+  workshopScore?: number;
+
+  @IsNumber()
+  @IsOptional()
+  securityScore?: number;
+
+  @IsNumber()
+  @IsOptional()
+  customerScore?: number;
+
+  @IsNumber()
+  @IsOptional()
+  mileageScore?: number;
 }

@@ -373,9 +373,12 @@ export class DriversService {
           totalScore: 0,
           onTimeAvg: 0,
           podAvg: 0,
-          fuelAvg: 0,
-          damageAvg: 0,
-          behaviourAvg: 0,
+          dispatcherAvg: 0,
+          fleetManagerAvg: 0,
+          workshopAvg: 0,
+          securityAvg: 0,
+          customerAvg: 0,
+          mileageAvg: 0,
           trend: 'stable',
           recentTrips: []
         };
@@ -384,9 +387,13 @@ export class DriversService {
       const totalScore = scores.reduce((sum, s) => sum + s.total, 0) / scores.length;
       const onTimeAvg = (scores.filter(s => s.onTime).length / scores.length) * 100;
       const podAvg = (scores.filter(s => s.podUploaded).length / scores.length) * 100;
-      const fuelAvg = scores.reduce((sum, s) => sum + s.fuelScore, 0) / scores.length;
-      const damageAvg = scores.reduce((sum, s) => sum + s.damageScore, 0) / scores.length;
-      const behaviourAvg = scores.reduce((sum, s) => sum + s.behaviourScore, 0) / scores.length;
+      
+      const dispatcherAvg = scores.reduce((sum, s) => sum + (s.dispatcherScore || 0), 0) / scores.length;
+      const fleetManagerAvg = scores.reduce((sum, s) => sum + (s.fleetManagerScore || 0), 0) / scores.length;
+      const workshopAvg = scores.reduce((sum, s) => sum + (s.workshopScore || 0), 0) / scores.length;
+      const securityAvg = scores.reduce((sum, s) => sum + (s.securityScore || 0), 0) / scores.length;
+      const customerAvg = scores.reduce((sum, s) => sum + (s.customerScore || 0), 0) / scores.length;
+      const mileageAvg = scores.reduce((sum, s) => sum + (s.mileageScore || 0), 0) / scores.length;
 
       let trend = 'stable';
       if (scores.length >= 2) {
@@ -400,9 +407,12 @@ export class DriversService {
         totalScore,
         onTimeAvg,
         podAvg,
-        fuelAvg,
-        damageAvg,
-        behaviourAvg,
+        dispatcherAvg,
+        fleetManagerAvg,
+        workshopAvg,
+        securityAvg,
+        customerAvg,
+        mileageAvg,
         trend,
         recentTrips: scores.map(s => ({
           tripNumber: s.trip.tripNumber,
