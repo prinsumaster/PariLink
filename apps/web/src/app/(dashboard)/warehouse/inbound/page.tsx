@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Download, Search, CheckCircle2, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 export default function InboundReceiptsPage() {
   const [search, setSearch] = useState('');

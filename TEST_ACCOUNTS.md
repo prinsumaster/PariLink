@@ -116,5 +116,5 @@ owner to confirm the trust policy does not allow assumption from arbitrary repos
 Company: PariLink / Tenant B
 Role: Admin
 Origin: These are the core testing accounts used for E2E tests, originally seeded via `apps/api/prisma/seed.ts` using `password123`.
-Why modified: An earlier agent erroneously thought `devpassword` was the original credential based on test scripts, causing transaction errors during login.
+Why modified: An earlier agent erroneously thought `devpassword` was the original credential based on test scripts, causing transaction errors during login. `Company B`'s `TenantConfiguration.onboardingCompleted` was also seeded manually in DB (set to true) for testing purposes, so `admin_b@parilink.com` lands cleanly on `/dashboard` and is not stuck in `/onboarding`.
 Current state: Both passwords are now cleanly restored to the hash for "password123" in the Docker DB as of 2026-09-22.

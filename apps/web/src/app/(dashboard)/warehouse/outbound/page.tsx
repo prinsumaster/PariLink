@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Search, CheckCircle2, Clock, Package } from 'lucide-react';
+import { Plus, Search, Clock, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 export default function OutboundOrdersPage() {
   const [search, setSearch] = useState('');

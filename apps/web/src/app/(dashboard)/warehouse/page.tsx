@@ -3,17 +3,22 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
-import { Plus, Building2, Package, Search } from 'lucide-react';
+import { Plus, Building2, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/api';
-import Link from 'next/link';
 
 export default function WarehouseMasterPage() {
   const [search, setSearch] = useState('');
   
   // Basic layout for now. Will be populated by backend in future updates.
-  const { data, isLoading } = useSWR('/warehouse', (url) => api.get(url).then(r => r.data));
+  const { data, isLoading } = useQuery({
+    queryKey: ['warehouses'],
+    queryFn: async () => {
+      const res = await api.get('/warehouse');
+      return res.data;
+    },
+  });
 
   return (
     <div className="flex flex-col h-full page-enter">

@@ -24,7 +24,7 @@ import {
   LineChart,
   DollarSign,
   Store,
-  Crown,
+  
   Building2,
   Monitor,
   GitBranch,
@@ -123,7 +123,7 @@ export const navigationConfig: NavGroup[] = [
       },
     ],
   },
-  */
+
   {
     title: 'Overview',
     items: [

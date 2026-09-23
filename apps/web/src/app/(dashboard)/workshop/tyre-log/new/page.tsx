@@ -64,7 +64,7 @@ export default function NewTyreLogPage() {
               <Label htmlFor="tyreId">Tyre ID (UUID) <span className="text-red-500">*</span></Label>
               <Input 
                 id="tyreId" 
-                value={formData.tyreId}
+                value={formData.tyreId || ""}
                 onChange={e => setFormData({ ...formData, tyreId: e.target.value })}
                 placeholder="e.g. 58387ba9-e9e2-4cbe-8dad-17ed42bd6cd0"
                 required
@@ -84,7 +84,7 @@ export default function NewTyreLogPage() {
 
             <div className="space-y-2">
               <Label htmlFor="action">Action</Label>
-              <Select value={formData.action} onValueChange={(v) => setFormData({ ...formData, action: v })}>
+              <Select value={formData.action} onValueChange={(v) => setFormData({ ...formData, action: v || '' })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Action" />
                 </SelectTrigger>

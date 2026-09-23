@@ -1,6 +1,6 @@
 # Honest Module Status Table
 
-Last updated: 2026-09-22
+Last updated: 2026-09-23
 
 Each claim in this table has specific evidence backing it. Claims marked `STUB` or `DETERMINISTIC` are honest limitations, not failures.
 
@@ -25,7 +25,7 @@ Each claim in this table has specific evidence backing it. Claims marked `STUB` 
 | **Warehouse — Master** | Yes | Yes — Operations → Warehouse → Master | Yes (6/6 E2E) | Yes | Docker DB: Tenant A sees Mumbai Central Warehouse only; Tenant B sees Chennai South Warehouse only. Cross-tenant GET on Tenant B warehouse ID → 404. Verified via `docker exec parilink-postgres-1 psql`. Note: earlier session SQL counts cited local native Postgres (380 companies) not Docker DB (81 companies) — those counts are retracted. |
 | **Warehouse — Inbound** | Yes | Yes — Operations → Warehouse → Inbound | Yes (part of 6/6 E2E) | Yes — CreateAsnDto + ReceiveGoodsDto | |
 | **Warehouse — Outbound** | Yes | Yes — Operations → Warehouse → Outbound | Yes (part of 6/6 E2E) | Yes — CreateOutboundOrderDto | |
-
+| **Workshop / Fleet Maint** | Yes | Yes — Operations → Workshop | Yes (20/20 E2E) | Yes | Real cross-tenant isolation verified with Playwright on /workshop/[id] yielding 404 both at network and UI level. DB counts matched exactly with API return length. |
 ---
 
 ## CI Status
