@@ -131,59 +131,60 @@ model Company {
   documentSignatures         DocumentSignature[]
   complianceRequirements     ComplianceRequirement[]
 
-  crmLeads            CrmLead[]
-  crmActivities       CrmActivity[]
-  salesTargets        SalesTarget[]
-  gstTaxRules         GstTaxRule[]
-  taxLedgers          TaxLedger[]
-  tollAccounts        TollAccount[]
-  tollTransactions    TollTransaction[]
-  bankAccounts        BankAccount[]
-  bankStatements      BankStatement[]
-  bankTransactions    BankTransaction[]
-  vehiclePermits      VehiclePermit[]
-  payrollStructures   PayrollStructure[]
-  payrollRuns         PayrollRun[]
-  payslips            Payslip[]
-  driverAttendances   DriverAttendance[]
-  DriverScore         DriverScore[]
-  FleetKpiSnapshot    FleetKpiSnapshot[]
-  Claim               Claim[]
-  MaintenanceJob      MaintenanceJob[]
-  EmergencyAlert      EmergencyAlert[]
-  Workshop            Workshop[]
-  Mechanic            Mechanic[]
-  JobCard             JobCard[]
-  MaintenanceSchedule MaintenanceSchedule[]
-  FuelCard            FuelCard[]
-  FuelStation         FuelStation[]
-  FuelTransaction     FuelTransaction[]
-  Tyre                Tyre[]
-  TyreLog             TyreLog[]
-  HosViolation        HosViolation[]
-  DvirLog             DvirLog[]
-  InsuranceLog        InsuranceLog[]
-  LoadBoardItem       LoadBoardItem[]
-  ReportTemplate      ReportTemplate[]
-  ReportSchedule      ReportSchedule[]
-  ReportExecution     ReportExecution[]
-  VehicleRegistration VehicleRegistration[]
-  PurchaseOrder       PurchaseOrder[]
-  ExternalCarrier     ExternalCarrier[]
-  CarrierBid          CarrierBid[]
-  KpiDefinition       KpiDefinition[]
-  CustomMetric        CustomMetric[]
-  TrendReport         TrendReport[]
-  TripDesk            TripDesk[]
-  FuelEntry           FuelEntry[]
-  LoadingEvent        LoadingEvent[]
-  JobPart             JobPart[]
-  TruckProfitability  TruckProfitability[]
-  TripExpense         TripExpense[]
-  outboundOrders      OutboundOrder[]
-  outboundOrderItems  OutboundOrderItem[]
-  tripReviews         TripReview[]
-  RouteTollRate       RouteTollRate[]
+  crmLeads             CrmLead[]
+  crmActivities        CrmActivity[]
+  salesTargets         SalesTarget[]
+  gstTaxRules          GstTaxRule[]
+  taxLedgers           TaxLedger[]
+  tollAccounts         TollAccount[]
+  tollTransactions     TollTransaction[]
+  bankAccounts         BankAccount[]
+  bankStatements       BankStatement[]
+  bankTransactions     BankTransaction[]
+  vehiclePermits       VehiclePermit[]
+  payrollStructures    PayrollStructure[]
+  payrollRuns          PayrollRun[]
+  payslips             Payslip[]
+  driverAttendances    DriverAttendance[]
+  DriverScore          DriverScore[]
+  FleetKpiSnapshot     FleetKpiSnapshot[]
+  Claim                Claim[]
+  MaintenanceJob       MaintenanceJob[]
+  EmergencyAlert       EmergencyAlert[]
+  Workshop             Workshop[]
+  Mechanic             Mechanic[]
+  JobCard              JobCard[]
+  MaintenanceSchedule  MaintenanceSchedule[]
+  FuelCard             FuelCard[]
+  FuelStation          FuelStation[]
+  FuelTransaction      FuelTransaction[]
+  Tyre                 Tyre[]
+  TyreLog              TyreLog[]
+  HosViolation         HosViolation[]
+  DvirLog              DvirLog[]
+  InsuranceLog         InsuranceLog[]
+  LoadBoardItem        LoadBoardItem[]
+  ReportTemplate       ReportTemplate[]
+  ReportSchedule       ReportSchedule[]
+  ReportExecution      ReportExecution[]
+  VehicleRegistration  VehicleRegistration[]
+  PurchaseOrder        PurchaseOrder[]
+  ExternalCarrier      ExternalCarrier[]
+  CarrierBid           CarrierBid[]
+  KpiDefinition        KpiDefinition[]
+  CustomMetric         CustomMetric[]
+  TrendReport          TrendReport[]
+  TripDesk             TripDesk[]
+  FuelEntry            FuelEntry[]
+  LoadingEvent         LoadingEvent[]
+  JobPart              JobPart[]
+  TruckProfitability   TruckProfitability[]
+  TripExpense          TripExpense[]
+  outboundOrders       OutboundOrder[]
+  outboundOrderItems   OutboundOrderItem[]
+  tripReviews          TripReview[]
+  RouteTollRate        RouteTollRate[]
+  JobCardStatusHistory JobCardStatusHistory[]
 
   @@index([status])
   @@index([subscriptionPlanId])
@@ -4149,29 +4150,58 @@ model Mechanic {
 }
 
 model JobCard {
-  id            String        @id @default(uuid())
+  id            String    @id @default(uuid())
   companyId     String
   vehicleId     String
   workshopId    String
   mechanicId    String?
   issueReported String
-  status        String        @default("OPEN")
+  status        String    @default("OPEN")
   totalCost     Float?
   workDone      String?
   closedAt      DateTime?
   odometer      Float?
-  openedAt      DateTime      @default(now())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  parts         JobCardPart[]
-  mechanic      Mechanic?     @relation(fields: [mechanicId], references: [id])
-  workshop      Workshop      @relation(fields: [workshopId], references: [id])
-  JobPart       JobPart[]
-  maintenanceJobs MaintenanceJob[]
+  openedAt      DateTime  @default(now())
 
-  @@index([companyId, vehicleId])
+  // Lifecycle fields
+  gateInTime      DateTime?
+  gateInOdometer  Float?
+  gateInPhotoUrl  String?
+  qcApprovedById  String?
+  qcApprovedAt    DateTime?
+  gateOutTime     DateTime?
+  gateOutOdometer Float?
+  gateOutPhotoUrl String?
+  ownerApproved   Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company         Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parts           JobCardPart[]
+  mechanic        Mechanic?              @relation(fields: [mechanicId], references: [id])
+  workshop        Workshop               @relation(fields: [workshopId], references: [id])
+  JobPart         JobPart[]
+  maintenanceJobs MaintenanceJob[]
+  statusHistory   JobCardStatusHistory[]
+
+  @@index([companyId, vehicleId, openedAt])
   @@index([companyId, status])
+}
+
+model JobCardStatusHistory {
+  id         String    @id @default(uuid())
+  companyId  String
+  jobCardId  String
+  status     String
+  startTime  DateTime  @default(now())
+  endTime    DateTime?
+  durationMs Float?
+
+  jobCard JobCard @relation(fields: [jobCardId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, jobCardId])
 }
 
 model JobCardPart {
@@ -4637,23 +4667,24 @@ model JobPart {
 }
 
 model Part {
-  id           String    @id @default(uuid())
+  id           String   @id @default(uuid())
   companyId    String
   name         String
   sku          String?
-  unitCost     Float     @default(0)
-  quantity     Float     @default(0)
+  unitCost     Float    @default(0)
+  quantity     Float    @default(0)
   reorderLevel Float?
   vendorId     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  company      Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  vendor       Vendor?   @relation(fields: [vendorId], references: [id])
-  JobPart      JobPart[]
+  company Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  vendor  Vendor?   @relation(fields: [vendorId], references: [id])
+  JobPart JobPart[]
 
   @@index([companyId])
   @@index([companyId, sku])
+  @@index([companyId, quantity])
 }
 
 model DriverScore {

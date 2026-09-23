@@ -5,6 +5,7 @@ import { CreatePartDto } from './dto/create-part.dto';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { CreateTyreLogDto } from './dto/create-tyre-log.dto';
 import { CreateJobPartDto } from './dto/create-job-part.dto';
+import { GateInDto, UpdateStatusDto, GateOutDto, OwnerApproveDto } from './dto/lifecycle.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -37,10 +38,58 @@ export class WorkshopController {
     return this.workshopService.getJobCard(user.companyId, id);
   }
 
+  @Post('job-cards/:id/gate-in')
+  @RequirePermissions('workshop:gate')
+  async gateInJobCard(@GetUser() user: AuthenticatedUser, @Param('id') id: string, @Body() data: GateInDto) {
+    return this.workshopService.gateInJobCard(user.companyId, id, data);
+  }
+
+  @Post('job-cards/:id/status')
+  @RequirePermissions('workshop:mechanic')
+  async updateJobCardStatus(@GetUser() user: AuthenticatedUser, @Param('id') id: string, @Body() data: UpdateStatusDto) {
+    return this.workshopService.updateJobCardStatus(user.companyId, id, data);
+  }
+
+  @Post('job-cards/:id/qc-signoff')
+  @RequirePermissions('workshop:supervisor')
+  async qcSignoffJobCard(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.workshopService.qcSignoffJobCard(user.companyId, id, user.id);
+  }
+
+  @Post('job-cards/:id/gate-out')
+  @RequirePermissions('workshop:gate')
+  async gateOutJobCard(@GetUser() user: AuthenticatedUser, @Param('id') id: string, @Body() data: GateOutDto) {
+    return this.workshopService.gateOutJobCard(user.companyId, id, data);
+  }
+
+  @Post('job-cards/:id/owner-approve')
+  @RequirePermissions('workshop:owner')
+  async ownerApproveJobCard(@GetUser() user: AuthenticatedUser, @Param('id') id: string, @Body() data: OwnerApproveDto) {
+    return this.workshopService.ownerApproveJobCard(user.companyId, id, data);
+  }
+
+  @Get('job-cards/:id/idle-time')
+  @RequirePermissions('fleet:read')
+  async getJobCardIdleTime(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.workshopService.getJobCardIdleTime(user.companyId, id);
+  }
+
+  @Get('maintenance-due')
+  @RequirePermissions('fleet:read')
+  async getMaintenanceDue(@GetUser() user: AuthenticatedUser) {
+    return this.workshopService.getMaintenanceDue(user.companyId);
+  }
+
   @Post('parts')
   @RequirePermissions('fleet:write')
   async createPart(@GetUser() user: AuthenticatedUser, @Body() data: CreatePartDto) {
     return this.workshopService.createPart(user.companyId, data);
+  }
+
+  @Get('parts/low-stock')
+  @RequirePermissions('fleet:read')
+  async getLowStockParts(@GetUser() user: AuthenticatedUser) {
+    return this.workshopService.getLowStockParts(user.companyId);
   }
 
   @Get('parts')
@@ -53,6 +102,12 @@ export class WorkshopController {
   @RequirePermissions('fleet:read')
   async getPart(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.workshopService.getPart(user.companyId, id);
+  }
+
+  @Get('vendors/:id/performance')
+  @RequirePermissions('fleet:read')
+  async getVendorPerformance(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.workshopService.getVendorPerformance(user.companyId, id);
   }
 
   @Get('vendors')

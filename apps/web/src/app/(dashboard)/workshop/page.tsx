@@ -4,7 +4,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import Link from 'next/link';
-import { Plus, Wrench, Calendar, Truck } from 'lucide-react';
+import { Plus, Wrench, Calendar, Truck, AlertTriangle, AlertCircle } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,22 @@ export default function WorkshopPage() {
     queryKey: ['job-cards'],
     queryFn: async () => {
       const res = await api.get('/workshop/job-cards');
+      return res.data;
+    },
+  });
+
+  const { data: lowStock } = useQuery({
+    queryKey: ['parts-low-stock'],
+    queryFn: async () => {
+      const res = await api.get('/workshop/parts/low-stock');
+      return res.data;
+    },
+  });
+
+  const { data: maintDue } = useQuery({
+    queryKey: ['maintenance-due'],
+    queryFn: async () => {
+      const res = await api.get('/workshop/maintenance-due');
       return res.data;
     },
   });
@@ -71,6 +87,46 @@ export default function WorkshopPage() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="glass elevation-2 border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/30 rounded-xl overflow-hidden p-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-amber-600"><AlertTriangle className="w-5 h-5" /> Low Stock Parts</h2>
+          {!lowStock || lowStock.length === 0 ? (
+            <p className="text-slate-500 italic">Inventory is healthy.</p>
+          ) : (
+            <div className="space-y-3">
+              {lowStock.map((part: any) => (
+                <div key={part.id} className="flex justify-between items-center p-3 border rounded-lg bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900">
+                  <div>
+                    <h3 className="font-bold">{part.name}</h3>
+                    <p className="text-sm text-amber-600 dark:text-amber-500">Reorder Level: {part.reorderLevel}</p>
+                  </div>
+                  <Badge variant="destructive" className="text-lg px-3">{part.quantity} in stock</Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="glass elevation-2 border-slate-200/60 dark:border-slate-800/60 bg-white/50 dark:bg-slate-900/30 rounded-xl overflow-hidden p-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-rose-600"><AlertCircle className="w-5 h-5" /> Maintenance Due</h2>
+          {!maintDue || maintDue.length === 0 ? (
+            <p className="text-slate-500 italic">No vehicles overdue for maintenance.</p>
+          ) : (
+            <div className="space-y-3">
+              {maintDue.map((due: any, i: number) => (
+                <div key={i} className="p-3 border rounded-lg bg-rose-50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold font-mono text-rose-900 dark:text-rose-100">{due.vehicleId.slice(0, 8)}...</h3>
+                    <Badge variant="destructive">Overdue by {due.overdueKm} km</Badge>
+                  </div>
+                  <p className="text-sm text-rose-600 dark:text-rose-400">Current Odo: {due.currentOdo} | Last Maint: {due.lastMaintOdo}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

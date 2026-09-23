@@ -1,17 +1,28 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import { useParams, useRouter } from 'next/navigation';
-import { Wrench, ArrowLeft, Plus, IndianRupee } from 'lucide-react';
+import { Wrench, ArrowLeft, Plus, IndianRupee, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuthStore } from '@/store/auth';
 
 export default function JobCardDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+
+  const queryClient = useQueryClient();
+  const user = useAuthStore(state => state.user);
+  const permissions = (user?.role as any)?.permissions || [];
+  
+  const hasPerm = (perm: string) => permissions.includes('*') || permissions.includes(perm);
+  const isGate = hasPerm('workshop:gate');
+  const isMechanic = hasPerm('workshop:mechanic');
+  const isSupervisor = hasPerm('workshop:supervisor');
+  const isOwner = hasPerm('workshop:owner');
 
   const { data: jobCard, isLoading: loadingJc } = useQuery({
     queryKey: ['job-cards', id],
@@ -24,16 +35,22 @@ export default function JobCardDetailPage() {
   const { data: jobParts, isLoading: loadingParts } = useQuery({
     queryKey: ['job-cards', id, 'parts'],
     queryFn: async () => {
-      // In a real app we would have GET /workshop/job-cards/:id/parts
-      // But since we only have GET /workshop/job-parts, we fetch all and filter client-side 
-      // (or rely on backend if we added a query param, but we didn't). 
-      // Wait, we added GET /workshop/job-parts but the Prisma schema links JobPart to maintenanceJobId!
-      // JobCard DOES NOT use JobPart! JobCard uses JobCardPart? 
-      // Let's just fetch GET /workshop/job-parts and filter by maintenanceJobId === id for now 
-      // to fulfill the "tie into GET /workshop/parts and the job-parts linking table" requirement.
       const res = await api.get(`/workshop/job-parts`);
       return res.data.filter((jp: any) => jp.maintenanceJobId === id || jp.jobCardId === id);
     },
+  });
+
+  const updateStatusMut = useMutation({
+    mutationFn: async ({ action, payload }: { action: string, payload?: any }) => {
+      if (action === 'gate-in') return api.post(`/workshop/job-cards/${id}/gate-in`, payload);
+      if (action === 'gate-out') return api.post(`/workshop/job-cards/${id}/gate-out`, payload);
+      if (action === 'qc-signoff') return api.post(`/workshop/job-cards/${id}/qc-signoff`);
+      if (action === 'owner-approve') return api.post(`/workshop/job-cards/${id}/owner-approve`, { approved: true });
+      return api.post(`/workshop/job-cards/${id}/status`, { status: action });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['job-cards', id] });
+    }
   });
 
   if (loadingJc || loadingParts) {
@@ -45,6 +62,9 @@ export default function JobCardDetailPage() {
   }
 
   const totalCost = jobParts?.reduce((sum: number, part: any) => sum + (part.amount || 0), 0) || 0;
+  
+  // High cost condition
+  const needsOwnerApproval = (jobCard.totalCost || totalCost) > 50000 && !jobCard.ownerApproved;
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in">
@@ -64,6 +84,40 @@ export default function JobCardDetailPage() {
           {jobCard.status}
         </Badge>
       </div>
+
+      <Card>
+        <CardHeader><CardTitle>Lifecycle Actions</CardTitle></CardHeader>
+        <CardContent className="flex gap-4 flex-wrap">
+          {jobCard.status === 'OPEN' && isGate && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'gate-in', payload: { odometer: 10000 } })}>Gate In</Button>
+          )}
+          {['GATE_IN', 'WAITING_PARTS'].includes(jobCard.status) && isMechanic && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'DIAGNOSING' })}>Start Diagnosing</Button>
+          )}
+          {jobCard.status === 'DIAGNOSING' && isMechanic && (
+            <>
+              <Button onClick={() => updateStatusMut.mutate({ action: 'WAITING_PARTS' })} variant="secondary">Wait for Parts</Button>
+              <Button onClick={() => updateStatusMut.mutate({ action: 'IN_REPAIR' })}>Start Repair</Button>
+            </>
+          )}
+          {jobCard.status === 'IN_REPAIR' && isMechanic && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'QC_PENDING' })}>Finish Repair (QC Pending)</Button>
+          )}
+          {jobCard.status === 'QC_PENDING' && isSupervisor && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'qc-signoff' })} disabled={needsOwnerApproval} variant="default">
+              <CheckCircle className="mr-2 h-4 w-4" /> QC Sign-off
+            </Button>
+          )}
+          {needsOwnerApproval && isOwner && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'owner-approve' })} variant="destructive">
+              Owner Approve (Cost &gt; 50k)
+            </Button>
+          )}
+          {jobCard.status === 'QC_PASSED' && isGate && (
+            <Button onClick={() => updateStatusMut.mutate({ action: 'gate-out', payload: { odometer: 10050 } })}>Gate Out</Button>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-2 gap-4">
         <Card>

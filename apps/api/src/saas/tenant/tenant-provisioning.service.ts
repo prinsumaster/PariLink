@@ -49,6 +49,30 @@ export class TenantProvisioningService {
           },
         });
       }
+
+      // Workshop Roles
+      const workshopRoles = [
+        { name: 'Workshop Gate', permissions: ['workshop:gate'] },
+        { name: 'Workshop Mechanic', permissions: ['workshop:mechanic'] },
+        { name: 'Workshop Supervisor', permissions: ['workshop:supervisor', 'workshop:gate'] },
+        { name: 'Workshop Owner', permissions: ['workshop:owner', 'workshop:supervisor', 'workshop:mechanic', 'workshop:gate'] }
+      ];
+
+      for (const role of workshopRoles) {
+        const existing = await tx.role.findFirst({
+          where: { companyId, name: role.name },
+        });
+        if (!existing) {
+          await tx.role.create({
+            data: {
+              companyId,
+              name: role.name,
+              description: `${role.name} access`,
+              permissions: role.permissions,
+            },
+          });
+        }
+      }
     });
 
     return { success: true };
