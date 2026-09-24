@@ -6939,6 +6939,44 @@
         ]
       }
     },
+    "/api/v1/routes": {
+      "get": {
+        "operationId": "RoutesController_getRoutes_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all routes",
+        "tags": [
+          "routes"
+        ]
+      },
+      "post": {
+        "operationId": "RoutesController_createRoute_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new route",
+        "tags": [
+          "routes"
+        ]
+      }
+    },
     "/api/v1/dispatch/board": {
       "get": {
         "operationId": "DispatchController_getBoardData_v1",
@@ -21741,6 +21779,82 @@
         ],
         "tags": [
           "workshop"
+        ]
+      }
+    },
+    "/api/v1/fuel-logs": {
+      "get": {
+        "operationId": "FuelController_getFuelLogs_v1",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all fuel logs",
+        "tags": [
+          "fuel-logs"
+        ]
+      },
+      "post": {
+        "operationId": "FuelController_createFuelLog_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new fuel log",
+        "tags": [
+          "fuel-logs"
+        ]
+      }
+    },
+    "/api/v1/fuel-logs/{id}/status": {
+      "patch": {
+        "operationId": "FuelController_updateFuelLogStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve or update fuel log status",
+        "tags": [
+          "fuel-logs"
         ]
       }
     }

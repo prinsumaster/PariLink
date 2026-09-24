@@ -185,6 +185,7 @@ model Company {
   tripReviews          TripReview[]
   RouteTollRate        RouteTollRate[]
   JobCardStatusHistory JobCardStatusHistory[]
+  Route                Route[]
 
   @@index([status])
   @@index([subscriptionPlanId])
@@ -4766,24 +4767,26 @@ model TripDesk {
 }
 
 model FuelEntry {
-  id              String   @id @default(uuid())
-  companyId       String
-  tripId          String
-  vehicleId       String
-  driverId        String
-  litres          Float
-  amount          Float
-  pump            String?
-  slipNo          String?
-  expectedLitres  Float?
-  variancePct     Float?
+  id                String   @id @default(uuid())
+  companyId         String
+  tripId            String
+  vehicleId         String
+  driverId          String
+  litres            Float
+  amount            Float
+  pump              String?
+  slipNo            String?
+  expectedLitres    Float?
+  variancePct       Float?
   // Route key fields — copied from Load at write time so root-cause grouping
   // needs no join. routeKey = originCity + ":" + destinationCity
-  originCity      String?
-  destinationCity String?
-  filledAt        DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  originCity        String?
+  destinationCity   String?
+  filledAt          DateTime @default(now())
+  status            String   @default("PENDING")
+  billingCustomerId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   trip    Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
@@ -4880,5 +4883,20 @@ model RouteTollRate {
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, originCity, destinationCity])
+  @@index([companyId])
+}
+
+model Route {
+  id             String   @id @default(uuid())
+  companyId      String
+  origin         String
+  destination    String
+  distance       Float?
+  estimatedTolls Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
   @@index([companyId])
 }

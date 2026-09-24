@@ -126,6 +126,7 @@ import { AiSchedulerModule } from './intelligence/scheduler/scheduler.module';
 import { TelemetryProcessorModule } from './intelligence/telemetry-processor/telemetry-processor.module';
 import { ReportingModule } from './reporting/reporting.module';
 import { WorkshopModule } from './workshop/workshop.module';
+import { FuelModule } from './fuel/fuel.module';
 
 @Module({
   imports: [
@@ -320,6 +321,7 @@ import { WorkshopModule } from './workshop/workshop.module';
     FleetModule,
     LorryReceiptsModule,
     WorkshopModule,
+    FuelModule,
   ],
   providers: [
     ApiRateLimiterMiddleware,

@@ -30,4 +30,27 @@ export class RoutesService {
       };
     });
   }
+
+  async getRoutes(companyId: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.route.findMany({
+        where: { companyId },
+        orderBy: { createdAt: 'desc' },
+      });
+    });
+  }
+
+  async createRoute(companyId: string, origin: string, destination: string, distance?: number, estimatedTolls?: number) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.route.create({
+        data: {
+          companyId,
+          origin,
+          destination,
+          distance: distance || 1000,
+          estimatedTolls: estimatedTolls || 50,
+        },
+      });
+    });
+  }
 }
