@@ -1,0 +1,20 @@
+# Antigravity Instructions - Repository Hygiene
+
+This repository enforces strict hygiene rules to prevent clutter and ensure that throwaway scripts do not pollute the main codebase.
+
+## 1. Scratch & Workaround Scripts
+- **Do NOT commit** temporary, throwaway, or workaround scripts (e.g., debug scripts, temporary database seeders, manual API callers) into the codebase.
+- Any script intended for temporary debugging or bypassing a proper flow MUST be placed in the `scratch/` directory. 
+- The `scratch/` directory is already in `.gitignore`. **Do not force-add files inside `scratch/` to Git.**
+
+## 2. Reusable Utility Scripts
+- Scripts that are meant to be reused (e.g., database migrations, legitimate seeders, test environment setup scripts) must be placed in the `scripts/` directory at the repository root.
+- Give these scripts descriptive names (e.g., `seed-warehouse.sql`, `setup-test-db.sh`) and ensure they are well-documented.
+
+## 3. Playwright and E2E Testing
+- When an E2E test fails (e.g., timeouts, authentication redirects), diagnose the root cause in the application or test configuration rather than writing a standalone `.js`/`.ts` bypass script.
+- Do not commit manual playwright test scripts in the root directory. Place all tests in `apps/web/tests/` or `apps/api/test/` and name them with `.spec.ts` or `.e2e-spec.ts`.
+
+## 4. Root Directory Cleanliness
+- The repository root must be kept clean. Do not drop temporary `.js`, `.ts`, `.json`, `.sql`, or `.txt` log files at the root level.
+- Use `scripts/check-repo-hygiene.sh` to automatically detect unauthorized files at the root level before committing.
