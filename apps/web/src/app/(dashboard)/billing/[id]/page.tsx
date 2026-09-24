@@ -187,12 +187,15 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                       <tr key={item.id || idx}>
                         <td className="py-4">
                           <p className="font-medium text-slate-900 dark:text-white">{item.description}</p>
-                          {invoice.loadId && (
-                            <p className="text-xs text-muted-foreground mt-0.5 font-mono">Load Ref: {invoice.loadId.slice(0, 8)}</p>
+                          {item.sourceType === 'TRIP' && item.tripId && (
+                            <p className="text-xs text-muted-foreground mt-0.5 font-mono">Trip: {item.tripId.slice(0, 8)}</p>
+                          )}
+                          {item.sourceType === 'LORRY_RECEIPT' && item.lorryReceiptId && (
+                            <p className="text-xs text-muted-foreground mt-0.5 font-mono">LR: {item.lorryReceiptId.slice(0, 8)}</p>
                           )}
                         </td>
                         <td className="py-4 text-right">{item.quantity || 1}</td>
-                        <td className="py-4 text-right">{money(item.unitPrice || item.rate || item.amount || 0)}</td>
+                        <td className="py-4 text-right">{money(item.unitPrice || item.rate || 0)}</td>
                         <td className="py-4 text-right">5%</td>
                         <td className="py-4 text-right font-medium text-slate-900 dark:text-white">{money(item.amount || item.total || 0)}</td>
                       </tr>
@@ -206,21 +209,36 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                 <div className="w-72 space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Taxable Value (Subtotal)</span>
-                    <span className="font-medium text-slate-900 dark:text-white">{money(invoice.subtotal || Math.round(invoice.amount / 1.05))}</span>
+                    <span className="font-medium text-slate-900 dark:text-white">{money(invoice.subtotal)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">CGST (2.5%)</span>
-                    <span className="font-medium text-slate-900 dark:text-white">{money(Math.round((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) / 2))}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">SGST (2.5%)</span>
-                    <span className="font-medium text-slate-900 dark:text-white">{money((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) - Math.round((invoice.taxTotal || (invoice.amount - Math.round(invoice.amount / 1.05))) / 2))}</span>
-                  </div>
+                  {invoice.taxType === 'IGST' ? (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">IGST (5%)</span>
+                      <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal)}</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">CGST (2.5%)</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal / 2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">SGST (2.5%)</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal / 2)}</span>
+                      </div>
+                    </>
+                  )}
                   <Separator />
                   <div className="flex justify-between text-base">
                     <span className="font-bold text-slate-900 dark:text-white">Grand Total</span>
                     <span className="font-bold text-blue-600 dark:text-blue-400">{money(invoice.grandTotal || invoice.amount)}</span>
                   </div>
+                  {invoice.amountInWords && (
+                    <div className="pt-2">
+                      <p className="text-xs text-muted-foreground uppercase font-medium">Amount in Words</p>
+                      <p className="text-sm font-semibold capitalize mt-1 text-slate-800 dark:text-slate-200">{invoice.amountInWords}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

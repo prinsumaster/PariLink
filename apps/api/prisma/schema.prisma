@@ -426,6 +426,7 @@ model Invoice {
   paymentRef    String?
   paidAt        DateTime?
   notes         String?
+  amountInWords String?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   deletedAt     DateTime?
@@ -467,8 +468,12 @@ model InvoiceLineItem {
   description String
   quantity    Float    @default(1)
   unitPrice   Float
+  loadedQty   Float?
+  unloadedQty Float?
+  rate        Float?
   amount      Float
   type        String   @default("LINE_HAUL")
+  sourceType  String   @default("TRIP")
   tripId      String?
   jobCardId   String?
   createdAt   DateTime @default(now())
@@ -490,6 +495,7 @@ model Customer {
   email          String?
   phone          String?
   billingAddress String?
+  state          String?
   taxId          String?
   paymentTerms   String      @default("NET_30")
   creditLimit    Float?      @default(0)

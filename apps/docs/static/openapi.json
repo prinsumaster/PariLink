@@ -4240,6 +4240,35 @@
         ]
       }
     },
+    "/api/v1/drivers/{id}/lorry-receipts": {
+      "get": {
+        "operationId": "DriversController_getLorryReceipts_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Lorry Receipts shared with a driver",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
     "/api/v1/drivers/{id}": {
       "get": {
         "operationId": "DriversController_findOne_v1",
@@ -4335,7 +4364,7 @@
     },
     "/api/v1/drivers/{id}/score": {
       "get": {
-        "operationId": "DriversController_getDriverScore_v1",
+        "operationId": "DriversController_getScore_v1",
         "parameters": [
           {
             "name": "id",
@@ -4356,7 +4385,7 @@
             "bearer": []
           }
         ],
-        "summary": "Get a driver running score",
+        "summary": "Get a driver score scorecard and history",
         "tags": [
           "drivers"
         ]
@@ -6568,6 +6597,45 @@
         ]
       }
     },
+    "/api/v1/trips/{id}/lorry-receipt": {
+      "post": {
+        "operationId": "TripsController_generateLorryReceipt_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLorryReceiptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate LR for a trip",
+        "tags": [
+          "trips"
+        ]
+      }
+    },
     "/api/v1/trips/{id}": {
       "get": {
         "operationId": "TripsController_findOne_v1",
@@ -6802,6 +6870,33 @@
           }
         ],
         "summary": "Submit a trip review",
+        "tags": [
+          "trips"
+        ]
+      },
+      "get": {
+        "operationId": "TripsController_getReviews_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all reviews for a trip",
         "tags": [
           "trips"
         ]
@@ -10700,6 +10795,132 @@
           }
         ],
         "summary": "Generate a draft invoice from a delivered load",
+        "tags": [
+          "billing"
+        ]
+      },
+      "get": {
+        "operationId": "BillingController_getInvoices_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all invoices",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/invoices/generate-from-trips": {
+      "post": {
+        "operationId": "BillingController_generateInvoiceFromTrips_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceFromTripsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a draft invoice from completed trips",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/invoices/overdue": {
+      "get": {
+        "operationId": "BillingController_getOverdueInvoices_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all overdue invoices",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/invoices/{id}": {
+      "get": {
+        "operationId": "BillingController_getInvoiceById_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get an invoice by ID",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/invoices/{id}/status": {
+      "patch": {
+        "operationId": "BillingController_updateInvoiceStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update invoice status (SENT, PAID, CANCELLED)",
         "tags": [
           "billing"
         ]
@@ -20750,16 +20971,25 @@
         ]
       }
     },
-    "/api/v1/lorry-receipts": {
+    "/api/v1/lorry-receipts/{id}/share": {
       "post": {
-        "operationId": "LorryReceiptsController_create_v1",
-        "parameters": [],
+        "operationId": "LorryReceiptsController_share_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateLorryReceiptDto"
+                "$ref": "#/components/schemas/ShareLorryReceiptDto"
               }
             }
           }
@@ -20774,85 +21004,16 @@
             "bearer": []
           }
         ],
-        "summary": "Generate a Lorry Receipt (LR / Bilty) from a booking",
+        "summary": "Share Lorry Receipt with a driver",
         "tags": [
           "lorry-receipts"
         ]
-      },
+      }
+    },
+    "/api/v1/lorry-receipts": {
       "get": {
         "operationId": "LorryReceiptsController_findAll_v1",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "description": "Page number for pagination",
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "description": "Number of items per page",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "search",
-            "required": false,
-            "in": "query",
-            "description": "Global search string",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "description": "Field to sort by",
-            "schema": {
-              "default": "createdAt",
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortOrder",
-            "required": false,
-            "in": "query",
-            "description": "Sort order (asc/desc)",
-            "schema": {
-              "default": "desc",
-              "type": "string",
-              "enum": [
-                "asc",
-                "desc"
-              ]
-            }
-          },
-          {
-            "name": "status",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "ISSUED",
-                "IN_TRANSIT",
-                "DELIVERED",
-                "CANCELLED"
-              ]
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": ""
@@ -20863,7 +21024,7 @@
             "bearer": []
           }
         ],
-        "summary": "List Lorry Receipts for current company",
+        "summary": "List Lorry Receipts",
         "tags": [
           "lorry-receipts"
         ]
@@ -20895,197 +21056,6 @@
         "summary": "Get a Lorry Receipt by ID",
         "tags": [
           "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/lorry-receipts/{id}/print": {
-      "get": {
-        "operationId": "LorryReceiptsController_print_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Printable LR (HTML → browser Print gives a PDF)",
-        "tags": [
-          "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/lorry-receipts/{id}/pdf": {
-      "get": {
-        "operationId": "LorryReceiptsController_generatePdf_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "copy",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Generate a proper A4 PDF for a Bilty/LR",
-        "tags": [
-          "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/lorry-receipts/{id}/status": {
-      "patch": {
-        "operationId": "LorryReceiptsController_updateStatus_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateLorryReceiptStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update LR status (ISSUED→IN_TRANSIT→DELIVERED)",
-        "tags": [
-          "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/lorry-receipts/{id}/eway-bill": {
-      "patch": {
-        "operationId": "LorryReceiptsController_updateEwayBill_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Save manually entered E-Way Bill number on an LR (manual entry only — NIC portal integration not implemented)",
-        "tags": [
-          "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/lorry-receipts/summary/gst": {
-      "get": {
-        "operationId": "LorryReceiptsController_gstSummary_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "GST summary — total GST collected across all LRs for this company (computed from stored LR data, not GST portal)",
-        "tags": [
-          "lorry-receipts"
-        ]
-      }
-    },
-    "/api/v1/bilty/{id}/pdf": {
-      "get": {
-        "operationId": "BiltyController_generatePdf_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "copy",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Generate a proper A4 PDF for a Bilty",
-        "tags": [
-          "bilty"
         ]
       }
     },
@@ -21163,6 +21133,233 @@
         ]
       }
     },
+    "/api/v1/workshop/job-cards/{id}/gate-in": {
+      "post": {
+        "operationId": "WorkshopController_gateInJobCard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GateInDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}/status": {
+      "post": {
+        "operationId": "WorkshopController_updateJobCardStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}/qc-signoff": {
+      "post": {
+        "operationId": "WorkshopController_qcSignoffJobCard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}/gate-out": {
+      "post": {
+        "operationId": "WorkshopController_gateOutJobCard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GateOutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}/owner-approve": {
+      "post": {
+        "operationId": "WorkshopController_ownerApproveJobCard_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnerApproveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-cards/{id}/idle-time": {
+      "get": {
+        "operationId": "WorkshopController_getJobCardIdleTime_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/maintenance-due": {
+      "get": {
+        "operationId": "WorkshopController_getMaintenanceDue_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
     "/api/v1/workshop/parts": {
       "post": {
         "operationId": "WorkshopController_createPart_v1",
@@ -21209,9 +21406,56 @@
         ]
       }
     },
+    "/api/v1/workshop/parts/low-stock": {
+      "get": {
+        "operationId": "WorkshopController_getLowStockParts_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
     "/api/v1/workshop/parts/{id}": {
       "get": {
         "operationId": "WorkshopController_getPart_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/vendors/{id}/performance": {
+      "get": {
+        "operationId": "WorkshopController_getVendorPerformance_v1",
         "parameters": [
           {
             "name": "id",
@@ -21345,6 +21589,51 @@
         },
         "responses": {
           "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      },
+      "get": {
+        "operationId": "WorkshopController_getAllJobParts_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "workshop"
+        ]
+      }
+    },
+    "/api/v1/workshop/job-parts/{id}": {
+      "get": {
+        "operationId": "WorkshopController_getJobPart_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": ""
           }
         },
@@ -22812,6 +23101,46 @@
           "status"
         ]
       },
+      "CreateLorryReceiptDto": {
+        "type": "object",
+        "properties": {
+          "consignorName": {
+            "type": "string"
+          },
+          "consigneeName": {
+            "type": "string"
+          },
+          "product": {
+            "type": "string"
+          },
+          "grossWeight": {
+            "type": "number"
+          },
+          "tareWeight": {
+            "type": "number"
+          },
+          "netWeight": {
+            "type": "number"
+          },
+          "gstNo": {
+            "type": "string"
+          },
+          "gateInTime": {
+            "type": "string"
+          },
+          "gateOutTime": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "consignorName",
+          "consigneeName",
+          "product",
+          "grossWeight",
+          "tareWeight",
+          "netWeight"
+        ]
+      },
       "UpdateTripDto": {
         "type": "object",
         "properties": {
@@ -22917,7 +23246,10 @@
               "LOADER",
               "SAFETY_OFFICER",
               "UNLOADER",
-              "FLEET_MANAGER"
+              "FLEET_MANAGER",
+              "WORKSHOP_MECHANIC",
+              "GATE_SECURITY",
+              "CUSTOMER_CONTACT"
             ],
             "description": "The role of the reviewer"
           },
@@ -23784,6 +24116,24 @@
         },
         "required": [
           "loadId"
+        ]
+      },
+      "GenerateInvoiceFromTripsDto": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string"
+          },
+          "tripIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "customerId",
+          "tripIds"
         ]
       },
       "CreateExpenseDto": {
@@ -25038,128 +25388,15 @@
         "type": "object",
         "properties": {}
       },
-      "CreateLorryReceiptDto": {
+      "ShareLorryReceiptDto": {
         "type": "object",
         "properties": {
-          "loadId": {
-            "type": "string",
-            "example": "b567d2ca-1122-3344-5566-778899aabbcc"
-          },
-          "consignorName": {
-            "type": "string",
-            "example": "Bhonsle Transport"
-          },
-          "consignorGstin": {
-            "type": "string",
-            "example": "27ABCDE1234F1Z5"
-          },
-          "consignorAddress": {
+          "driverId": {
             "type": "string"
-          },
-          "consigneeName": {
-            "type": "string",
-            "example": "Gupta Roadways"
-          },
-          "consigneeGstin": {
-            "type": "string",
-            "example": "07ABCDE1234F1Z5"
-          },
-          "consigneeAddress": {
-            "type": "string"
-          },
-          "fromStation": {
-            "type": "string",
-            "example": "Mumbai"
-          },
-          "toStation": {
-            "type": "string",
-            "example": "Delhi"
-          },
-          "vehicleId": {
-            "type": "string",
-            "example": "a1b2c3d4-1122-3344-5566-778899aabbcc"
-          },
-          "vehicleNumber": {
-            "type": "string",
-            "example": "MH-12-CD-5678"
-          },
-          "goodsDescription": {
-            "type": "string",
-            "example": "Steel Coils"
-          },
-          "packagesCount": {
-            "type": "number",
-            "example": 10
-          },
-          "packingType": {
-            "type": "string",
-            "example": "Bundles"
-          },
-          "actualWeightKg": {
-            "type": "number",
-            "example": 12000
-          },
-          "chargedWeightKg": {
-            "type": "number",
-            "example": 12000
-          },
-          "invoiceValue": {
-            "type": "number",
-            "example": 500000
-          },
-          "freightAmount": {
-            "type": "number",
-            "example": 25000
-          },
-          "hamaliCharges": {
-            "type": "number",
-            "example": 1000
-          },
-          "otherCharges": {
-            "type": "number",
-            "example": 500
-          },
-          "gstAmount": {
-            "type": "number",
-            "example": 0
-          },
-          "paymentType": {
-            "type": "string",
-            "enum": [
-              "PAID",
-              "TOPAY",
-              "TBB"
-            ],
-            "default": "TOPAY"
-          },
-          "ewayBillNumber": {
-            "type": "string",
-            "example": "1234-5678-9012"
           }
         },
         "required": [
-          "loadId"
-        ]
-      },
-      "UpdateLorryReceiptStatusDto": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "ISSUED",
-              "IN_TRANSIT",
-              "DELIVERED",
-              "CANCELLED"
-            ]
-          },
-          "podDocumentId": {
-            "type": "string",
-            "description": "POD document id, set on delivery"
-          }
-        },
-        "required": [
-          "status"
+          "driverId"
         ]
       },
       "CreateJobCardDto": {
@@ -25203,6 +25440,22 @@
           "workshopId",
           "issueReported"
         ]
+      },
+      "GateInDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GateOutDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "OwnerApproveDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreatePartDto": {
         "type": "object",

@@ -75,8 +75,8 @@ export class BillingController {
   @Get('invoices')
   @RequirePermissions('billing:read')
   @ApiOperation({ summary: 'Get all invoices' })
-  getInvoices(@GetUser() user: AuthenticatedUser) {
-    return this.billingService.getInvoices(user.companyId);
+  getInvoices(@GetUser() user: AuthenticatedUser, @Query() query: any) {
+    return this.billingService.getInvoices(user.companyId, query);
   }
 
   @Get('invoices/:id')

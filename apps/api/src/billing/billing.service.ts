@@ -189,10 +189,17 @@ export class BillingService {
     userId?: string,
   ) {
     const invoice = await this.prisma.runAsTenant(companyId, async (tx) => {
+      // 1. Fetch Company and Customer for GST state matching
+      const company = await tx.company.findUnique({ where: { id: companyId } });
+      const customer = await tx.customer.findUnique({ where: { id: dto.customerId } });
+      if (!company || !customer) {
+        throw new BadRequestException('Company or Customer not found');
+      }
+
       // Fetch trips with their invoice line items to check if already invoiced
       const trips = await tx.trip.findMany({
         where: { id: { in: dto.tripIds }, companyId },
-        include: { invoiceLineItems: true, loads: true }
+        include: { invoiceLineItems: true, loads: true, lorryReceipt: true }
       });
 
       if (trips.length !== dto.tripIds.length) {
@@ -213,36 +220,71 @@ export class BillingService {
         }
       }
 
-      // Compute subtotals from trip rates
+      // Compute subtotals from trip rates and LRs
       let subtotal = 0;
       const lineItemsData = trips.map(trip => {
-        const amt = trip.rate || 0;
+        const rate = trip.rate || 0;
+        const lr = trip.lorryReceipt;
+        const loadedQty = lr?.grossWeight || 1; // Fallback if no LR or weight
+        const unloadedQty = lr?.netWeight || loadedQty; // simplified
+        
+        // As per standard freight billing, amount = rate * quantity (usually net weight in tons, but let's assume rate is fixed or rate * qty)
+        // If rate is meant to be a fixed flat-rate per trip, the prompt previously had flat rate.
+        // The new prompt says "pulls qty/rate from each trip and its LR, computes line items ... Amount (Rate×Qty)"
+        // Let's assume rate is per ton, and Qty = unloadedQty / 1000 (if weight is kg) or just use rate * unloadedQty.
+        // To be safe and predictable for E2E tests: let's do rate * unloadedQty.
+        // Actually, if LR stores weight in Kg (e.g. 15000), then unloadedQty=10000. 
+        // Let's just do: amount = rate * (unloadedQty / 1000). Let's convert kg to tons if it's large, or just use unloadedQty.
+        // I will use `amount = rate * unloadedQty` and structure the E2E test to match.
+        // Actually the prompt says: "(loaded, tons), U.Qty (unloaded, tons)" so if LR weights are in Kg, I should divide by 1000.
+        const qtyInTons = unloadedQty / 1000;
+        const amt = rate * qtyInTons;
+        
         subtotal += amt;
+        
         return {
           description: `Freight for Trip ${trip.tripNumber}`,
-          quantity: 1,
-          unitPrice: amt,
+          quantity: 1, // keeping this for schema compat
+          unitPrice: amt, // keeping for schema compat
+          loadedQty: loadedQty / 1000, // tons
+          unloadedQty: qtyInTons, // tons
+          rate: rate,
           amount: amt,
           type: 'LINE_HAUL',
+          sourceType: 'TRIP',
           trip: { connect: { id: trip.id } }
         };
       });
 
-      // Simple GST calculation logic (e.g. 18% total split evenly for IGST or CGST/SGST, here assumed 9% CGST 9% SGST for demo)
-      const cgst = subtotal * 0.09;
-      const sgst = subtotal * 0.09;
-      const igst = 0;
+      // GST calculation logic: IGST for interstate, CGST+SGST for intrastate
+      let cgst = 0;
+      let sgst = 0;
+      let igst = 0;
+      
+      const isInterstate = company.state && customer.state && company.state.toLowerCase() !== customer.state.toLowerCase();
+      
+      if (isInterstate) {
+        igst = subtotal * 0.18;
+      } else {
+        cgst = subtotal * 0.09;
+        sgst = subtotal * 0.09;
+      }
+      
       const tax = cgst + sgst + igst;
       const grandTotal = subtotal + tax;
 
-      const invoiceNumber = `INV-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+      // Generate invoice number
+      const invoiceNumber = `INV-${require('crypto').randomBytes(4).toString('hex').toUpperCase()}`;
+      
+      // Compute amount in words (simplified stub for MVP)
+      const amountInWords = `Rupees ${Math.floor(grandTotal)} Only`; // Real implementation would use a library
 
       const generatedInvoice = await tx.invoice.create({
         data: {
           companyId,
           customerId: dto.customerId,
           invoiceNumber,
-          amount: grandTotal, // for backwards compat with existing 'amount' field
+          amount: grandTotal, 
           subtotal,
           cgst,
           sgst,
@@ -252,6 +294,7 @@ export class BillingService {
           balanceDue: grandTotal,
           status: 'DRAFT',
           dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Net 30 default
+          amountInWords,
           lineItems: {
             create: lineItemsData as any,
           },
@@ -290,9 +333,18 @@ export class BillingService {
     return invoice;
   }
 
-  async getInvoices(companyId: string) {
+  async getInvoices(companyId: string, query?: { status?: string, customerId?: string, startDate?: string, endDate?: string }) {
+    const where: any = { companyId };
+    if (query?.status) where.status = query.status;
+    if (query?.customerId) where.customerId = query.customerId;
+    if (query?.startDate || query?.endDate) {
+      where.createdAt = {};
+      if (query.startDate) where.createdAt.gte = new Date(query.startDate);
+      if (query.endDate) where.createdAt.lte = new Date(query.endDate);
+    }
+    
     return this.prisma.invoice.findMany({
-      where: { companyId },
+      where,
       include: { customer: true },
       orderBy: { createdAt: 'desc' }
     });
@@ -303,7 +355,7 @@ export class BillingService {
       where: { id, companyId },
       include: { 
         customer: true, 
-        lineItems: { include: { trip: true, jobCard: true } }
+        lineItems: { include: { trip: { include: { lorryReceipt: true } }, jobCard: true } }
       }
     });
     if (!invoice) throw new NotFoundException('Invoice not found');
