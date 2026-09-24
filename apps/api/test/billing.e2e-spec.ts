@@ -385,15 +385,66 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
       expect(workshopItem.description).toContain('Labor: 2000');
     });
 
-    it('should generate an invoice PDF', async () => {
+    it('should generate an invoice PDF with correct content fields', async () => {
       const res = await request(app.getHttpServer())
         .get(`/api/v1/billing/invoices/${draftInvoiceId}/pdf`)
-        .set('Authorization', `Bearer ${adminToken}`);
+        .set('Authorization', `Bearer ${adminToken}`)
+        .buffer(true)
+        .parse((res, callback) => {
+          const chunks: Buffer[] = [];
+          res.on('data', (chunk: Buffer) => chunks.push(chunk));
+          res.on('end', () => callback(null, Buffer.concat(chunks)));
+        });
 
       expect(res.status).toBe(200);
       expect(res.header['content-type']).toBe('application/pdf');
-      // The body is a buffer, just check its length
-      expect(res.body.length).toBeGreaterThan(100);
+      expect(res.body.length).toBeGreaterThan(500);
+
+      // Write PDF to temp file; parse text via child process (pdf-parse v2 uses dynamic imports
+      // incompatible with Jest's CJS environment without --experimental-vm-modules).
+      const fs = require('fs');
+      const path = require('path');
+      const { execSync } = require('child_process');
+      const tmpPath = `/tmp/test-invoice-${Date.now()}.pdf`;
+      const scriptPath = `/tmp/pdf-extract-${Date.now()}.js`;
+      fs.writeFileSync(tmpPath, res.body);
+      fs.writeFileSync(scriptPath, [
+        "const { PDFParse } = require('pdf-parse');",
+        "async function run() {",
+        `  const parser = new PDFParse({ url: 'file://${tmpPath}', verbosity: 0 });`,
+        "  const result = await parser.getText();",
+        "  process.stdout.write(result.text || '');",
+        "}",
+        "run().catch(e => { process.stderr.write(e.message); process.exit(1); });",
+      ].join('\n'));
+
+      let extractedText = '';
+      try {
+        extractedText = execSync(`node ${scriptPath}`, {
+          // NODE_PATH lets /tmp script find pdf-parse in the monorepo root node_modules
+          env: { ...process.env, NODE_PATH: '/Users/vishalvirda/Desktop/PariLink/node_modules' },
+          timeout: 15000,
+          encoding: 'utf8',
+        });
+      } finally {
+        fs.unlinkSync(tmpPath);
+        fs.unlinkSync(scriptPath);
+      }
+
+      // ── Verified extracted text fields from the generated invoice ──
+      expect(extractedText).toMatch(/TAX INVOICE/i);
+      expect(extractedText).toMatch(/Invoice No:/i);
+      expect(extractedText).toMatch(/Date:/i);
+      expect(extractedText).toMatch(/Billed To:/i);
+      expect(extractedText).toMatch(/Subtotal:/i);
+      expect(extractedText).toMatch(/Grand Total:/i);
+      expect(extractedText).toMatch(/Amount in Words:/i);
+
+      // GST — intrastate Maharashtra customer should show CGST/SGST
+      expect(extractedText).toMatch(/CGST|SGST|IGST/i);
+
+      // Line items — freight line generated from trip
+      expect(extractedText).toMatch(/Freight|TRIP/i);
     });
   });
 });

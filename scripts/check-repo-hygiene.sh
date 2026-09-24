@@ -25,6 +25,25 @@ if [ -n "$STRAY_WEB_FILES" ]; then
     EXIT_CODE=1
 fi
 
+# Check for loose scripts in apps/api root (excluding config and compiled output)
+STRAY_API_FILES=$(find apps/api -maxdepth 1 -type f \( -name "*.js" -o -name "*.ts" -o -name "*.pdf" \) ! -name "jest.config.ts" ! -name "tsconfig.json" ! -name "tsconfig.build.json")
+
+if [ -n "$STRAY_API_FILES" ]; then
+    echo "❌ Error: Found unauthorized throwaway files in apps/api:"
+    echo "$STRAY_API_FILES"
+    echo "Delete or move to scratch/ before committing."
+    EXIT_CODE=1
+fi
+
+# Check for committed PDF/binary test artifacts anywhere outside docs
+STRAY_PDFS=$(git ls-files | grep -E "\.pdf$" | grep -v "apps/docs/")
+
+if [ -n "$STRAY_PDFS" ]; then
+    echo "❌ Error: PDF test artifacts committed to the repo (not in docs/):"
+    echo "$STRAY_PDFS"
+    EXIT_CODE=1
+fi
+
 if [ $EXIT_CODE -eq 0 ]; then
     echo "✅ Repository hygiene check passed. No stray scripts found."
 fi
