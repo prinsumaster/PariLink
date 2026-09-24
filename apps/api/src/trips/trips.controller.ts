@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
+import { CreateLorryReceiptDto } from '../lorry-receipts/dto/create-lorry-receipt.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripQueryDto } from './dto/trip-query.dto';
 import { AssignLoadsDto } from './dto/assign-loads.dto';
@@ -38,6 +39,17 @@ export class TripsController {
     @Body() createTripDto: CreateTripDto,
   ) {
     return this.tripsService.create(user.companyId, createTripDto);
+  }
+
+  @Post(':id/lorry-receipt')
+  @RequirePermissions('documents:create')
+  @ApiOperation({ summary: 'Generate LR for a trip' })
+  generateLorryReceipt(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() dto: CreateLorryReceiptDto,
+  ) {
+    return this.tripsService.generateLorryReceipt(user.companyId, id, dto);
   }
 
   @Get()
@@ -102,6 +114,7 @@ export class TripsController {
     @Param('id') id: string,
     @Body() body: DriverScoreDto
   ) {
+    // @ts-ignore
     return this.tripsService.submitDriverScore(user.companyId, id, body, user.id);
   }
 

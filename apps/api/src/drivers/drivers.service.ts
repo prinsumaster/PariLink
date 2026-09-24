@@ -130,6 +130,19 @@ export class DriversService {
     };
   }
 
+  async getLorryReceipts(companyId: string, driverId: string) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const driver = await tx.driver.findFirst({ where: { id: driverId, companyId } });
+      if (!driver) throw new NotFoundException('Driver not found');
+      
+      return tx.lorryReceipt.findMany({
+        where: { driverId, companyId, status: 'SHARED' },
+        orderBy: { createdAt: 'desc' },
+        include: { trip: true, vehicle: true }
+      });
+    });
+  }
+
   async findAll(companyId: string, query: DriverQueryDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const { page = 1, limit = 10, search, status } = query;

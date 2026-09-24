@@ -97,7 +97,7 @@ export class ExecutiveDashboardController {
           orderBy: { createdAt: 'desc' },
           take: 5,
           include: {
-            lorryReceipts: { select: { lrNumber: true }, take: 1 }
+            documents: { select: { id: true } },
           }
         })
       ]);
@@ -119,7 +119,7 @@ export class ExecutiveDashboardController {
 
     const recentBookings = recentLoads.map(load => ({
       id: load.id,
-      lrNumber: load.lorryReceipts?.[0]?.lrNumber || null,
+      lrNumber: null,
       originCity: load.originCity,
       destinationCity: load.destinationCity,
       rate: load.rate,

@@ -45,6 +45,13 @@ export class DriversController {
     return this.driversService.findAll(user.companyId, query);
   }
 
+  @Get(':id/lorry-receipts')
+  @RequirePermissions('documents:read')
+  @ApiOperation({ summary: 'Get Lorry Receipts shared with a driver' })
+  getLorryReceipts(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+    return this.driversService.getLorryReceipts(user.companyId, id);
+  }
+
   @Get(':id')
   @RequirePermissions('drivers:read')
   @ApiOperation({ summary: 'Get a driver by ID' })

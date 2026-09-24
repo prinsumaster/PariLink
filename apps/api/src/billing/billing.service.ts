@@ -322,7 +322,7 @@ export class BillingService {
     });
   }
 
-  async updateInvoiceStatus(companyId: string, id: string, status: string, userId: string, paymentRef?: string) {
+  async updateInvoiceStatus(companyId: string, id: string, status: string, _userId: string, paymentRef?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const invoice = await tx.invoice.findFirst({ where: { id, companyId } });
       if (!invoice) throw new NotFoundException('Invoice not found');

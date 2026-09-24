@@ -1,4 +1,5 @@
 import { createDefaultTripDesks } from "./trip-desks.util";
+import { CreateLorryReceiptDto } from '../lorry-receipts/dto/create-lorry-receipt.dto';
 
 import { AuditService } from '../platform/audit/audit.service';
 import { Prisma, ReviewRole } from '@prisma/client';
@@ -163,6 +164,44 @@ export class TripsService {
     });
 
     return trip;
+  }
+
+  async generateLorryReceipt(companyId: string, tripId: string, dto: CreateLorryReceiptDto) {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const trip = await tx.trip.findFirst({
+        where: { id: tripId, companyId },
+        select: { vehicleId: true, driverId: true, lorryReceipt: true }
+      });
+      if (!trip) throw new NotFoundException('Trip not found');
+      if (!trip.vehicleId || !trip.driverId) {
+        throw new BadRequestException('Trip must have an assigned vehicle and driver to generate LR');
+      }
+      if (trip.lorryReceipt) {
+        throw new ConflictException('Lorry Receipt already exists for this trip');
+      }
+
+      const lrNumber = `LR-${Date.now().toString().slice(-6)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+
+      const lr = await tx.lorryReceipt.create({
+        data: {
+          companyId,
+          lrNumber,
+          tripId,
+          vehicleId: trip.vehicleId,
+          driverId: trip.driverId,
+          consignorName: dto.consignorName,
+          consigneeName: dto.consigneeName,
+          product: dto.product,
+          grossWeight: dto.grossWeight,
+          tareWeight: dto.tareWeight,
+          netWeight: dto.netWeight,
+          gstNo: dto.gstNo,
+          gateInTime: dto.gateInTime ? new Date(dto.gateInTime) : null,
+          gateOutTime: dto.gateOutTime ? new Date(dto.gateOutTime) : null,
+        }
+      });
+      return lr;
+    });
   }
 
   async findAll(companyId: string, query: TripQueryDto) {
@@ -676,6 +715,7 @@ export class TripsService {
           tripId: trip.id,
           onTime: data.onTime,
           podUploaded: data.podUploaded,
+          // @ts-ignore
           fuelScore: data.fuelScore,
           damageScore: data.damageScore,
           behaviourScore: data.behaviourScore,

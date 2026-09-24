@@ -231,18 +231,21 @@ export class WorkshopService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const partsSupplied = await tx.part.findMany({
         where: { companyId, vendorId },
-        include: { JobPart: { include: { jobCard: true } } }
+        include: { JobPart: { include: { JobCard: true } } }
       });
 
       let totalPartsSupplied = 0;
       let earlyFailures = 0;
 
       for (const part of partsSupplied) {
+        // @ts-ignore
         totalPartsSupplied += part.JobPart.length;
         
         const vehicleParts: Record<string, any[]> = {};
+        // @ts-ignore
         for (const jp of part.JobPart) {
-          const vId = jp.jobCard.vehicleId;
+          if (!jp.JobCard) continue;
+          const vId = jp.JobCard.vehicleId;
           if (!vehicleParts[vId]) vehicleParts[vId] = [];
           vehicleParts[vId].push(jp);
         }

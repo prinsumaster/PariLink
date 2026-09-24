@@ -233,6 +233,7 @@ model Trip {
   MaintenanceJob   MaintenanceJob[]
   DriverScore      DriverScore[]
   TripExpense      TripExpense[]
+  lorryReceipt     LorryReceipt?
   tripReviews      TripReview[]
   invoiceLineItems InvoiceLineItem[]
 
@@ -296,7 +297,6 @@ model Load {
   customer           Customer         @relation(fields: [customerId], references: [id])
   trip               Trip?            @relation(fields: [tripId], references: [id])
   DispatchPlan       DispatchPlan[]
-  lorryReceipts      LorryReceipt[]
   CustomerPromise    CustomerPromise?
   InboundReceipt     InboundReceipt[]
   OutboundWave       OutboundWave[]
@@ -580,6 +580,7 @@ model Driver {
   payslips          Payslip[]
   attendances       DriverAttendance[]
   driverScore       DriverScore[]
+  lorryReceipts     LorryReceipt[]
   EmergencyAlert    EmergencyAlert[]
   FuelEntry         FuelEntry[]
 
@@ -4192,10 +4193,10 @@ model JobCard {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  company         Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  parts           JobCardPart[]
-  mechanic        Mechanic?              @relation(fields: [mechanicId], references: [id])
-  workshop        Workshop               @relation(fields: [workshopId], references: [id])
+  company          Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parts            JobCardPart[]
+  mechanic         Mechanic?              @relation(fields: [mechanicId], references: [id])
+  workshop         Workshop               @relation(fields: [workshopId], references: [id])
   JobPart          JobPart[]
   maintenanceJobs  MaintenanceJob[]
   statusHistory    JobCardStatusHistory[]
@@ -4556,47 +4557,35 @@ model TrendReport {
 }
 
 model LorryReceipt {
-  id               String    @id @default(cuid())
-  companyId        String
-  loadId           String
-  lrNumber         String
-  consignorName    String
-  consignorGstin   String?
-  consignorAddress String?
-  consigneeName    String
-  consigneeGstin   String?
-  consigneeAddress String?
-  fromStation      String
-  toStation        String
-  vehicleId        String?
-  vehicleNumber    String?
-  goodsDescription String
-  packagesCount    Int
-  packingType      String?
-  actualWeightKg   Float?
-  chargedWeightKg  Float?
-  invoiceValue     Float?
-  freightAmount    Float
-  hamaliCharges    Float
-  otherCharges     Float
-  gstAmount        Float
-  totalAmount      Float
-  paymentType      String
-  ewayBillNumber   String?
-  status           String    @default("GENERATED")
-  podDocumentId    String?
-  date             DateTime  @default(now())
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime?
+  id                String    @id @default(uuid())
+  companyId         String
+  lrNumber          String
+  tripId            String    @unique
+  vehicleId         String
+  driverId          String
+  consignorName     String
+  consigneeName     String
+  product           String
+  grossWeight       Float
+  tareWeight        Float
+  netWeight         Float
+  gstNo             String?
+  gateInTime        DateTime?
+  gateOutTime       DateTime?
+  receiverSignature String?
+  status            String    @default("DRAFT")
 
-  company Company  @relation(fields: [companyId], references: [id])
-  load    Load     @relation(fields: [loadId], references: [id])
-  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id])
+  trip    Trip    @relation(fields: [tripId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  Driver  @relation(fields: [driverId], references: [id])
 
   @@unique([companyId, lrNumber])
-  @@index([companyId, deletedAt])
-  @@index([loadId])
+  @@index([companyId, status])
+  @@index([driverId, status])
 }
 
 model LrSequence {
@@ -4704,23 +4693,23 @@ model Part {
 }
 
 model DriverScore {
-  id             String    @id @default(uuid())
-  companyId      String
-  driverId       String
-  tripId         String
-  onTime         Boolean   @default(true)
-  podUploaded    Boolean   @default(true)
-  dispatcherScore Float?
+  id                String    @id @default(uuid())
+  companyId         String
+  driverId          String
+  tripId            String
+  onTime            Boolean   @default(true)
+  podUploaded       Boolean   @default(true)
+  dispatcherScore   Float?
   fleetManagerScore Float?
-  workshopScore  Float?
-  securityScore  Float?
-  customerScore  Float?
-  mileageScore   Float?
-  total          Float     @default(0)
-  ratedBy        String?
-  ratedAt        DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  workshopScore     Float?
+  securityScore     Float?
+  customerScore     Float?
+  mileageScore      Float?
+  total             Float     @default(0)
+  ratedBy           String?
+  ratedAt           DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   driver  Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)

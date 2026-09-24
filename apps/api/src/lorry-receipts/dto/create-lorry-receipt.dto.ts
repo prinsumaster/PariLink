@@ -1,145 +1,49 @@
-import {
-  IsString,
-  IsOptional,
-  IsNotEmpty,
-  IsUUID,
-  IsIn,
-  IsNumber,
-  IsInt,
-  Min,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsOptional, IsNotEmpty, IsNumber, IsDateString } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateLorryReceiptDto {
-  @ApiProperty({ example: 'b567d2ca-1122-3344-5566-778899aabbcc' })
-  @IsUUID()
+  @ApiProperty()
+  @IsString()
   @IsNotEmpty()
-  loadId!: string;
+  consignorName!: string;
 
-  @ApiPropertyOptional({ example: 'Bhonsle Transport' })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
-  consignorName?: string;
+  @IsNotEmpty()
+  consigneeName!: string;
 
-  @ApiPropertyOptional({ example: '27ABCDE1234F1Z5' })
+  @ApiProperty()
   @IsString()
-  @IsOptional()
-  consignorGstin?: string;
+  @IsNotEmpty()
+  product!: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  grossWeight!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  tareWeight!: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  netWeight!: number;
 
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  consignorAddress?: string;
-
-  @ApiPropertyOptional({ example: 'Gupta Roadways' })
-  @IsString()
-  @IsOptional()
-  consigneeName?: string;
-
-  @ApiPropertyOptional({ example: '07ABCDE1234F1Z5' })
-  @IsString()
-  @IsOptional()
-  consigneeGstin?: string;
+  gstNo?: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsDateString()
   @IsOptional()
-  consigneeAddress?: string;
+  gateInTime?: string;
 
-  @ApiPropertyOptional({ example: 'Mumbai' })
-  @IsString()
+  @ApiPropertyOptional()
+  @IsDateString()
   @IsOptional()
-  fromStation?: string;
-
-  @ApiPropertyOptional({ example: 'Delhi' })
-  @IsString()
-  @IsOptional()
-  toStation?: string;
-
-  @ApiPropertyOptional({ example: 'a1b2c3d4-1122-3344-5566-778899aabbcc' })
-  @IsUUID()
-  @IsOptional()
-  vehicleId?: string;
-
-  @ApiPropertyOptional({ example: 'MH-12-CD-5678' })
-  @IsString()
-  @IsOptional()
-  vehicleNumber?: string;
-
-  @ApiPropertyOptional({ example: 'Steel Coils' })
-  @IsString()
-  @IsOptional()
-  goodsDescription?: string;
-
-  @ApiPropertyOptional({ example: 10 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  packagesCount?: number;
-
-  @ApiPropertyOptional({ example: 'Bundles' })
-  @IsString()
-  @IsOptional()
-  packingType?: string;
-
-  @ApiPropertyOptional({ example: 12000 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  actualWeightKg?: number;
-
-  @ApiPropertyOptional({ example: 12000 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  chargedWeightKg?: number;
-
-  @ApiPropertyOptional({ example: 500000 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  invoiceValue?: number;
-
-  @ApiPropertyOptional({ example: 25000 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  freightAmount?: number;
-
-  @ApiPropertyOptional({ example: 1000 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  hamaliCharges?: number;
-
-  @ApiPropertyOptional({ example: 500 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  otherCharges?: number;
-
-  @ApiPropertyOptional({ example: 0 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  gstAmount?: number;
-
-  @ApiPropertyOptional({ enum: ['PAID', 'TOPAY', 'TBB'], default: 'TOPAY' })
-  @IsIn(['PAID', 'TOPAY', 'TBB'])
-  @IsOptional()
-  paymentType?: string;
-
-  @ApiPropertyOptional({ example: '1234-5678-9012' })
-  @IsString()
-  @IsOptional()
-  ewayBillNumber?: string;
+  gateOutTime?: string;
 }
