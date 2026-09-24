@@ -10955,6 +10955,74 @@
         ]
       }
     },
+    "/api/v1/billing/invoices/{id}/add-workshop-costs": {
+      "post": {
+        "operationId": "BillingController_addWorkshopCosts_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddWorkshopCostsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add workshop job card costs to an invoice",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
+    "/api/v1/billing/invoices/{id}/pdf": {
+      "get": {
+        "operationId": "BillingController_getInvoicePdf_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Invoice PDF",
+        "tags": [
+          "billing"
+        ]
+      }
+    },
     "/api/v1/ledger/chart-of-accounts": {
       "get": {
         "operationId": "LedgerController_getChartOfAccounts_v1",
@@ -21059,6 +21127,35 @@
         ]
       }
     },
+    "/api/v1/lorry-receipts/{id}/pdf": {
+      "get": {
+        "operationId": "LorryReceiptsController_generatePdf_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate Lorry Receipt PDF",
+        "tags": [
+          "lorry-receipts"
+        ]
+      }
+    },
     "/api/v1/workshop/job-cards": {
       "post": {
         "operationId": "WorkshopController_createJobCard_v1",
@@ -24135,6 +24232,10 @@
           "customerId",
           "tripIds"
         ]
+      },
+      "AddWorkshopCostsDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateExpenseDto": {
         "type": "object",

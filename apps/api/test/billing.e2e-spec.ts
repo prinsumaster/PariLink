@@ -19,6 +19,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
   let trip3Id: string; // intrastate, planned (for rejection)
   let trip4Id: string; // intrastate, completed (for duplicate rejection)
   let trip5Id: string; // interstate, completed (for different customer rejection)
+  let trip6Id: string;
 
   let generatedInvoiceId: string;
 
@@ -141,6 +142,18 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         }
       });
       trip5Id = t5.id;
+
+      // Trip 6 (For Workshop Costs Integration)
+      const t6 = await tx.trip.create({
+        data: { 
+          id: 't6-' + Date.now(), companyId, tripNumber: 'T6-' + Date.now(), status: 'COMPLETED', rate: 900, 
+          loads: { create: [{ customerId: intrastateCustomerId, referenceNumber: 'L6', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Maharashtra', pickupDate: new Date(), deliveryDate: new Date(), rate: 900, companyId }] },
+          lorryReceipt: {
+            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-6-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 15000, tareWeight: 5000, netWeight: 10000, status: 'DRAFT' }
+          }
+        }
+      });
+      trip6Id = t6.id;
     });
   });
 
@@ -289,6 +302,98 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
       expect(res.body.paymentRef).toBe('TXN12345');
       expect(res.body.balanceDue).toBe(0);
       expect(res.body.paidAt).toBeDefined();
+    });
+  });
+
+  describe('Workshop Costs Integration', () => {
+    let draftInvoiceId: string;
+    let jobCardId: string;
+    let originalSubtotal: number;
+    let originalGrandTotal: number;
+    
+    it('should create a job card and generate a draft invoice', async () => {
+      // 1. Generate a new draft invoice from trip6Id (which hasn't been invoiced yet)
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/billing/invoices/generate-from-trips')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          customerId: intrastateCustomerId,
+          tripIds: [trip6Id] 
+        });
+
+      expect(res.status).toBe(201);
+      draftInvoiceId = res.body.id;
+      originalSubtotal = res.body.subtotal;
+      originalGrandTotal = res.body.grandTotal;
+      
+      // 2. Create a mock job card with a part directly in DB using runAsTenant to bypass RLS
+      await prisma.runAsTenant(companyId, async (tx) => {
+        const vehicle = await tx.vehicle.create({
+          data: {
+            companyId,
+            type: 'TRUCK',
+            status: 'ACTIVE',
+            licensePlate: 'WK-' + Date.now()
+          }
+        });
+        const workshop = await tx.workshop.create({
+          data: {
+            companyId,
+            name: 'Main Workshop',
+            type: 'INTERNAL'
+          }
+        });
+        
+        const jc = await tx.jobCard.create({
+          data: {
+            companyId,
+            vehicleId: vehicle.id,
+            workshopId: workshop.id,
+            issueReported: 'Brake Pad Replacement',
+            status: 'COMPLETED',
+            parts: {
+              create: [
+                { partName: 'Brake Pad', quantity: 2, unitCost: 1500 }
+              ]
+            },
+            totalCost: 5000 // 3000 parts, 2000 labor
+          }
+        });
+        jobCardId = jc.id;
+      });
+    });
+
+    it('should add workshop costs to the draft invoice and recalculate GST', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/api/v1/billing/invoices/${draftInvoiceId}/add-workshop-costs`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ jobCardIds: [jobCardId] });
+
+      expect(res.status).toBe(201);
+      expect(res.body.subtotal).toBe(originalSubtotal + 5000);
+      
+      // Since it's intrastate, CGST and SGST should each be 9% of the new subtotal
+      const expectedTax = (originalSubtotal + 5000) * 0.18;
+      expect(res.body.tax).toBeCloseTo(expectedTax, 2);
+      expect(res.body.grandTotal).toBeCloseTo(originalSubtotal + 5000 + expectedTax, 2);
+      
+      // Check line items
+      const lineItems = res.body.lineItems;
+      const workshopItem = lineItems.find(li => li.sourceType === 'WORKSHOP');
+      expect(workshopItem).toBeDefined();
+      expect(workshopItem.amount).toBe(5000);
+      expect(workshopItem.description).toContain('Labor: 2000');
+    });
+
+    it('should generate an invoice PDF', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/api/v1/billing/invoices/${draftInvoiceId}/pdf`)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.header['content-type']).toBe('application/pdf');
+      // The body is a buffer, just check its length
+      expect(res.body.length).toBeGreaterThan(100);
     });
   });
 });

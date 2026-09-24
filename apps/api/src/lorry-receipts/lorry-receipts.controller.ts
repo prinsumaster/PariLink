@@ -14,6 +14,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Res } from '@nestjs/common';
 
 @ApiTags('lorry-receipts')
 @ApiBearerAuth()
@@ -45,5 +46,21 @@ export class LorryReceiptsController {
   @ApiOperation({ summary: 'Get a Lorry Receipt by ID' })
   findOne(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.lorryReceiptsService.findOne(user.companyId, id);
+  }
+
+  @Get(':id/pdf')
+  @RequirePermissions('documents:read')
+  @ApiOperation({ summary: 'Generate Lorry Receipt PDF' })
+  async generatePdf(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Res() res: any,
+  ) {
+    const stream = await this.lorryReceiptsService.generatePdf(user.companyId, id);
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="lr-${id}.pdf"`,
+    });
+    stream.pipe(res);
   }
 }

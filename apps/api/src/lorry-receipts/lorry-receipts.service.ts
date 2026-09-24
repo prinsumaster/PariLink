@@ -46,4 +46,50 @@ export class LorryReceiptsService {
       return lr;
     });
   }
+
+  async generatePdf(companyId: string, id: string): Promise<any> {
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      const lr = await tx.lorryReceipt.findFirst({
+        where: { id, companyId },
+        include: {
+          trip: true,
+          driver: true,
+          vehicle: true,
+          company: true
+        }
+      });
+
+      if (!lr) {
+        throw new NotFoundException('Lorry Receipt not found');
+      }
+
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument({ margin: 50 });
+
+      doc.fontSize(20).text('LORRY RECEIPT / BILTY', { align: 'center' }).moveDown();
+
+      doc.fontSize(10).text(`Company: ${lr.company.name}`);
+      doc.text(`LR Number: ${lr.lrNumber}`);
+      doc.text(`Date: ${lr.createdAt.toDateString()}`);
+      doc.moveDown();
+
+      doc.text(`Consignor: ${lr.consignorName}`);
+      doc.text(`Consignee: ${lr.consigneeName}`);
+      doc.moveDown();
+
+      doc.text(`Vehicle: ${lr.vehicle?.licensePlate || 'N/A'}`);
+      doc.text(`Driver: ${lr.driver?.firstName} ${lr.driver?.lastName || ''}`);
+      doc.moveDown();
+
+      doc.text(`Product: ${lr.product}`);
+      doc.text(`Gross Weight: ${lr.grossWeight} kg`);
+      doc.text(`Tare Weight: ${lr.tareWeight} kg`);
+      doc.text(`Net Weight: ${lr.netWeight} kg`);
+      doc.moveDown();
+
+      doc.end();
+
+      return doc;
+    });
+  }
 }
