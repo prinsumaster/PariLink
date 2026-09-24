@@ -86,7 +86,7 @@ export function DriverScorecardPanel({ driverId, overallScore }: { driverId: str
                 </div>
                 <span className="text-sm font-bold">{metric.value.toFixed(1)} / 5.0</span>
               </div>
-              <Progress value={(metric.value / 5) * 100} className={`h-2`} indicatorClassName={metric.bg} />
+              <Progress value={(metric.value / 5) * 100} className={`h-2`} />
             </div>
           ))}
         </div>

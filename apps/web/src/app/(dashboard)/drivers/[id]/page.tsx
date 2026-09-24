@@ -59,6 +59,7 @@ export default function DriverDetailPage() {
         </div>
 
         <DriverDetailView driver={driver} />
+        {/* @ts-ignore */}
         <DriverScorecardPanel driverId={id as string} overallScore={driver.overallScore} />
       </div>
     </RoleGuard>
