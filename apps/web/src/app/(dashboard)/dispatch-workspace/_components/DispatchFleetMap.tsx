@@ -105,7 +105,7 @@ export function DispatchFleetMap({
 }) {
   const { theme } = useTheme();
   const rafRef = useRef<number | null>(null);
-  const replayStartWallRef = useRef<number>(Date.now());
+  const replayStartWallRef = useRef<number>(0);
   const [virtualTimeMs, setVirtualTimeMs] = useState<number>(0);
   const [interpolated, setInterpolated] = useState<
     Record<string, { lat: number; lng: number; heading: number; speed: number }>
@@ -121,10 +121,11 @@ export function DispatchFleetMap({
     refetchInterval: 5000,
   });
 
-  if (typeof window !== 'undefined') {
-    (window as any).__TEST_FLEET_DATA__ = fleetData;
-  }
-
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__TEST_FLEET_DATA__ = fleetData;
+    }
+  }, [fleetData]);
   // ── 2. Fetch trail for selected vehicle ──────────────────────────────────
   const { data: trailData } = useQuery<{ vehicleId: string; isSimulated: boolean; trail: TrailFix[] }>({
     queryKey: ['dispatch', 'trail', selectedVehicleId],
@@ -202,10 +203,11 @@ export function DispatchFleetMap({
     setInterpolated(next);
   }, [virtualTimeMs, fleetData, trailData, selectedVehicleId]);
 
-  if (typeof window !== 'undefined') {
-    (window as any).__TEST_FLEET_POSITIONS__ = interpolated;
-  }
-
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__TEST_FLEET_POSITIONS__ = interpolated;
+    }
+  }, [interpolated]);
   // ── 5. Build deck.gl layers ──────────────────────────────────────────────
   const layers = useMemo(() => {
     if (!fleetData) return [];

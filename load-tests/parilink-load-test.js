@@ -47,8 +47,8 @@ export const options = {
       executor: 'ramping-vus',
       startVUs: 0,
       stages: [
-        { duration: '1m', target: 15 },   // ramp up
-        { duration: '5m', target: 15 },   // sustain — target ~28 req/s
+        { duration: '1m', target: 20 },   // ramp up
+        { duration: '5m', target: 20 },   // sustain — target ~35 req/s
         { duration: '30s', target: 0 },   // ramp down
       ],
       gracefulRampDown: '30s',

@@ -52,7 +52,7 @@ export function DocumentUploadModal({ isOpen, onClose }: DocumentUploadModalProp
       const previousDocs = queryClient.getQueryData<PaginatedDocuments>(['documents', { page: 1, limit: 20 }]);
       
       const optimisticDoc: Document = {
-        id: `optimistic-${Date.now()}`,
+        id: `optimistic-${crypto.randomUUID()}`,
         filename: file.name,
         originalName: file.name,
         mimeType: file.type,

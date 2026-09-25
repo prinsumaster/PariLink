@@ -18,10 +18,6 @@ export function AuditClient() {
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState('ALL');
 
-  useEffect(() => {
-    fetchLogs();
-  }, [actionFilter]);
-
   const fetchLogs = async () => {
     setIsLoading(true);
     setIsError(false);
@@ -42,6 +38,9 @@ export function AuditClient() {
     }
   };
 
+  useEffect(() => {
+    fetchLogs();
+  }, [actionFilter]);
   const filteredLogs = logs.filter((log) => 
     log.action.toLowerCase().includes(search.toLowerCase()) || 
     log.entityId?.toLowerCase().includes(search.toLowerCase())

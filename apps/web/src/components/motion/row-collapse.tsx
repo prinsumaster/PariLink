@@ -10,14 +10,14 @@ interface RowCollapseProps {
   className?: string;
 }
 
-export function RowCollapse({ children, isVisible, as: Component = 'div', className = '' }: RowCollapseProps) {
+export function RowCollapse({ children, isVisible, as: ComponentProp = 'div', className = '' }: RowCollapseProps) {
   const shouldReduceMotion = useReducedMotion();
-  const MotionComponent = motion(Component as any);
+  const Component = ComponentProp === 'tr' ? motion.tr : motion.div;
 
   return (
     <AnimatePresence initial={false}>
       {isVisible && (
-        <MotionComponent
+        <Component
           initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0, scaleY: 0.8 }}
           animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, height: 'auto', scaleY: 1 }}
           exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, height: 0, scaleY: 0.8 }}
@@ -30,7 +30,7 @@ export function RowCollapse({ children, isVisible, as: Component = 'div', classN
           style={{ originY: 0 }}
         >
           {children}
-        </MotionComponent>
+        </Component>
       )}
     </AnimatePresence>
   );

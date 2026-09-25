@@ -7,7 +7,7 @@ export function useCommandSocket(token: string) {
   const [isConnected, setIsConnected] = useState(false);
   const [kpis, setKpis] = useState<any>(null);
   const [recommendations, setRecommendations] = useState<any[]>([]);
-  const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -15,7 +15,7 @@ export function useCommandSocket(token: string) {
     // Use absolute URL if necessary or fallback to window.location
     const socketUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8080';
     
-    const socket = io(socketUrl, {
+    const newSocket = io(socketUrl, {
       auth: { token },
       transports: ['websocket'],
       reconnection: true,
@@ -23,29 +23,29 @@ export function useCommandSocket(token: string) {
       reconnectionDelay: 1000,
     });
 
-    socketRef.current = socket;
+    setSocket(newSocket);
 
-    socket.on('connect', () => {
+    newSocket.on('connect', () => {
       setIsConnected(true);
       console.log('Connected to Command Center Gateway');
     });
 
-    socket.on('disconnect', () => {
+    newSocket.on('disconnect', () => {
       setIsConnected(false);
       console.log('Disconnected from Command Center Gateway');
     });
 
-    socket.on('kpi.updated', (payload: any) => {
+    newSocket.on('kpi.updated', (payload: any) => {
       setKpis((prev: any) => ({ ...prev, ...payload }));
     });
 
-    socket.on('dispatch.recommendation', (payload: any) => {
+    newSocket.on('dispatch.recommendation', (payload: any) => {
       setRecommendations(payload);
     });
 
     return () => {
-      socket.disconnect();
-      socketRef.current = null;
+      newSocket.disconnect();
+      setSocket(null);
     };
   }, [token]);
 
@@ -53,6 +53,6 @@ export function useCommandSocket(token: string) {
     isConnected,
     kpis,
     recommendations,
-    socket: socketRef.current,
+    socket,
   };
 }
