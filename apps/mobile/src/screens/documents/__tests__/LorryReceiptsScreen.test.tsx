@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, screen } from '@testing-library/react-native';
 import { LorryReceiptsScreen } from '../LorryReceiptsScreen';
 import { DriverAPI } from '../../../services/api/client';
 import { useAppSelector } from '../../../store';
@@ -22,10 +22,10 @@ describe('LorryReceiptsScreen', () => {
   it('shows no driver profile if driverId is missing', async () => {
     (useAppSelector as jest.Mock).mockReturnValue(undefined);
 
-    const { getByText } = render(<LorryReceiptsScreen />);
+    render(<LorryReceiptsScreen />);
     
     await waitFor(() => {
-      expect(getByText('No Driver Profile Found')).toBeTruthy();
+      expect(screen.getByText('No Driver Profile Found')).toBeTruthy();
     });
   });
 
@@ -49,16 +49,16 @@ describe('LorryReceiptsScreen', () => {
       data: { data: mockReceipts }
     });
 
-    const { getByText } = render(<LorryReceiptsScreen />);
+    render(<LorryReceiptsScreen />);
     
     // Initial loading state...
     
     await waitFor(() => {
-      expect(getByText('LR No: LR-2023-001')).toBeTruthy();
-      expect(getByText('GENERATED')).toBeTruthy();
-      expect(getByText('Mumbai')).toBeTruthy();
-      expect(getByText('Delhi')).toBeTruthy();
-      expect(getByText('₹15000')).toBeTruthy();
+      expect(screen.getByText('LR No: LR-2023-001')).toBeTruthy();
+      expect(screen.getByText('GENERATED')).toBeTruthy();
+      expect(screen.getByText('Mumbai')).toBeTruthy();
+      expect(screen.getByText('Delhi')).toBeTruthy();
+      expect(screen.getByText('₹15000')).toBeTruthy();
     });
     
     expect(DriverAPI.getLorryReceipts).toHaveBeenCalledWith('driver-123');
