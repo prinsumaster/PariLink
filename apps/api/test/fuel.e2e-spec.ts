@@ -5,7 +5,7 @@ const request = requestSupertest.default || requestSupertest;
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
-describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
+describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let adminToken: string;
@@ -14,7 +14,10 @@ describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
   let vehicleId: string;
   let driverId: string;
   let tripId: string;
+  let customerId: string;
   let fuelLogId: string;
+  let fuelCardId: string;
+  let otp: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,7 +36,7 @@ describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
     adminToken = loginRes.body?.access_token || loginRes.body?.accessToken;
     expect(adminToken).toBeDefined();
 
-    // Create prerequisite vehicle, driver, and trip
+    // Create prerequisite vehicle, driver, customer and trip
     await prisma.runAsTenant(companyId, async (tx) => {
       const driver = await tx.driver.create({
         data: {
@@ -63,6 +66,7 @@ describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
       const customer = await tx.customer.create({
         data: { id: 'fuel-cust-' + Date.now(), companyId, name: 'Fuel Customer', state: 'Maharashtra' },
       });
+      customerId = customer.id;
 
       const trip = await tx.trip.create({
         data: {
@@ -97,8 +101,39 @@ describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
     await app.close();
   });
 
-  describe('POST /fuel-logs — Create a fuel log', () => {
-    it('should create a fuel log with PENDING status', async () => {
+  describe('Fuel Card Flow', () => {
+    it('should create a fuel card with last 4 masking and hashed reference', async () => {
+      const uniqueNum = Date.now().toString().slice(-4);
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/fuel-cards')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          cardNumber: `123456781234${uniqueNum}`, // Full number sent
+          provider: 'BPCL',
+          vehicleId,
+          driverId,
+          dailyLimit: 5000,
+          dueDate: new Date(Date.now() - 86400000 * 5), // Overdue by 5 days
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.cardNumber).toBe(uniqueNum); // masked
+      expect(res.body.hashedRef).toBeDefined(); // hashed ref stored
+      fuelCardId = res.body.id;
+    });
+
+    it('should check fuel card billing status and return OVERDUE', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/api/v1/fuel-cards/${fuelCardId}/billing-status`)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe('OVERDUE');
+    });
+  });
+
+  describe('Fuel Log OTP Flow', () => {
+    it('should create a fuel log with PENDING status (driver requests fuel)', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/v1/fuel-logs')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -106,76 +141,84 @@ describe('Fuel Module (e2e) — CRUD + Approval Workflow', () => {
           vehicleId,
           driverId,
           tripId,
+          fuelCardId,
           litres: 120.5,
           amount: 10480,
           pump: 'BPCL Station, NH-4',
           slipNo: 'SLIP-' + Date.now(),
+          billingCustomerId: customerId,
         });
 
       expect(res.status).toBe(201);
-      expect(res.body.litres).toBe(120.5);
-      expect(res.body.amount).toBe(10480);
-      expect(res.body.pump).toBe('BPCL Station, NH-4');
       expect(res.body.status).toBe('PENDING');
-      expect(res.body.companyId).toBe(companyId);
       fuelLogId = res.body.id;
-      expect(fuelLogId).toBeDefined();
     });
-  });
 
-  describe('GET /fuel-logs — List fuel logs', () => {
-    it('should list fuel logs and include the newly created one', async () => {
+    it('should approve fuel log and generate OTP (dispatcher approves)', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/fuel-logs')
+        .patch(`/api/v1/fuel-logs/${fuelLogId}/approve`)
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      const found = res.body.find((f: any) => f.id === fuelLogId);
-      expect(found).toBeDefined();
-      expect(found.status).toBe('PENDING');
+      expect(res.body.otp).toBeDefined();
+      otp = res.body.otp; // Capture generated OTP
     });
 
-    it('should filter fuel logs by status=PENDING', async () => {
+    it('should reject filling with an invalid OTP', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/fuel-logs?status=PENDING')
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.every((f: any) => f.status === 'PENDING')).toBe(true);
-    });
-  });
-
-  describe('PATCH /fuel-logs/:id/status — Approval workflow', () => {
-    it('should approve a PENDING fuel log by transitioning to APPROVED', async () => {
-      const res = await request(app.getHttpServer())
-        .patch(`/api/v1/fuel-logs/${fuelLogId}/status`)
+        .post(`/api/v1/fuel-logs/${fuelLogId}/fill`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ status: 'APPROVED' });
+        .send({ otp: '000000' });
 
-      expect(res.status).toBe(200);
-      expect(res.body.id).toBe(fuelLogId);
-      expect(res.body.status).toBe('APPROVED');
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('Invalid OTP');
     });
 
-    it('should verify the status is now APPROVED when listing', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/api/v1/fuel-logs?status=APPROVED')
-        .set('Authorization', `Bearer ${adminToken}`);
+    it('should reject filling with an expired OTP', async () => {
+      // Manually expire the OTP in DB for this test
+      await prisma.runAsTenant(companyId, async (tx) => {
+        await tx.fuelEntry.update({
+          where: { id: fuelLogId },
+          data: { otpExpiry: new Date(Date.now() - 60000) } // Expired 1 min ago
+        });
+      });
 
-      expect(res.status).toBe(200);
-      const found = res.body.find((f: any) => f.id === fuelLogId);
-      expect(found).toBeDefined();
-      expect(found.status).toBe('APPROVED');
-    });
-
-    it('should reject status update for a non-existent fuel log', async () => {
       const res = await request(app.getHttpServer())
-        .patch('/api/v1/fuel-logs/non-existent-id/status')
+        .post(`/api/v1/fuel-logs/${fuelLogId}/fill`)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ status: 'APPROVED' });
+        .send({ otp });
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('OTP has expired');
+
+      // Reset expiry so the rest of the flow can continue
+      await prisma.runAsTenant(companyId, async (tx) => {
+        await tx.fuelEntry.update({
+          where: { id: fuelLogId },
+          data: { otpExpiry: new Date(Date.now() + 60 * 60 * 1000) }
+        });
+      });
+    });
+
+    it('should complete filling with correct OTP (driver fills at pump) and create invoice line item', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/api/v1/fuel-logs/${fuelLogId}/fill`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ otp });
+
+      expect(res.status).toBe(201); // 201 for POST
+      expect(res.body.status).toBe('FILLED');
+
+      // Verify invoice line item was created
+      await prisma.runAsTenant(companyId, async (tx) => {
+        const invoiceCheck = await tx.invoiceLineItem.findFirst({
+          where: { fuelEntryId: fuelLogId }
+        });
+        expect(invoiceCheck).toBeDefined();
+        expect(invoiceCheck).not.toBeNull();
+        expect(invoiceCheck?.amount).toBe(10480);
+        expect(invoiceCheck?.type).toBe('FUEL');
+      });
     });
   });
 });

@@ -1,15 +1,13 @@
-import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
 import { RoutesService } from './routes.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { RequireAuth } from '../auth/decorators/require-auth.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('routes')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@RequireAuth()
 @Controller('routes')
 export class RoutesController {
   constructor(private readonly routesService: RoutesService) {}
@@ -42,5 +40,16 @@ export class RoutesController {
     @Body() body: { origin: string, destination: string, distance?: number, estimatedTolls?: number },
   ) {
     return this.routesService.createRoute(user.companyId, body.origin, body.destination, body.distance, body.estimatedTolls);
+  }
+
+  @Post(':id/attach-to-trip')
+  @RequirePermissions('trips:write')
+  @ApiOperation({ summary: 'Attach a route to a trip' })
+  attachToTrip(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: { tripId: string },
+  ) {
+    return this.routesService.attachRouteToTrip(user.companyId, body.tripId, id);
   }
 }

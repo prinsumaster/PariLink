@@ -744,10 +744,19 @@ export class TripsService {
 
     const [resource, action] = requiredPermission.split(':');
     
+    const userRecord = await this.prisma.user.findFirst({
+      where: { id: reviewerId, companyId },
+      select: { roleId: true }
+    });
+
+    if (!userRecord) {
+      throw new ForbiddenException('User not found in tenant context');
+    }
+
     const auth = await this.iam.authorize({
       userId: reviewerId,
       companyId,
-      roleId: roleId,
+      roleId: userRecord.roleId,
       resource,
       action
     });

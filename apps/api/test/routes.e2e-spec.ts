@@ -51,7 +51,7 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(createdRouteId).toBeDefined();
     });
 
-    it('should create a route with mocked defaults when distance/tolls omitted', async () => {
+    it('should create a route with mocked defaults when distance/tolls omitted, falling back to heuristic', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/v1/routes')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -63,9 +63,9 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(res.status).toBe(201);
       expect(res.body.origin).toBe('Delhi');
       expect(res.body.destination).toBe('Jaipur');
-      // Mocked defaults — explicitly noted as placeholders
-      expect(res.body.distance).toBe(1000);
-      expect(res.body.estimatedTolls).toBe(50);
+      // Heuristic fallback should generate a deterministic distance > 0
+      expect(res.body.distance).toBeGreaterThan(0);
+      expect(res.body.estimatedTolls).toBe(res.body.distance * 2.0); // 2.0 per km
     });
   });
 
@@ -86,12 +86,58 @@ describe('Routes Module (e2e) — Route Planning', () => {
   });
 
   describe('GET /routes/toll-estimate — Lookup from static toll table', () => {
-    it('should return 404 for an unknown route pair', async () => {
+    it('should return heuristic fallback for an unknown route pair', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/v1/routes/toll-estimate?originCity=NonExistCity&destinationCity=AlsoFake')
         .set('Authorization', `Bearer ${adminToken}`);
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(200); // Now it returns heuristic, not 404
+      expect(res.body.estimateType).toBe('HEURISTIC_FALLBACK');
+      expect(res.body.distanceKm).toBeGreaterThan(0);
+      expect(res.body.fastagCost).toBe(res.body.distanceKm * 2.0);
+    });
+    
+    it('should return dictionary exact match for known hub pair', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.estimateType).toBe('EXACT_DICTIONARY');
+      expect(res.body.distanceKm).toBe(150);
+      expect(res.body.fastagCost).toBe(300);
+    });
+  });
+
+  describe('POST /routes/:id/attach-to-trip — Attach to Trip', () => {
+    let tripId: string;
+    
+    beforeAll(async () => {
+      const prisma = app.get(require('../src/prisma/prisma.service').PrismaService);
+      const companyId = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
+      
+      await prisma.runAsTenant(companyId, async (tx: any) => {
+        const trip = await tx.trip.create({
+          data: {
+            id: 'route-test-trip-' + Date.now(),
+            companyId,
+            tripNumber: 'RT-' + Date.now(),
+            status: 'IN_TRANSIT',
+            rate: 500,
+          },
+        });
+        tripId = trip.id;
+      });
+    });
+
+    it('should attach the route to the trip', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/api/v1/routes/${createdRouteId}/attach-to-trip`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ tripId });
+
+      expect(res.status).toBe(201);
+      expect(res.body.route.id).toBe(createdRouteId);
     });
   });
 });

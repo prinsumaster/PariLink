@@ -1,0 +1,248 @@
+
+> api@0.0.1 test:e2e
+> jest --config ./test/jest-e2e.json test/fuel.e2e-spec.ts
+
+[31m[Nest] 1529  - [39m09/25/2026, 10:17:19 AM [31m  ERROR[39m [38;5;3m[PrismaService] [39m[31mPrisma Error: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Can't reach database server at `localhost:5433`
+
+Please make sure your database server is running at `localhost:5433`.[39m
+FAIL test/fuel.e2e-spec.ts (15.772 s)
+  Fuel Module (e2e) — CRUD + OTP Workflow
+    Fuel Card Flow
+      ✕ should create a fuel card with last 4 masking and hashed reference (1 ms)
+      ✕ should check fuel card billing status and return OVERDUE
+    Fuel Log OTP Flow
+      ✕ should create a fuel log with PENDING status (driver requests fuel)
+      ✕ should approve fuel log and generate OTP (dispatcher approves)
+      ✕ should reject filling with an invalid OTP
+      ✕ should reject filling with an expired OTP
+      ✕ should complete filling with correct OTP (driver fills at pump) and create invoice line item
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Card Flow › should create a fuel card with last 4 masking and hashed reference
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Card Flow › should check fuel card billing status and return OVERDUE
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Log OTP Flow › should create a fuel log with PENDING status (driver requests fuel)
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Log OTP Flow › should approve fuel log and generate OTP (dispatcher approves)
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Log OTP Flow › should reject filling with an invalid OTP
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Log OTP Flow › should reject filling with an expired OTP
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+  ● Fuel Module (e2e) — CRUD + OTP Workflow › Fuel Log OTP Flow › should complete filling with correct OTP (driver fills at pump) and create invoice line item
+
+    PrismaClientInitializationError: 
+    Invalid `prisma.$queryRaw()` invocation:
+
+
+    Can't reach database server at `localhost:5433`
+
+    Please make sure your database server is running at `localhost:5433`.
+
+      134 |     }
+      135 |
+    > 136 |     const rows = await this.$queryRaw<
+          |                  ^
+      137 |       Array<{ current_user: string; is_superuser: string; bypassrls: boolean }>
+      138 |     >`SELECT current_user,
+      139 |              current_setting('is_superuser') AS is_superuser,
+
+      at $n.handleRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:7615)
+      at $n.handleAndLogRequestError (../../../node_modules/@prisma/client/runtime/library.js:121:6623)
+      at $n.request (../../../node_modules/@prisma/client/runtime/library.js:121:6307)
+      at l (../../../node_modules/@prisma/client/runtime/library.js:130:9633)
+      at Proxy.assertRequestPathIsNotPrivileged (../src/prisma/prisma.service.ts:136:18)
+      at Proxy.onModuleInit (../src/prisma/prisma.service.ts:98:5)
+          at async Promise.all (index 0)
+      at callModuleInitHook (../../../node_modules/@nestjs/core/hooks/on-module-init.hook.js:43:5)
+      at Proxy.callInitHook (../../../node_modules/@nestjs/core/nest-application-context.js:245:13)
+      at Proxy.init (../../../node_modules/@nestjs/core/nest-application.js:106:9)
+      at Object.<anonymous> (fuel.e2e-spec.ts:30:5)
+
+Test Suites: 1 failed, 1 total
+Tests:       7 failed, 7 total
+Snapshots:   0 total
+Time:        16.196 s
+Ran all test suites matching /test\/fuel.e2e-spec.ts/i.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error workspace api@0.0.1
+npm error location /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error command failed
+npm error command sh -c jest --config ./test/jest-e2e.json test/fuel.e2e-spec.ts
