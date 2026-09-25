@@ -19,27 +19,70 @@ export class RoutesService {
   };
 
   /**
-   * Explicitly documented placeholder logic.
-   * In the absence of a paid Maps API key, this uses a dictionary lookup for major hubs,
-   * and falls back to a deterministic pseudo-random hash to generate a realistic distance.
-   * Tolls are estimated at a flat rate of ₹2.0 per km.
+   * Geocode a city name using Nominatim (OpenStreetMap).
+   * Note: This is a free rate-limited API.
    */
-  private calculateHeuristicRoute(origin: string, destination: string) {
-    const key = `${origin.toUpperCase()}:${destination.toUpperCase()}`;
-    let distanceKm = this.KNOWN_DISTANCES[key];
-    let estimateType = 'EXACT_DICTIONARY';
+  private async geocodeCity(city: string): Promise<{ lat: number, lon: number } | null> {
+    try {
+      // Nominatim requires a user agent
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city + ', India')}&format=json&limit=1`, {
+        headers: { 'User-Agent': 'PariLink-Enterprise/1.0' }
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data && data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 
-    if (!distanceKm) {
-      // Deterministic heuristic for unknown routes
-      const hash = crypto.createHash('md5').update(key).digest('hex');
-      const hashInt = parseInt(hash.substring(0, 4), 16); // 0 to 65535
-      // Map to 100km - 2500km
-      distanceKm = 100 + (hashInt % 2400);
-      estimateType = 'HEURISTIC_FALLBACK';
+  /**
+   * Explicitly documented routing logic using OSRM public demo server.
+   * If OSRM or Geocoding fails, it falls back to a deterministic pseudo-random hash.
+   * Tolls are estimated at a flat rate of ₹3.0 per km.
+   */
+  private async calculateRouteInternal(origin: string, destination: string) {
+    let distanceKm = 0;
+    let distanceSource = 'HEURISTIC_FALLBACK';
+
+    const originCoords = await this.geocodeCity(origin);
+    const destCoords = await this.geocodeCity(destination);
+
+    if (originCoords && destCoords) {
+      try {
+        const osrmUrl = `http://router.project-osrm.org/route/v1/driving/${originCoords.lon},${originCoords.lat};${destCoords.lon},${destCoords.lat}?overview=false`;
+        const res = await fetch(osrmUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.routes && data.routes.length > 0) {
+            distanceKm = data.routes[0].distance / 1000; // OSRM returns meters
+            distanceSource = 'OSRM_PUBLIC';
+          }
+        }
+      } catch (e) {
+        // Fallback below
+      }
     }
 
-    // Heavy commercial vehicle toll avg ₹2.0 / km
-    const estimatedTolls = distanceKm * 2.0;
+    if (distanceKm === 0) {
+      const key = `${origin.toUpperCase()}:${destination.toUpperCase()}`;
+      distanceKm = this.KNOWN_DISTANCES[key];
+      if (distanceKm) {
+        distanceSource = 'EXACT_DICTIONARY';
+      } else {
+        // Deterministic heuristic for unknown routes
+        const hash = crypto.createHash('md5').update(key).digest('hex');
+        const hashInt = parseInt(hash.substring(0, 4), 16); // 0 to 65535
+        // Map to 100km - 2500km
+        distanceKm = 100 + (hashInt % 2400);
+      }
+    }
+
+    // Heavy commercial vehicle toll avg ₹3.0 / km
+    const estimatedTolls = distanceKm * 3.0;
     
     // Average speed ~50km/h for trucks in India
     const estimatedHours = distanceKm / 50;
@@ -48,7 +91,8 @@ export class RoutesService {
       distanceKm,
       estimatedTolls,
       estimatedHours,
-      estimateType
+      distanceSource,
+      tollEstimateType: 'CALCULATED_AVERAGE'
     };
   }
 
@@ -69,19 +113,21 @@ export class RoutesService {
           fastagCost: dbRoute.fastagCost,
           cashCost: dbRoute.cashCost,
           distanceKm: dbRoute.distanceKm,
-          estimateType: 'DB_EXACT',
+          distanceSource: 'DB_EXACT',
+          tollEstimateType: 'DB_EXACT',
         };
       }
 
-      // Fallback to heuristic
-      const heuristic = this.calculateHeuristicRoute(originCity, destinationCity);
+      // Fallback to routing API or heuristic
+      const routeData = await this.calculateRouteInternal(originCity, destinationCity);
       return {
         originCity,
         destinationCity,
-        fastagCost: heuristic.estimatedTolls,
-        cashCost: heuristic.estimatedTolls * 1.1, // Cash is usually more expensive or no discount
-        distanceKm: heuristic.distanceKm,
-        estimateType: heuristic.estimateType,
+        fastagCost: routeData.estimatedTolls,
+        cashCost: routeData.estimatedTolls * 1.1, // Cash is usually more expensive or no discount
+        distanceKm: routeData.distanceKm,
+        distanceSource: routeData.distanceSource,
+        tollEstimateType: routeData.tollEstimateType,
       };
     });
   }
@@ -97,10 +143,12 @@ export class RoutesService {
 
   async createRoute(companyId: string, origin: string, destination: string, providedDistance?: number, providedTolls?: number) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const heuristic = this.calculateHeuristicRoute(origin, destination);
+      const routeData = await this.calculateRouteInternal(origin, destination);
       
-      const distance = providedDistance || heuristic.distanceKm;
-      const estimatedTolls = providedTolls || heuristic.estimatedTolls;
+      const distance = providedDistance || routeData.distanceKm;
+      const estimatedTolls = providedTolls || routeData.estimatedTolls;
+      const distanceSource = providedDistance ? 'USER_PROVIDED' : routeData.distanceSource;
+      const tollEstimateType = providedTolls ? 'USER_PROVIDED' : routeData.tollEstimateType;
 
       return tx.route.create({
         data: {
@@ -109,6 +157,8 @@ export class RoutesService {
           destination,
           distance,
           estimatedTolls,
+          distanceSource,
+          tollEstimateType
         },
       });
     });

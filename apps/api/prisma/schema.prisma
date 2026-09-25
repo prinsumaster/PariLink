@@ -4908,7 +4908,9 @@ model Route {
   origin         String
   destination    String
   distance       Float?
+  distanceSource String?
   estimatedTolls Float?
+  tollEstimateType String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

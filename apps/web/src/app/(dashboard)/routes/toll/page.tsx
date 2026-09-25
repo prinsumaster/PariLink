@@ -18,6 +18,8 @@ interface TollEstimate {
   fastagCost: number;
   cashCost: number;
   distanceKm: number;
+  tollEstimateType?: string;
+  distanceSource?: string;
 }
 
 async function fetchTollEstimate(
@@ -141,15 +143,32 @@ export default function RouteTollPage() {
                 <Milestone className="h-4 w-4 text-primary" />
                 {data.originCity} → {data.destinationCity}
               </span>
-              <Badge variant="outline">{data.distanceKm} km</Badge>
+              <div className="flex flex-col items-end gap-1">
+                <Badge variant="outline">
+                  {data.distanceKm} km 
+                  <span className="text-muted-foreground ml-1 text-[10px]">
+                    ({data.distanceSource === 'OSRM_PUBLIC' ? 'Live Routing' : 'Est. Distance'})
+                  </span>
+                </Badge>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {data.tollEstimateType === 'CALCULATED_AVERAGE' && (
+              <div className="mb-4 p-2 text-xs bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900 rounded-md flex items-center justify-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                <strong>Note:</strong> Toll costs shown are estimated averages based on distance, not real-time FASTag quotes.
+              </div>
+            )}
+            
             <div className="grid grid-cols-2 gap-4">
               <div
                 id="toll-fastag-cost"
-                className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 p-4 text-center"
+                className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 p-4 text-center relative"
               >
+                {data.tollEstimateType === 'CALCULATED_AVERAGE' && (
+                  <span className="absolute top-2 right-2 text-[9px] uppercase tracking-wider font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">Est</span>
+                )}
                 <div className="text-xs font-medium text-emerald-600 uppercase tracking-wide mb-1">
                   FASTag Cost
                 </div>
@@ -162,8 +181,11 @@ export default function RouteTollPage() {
 
               <div
                 id="toll-cash-cost"
-                className="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 p-4 text-center"
+                className="rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 p-4 text-center relative"
               >
+                {data.tollEstimateType === 'CALCULATED_AVERAGE' && (
+                  <span className="absolute top-2 right-2 text-[9px] uppercase tracking-wider font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">Est</span>
+                )}
                 <div className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
                   Cash Cost
                 </div>
@@ -176,7 +198,7 @@ export default function RouteTollPage() {
             </div>
 
             <p className="text-xs text-slate-400 mt-4 text-center">
-              Source: seeded static rate table. FASTag live integration is not yet active.
+              Source: {data.tollEstimateType === 'DB_EXACT' ? 'seeded static rate table.' : 'estimated calculated average.'} FASTag live integration is not yet active.
             </p>
           </CardContent>
         </Card>

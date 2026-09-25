@@ -51,7 +51,7 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(createdRouteId).toBeDefined();
     });
 
-    it('should create a route with mocked defaults when distance/tolls omitted, falling back to heuristic', async () => {
+    it('should create a route with mocked defaults when distance/tolls omitted, routing via OSRM if cities are valid', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/v1/routes')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -63,9 +63,12 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(res.status).toBe(201);
       expect(res.body.origin).toBe('Delhi');
       expect(res.body.destination).toBe('Jaipur');
-      // Heuristic fallback should generate a deterministic distance > 0
-      expect(res.body.distance).toBeGreaterThan(0);
-      expect(res.body.estimatedTolls).toBe(res.body.distance * 2.0); // 2.0 per km
+      // Should successfully use OSRM API
+      expect(res.body.distanceSource).toBe('OSRM_PUBLIC');
+      expect(res.body.tollEstimateType).toBe('CALCULATED_AVERAGE');
+      expect(res.body.distance).toBeGreaterThan(150); // Delhi to Jaipur is ~280km
+      expect(res.body.distance).toBeLessThan(400);
+      expect(res.body.estimatedTolls).toBe(res.body.distance * 3.0); // 3.0 per km
     });
   });
 
@@ -82,30 +85,35 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(found.origin).toBe('Mumbai');
       expect(found.destination).toBe('Pune');
       expect(found.distance).toBe(148);
+      expect(found.distanceSource).toBe('USER_PROVIDED');
+      expect(found.tollEstimateType).toBe('USER_PROVIDED');
     });
   });
 
   describe('GET /routes/toll-estimate — Lookup from static toll table', () => {
-    it('should return heuristic fallback for an unknown route pair', async () => {
+    it('should return heuristic fallback for an un-geocodable random string', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/routes/toll-estimate?originCity=NonExistCity&destinationCity=AlsoFake')
+        .get('/api/v1/routes/toll-estimate?originCity=XYZQwerty123&destinationCity=ABCPoiuy098')
         .set('Authorization', `Bearer ${adminToken}`);
 
-      expect(res.status).toBe(200); // Now it returns heuristic, not 404
-      expect(res.body.estimateType).toBe('HEURISTIC_FALLBACK');
+      expect(res.status).toBe(200);
+      expect(res.body.estimateType).toBeUndefined(); // we use tollEstimateType now
+      expect(res.body.tollEstimateType).toBe('CALCULATED_AVERAGE');
+      expect(res.body.distanceSource).toBe('HEURISTIC_FALLBACK');
       expect(res.body.distanceKm).toBeGreaterThan(0);
-      expect(res.body.fastagCost).toBe(res.body.distanceKm * 2.0);
+      expect(res.body.fastagCost).toBe(res.body.distanceKm * 3.0);
     });
     
-    it('should return dictionary exact match for known hub pair', async () => {
+    it('should return OSRM distance for real cities', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune')
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.estimateType).toBe('EXACT_DICTIONARY');
-      expect(res.body.distanceKm).toBe(150);
-      expect(res.body.fastagCost).toBe(300);
+      expect(res.body.distanceSource).toBe('OSRM_PUBLIC');
+      expect(res.body.tollEstimateType).toBe('CALCULATED_AVERAGE');
+      expect(res.body.distanceKm).toBeGreaterThan(100);
+      expect(res.body.fastagCost).toBe(res.body.distanceKm * 3.0);
     });
   });
 
