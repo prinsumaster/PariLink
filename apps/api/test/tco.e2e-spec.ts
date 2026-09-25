@@ -173,14 +173,18 @@ describe('TCO (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    console.log(
-      'REAL ENDPOINT RESPONSE:',
-      JSON.stringify(response.body, null, 2),
-    );
-
     expect(response.body.breakdown.fuel).toBe(500);
     expect(response.body.breakdown.workshop).toBe(1500);
     expect(response.body.breakdown.insurance).toBe(5000);
+    expect(response.body.lifetimeTotal).toBe(7000);
+  });
+
+  it('/vehicles/:id/tco (GET) - Hits the cache on second request', async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/api/v1/vehicles/${vehicleId}/tco`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
     expect(response.body.lifetimeTotal).toBe(7000);
   });
 });

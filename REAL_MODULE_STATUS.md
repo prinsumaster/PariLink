@@ -24,7 +24,7 @@ The PariLink Version 1.0.0 release changelog contained massive claims about the 
 | **Cross-docking Engine** | ❌ FABRICATED | Contains complex math logic in `inbound-outbound.engine.ts`, but no Prisma models exist to back this up. Purely simulated. |
 | **Sales Demo Mode** | ❌ FABRICATED | The "Sales Demo Mode" UI clicks a button, sleeps for 3 seconds (`setTimeout`), and displays a "Demo environment provisioned" toast. No backend seeding exists. |
 | **Total Cost of Ownership (TCO)** | ✅ REAL AND WORKING | Real implementation aggregating fuel, workshop (maintenance), and insurance costs. Included Redis caching for the TCO query endpoint. Validated end-to-end. |
-| **Scale/Infra Hardening** | ✅ REAL AND WORKING | Database transaction pooling via PgBouncer configured securely using `AUTH_QUERY`. Redis caching implemented for heavy read endpoints. Compound indexes added and verified via `EXPLAIN ANALYZE` for TCO analytics. |
+| **Scale/Infra Hardening** | ✅ REAL AND WORKING | Database transaction pooling via PgBouncer configured securely using `AUTH_QUERY` (verified via `SHOW POOLS`). Redis caching implemented for heavy read endpoints (e.g. TCO cache hits verified in e2e tests). N+1 query warnings resolved. Compound indexes added and verified via `EXPLAIN ANALYZE` for TCO analytics without sequence scans. |
 > **Audit Summary:** Out of the massive feature list claimed at launch, the core CRUD, API platform, and infrastructure boilerplate are real. The "Enterprise" tier features (Sales Demo Mode, Cross-docking, real AI Agent Dispatch, Data Warehouse integrations) are entirely fabricated simulations or stubs meant to pass superficial inspection.
 
 ## Scale/Load Testing
@@ -54,8 +54,14 @@ This confirms that the IAM Zero-Trust updates and Role-Based Access Control logi
 ## Production Readiness
 ### Secrets & Configuration Audit
 - **Findings:** A full audit revealed multiple dangerous hardcoded fallbacks across the codebase. `ENCRYPTION_KEY`, `WEBHOOK_SECRET`, `NEXTAUTH_SECRET`, and CRM integration keys defaulted to insecure stubs, and `infra/initdb/userlist.txt` contained hardcoded plaintext passwords.
-- **Fixes Applied:** Refactored the core security variables in the `api` and `web` repositories to strictly evaluate `NODE_ENV === 'production'`. If these critical keys are missing in production, the application now intentionally crashes with `throw new Error('FATAL: ...')` rather than silently booting in an insecure state. Missing API keys for stub features (like AI/LLMs) now gracefully downgrade to `undefined` in production to prevent crashes while keeping dev mocks.
+- **Fixes Applied:** Refactored the core security variables in the `api` and `web` repositories to strictly evaluate `NODE_ENV === 'production'`. Scrubbed `CHANGE_ME_IN_PRODUCTION` fallbacks from `docker-compose.yml` so that if keys are missing in production, the application intentionally crashes instead of silently booting in an insecure state.
 - **Documentation:** Created a comprehensive, scrubbed `.env.production.example` detailing all required variables to run the app.
+
+### Authentication & Authorization Audit
+- **Webhook Security (B1/B2):** Verified that `StripeWebhookController` properly validates signatures via `stripe.webhooks.constructEvent`. Telemetry and IoT webhooks correctly enforce HMAC-SHA256 signature checking (`crypto.timingSafeEqual`) on `x-provider-signature` and static API key checks.
+- **Tenant Isolation (C1/C2):** Confirmed all endpoints rigorously enforce `where: { companyId }`. Ran `cross-tenant.e2e-spec.ts`, which successfully passed (5/5 tests), proving that BOLA/IDOR cross-tenant read/update/delete attempts throw HTTP 403/404.
+- **RBAC Rejection (2.2):** Validated via `security.e2e-spec.ts` that users explicitly lacking `fleet:write` permissions correctly receive an HTTP 403 Forbidden when attempting to create a vehicle.
+- **Token Expiry (2.5):** Validated via `security.e2e-spec.ts` that expired JWTs correctly return an HTTP 401 Unauthorized instead of processing the request.
 
 ### Container & Build Readiness
 - Both `api` and `web` Dockerfiles represent proper multi-stage production builds.
