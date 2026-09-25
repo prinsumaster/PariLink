@@ -5,7 +5,7 @@ import {
   IsInt,
   IsDateString,
   IsNotEmpty,
-  Min
+  Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 

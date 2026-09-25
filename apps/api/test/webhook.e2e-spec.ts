@@ -22,10 +22,10 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
     configService = moduleFixture.get<ConfigService>(ConfigService);
     app.enableShutdownHooks();
     await app.init();
-    
+
     // Use runAsSystem so the truncate runs as parilink_sys (bypasses RLS)
     await prisma.runAsSystem('webhook-test-setup', (tx) =>
-      tx.$executeRawUnsafe(`TRUNCATE TABLE "WebhookDelivery" CASCADE`)
+      tx.$executeRawUnsafe(`TRUNCATE TABLE "WebhookDelivery" CASCADE`),
     );
   });
 
@@ -36,14 +36,18 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
   describe('Razorpay Webhook', () => {
     const validPayload = JSON.stringify({
       event: 'payment.captured',
-      payload: { payment: { entity: { amount: 100 } } }
+      payload: { payment: { entity: { amount: 100 } } },
     });
-    
+
     let validSignature: string;
 
     beforeAll(() => {
-      const secret = configService.get<string>('RAZORPAY_WEBHOOK_SECRET') || 'secret';
-      validSignature = crypto.createHmac('sha256', secret).update(validPayload).digest('hex');
+      const secret =
+        configService.get<string>('RAZORPAY_WEBHOOK_SECRET') || 'secret';
+      validSignature = crypto
+        .createHmac('sha256', secret)
+        .update(validPayload)
+        .digest('hex');
     });
 
     it('should reject missing signature', async () => {
@@ -51,7 +55,7 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
         .post('/api/v1/webhooks/razorpay')
         .send(validPayload)
         .set('Content-Type', 'application/json');
-        
+
       expect(res.status).toBe(400);
     });
 
@@ -61,7 +65,7 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
         .send(validPayload)
         .set('x-razorpay-signature', 'invalid_signature_here')
         .set('Content-Type', 'application/json');
-        
+
       expect(res.status).toBe(400);
     });
 
@@ -72,7 +76,7 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
         .send(tamperedPayload)
         .set('x-razorpay-signature', validSignature)
         .set('Content-Type', 'application/json');
-        
+
       expect(res.status).toBe(400);
     });
   });
@@ -85,8 +89,8 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
         .post('/api/v1/webhooks/stripe')
         .send(payload)
         .set('Content-Type', 'application/json');
-        
-      expect(res.status).toBe(400); 
+
+      expect(res.status).toBe(400);
     });
 
     it('should reject invalid signature', async () => {
@@ -95,8 +99,8 @@ describe('Webhook HTTP E2E Security (e2e)', () => {
         .send(payload)
         .set('stripe-signature', 't=123456,v1=invalid_sig')
         .set('Content-Type', 'application/json');
-        
-      expect(res.status).toBe(400); 
+
+      expect(res.status).toBe(400);
     });
   });
 });

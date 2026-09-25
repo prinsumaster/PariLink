@@ -11,7 +11,10 @@ import { AiInferenceProcessor } from './ai-inference.processor';
     }),
   ],
   controllers: [DispatchAiController],
-  providers: [DispatchAiService, ...(process.env.RUN_WORKERS === 'true' ? [AiInferenceProcessor] : [])],
+  providers: [
+    DispatchAiService,
+    ...(process.env.RUN_WORKERS === 'true' ? [AiInferenceProcessor] : []),
+  ],
   exports: [DispatchAiService],
 })
 export class DispatchAiModule {}

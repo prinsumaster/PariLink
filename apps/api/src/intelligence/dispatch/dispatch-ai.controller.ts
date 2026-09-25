@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Param, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Param,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { DispatchAiService } from './dispatch-ai.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { TenantInterceptor } from '../../platform/security/tenant.interceptor';

@@ -43,11 +43,13 @@ export class WebhookController {
     );
 
     // Verify connection exists
-    const connection = await this.prisma.runAsSystem('[WebhookController.receiveWebhook] Webhook handler bypass', async (tx) =>
-      tx.integrationConnection.findUnique({
-        where: { id: connectionId },
-        include: { connector: true },
-      }),
+    const connection = await this.prisma.runAsSystem(
+      '[WebhookController.receiveWebhook] Webhook handler bypass',
+      async (tx) =>
+        tx.integrationConnection.findUnique({
+          where: { id: connectionId },
+          include: { connector: true },
+        }),
     );
 
     if (!connection || !connection.credentials) {
@@ -56,17 +58,24 @@ export class WebhookController {
 
     let secret = '';
     try {
-      const credsString = typeof connection.credentials === 'string' 
-        ? connection.credentials 
-        : JSON.stringify(connection.credentials);
+      const credsString =
+        typeof connection.credentials === 'string'
+          ? connection.credentials
+          : JSON.stringify(connection.credentials);
       const credentials = this.authService.decryptCredentials(credsString);
       secret = credentials?.webhookSecret;
     } catch (e: any) {
-      throw new HttpException('Invalid credentials state', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Invalid credentials state',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     if (!secret) {
-      throw new HttpException('Webhook secret not configured', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Webhook secret not configured',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     if (!signature) {
@@ -90,16 +99,18 @@ export class WebhookController {
     }
 
     // Log Delivery
-    await this.prisma.runAsSystem('[WebhookController.receiveWebhook] Webhook handler bypass', async (tx) =>
-      tx.webhookDelivery.create({
-        data: {
-          companyId: connection.companyId,
-          direction: 'INCOMING',
-          endpointUrl: req.url,
-          eventTopic: (payload as any).event_type || 'unknown_event',
-          payload: payload as any,
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[WebhookController.receiveWebhook] Webhook handler bypass',
+      async (tx) =>
+        tx.webhookDelivery.create({
+          data: {
+            companyId: connection.companyId,
+            direction: 'INCOMING',
+            endpointUrl: req.url,
+            eventTopic: (payload as any).event_type || 'unknown_event',
+            payload: payload as any,
+          },
+        }),
     );
 
     // We would then push this to the EventBus/BullMQ for asynchronous processing.

@@ -25,15 +25,17 @@ export class FinanceAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const invoices = await this.prisma.runAsSystem('[FinanceAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-            tx.invoice.findMany({
-              where: {
-                companyId: parsed.companyId,
-                ...(parsed.status ? { status: parsed.status } : {}),
-              },
-              take: parsed.limit || 10,
-              orderBy: { createdAt: 'desc' },
-            }),
+          const invoices = await this.prisma.runAsSystem(
+            '[FinanceAgent.unknownMethod] Autonomous AI Agent bypass',
+            async (tx) =>
+              tx.invoice.findMany({
+                where: {
+                  companyId: parsed.companyId,
+                  ...(parsed.status ? { status: parsed.status } : {}),
+                },
+                take: parsed.limit || 10,
+                orderBy: { createdAt: 'desc' },
+              }),
           );
           const totalAmount = invoices.reduce(
             (sum, inv) => sum + Number(inv.amount || 0),

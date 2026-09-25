@@ -114,7 +114,7 @@ export class BusinessHealthService {
     const completedOrTransit = tripsToday.filter(
       (t) => t.status === 'COMPLETED' || t.status === 'IN_TRANSIT',
     ).length;
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _delayed = tripsToday.filter((t) => t.status === 'DELAYED').length;
 
     let onTimeScore = 100;

@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-  Req
-} from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CryptoService } from '../security/crypto.service';
@@ -40,10 +35,12 @@ class ApiKeyAuthGuard implements CanActivate {
 
     const hashedKey = this.crypto.hashApiKey(apiKey);
 
-    const credential = await this.prisma.runAsSystem('[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-      tx.apiCredential.findFirst({
-        where: { apiKeyHash: hashedKey },
-      }),
+    const credential = await this.prisma.runAsSystem(
+      '[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass',
+      async (tx) =>
+        tx.apiCredential.findFirst({
+          where: { apiKeyHash: hashedKey },
+        }),
     );
 
     if (!credential) {
@@ -59,18 +56,20 @@ class ApiKeyAuthGuard implements CanActivate {
 
     // Log request asynchronously
     this.prisma
-      .runAsSystem('[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-        tx.apiRequestLog.create({
-          data: {
-            companyId: credential.companyId,
-            endpoint: request.url,
-            method: request.method,
-            statusCode: 200,
-            latencyMs: 0,
-            ipAddress: request.ip,
-            userAgent: request.headers['user-agent'],
-          },
-        }),
+      .runAsSystem(
+        '[ApiKeyAuthGuard.canActivate] Security/Auth lifecycle bypass',
+        async (tx) =>
+          tx.apiRequestLog.create({
+            data: {
+              companyId: credential.companyId,
+              endpoint: request.url,
+              method: request.method,
+              statusCode: 200,
+              latencyMs: 0,
+              ipAddress: request.ip,
+              userAgent: request.headers['user-agent'],
+            },
+          }),
       )
       .catch((e: any) => this.logger.error('Failed to log API request', e));
 
@@ -95,11 +94,13 @@ export class GatewayController {
   @ApiOperation({ summary: 'Get loads via API Gateway' })
   async getLoads(@Req() req: any) {
     // This is scoped by ApiKeyAuthGuard's attached companyId
-    const loads = await this.prisma.runAsTenant(req.user.companyId, async (tx) =>
-      tx.load.findMany({
-        where: { companyId: req.companyId },
-        take: 50,
-      }),
+    const loads = await this.prisma.runAsTenant(
+      req.user.companyId,
+      async (tx) =>
+        tx.load.findMany({
+          where: { companyId: req.companyId },
+          take: 50,
+        }),
     );
     return { data: loads };
   }

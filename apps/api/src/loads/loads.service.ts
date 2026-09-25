@@ -17,7 +17,8 @@ import * as crypto from 'crypto';
 import { WorkflowService } from '../workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AuditService } from '../platform/audit/audit.service';
-import { createDefaultTripDesks } from '../trips/trip-desks.util';import { EventStoreService } from '../platform/digital-twin/event-store.service';
+import { createDefaultTripDesks } from '../trips/trip-desks.util';
+import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class LoadsService {

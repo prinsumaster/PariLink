@@ -21,7 +21,9 @@ describe('Multi-Tenant Isolation (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     app.enableShutdownHooks();
     await app.init();
 
@@ -31,57 +33,73 @@ describe('Multi-Tenant Isolation (e2e)', () => {
 
     // Create companies — let Postgres generate real UUIDs then capture them
     const coA = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.company.create({ data: { name: `E2E-TenantA-${Date.now()}` } })
+      tx.company.create({ data: { name: `E2E-TenantA-${Date.now()}` } }),
     );
     const coB = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.company.create({ data: { name: `E2E-TenantB-${Date.now()}` } })
+      tx.company.create({ data: { name: `E2E-TenantB-${Date.now()}` } }),
     );
     _tenantACompanyId = coA.id;
 
     // Customer for tenant-a (using real UUID)
     const cust = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.customer.create({ data: { name: 'Customer A', companyId: coA.id } })
+      tx.customer.create({ data: { name: 'Customer A', companyId: coA.id } }),
     );
     tenantACustomerId = cust.id;
 
     // Roles & users for both tenants
     const roleA = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.role.create({ data: { name: 'Admin', permissions: ['*'], companyId: coA.id } })
+      tx.role.create({
+        data: { name: 'Admin', permissions: ['*'], companyId: coA.id },
+      }),
     );
     const roleB = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.role.create({ data: { name: 'Admin', permissions: ['*'], companyId: coB.id } })
+      tx.role.create({
+        data: { name: 'Admin', permissions: ['*'], companyId: coB.id },
+      }),
     );
 
     const suffix = Date.now();
     await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.user.create({
         data: {
-          email: `mt_admin_a_${suffix}@example.com`, password: hash,
-          firstName: 'Admin', lastName: 'A',
-          companyId: coA.id, roleId: roleA.id,
+          email: `mt_admin_a_${suffix}@example.com`,
+          password: hash,
+          firstName: 'Admin',
+          lastName: 'A',
+          companyId: coA.id,
+          roleId: roleA.id,
         },
-      })
+      }),
     );
     await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.user.create({
         data: {
-          email: `mt_admin_b_${suffix}@example.com`, password: hash,
-          firstName: 'Admin', lastName: 'B',
-          companyId: coB.id, roleId: roleB.id,
+          email: `mt_admin_b_${suffix}@example.com`,
+          password: hash,
+          firstName: 'Admin',
+          lastName: 'B',
+          companyId: coB.id,
+          roleId: roleB.id,
         },
-      })
+      }),
     );
 
     // Login as Tenant A
     const loginA = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: `mt_admin_a_${suffix}@example.com`, password: 'password' });
+      .send({
+        email: `mt_admin_a_${suffix}@example.com`,
+        password: 'password',
+      });
     tenantAToken = loginA.body.access_token;
 
     // Login as Tenant B
     const loginB = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: `mt_admin_b_${suffix}@example.com`, password: 'password' });
+      .send({
+        email: `mt_admin_b_${suffix}@example.com`,
+        password: 'password',
+      });
     tenantBToken = loginB.body.access_token;
   });
 

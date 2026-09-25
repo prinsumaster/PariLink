@@ -5,6 +5,6 @@ import { LorryReceiptsController } from './lorry-receipts.controller';
 @Module({
   controllers: [LorryReceiptsController],
   providers: [LorryReceiptsService],
-  exports: [LorryReceiptsService]
+  exports: [LorryReceiptsService],
 })
 export class LorryReceiptsModule {}

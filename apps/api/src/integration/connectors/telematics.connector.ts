@@ -64,7 +64,9 @@ export class SamsaraTelematicsConnector extends BaseConnector {
     return true;
   }
 
-  async testConnection(_credentials: Record<string, unknown>): Promise<boolean> {
+  async testConnection(
+    _credentials: Record<string, unknown>,
+  ): Promise<boolean> {
     return true;
   }
 }

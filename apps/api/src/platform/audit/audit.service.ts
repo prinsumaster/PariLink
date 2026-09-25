@@ -65,12 +65,14 @@ export class AuditService {
 
     // ── Hash Chain ──────────────────────────────────────────────────────
     // Retrieve the previous audit log for this tenant to link the chain.
-    const previousRecord = await this.prisma.runAsSystem('[AuditService.logEvent] Internal service operation bypass', async (tx) =>
-      tx.auditLog.findFirst({
-        where: { companyId: event.companyId },
-        orderBy: { createdAt: 'desc' },
-        select: { id: true, details: true },
-      }),
+    const previousRecord = await this.prisma.runAsSystem(
+      '[AuditService.logEvent] Internal service operation bypass',
+      async (tx) =>
+        tx.auditLog.findFirst({
+          where: { companyId: event.companyId },
+          orderBy: { createdAt: 'desc' },
+          select: { id: true, details: true },
+        }),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,10 +148,12 @@ export class AuditService {
    * Returns true if the record has not been tampered with.
    */
   async verifyIntegrity(auditLogId: string): Promise<boolean> {
-    const record = await this.prisma.runAsSystem('[AuditService.verifyIntegrity] Internal service operation bypass', async (tx) =>
-      tx.auditLog.findUnique({
-        where: { id: auditLogId },
-      }),
+    const record = await this.prisma.runAsSystem(
+      '[AuditService.verifyIntegrity] Internal service operation bypass',
+      async (tx) =>
+        tx.auditLog.findUnique({
+          where: { id: auditLogId },
+        }),
     );
     if (!record) return false;
 

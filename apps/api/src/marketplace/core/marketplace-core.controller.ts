@@ -10,11 +10,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { MarketplaceCoreService } from './marketplace-core.service';
 import { InstallAppDto } from './dto/install-app.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';

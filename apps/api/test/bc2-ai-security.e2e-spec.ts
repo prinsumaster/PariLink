@@ -21,7 +21,9 @@ describe('BC2 - AI Security Tracing (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
 
     prisma = app.get<PrismaService>(PrismaService);
@@ -40,8 +42,8 @@ describe('BC2 - AI Security Tracing (e2e)', () => {
         data: {
           name: 'AI User Role',
           companyId: tenantA_id,
-          permissions: ['ai:interact']
-        }
+          permissions: ['ai:interact'],
+        },
       });
       roleA_id = roleA.id;
 
@@ -59,7 +61,11 @@ describe('BC2 - AI Security Tracing (e2e)', () => {
       userA_id = userA.id;
     });
 
-    userA_token = jwtService.sign({ sub: userA_id, cid: tenantA_id, rid: roleA_id });
+    userA_token = jwtService.sign({
+      sub: userA_id,
+      cid: tenantA_id,
+      rid: roleA_id,
+    });
   });
 
   afterAll(async () => {
@@ -73,11 +79,11 @@ describe('BC2 - AI Security Tracing (e2e)', () => {
       .send({
         origin: 'Seattle, WA',
         destination: 'Portland, OR',
-        loadWeight: 12000
+        loadWeight: 12000,
       });
 
     expect(res.status).toBe(201); // 201 Created for POST by default in NestJS
-    
+
     // We expect the logs to show: [AI_SECURITY_TRACE] Payload context: {"companyId":"<tenantA_id>","userId":"<userA_id>"}
     console.log('AI Prediction Response:', res.body);
   });

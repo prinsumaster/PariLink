@@ -1,12 +1,6 @@
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ApiPlatformService } from './api-platform.service';
 import { CreateApiKeyDto, CreateWebhookDto } from './dto/api-platform.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

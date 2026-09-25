@@ -1,12 +1,5 @@
 import { IsString, IsNumber, IsOptional, IsNotEmpty } from 'class-validator';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { GetUser } from '../../../auth/decorators/get-user.decorator';
@@ -23,8 +16,6 @@ export class SubmitExpenseDto {
 @ApiTags('driver-portal/expenses')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-
-
 @Controller('driver-portal/expenses')
 export class DriverExpensesController {
   constructor(private readonly driverExpensesService: DriverExpensesService) {}

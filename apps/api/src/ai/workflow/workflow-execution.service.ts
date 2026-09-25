@@ -47,7 +47,7 @@ export class WorkflowExecutionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly llmManager: LlmManagerService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _observability: AiObservabilityService,
   ) {}
 
@@ -393,21 +393,24 @@ export class WorkflowExecutionService {
     notes?: string,
   ) {
     try {
-      const agentRecord = await this.prisma.runAsSystem('[WorkflowExecutionService.logWorkflowAudit] Internal service operation bypass', async (tx) =>
-        tx.aiAgent.findFirst(),
+      const agentRecord = await this.prisma.runAsSystem(
+        '[WorkflowExecutionService.logWorkflowAudit] Internal service operation bypass',
+        async (tx) => tx.aiAgent.findFirst(),
       );
       if (agentRecord) {
-        await this.prisma.runAsSystem('[WorkflowExecutionService.logWorkflowAudit] Internal service operation bypass', async (tx) =>
-          tx.aiInteractionLog.create({
-            data: {
-              agentId: agentRecord.id,
-              prompt: `Workflow: ${execution.workflowName} | Step: ${step.name}`,
-              response: step.output || notes || status,
-              userId: step.approvedBy || execution.initiatedBy,
-              companyId: execution.companyId,
-              sessionId: execution.executionId,
-            },
-          }),
+        await this.prisma.runAsSystem(
+          '[WorkflowExecutionService.logWorkflowAudit] Internal service operation bypass',
+          async (tx) =>
+            tx.aiInteractionLog.create({
+              data: {
+                agentId: agentRecord.id,
+                prompt: `Workflow: ${execution.workflowName} | Step: ${step.name}`,
+                response: step.output || notes || status,
+                userId: step.approvedBy || execution.initiatedBy,
+                companyId: execution.companyId,
+                sessionId: execution.executionId,
+              },
+            }),
         );
       }
     } catch {

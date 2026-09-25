@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 export interface SlaEvaluationResult {
@@ -11,7 +11,6 @@ export interface SlaEvaluationResult {
 
 @Injectable()
 export class SlaTrackerService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

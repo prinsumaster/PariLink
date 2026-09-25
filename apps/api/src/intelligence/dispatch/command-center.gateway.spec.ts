@@ -55,7 +55,7 @@ describe('CommandCenterGateway', () => {
       });
 
       await gateway.handleConnection(mockClient);
-      
+
       expect(jwtService.verify).toHaveBeenCalledWith('invalid.jwt.token');
       expect(mockClient.disconnect).toHaveBeenCalledWith(true);
       expect(mockClient.join).not.toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe('CommandCenterGateway', () => {
       jest.spyOn(jwtService, 'verify').mockReturnValue({ userId: 'user-1' });
 
       await gateway.handleConnection(mockClient);
-      
+
       expect(jwtService.verify).toHaveBeenCalledWith('valid.jwt.no-company');
       expect(mockClient.disconnect).toHaveBeenCalledWith(true);
       expect(mockClient.join).not.toHaveBeenCalled();
@@ -75,7 +75,9 @@ describe('CommandCenterGateway', () => {
     it('should join strictly isolated tenant room if token is valid', async () => {
       const companyId = 'test-tenant-xyz';
       mockClient.handshake.auth.token = 'valid.jwt.token';
-      jest.spyOn(jwtService, 'verify').mockReturnValue({ companyId, userId: 'user-1' });
+      jest
+        .spyOn(jwtService, 'verify')
+        .mockReturnValue({ companyId, userId: 'user-1' });
 
       await gateway.handleConnection(mockClient);
 

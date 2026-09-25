@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -25,7 +25,6 @@ export interface MetricSeries {
 
 @Injectable()
 export class MetricsPlatformService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     // @ts-ignore: reserved for future use
@@ -80,12 +79,14 @@ export class MetricsPlatformService {
       if (filter.endTime) where.recordedAt.lte = filter.endTime;
     }
 
-    const records = await this.prisma.runAsSystem('[MetricsPlatformService.queryMetrics] Internal service operation bypass', async (tx) =>
-      tx.platformMetric.findMany({
-        where,
-        orderBy: { recordedAt: 'asc' },
-        take: filter.limit || 500,
-      }),
+    const records = await this.prisma.runAsSystem(
+      '[MetricsPlatformService.queryMetrics] Internal service operation bypass',
+      async (tx) =>
+        tx.platformMetric.findMany({
+          where,
+          orderBy: { recordedAt: 'asc' },
+          take: filter.limit || 500,
+        }),
     );
 
     const grouped: Record<string, typeof records> = {};
@@ -146,17 +147,25 @@ export class MetricsPlatformService {
     try {
       const [tripsCount, invoicesCount, loadsCount, driversCount] =
         await Promise.all([
-          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
-            tx.trip.count({ where: companyId ? { companyId } : {} }),
+          this.prisma.runAsSystem(
+            '[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass',
+            async (tx) =>
+              tx.trip.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
-            tx.invoice.count({ where: companyId ? { companyId } : {} }),
+          this.prisma.runAsSystem(
+            '[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass',
+            async (tx) =>
+              tx.invoice.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
-            tx.load.count({ where: companyId ? { companyId } : {} }),
+          this.prisma.runAsSystem(
+            '[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass',
+            async (tx) =>
+              tx.load.count({ where: companyId ? { companyId } : {} }),
           ),
-          this.prisma.runAsSystem('[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass', async (tx) =>
-            tx.driver.count({ where: companyId ? { companyId } : {} }),
+          this.prisma.runAsSystem(
+            '[MetricsPlatformService.getBusinessMetrics] Internal service operation bypass',
+            async (tx) =>
+              tx.driver.count({ where: companyId ? { companyId } : {} }),
           ),
         ]);
       return {
@@ -183,20 +192,29 @@ export class MetricsPlatformService {
   async getQueueMetrics(companyId?: string): Promise<Record<string, number>> {
     try {
       const [pending, completed, failed] = await Promise.all([
-        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
-          tx.backgroundJob.count({
-            where: { ...(companyId ? { companyId } : {}), status: 'PENDING' },
-          }),
+        this.prisma.runAsSystem(
+          '[MetricsPlatformService.getQueueMetrics] Internal service operation bypass',
+          async (tx) =>
+            tx.backgroundJob.count({
+              where: { ...(companyId ? { companyId } : {}), status: 'PENDING' },
+            }),
         ),
-        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
-          tx.backgroundJob.count({
-            where: { ...(companyId ? { companyId } : {}), status: 'COMPLETED' },
-          }),
+        this.prisma.runAsSystem(
+          '[MetricsPlatformService.getQueueMetrics] Internal service operation bypass',
+          async (tx) =>
+            tx.backgroundJob.count({
+              where: {
+                ...(companyId ? { companyId } : {}),
+                status: 'COMPLETED',
+              },
+            }),
         ),
-        this.prisma.runAsSystem('[MetricsPlatformService.getQueueMetrics] Internal service operation bypass', async (tx) =>
-          tx.backgroundJob.count({
-            where: { ...(companyId ? { companyId } : {}), status: 'FAILED' },
-          }),
+        this.prisma.runAsSystem(
+          '[MetricsPlatformService.getQueueMetrics] Internal service operation bypass',
+          async (tx) =>
+            tx.backgroundJob.count({
+              where: { ...(companyId ? { companyId } : {}), status: 'FAILED' },
+            }),
         ),
       ]);
       return {
@@ -220,14 +238,16 @@ export class MetricsPlatformService {
    */
   async getApiMetrics(companyId?: string): Promise<Record<string, unknown>> {
     try {
-      const logs = await this.prisma.runAsSystem('[MetricsPlatformService.getApiMetrics] Internal service operation bypass', async (tx) =>
-        tx.apiAnalyticsLog.findMany({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            timestamp: { gte: new Date(Date.now() - 3600000) }, // Last 1h
-          },
-          take: 1000,
-        }),
+      const logs = await this.prisma.runAsSystem(
+        '[MetricsPlatformService.getApiMetrics] Internal service operation bypass',
+        async (tx) =>
+          tx.apiAnalyticsLog.findMany({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              timestamp: { gte: new Date(Date.now() - 3600000) }, // Last 1h
+            },
+            take: 1000,
+          }),
       );
 
       const latencies = logs.map((l) => l.latencyMs).sort((a, b) => a - b);
@@ -316,13 +336,15 @@ export class MetricsPlatformService {
     companyId?: string,
   ): Promise<Record<string, unknown>> {
     try {
-      const activeCrons = await this.prisma.runAsSystem('[MetricsPlatformService.getSchedulerMetrics] Internal service operation bypass', async (tx) =>
-        tx.scheduledSync.count({
-          where: {
-            ...(companyId ? { connection: { companyId } } : {}),
-            isActive: true,
-          },
-        }),
+      const activeCrons = await this.prisma.runAsSystem(
+        '[MetricsPlatformService.getSchedulerMetrics] Internal service operation bypass',
+        async (tx) =>
+          tx.scheduledSync.count({
+            where: {
+              ...(companyId ? { connection: { companyId } } : {}),
+              isActive: true,
+            },
+          }),
       );
       return {
         activeCrons,

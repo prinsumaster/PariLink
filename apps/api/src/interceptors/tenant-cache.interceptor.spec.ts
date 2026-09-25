@@ -17,8 +17,8 @@ describe('TenantCacheInterceptor', () => {
     mockRequest = {
       url: '/api/v1/dashboard/kpis',
       user: {
-        companyId: 'test-tenant-id'
-      }
+        companyId: 'test-tenant-id',
+      },
     };
 
     mockContext = {
@@ -39,7 +39,9 @@ describe('TenantCacheInterceptor', () => {
 
   it('should isolate cache key by appending companyId', () => {
     // Mock the super.trackBy to return a standard route path string
-    jest.spyOn(CacheInterceptor.prototype as any, 'trackBy').mockReturnValue('/api/v1/dashboard/kpis');
+    jest
+      .spyOn(CacheInterceptor.prototype as any, 'trackBy')
+      .mockReturnValue('/api/v1/dashboard/kpis');
 
     const cacheKey = interceptor.trackBy(mockContext);
     expect(cacheKey).toBe('/api/v1/dashboard/kpis_tenant_test-tenant-id');

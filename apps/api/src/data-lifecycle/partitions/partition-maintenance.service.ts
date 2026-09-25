@@ -124,7 +124,7 @@ export class PartitionMaintenanceService implements OnModuleInit {
   }
 
   private async createMonth(offset: number): Promise<string | null> {
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _rows = await this.prisma.runAsSystem(
       `partition maintenance: ensure VehicleLocation partition month+${offset}`,
       async (tx) =>

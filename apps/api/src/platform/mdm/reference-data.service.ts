@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   CacheManagerService,
@@ -7,7 +7,6 @@ import {
 
 @Injectable()
 export class ReferenceDataService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheManagerService,
@@ -19,11 +18,13 @@ export class ReferenceDataService {
     const cached = await this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const data = await this.prisma.runAsSystem('[ReferenceDataService.getReferenceData] Internal service operation bypass', async (tx) =>
-      tx.referenceData.findMany({
-        where: { domain, isActive: true },
-        orderBy: { code: 'asc' },
-      }),
+    const data = await this.prisma.runAsSystem(
+      '[ReferenceDataService.getReferenceData] Internal service operation bypass',
+      async (tx) =>
+        tx.referenceData.findMany({
+          where: { domain, isActive: true },
+          orderBy: { code: 'asc' },
+        }),
     );
 
     await this.cache.set(cacheKey, data, CacheTTL.FROZEN, ['refdata']);
@@ -36,10 +37,12 @@ export class ReferenceDataService {
     const cached = await this.cache.get(cacheKey);
     if (cached) return cached;
 
-    const data = await this.prisma.runAsSystem('[ReferenceDataService.getReferenceRecord] Internal service operation bypass', async (tx) =>
-      tx.referenceData.findUnique({
-        where: { domain_code: { domain, code } },
-      }),
+    const data = await this.prisma.runAsSystem(
+      '[ReferenceDataService.getReferenceRecord] Internal service operation bypass',
+      async (tx) =>
+        tx.referenceData.findUnique({
+          where: { domain_code: { domain, code } },
+        }),
     );
 
     if (data) {
@@ -58,12 +61,14 @@ export class ReferenceDataService {
     name: string,
     attributes?: Record<string, any>,
   ) {
-    const result = await this.prisma.runAsSystem('[ReferenceDataService.upsertReferenceData] Internal service operation bypass', async (tx) =>
-      tx.referenceData.upsert({
-        where: { domain_code: { domain, code } },
-        update: { name, attributes, version: { increment: 1 } },
-        create: { domain, code, name, attributes },
-      }),
+    const result = await this.prisma.runAsSystem(
+      '[ReferenceDataService.upsertReferenceData] Internal service operation bypass',
+      async (tx) =>
+        tx.referenceData.upsert({
+          where: { domain_code: { domain, code } },
+          update: { name, attributes, version: { increment: 1 } },
+          create: { domain, code, name, attributes },
+        }),
     );
 
     // Invalidate caches

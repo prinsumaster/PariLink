@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsDateString, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDateString,
+  IsObject,
+} from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateBankStatementDto {
@@ -25,4 +31,6 @@ export class CreateBankStatementDto {
   metadata?: Record<string, any>;
 }
 
-export class UpdateBankStatementDto extends PartialType(CreateBankStatementDto) {}
+export class UpdateBankStatementDto extends PartialType(
+  CreateBankStatementDto,
+) {}

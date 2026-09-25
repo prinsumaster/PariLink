@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { Load, Vehicle, Driver } from '@prisma/client';
 
 export interface CostEstimationResult {
@@ -12,7 +12,6 @@ export interface CostEstimationResult {
 
 @Injectable()
 export class CostEstimatorService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // Default metric constants (in production, read from RateCard or TenantConfiguration)
   private readonly DEFAULT_FUEL_COST_PER_KM = 0.45;
   private readonly DEFAULT_DRIVER_COST_PER_HOUR = 25.0;

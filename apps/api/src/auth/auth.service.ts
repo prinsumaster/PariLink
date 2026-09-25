@@ -66,10 +66,12 @@ export class AuthService {
   ) {
     const { email, password, companyName } = registerDto;
 
-    const existingUser = await this.prisma.runAsSystem('[AuthService.register] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-      }),
+    const existingUser = await this.prisma.runAsSystem(
+      '[AuthService.register] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+        }),
     );
 
     if (existingUser) {
@@ -78,38 +80,41 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-  // @ts-ignore: reserved for future use
-    const _result = await this.prisma.runAsSystem('[AuthService.register] Internal service operation bypass', async (tx) => {
-      // 1. Create company
-      const company = await tx.company.create({
-        data: { name: companyName, status: 'ACTIVE' },
-      });
+    // @ts-ignore: reserved for future use
+    const _result = await this.prisma.runAsSystem(
+      '[AuthService.register] Internal service operation bypass',
+      async (tx) => {
+        // 1. Create company
+        const company = await tx.company.create({
+          data: { name: companyName, status: 'ACTIVE' },
+        });
 
-      // 2. Create role
-      const role = await tx.role.create({
-        data: {
-          name: 'SUPER_ADMIN',
-          description: 'Full system access',
-          permissions: ['*'],
-          companyId: company.id,
-        },
-      });
+        // 2. Create role
+        const role = await tx.role.create({
+          data: {
+            name: 'SUPER_ADMIN',
+            description: 'Full system access',
+            permissions: ['*'],
+            companyId: company.id,
+          },
+        });
 
-      // 3. Create user
-      const user = await tx.user.create({
-        data: {
-          email: email.toLowerCase(),
-          password: hashedPassword,
-          firstName: 'Admin',
-          lastName: 'User',
-          roleId: role.id,
-          companyId: company.id,
-          status: 'ACTIVE',
-        },
-      });
+        // 3. Create user
+        const user = await tx.user.create({
+          data: {
+            email: email.toLowerCase(),
+            password: hashedPassword,
+            firstName: 'Admin',
+            lastName: 'User',
+            roleId: role.id,
+            companyId: company.id,
+            status: 'ACTIVE',
+          },
+        });
 
-      return user;
-    });
+        return user;
+      },
+    );
 
     // Send Welcome Email
     await this.resendService.sendTransactionalEmail(
@@ -135,35 +140,37 @@ export class AuthService {
     }
 
     // 2. Load user — use a generic error to prevent user enumeration
-    const user = await this.prisma.runAsSystem('[AuthService.login] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-        select: {
-          id: true,
-          email: true,
-          password: true,
-          firstName: true,
-          lastName: true,
-          status: true,
-          deletedAt: true,
-          roleId: true,
-          companyId: true,
-          mfaEnabled: true,
-          role: {
-            select: {
-              name: true,
-              permissions: true,
+    const user = await this.prisma.runAsSystem(
+      '[AuthService.login] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+          select: {
+            id: true,
+            email: true,
+            password: true,
+            firstName: true,
+            lastName: true,
+            status: true,
+            deletedAt: true,
+            roleId: true,
+            companyId: true,
+            mfaEnabled: true,
+            role: {
+              select: {
+                name: true,
+                permissions: true,
+              },
             },
-          },
-          company: {
-            select: {
-              tenantConfiguration: {
-                select: { onboardingCompleted: true },
+            company: {
+              select: {
+                tenantConfiguration: {
+                  select: { onboardingCompleted: true },
+                },
               },
             },
           },
-        },
-      }),
+        }),
     );
 
     const GENERIC_AUTH_ERROR = 'Invalid credentials';
@@ -212,22 +219,26 @@ export class AuthService {
     let returnedDeviceIdentifier = undefined;
 
     if (loginDto.deviceIdentifier) {
-      const trustedDevice = await this.prisma.runAsSystem('[AuthService.login] Internal service operation bypass', async (tx) =>
-        tx.trustedDevice.findFirst({
-          where: {
-            userId: user.id,
-            deviceIdentifier: loginDto.deviceIdentifier,
-            expiresAt: { gt: new Date() },
-          },
-        }),
+      const trustedDevice = await this.prisma.runAsSystem(
+        '[AuthService.login] Internal service operation bypass',
+        async (tx) =>
+          tx.trustedDevice.findFirst({
+            where: {
+              userId: user.id,
+              deviceIdentifier: loginDto.deviceIdentifier,
+              expiresAt: { gt: new Date() },
+            },
+          }),
       );
       if (trustedDevice) {
         isTrusted = true;
-        await this.prisma.runAsSystem('[AuthService.login] Internal service operation bypass', async (tx) =>
-          tx.trustedDevice.update({
-            where: { id: trustedDevice.id },
-            data: { lastUsedAt: new Date(), ipAddress, deviceInfo },
-          }),
+        await this.prisma.runAsSystem(
+          '[AuthService.login] Internal service operation bypass',
+          async (tx) =>
+            tx.trustedDevice.update({
+              where: { id: trustedDevice.id },
+              data: { lastUsedAt: new Date(), ipAddress, deviceInfo },
+            }),
         );
       }
     }
@@ -261,16 +272,18 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 30); // 30 days
 
-        await this.prisma.runAsSystem('[AuthService.login] Internal service operation bypass', async (tx) =>
-          tx.trustedDevice.create({
-            data: {
-              userId: user.id,
-              deviceIdentifier: deviceId,
-              deviceInfo,
-              ipAddress,
-              expiresAt,
-            },
-          }),
+        await this.prisma.runAsSystem(
+          '[AuthService.login] Internal service operation bypass',
+          async (tx) =>
+            tx.trustedDevice.create({
+              data: {
+                userId: user.id,
+                deviceIdentifier: deviceId,
+                deviceInfo,
+                ipAddress,
+                expiresAt,
+              },
+            }),
         );
         returnedDeviceIdentifier = deviceId;
       }
@@ -287,24 +300,26 @@ export class AuthService {
       await this.mintTokens(user);
 
     // 6. Store hashed refresh token (never the raw token)
-    await this.prisma.runAsSystem('[AuthService.login] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.create({
-        data: {
-          token: refreshTokenHash,
-          userId: user.id,
-          expiresAt: refreshExpiresAt,
-          ipAddress,
-          deviceInfo,
-          deviceFingerprint: loginDto.deviceFingerprint,
-          history: [
-            {
-              ip: ipAddress,
-              device: deviceInfo,
-              date: new Date().toISOString(),
-            },
-          ],
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[AuthService.login] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.create({
+          data: {
+            token: refreshTokenHash,
+            userId: user.id,
+            expiresAt: refreshExpiresAt,
+            ipAddress,
+            deviceInfo,
+            deviceFingerprint: loginDto.deviceFingerprint,
+            history: [
+              {
+                ip: ipAddress,
+                device: deviceInfo,
+                date: new Date().toISOString(),
+              },
+            ],
+          },
+        }),
     );
 
     // 7. Audit log
@@ -355,38 +370,42 @@ export class AuthService {
       .update(rawToken)
       .digest('hex');
 
-    const tokenRecord = await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.findUnique({
-        where: { token: tokenHash },
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              status: true,
-              deletedAt: true,
-              roleId: true,
-              companyId: true,
-              role: {
-                select: {
-                  name: true,
-                  permissions: true,
+    const tokenRecord = await this.prisma.runAsSystem(
+      '[AuthService.refreshToken] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.findUnique({
+          where: { token: tokenHash },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                status: true,
+                deletedAt: true,
+                roleId: true,
+                companyId: true,
+                role: {
+                  select: {
+                    name: true,
+                    permissions: true,
+                  },
                 },
               },
             },
           },
-        },
-      }),
+        }),
     );
 
     // Token not found, expired, or already rotated
     if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
       if (tokenRecord) {
         // Possible token reuse attack — invalidate entire session
-        await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-          tx.refreshToken.deleteMany({
-            where: { familyId: tokenRecord.familyId },
-          }),
+        await this.prisma.runAsSystem(
+          '[AuthService.refreshToken] Internal service operation bypass',
+          async (tx) =>
+            tx.refreshToken.deleteMany({
+              where: { familyId: tokenRecord.familyId },
+            }),
         );
         this.logger.warn(
           `[Auth] Expired refresh token reuse detected from ${ipAddress}. Revoking token family.`,
@@ -402,10 +421,12 @@ export class AuthService {
         tokenRecord.updatedAt.getTime() > Date.now() - 15000;
 
       if (!isWithinGracePeriod) {
-        await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-          tx.refreshToken.deleteMany({
-            where: { familyId: tokenRecord.familyId },
-          }),
+        await this.prisma.runAsSystem(
+          '[AuthService.refreshToken] Internal service operation bypass',
+          async (tx) =>
+            tx.refreshToken.deleteMany({
+              where: { familyId: tokenRecord.familyId },
+            }),
         );
         await this.auditService.logEvent({
           action: 'REPLAY_ATTACK_DETECTED',
@@ -466,10 +487,12 @@ export class AuthService {
 
     const { user } = tokenRecord;
     if (user.status !== 'ACTIVE' || user.deletedAt) {
-      await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-        tx.refreshToken.deleteMany({
-          where: { familyId: tokenRecord.familyId },
-        }),
+      await this.prisma.runAsSystem(
+        '[AuthService.refreshToken] Internal service operation bypass',
+        async (tx) =>
+          tx.refreshToken.deleteMany({
+            where: { familyId: tokenRecord.familyId },
+          }),
       );
       throw new UnauthorizedException('User account is inactive');
     }
@@ -482,14 +505,16 @@ export class AuthService {
       refreshExpiresAt,
     } = await this.mintTokens(user);
 
-    await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.update({
-        where: { id: tokenRecord.id },
-        data: {
-          isRevoked: true,
-          replacedByToken: refreshTokenHash,
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[AuthService.refreshToken] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.update({
+          where: { id: tokenRecord.id },
+          data: {
+            isRevoked: true,
+            replacedByToken: refreshTokenHash,
+          },
+        }),
     );
 
     const history = Array.isArray(tokenRecord.history)
@@ -503,19 +528,22 @@ export class AuthService {
     // Prune history to keep only the last 10 entries to save space
     if (newHistory.length > 10) newHistory.shift();
 
-    await this.prisma.runAsSystem('[AuthService.refreshToken] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.create({
-        data: {
-          token: refreshTokenHash,
-          familyId: tokenRecord.familyId,
-          userId: user.id,
-          expiresAt: refreshExpiresAt,
-          ipAddress,
-          deviceInfo,
-          deviceFingerprint: deviceFingerprint || tokenRecord.deviceFingerprint,
-          history: newHistory,
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[AuthService.refreshToken] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.create({
+          data: {
+            token: refreshTokenHash,
+            familyId: tokenRecord.familyId,
+            userId: user.id,
+            expiresAt: refreshExpiresAt,
+            ipAddress,
+            deviceInfo,
+            deviceFingerprint:
+              deviceFingerprint || tokenRecord.deviceFingerprint,
+            history: newHistory,
+          },
+        }),
     );
 
     return {
@@ -540,8 +568,9 @@ export class AuthService {
         .update(rawToken)
         .digest('hex');
       await this.prisma
-        .runAsSystem('[AuthService.logout] Internal service operation bypass', async (tx) =>
-          tx.refreshToken.delete({ where: { token: tokenHash } }),
+        .runAsSystem(
+          '[AuthService.logout] Internal service operation bypass',
+          async (tx) => tx.refreshToken.delete({ where: { token: tokenHash } }),
         )
         .catch(() => {}); // Already deleted — no-op
     }
@@ -557,8 +586,9 @@ export class AuthService {
   }
 
   async logoutAllSessions(userId: string): Promise<void> {
-    await this.prisma.runAsSystem('[AuthService.logoutAllSessions] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.deleteMany({ where: { userId } }),
+    await this.prisma.runAsSystem(
+      '[AuthService.logoutAllSessions] Internal service operation bypass',
+      async (tx) => tx.refreshToken.deleteMany({ where: { userId } }),
     );
     this.logger.log(`All sessions revoked for user ${userId}`);
   }
@@ -603,11 +633,13 @@ export class AuthService {
   }
 
   private async enforceSessionLimit(userId: string): Promise<void> {
-    const sessions = await this.prisma.runAsSystem('[AuthService.enforceSessionLimit] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.findMany({
-        where: { userId },
-        orderBy: { lastActiveAt: 'asc' }, // oldest active first
-      }),
+    const sessions = await this.prisma.runAsSystem(
+      '[AuthService.enforceSessionLimit] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.findMany({
+          where: { userId },
+          orderBy: { lastActiveAt: 'asc' }, // oldest active first
+        }),
     );
 
     if (sessions.length >= this.MAX_CONCURRENT_SESSIONS) {
@@ -615,10 +647,12 @@ export class AuthService {
         0,
         sessions.length - this.MAX_CONCURRENT_SESSIONS + 1,
       );
-      await this.prisma.runAsSystem('[AuthService.enforceSessionLimit] Internal service operation bypass', async (tx) =>
-        tx.refreshToken.deleteMany({
-          where: { id: { in: excess.map((s) => s.id) } },
-        }),
+      await this.prisma.runAsSystem(
+        '[AuthService.enforceSessionLimit] Internal service operation bypass',
+        async (tx) =>
+          tx.refreshToken.deleteMany({
+            where: { id: { in: excess.map((s) => s.id) } },
+          }),
       );
       this.logger.log(
         `[Session] Evicted ${excess.length} oldest session(s) for user ${userId}`,
@@ -627,33 +661,39 @@ export class AuthService {
   }
 
   async getActiveSessions(userId: string) {
-    return this.prisma.runAsSystem('[AuthService.getActiveSessions] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.findMany({
-        where: { userId },
-        select: {
-          id: true,
-          deviceInfo: true,
-          ipAddress: true,
-          lastActiveAt: true,
-          createdAt: true,
-        },
-        orderBy: { lastActiveAt: 'desc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[AuthService.getActiveSessions] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.findMany({
+          where: { userId },
+          select: {
+            id: true,
+            deviceInfo: true,
+            ipAddress: true,
+            lastActiveAt: true,
+            createdAt: true,
+          },
+          orderBy: { lastActiveAt: 'desc' },
+        }),
     );
   }
 
   async revokeSession(userId: string, sessionId: string) {
-    const session = await this.prisma.runAsSystem('[AuthService.revokeSession] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.findFirst({
-        where: { id: sessionId, userId },
-      }),
+    const session = await this.prisma.runAsSystem(
+      '[AuthService.revokeSession] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.findFirst({
+          where: { id: sessionId, userId },
+        }),
     );
     if (!session) throw new UnauthorizedException('Session not found');
 
-    await this.prisma.runAsSystem('[AuthService.revokeSession] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.delete({
-        where: { id: sessionId },
-      }),
+    await this.prisma.runAsSystem(
+      '[AuthService.revokeSession] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.delete({
+          where: { id: sessionId },
+        }),
     );
 
     this.logger.log(
@@ -667,11 +707,13 @@ export class AuthService {
   // ─────────────────────────────────────────────────────────────────────────
 
   async generateWebAuthnRegistrationOptions(email: string) {
-    const user = await this.prisma.runAsSystem('[AuthService.generateWebAuthnRegistrationOptions] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-        include: { webAuthnCredentials: true },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[AuthService.generateWebAuthnRegistrationOptions] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+          include: { webAuthnCredentials: true },
+        }),
     );
 
     if (!user) throw new UnauthorizedException('User not found');
@@ -708,10 +750,12 @@ export class AuthService {
     if (!expectedChallenge)
       throw new ForbiddenException('Challenge expired or not found');
 
-    const user = await this.prisma.runAsSystem('[AuthService.verifyWebAuthnRegistration] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[AuthService.verifyWebAuthnRegistration] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+        }),
     );
     if (!user) throw new UnauthorizedException('User not found');
 
@@ -726,18 +770,20 @@ export class AuthService {
       const { credential, credentialDeviceType, credentialBackedUp } =
         verification.registrationInfo;
 
-      await this.prisma.runAsSystem('[AuthService.verifyWebAuthnRegistration] Internal service operation bypass', async (tx) =>
-        tx.webAuthnCredential.create({
-          data: {
-            userId: user.id,
-            credentialID: Buffer.from(credential.id),
-            credentialPublicKey: Buffer.from(credential.publicKey),
-            counter: credential.counter,
-            credentialDeviceType,
-            credentialBackedUp,
-            transports: response.response.transports || [],
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[AuthService.verifyWebAuthnRegistration] Internal service operation bypass',
+        async (tx) =>
+          tx.webAuthnCredential.create({
+            data: {
+              userId: user.id,
+              credentialID: Buffer.from(credential.id),
+              credentialPublicKey: Buffer.from(credential.publicKey),
+              counter: credential.counter,
+              credentialDeviceType,
+              credentialBackedUp,
+              transports: response.response.transports || [],
+            },
+          }),
       );
 
       this.webAuthnChallenges.delete(`reg:${email.toLowerCase()}`);
@@ -748,11 +794,13 @@ export class AuthService {
   }
 
   async generateWebAuthnAuthenticationOptions(email: string) {
-    const user = await this.prisma.runAsSystem('[AuthService.generateWebAuthnAuthenticationOptions] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-        include: { webAuthnCredentials: true },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[AuthService.generateWebAuthnAuthenticationOptions] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+          include: { webAuthnCredentials: true },
+        }),
     );
 
     if (!user) throw new UnauthorizedException('User not found');
@@ -787,11 +835,13 @@ export class AuthService {
     if (!expectedChallenge)
       throw new ForbiddenException('Challenge expired or not found');
 
-    const user = await this.prisma.runAsSystem('[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: email.toLowerCase() },
-        include: { webAuthnCredentials: true },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: email.toLowerCase() },
+          include: { webAuthnCredentials: true },
+        }),
     );
     if (!user) throw new UnauthorizedException('User not found');
 
@@ -815,14 +865,16 @@ export class AuthService {
     });
 
     if (verification.verified) {
-      await this.prisma.runAsSystem('[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass', async (tx) =>
-        tx.webAuthnCredential.update({
-          where: { id: credential.id },
-          data: {
-            counter: verification.authenticationInfo.newCounter,
-            lastUsedAt: new Date(),
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass',
+        async (tx) =>
+          tx.webAuthnCredential.update({
+            where: { id: credential.id },
+            data: {
+              counter: verification.authenticationInfo.newCounter,
+              lastUsedAt: new Date(),
+            },
+          }),
       );
 
       this.webAuthnChallenges.delete(`auth:${email.toLowerCase()}`);
@@ -839,24 +891,26 @@ export class AuthService {
       const { accessToken, refreshToken, refreshTokenHash, refreshExpiresAt } =
         await this.mintTokens(user);
 
-      await this.prisma.runAsSystem('[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass', async (tx) =>
-        tx.refreshToken.create({
-          data: {
-            token: refreshTokenHash,
-            userId: user.id,
-            expiresAt: refreshExpiresAt,
-            ipAddress,
-            deviceInfo,
-            deviceFingerprint,
-            history: [
-              {
-                ip: ipAddress,
-                device: deviceInfo,
-                date: new Date().toISOString(),
-              },
-            ],
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[AuthService.verifyWebAuthnAuthentication] Internal service operation bypass',
+        async (tx) =>
+          tx.refreshToken.create({
+            data: {
+              token: refreshTokenHash,
+              userId: user.id,
+              expiresAt: refreshExpiresAt,
+              ipAddress,
+              deviceInfo,
+              deviceFingerprint,
+              history: [
+                {
+                  ip: ipAddress,
+                  device: deviceInfo,
+                  date: new Date().toISOString(),
+                },
+              ],
+            },
+          }),
       );
 
       return {
@@ -893,25 +947,27 @@ export class AuthService {
       await this.mintTokens(user);
 
     // Store hashed refresh token
-    await this.prisma.runAsSystem('[AuthService.issueTokensAfterLogin] Internal service operation bypass', async (tx) =>
-      tx.refreshToken.create({
-        data: {
-          token: refreshTokenHash,
-          userId: user.id,
-          expiresAt: refreshExpiresAt,
-          ipAddress,
-          deviceInfo,
-          deviceFingerprint: deviceFingerprint || null,
-          history: [
-            {
-              action: 'ISSUED_SSO',
-              timestamp: new Date(),
-              ipAddress,
-              deviceInfo,
-            },
-          ],
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[AuthService.issueTokensAfterLogin] Internal service operation bypass',
+      async (tx) =>
+        tx.refreshToken.create({
+          data: {
+            token: refreshTokenHash,
+            userId: user.id,
+            expiresAt: refreshExpiresAt,
+            ipAddress,
+            deviceInfo,
+            deviceFingerprint: deviceFingerprint || null,
+            history: [
+              {
+                action: 'ISSUED_SSO',
+                timestamp: new Date(),
+                ipAddress,
+                deviceInfo,
+              },
+            ],
+          },
+        }),
     );
 
     return {

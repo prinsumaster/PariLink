@@ -25,7 +25,9 @@ describe('DriversService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsSystem: jest
+      .fn()
+      .mockImplementation(async (_reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
@@ -112,7 +114,7 @@ describe('DriversService', () => {
 
       expect(result.data).toHaveLength(1);
       expect(result.meta.total).toBe(1);
-      
+
       // Strict assertion to prevent vacuous mutation tests
       expect(mockTx.driver.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -166,7 +168,10 @@ describe('DriversService', () => {
       // ── Strict tenant-isolation assertion ──────────────────────────────
       expect(mockTx.driver.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', id: 'driver-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            id: 'driver-1',
+          }),
         }),
       );
     });
@@ -199,7 +204,10 @@ describe('DriversService', () => {
       // ── Strict tenant-isolation assertion ──────────────────────────────
       expect(mockTx.driver.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', id: 'driver-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            id: 'driver-1',
+          }),
         }),
       );
     });

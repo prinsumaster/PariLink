@@ -68,10 +68,12 @@ export class FeatureToggleService implements OnModuleInit {
     const cached = await this.cache.get<boolean>(cacheKey);
     if (cached !== null) return cached;
 
-    const flag = await this.prisma.runAsSystem('[FeatureToggleService.isEnabled] Internal service operation bypass', async (tx) =>
-      tx.featureFlag.findUnique({
-        where: { companyId_key: { companyId: ctx.companyId, key: flagKey } },
-      }),
+    const flag = await this.prisma.runAsSystem(
+      '[FeatureToggleService.isEnabled] Internal service operation bypass',
+      async (tx) =>
+        tx.featureFlag.findUnique({
+          where: { companyId_key: { companyId: ctx.companyId, key: flagKey } },
+        }),
     );
 
     // Tenant hasn't configured this flag — check global default

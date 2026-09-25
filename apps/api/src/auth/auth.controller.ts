@@ -44,7 +44,9 @@ export class AuthController {
   ) {}
 
   // Enterprise Security: Prevent Brute Force Attacks. Max 500 attempts per IP per minute.
-  @Throttle({ default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 } })
+  @Throttle({
+    default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 },
+  })
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'User Login' })
@@ -91,7 +93,9 @@ export class AuthController {
   }
 
   // Enterprise Security: Rate limit registration endpoint
-  @Throttle({ default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 } })
+  @Throttle({
+    default: { limit: process.env.NODE_ENV === 'test' ? 1000 : 5, ttl: 60000 },
+  })
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   @ApiOperation({ summary: 'User Registration' })

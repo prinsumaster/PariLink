@@ -21,8 +21,6 @@ export class SubmitPodDto {
 @ApiTags('vendor-portal/operations')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-
-
 @Controller('vendor-portal/operations')
 export class VendorOperationsController {
   constructor(

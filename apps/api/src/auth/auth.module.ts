@@ -35,8 +35,8 @@ function resolveJwtKeys(): { privateKey: string; publicKey: string } {
   if (process.env.ALLOW_EPHEMERAL_JWT_KEYS !== 'true') {
     throw new Error(
       '[AUTH] CRITICAL: JWT_PRIVATE_KEY and JWT_PUBLIC_KEY are missing. ' +
-      'Set ALLOW_EPHEMERAL_JWT_KEYS=true to allow ephemeral keys in development, ' +
-      'or provide real keys via environment variables.'
+        'Set ALLOW_EPHEMERAL_JWT_KEYS=true to allow ephemeral keys in development, ' +
+        'or provide real keys via environment variables.',
     );
   }
 
@@ -57,9 +57,9 @@ function resolveJwtKeys(): { privateKey: string; publicKey: string } {
 
     console.warn(
       `[AUTH] WARN: Using EPHEMERAL RS256 keypair (fingerprint: ${fingerprint}). ` +
-      'Tokens will be invalidated on restart. ' +
-      'Multi-replica deployments will have intermittent 401s. ' +
-      'Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY for stable operation.'
+        'Tokens will be invalidated on restart. ' +
+        'Multi-replica deployments will have intermittent 401s. ' +
+        'Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY for stable operation.',
     );
   }
 

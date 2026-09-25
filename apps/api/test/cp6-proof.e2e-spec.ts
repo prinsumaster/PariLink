@@ -26,7 +26,15 @@ import { validateGeneratedSql } from '../src/ai/copilot/sql-validator';
  * 5. A well-formed tenant-scoped SELECT is accepted.
  */
 describe('CP6 SQL Validator — live attack-surface payloads', () => {
-  const ALLOWED = ['Trip', 'Load', 'Invoice', 'Vehicle', 'Driver', 'Customer', 'Expense'];
+  const ALLOWED = [
+    'Trip',
+    'Load',
+    'Invoice',
+    'Vehicle',
+    'Driver',
+    'Customer',
+    'Expense',
+  ];
 
   // --- GUC re-point payloads (the confirmed live attack vector) ---
   describe('GUC re-point: set_config targeting app.current_company_id', () => {

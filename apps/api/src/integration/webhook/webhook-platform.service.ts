@@ -102,7 +102,8 @@ export class WebhookPlatformService {
 
       try {
         const payloadStr = JSON.stringify(delivery.payload);
-        const secret = process.env.WEBHOOK_SECRET || 'REMOVED_PLACEHOLDER_WHSEC';
+        const secret =
+          process.env.WEBHOOK_SECRET || 'REMOVED_PLACEHOLDER_WHSEC';
         const signature = crypto
           .createHmac('sha256', secret)
           .update(payloadStr)

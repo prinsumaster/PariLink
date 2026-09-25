@@ -13,7 +13,7 @@ export class FuelManagementProcessor {
   async handleFuelCardSync(job: Job) {
     const {
       provider,
-  // @ts-ignore: reserved for future use
+      // @ts-ignore: reserved for future use
       _cardId,
       vehicleNumber,
       liters,

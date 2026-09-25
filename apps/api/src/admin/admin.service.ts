@@ -17,25 +17,30 @@ export class AdminService {
   constructor(private prisma: PrismaService) {}
 
   async createSubscriptionPlan(dto: CreateSubscriptionPlanDto) {
-    return this.prisma.runAsSystem('[AdminService.createSubscriptionPlan] Internal service operation bypass', async (tx) =>
-      tx.subscriptionPlan.create({
-        data: dto,
-      }),
+    return this.prisma.runAsSystem(
+      '[AdminService.createSubscriptionPlan] Internal service operation bypass',
+      async (tx) =>
+        tx.subscriptionPlan.create({
+          data: dto,
+        }),
     );
   }
 
   async getSubscriptionPlans() {
-    return this.prisma.runAsSystem('[AdminService.getSubscriptionPlans] Internal service operation bypass', async (tx) =>
-      tx.subscriptionPlan.findMany(),
+    return this.prisma.runAsSystem(
+      '[AdminService.getSubscriptionPlans] Internal service operation bypass',
+      async (tx) => tx.subscriptionPlan.findMany(),
     );
   }
 
   async provisionTenant(dto: CreateTenantDto) {
     // Check if admin email already exists globally
-    const existingUser = await this.prisma.runAsSystem('[AdminService.provisionTenant] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { email: dto.adminEmail },
-      }),
+    const existingUser = await this.prisma.runAsSystem(
+      '[AdminService.provisionTenant] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { email: dto.adminEmail },
+        }),
     );
     if (existingUser) {
       throw new ConflictException('Admin email already in use globally');
@@ -249,7 +254,9 @@ export class AdminService {
           },
         }),
       ),
-      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) =>
+        tx.auditLog.count({ where }),
+      ),
     ]);
     return { data, total, page, limit };
   }

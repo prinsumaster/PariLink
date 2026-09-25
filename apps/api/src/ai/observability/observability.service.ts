@@ -55,19 +55,21 @@ export class AiObservabilityService {
 
   async logMetrics(data: MetricsLogInput) {
     try {
-      await this.prisma.runAsSystem('[AiObservabilityService.logMetrics] Internal service operation bypass', async (tx) =>
-        tx.aiMetricsLog.create({
-          data: {
-            modelProvider: data.modelProvider,
-            modelVersion: 'v1',
-            latencyMs: data.latencyMs,
-            promptTokens: data.promptTokens,
-            completionTokens: data.completionTokens,
-            totalCost: data.cost,
-            companyId: data.companyId || 'SYSTEM',
-            interactionId: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[AiObservabilityService.logMetrics] Internal service operation bypass',
+        async (tx) =>
+          tx.aiMetricsLog.create({
+            data: {
+              modelProvider: data.modelProvider,
+              modelVersion: 'v1',
+              latencyMs: data.latencyMs,
+              promptTokens: data.promptTokens,
+              completionTokens: data.completionTokens,
+              totalCost: data.cost,
+              companyId: data.companyId || 'SYSTEM',
+              interactionId: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            },
+          }),
       );
     } catch {
       // Non-blocking — observability should never crash the AI pipeline

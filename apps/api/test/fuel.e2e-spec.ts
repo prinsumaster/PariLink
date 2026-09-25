@@ -64,7 +64,12 @@ describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
       vehicleId = vehicle.id;
 
       const customer = await tx.customer.create({
-        data: { id: 'fuel-cust-' + Date.now(), companyId, name: 'Fuel Customer', state: 'Maharashtra' },
+        data: {
+          id: 'fuel-cust-' + Date.now(),
+          companyId,
+          name: 'Fuel Customer',
+          state: 'Maharashtra',
+        },
       });
       customerId = customer.id;
 
@@ -76,20 +81,22 @@ describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
           status: 'IN_TRANSIT',
           rate: 500,
           loads: {
-            create: [{
-              customerId: customer.id,
-              referenceNumber: 'FL-' + Date.now(),
-              originAddress: 'Mumbai',
-              originCity: 'Mumbai',
-              originState: 'Maharashtra',
-              destinationAddress: 'Pune',
-              destinationCity: 'Pune',
-              destinationState: 'Maharashtra',
-              pickupDate: new Date(),
-              deliveryDate: new Date(),
-              rate: 500,
-              companyId,
-            }],
+            create: [
+              {
+                customerId: customer.id,
+                referenceNumber: 'FL-' + Date.now(),
+                originAddress: 'Mumbai',
+                originCity: 'Mumbai',
+                originState: 'Maharashtra',
+                destinationAddress: 'Pune',
+                destinationCity: 'Pune',
+                destinationState: 'Maharashtra',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 500,
+                companyId,
+              },
+            ],
           },
         },
       });
@@ -179,7 +186,7 @@ describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
       await prisma.runAsTenant(companyId, async (tx) => {
         await tx.fuelEntry.update({
           where: { id: fuelLogId },
-          data: { otpExpiry: new Date(Date.now() - 60000) } // Expired 1 min ago
+          data: { otpExpiry: new Date(Date.now() - 60000) }, // Expired 1 min ago
         });
       });
 
@@ -195,7 +202,7 @@ describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
       await prisma.runAsTenant(companyId, async (tx) => {
         await tx.fuelEntry.update({
           where: { id: fuelLogId },
-          data: { otpExpiry: new Date(Date.now() + 60 * 60 * 1000) }
+          data: { otpExpiry: new Date(Date.now() + 60 * 60 * 1000) },
         });
       });
     });
@@ -212,7 +219,7 @@ describe('Fuel Module (e2e) — CRUD + OTP Workflow', () => {
       // Verify invoice line item was created
       await prisma.runAsTenant(companyId, async (tx) => {
         const invoiceCheck = await tx.invoiceLineItem.findFirst({
-          where: { fuelEntryId: fuelLogId }
+          where: { fuelEntryId: fuelLogId },
         });
         expect(invoiceCheck).toBeDefined();
         expect(invoiceCheck).not.toBeNull();

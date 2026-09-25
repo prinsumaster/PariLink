@@ -52,33 +52,45 @@ export class IntegrationGatewayController {
     if (!connection || !connection.credentials) {
       throw new UnauthorizedException('Integration not configured');
     }
-    
+
     let secret = '';
     try {
-      const credsString = typeof connection.credentials === 'string' 
-        ? connection.credentials 
-        : JSON.stringify(connection.credentials);
+      const credsString =
+        typeof connection.credentials === 'string'
+          ? connection.credentials
+          : JSON.stringify(connection.credentials);
       const credentials = this.authService.decryptCredentials(credsString);
       secret = credentials?.webhookSecret;
     } catch (e: any) {
-      throw new UnauthorizedException('Invalid credentials state: ' + e.message);
+      throw new UnauthorizedException(
+        'Invalid credentials state: ' + e.message,
+      );
     }
 
     if (!secret) {
       throw new UnauthorizedException('Webhook secret not configured');
     }
 
-    const signature = headers['x-webhook-signature'] || headers['x-provider-signature'] || headers['signature'] || headers['x-hub-signature'] || headers['stripe-signature'];
+    const signature =
+      headers['x-webhook-signature'] ||
+      headers['x-provider-signature'] ||
+      headers['signature'] ||
+      headers['x-hub-signature'] ||
+      headers['stripe-signature'];
     if (!signature) {
       throw new UnauthorizedException('Missing webhook signature');
     }
-    
+
     const rawBody = req.rawBody;
     if (!rawBody) {
       throw new UnauthorizedException('Missing raw body');
     }
 
-    const isValid = this.authService.verifyWebhookSignature(rawBody, signature, secret);
+    const isValid = this.authService.verifyWebhookSignature(
+      rawBody,
+      signature,
+      secret,
+    );
     if (!isValid) {
       throw new UnauthorizedException('Invalid webhook signature');
     }

@@ -21,7 +21,9 @@ describe('RouteToll (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     app.setGlobalPrefix('api/v1');
     await app.init();
 
@@ -42,7 +44,7 @@ describe('RouteToll (e2e)', () => {
           fastagCost: 320,
           cashCost: 640,
           distanceKm: 150,
-        }
+        },
       });
     });
   });
@@ -53,7 +55,9 @@ describe('RouteToll (e2e)', () => {
 
   it('Route selection returns correct toll cost', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune')
+      .get(
+        '/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune',
+      )
       .set('Authorization', `Bearer ${tenantA.token}`)
       .expect(200);
 
@@ -64,30 +68,38 @@ describe('RouteToll (e2e)', () => {
     expect(res.body.distanceKm).toBe(150);
   });
 
-  it('Missing route data handled explicitly (404, not silent 0)', async () => {
+  it('Missing static data falls back to routing API', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Delhi')
+      .get(
+        '/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Delhi',
+      )
       .set('Authorization', `Bearer ${tenantA.token}`)
-      .expect(404);
+      .expect(200);
 
-    expect(res.body.message).toContain('Toll data missing for route: Mumbai to Delhi');
+    expect(res.body.distanceKm).toBeGreaterThan(0);
+    expect(res.body.fastagCost).toBeGreaterThan(0);
   });
 
   it('Cross-tenant isolation: Tenant B cannot see Tenant A toll rates', async () => {
     // Tenant B tries to get Mumbai->Pune which is defined for Tenant A
     const res = await request(app.getHttpServer())
-      .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune')
+      .get(
+        '/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune',
+      )
       .set('Authorization', `Bearer ${tenantB.token}`)
-      .expect(404);
+      .expect(200);
 
-    expect(res.body.message).toContain('Toll data missing');
+    // Should return fallback calculation, not Tenant A's hardcoded 320 fastagCost
+    expect(res.body.distanceKm).toBeGreaterThan(0);
+    expect(res.body.fastagCost).not.toBe(320);
   });
 
   it('Decisive RLS: toll rates isolated by RLS even without app-layer filter', async () => {
     // We query RouteTollRate via runAsTenant for Tenant A
-    const tenantARates = await prisma.runAsTenant(tenantA.companyId, (tx: any) =>
-      tx.routeTollRate.findMany()
-    ) as any[];
+    const tenantARates = await prisma.runAsTenant(
+      tenantA.companyId,
+      (tx: any) => tx.routeTollRate.findMany(),
+    );
 
     expect(tenantARates.length).toBeGreaterThan(0);
     for (const r of tenantARates) {
@@ -98,24 +110,39 @@ describe('RouteToll (e2e)', () => {
     const fs = require('fs');
     const serviceSource = fs.readFileSync(
       require('path').join(__dirname, '../src/routes/routes.service.ts'),
-      'utf8'
+      'utf8',
     );
     expect(serviceSource).toContain('runAsTenant(companyId');
     expect(serviceSource).not.toContain('where: {} // FILTER STRIPPED');
 
-    console.log(`\n✅ Decisive RLS: Tenant A runAsTenant sees ${tenantARates.length} rates, all companyId=${tenantA.companyId}`);
-    console.log(`✅ Source verified: getTollEstimate uses runAsTenant, no stripped filter`);
+    console.log(
+      `\n✅ Decisive RLS: Tenant A runAsTenant sees ${tenantARates.length} rates, all companyId=${tenantA.companyId}`,
+    );
+    console.log(
+      `✅ Source verified: getTollEstimate uses runAsTenant, no stripped filter`,
+    );
   });
 });
 
-async function setupTenant(prisma: PrismaService, jwt: JwtService, config: ConfigService, name: string) {
-  const company = await prisma.runAsSystem('e2e-setup', (tx) => 
-    tx.company.create({ data: { name } })
+async function setupTenant(
+  prisma: PrismaService,
+  jwt: JwtService,
+  config: ConfigService,
+  name: string,
+) {
+  const company = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.company.create({ data: { name } }),
   );
-  const role = await prisma.runAsSystem('e2e-setup', (tx) => 
-    tx.role.create({ data: { name: 'Admin', companyId: company.id, permissions: ['trips:read'] } })
+  const role = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.role.create({
+      data: {
+        name: 'Admin',
+        companyId: company.id,
+        permissions: ['trips:read'],
+      },
+    }),
   );
-  const user = await prisma.runAsSystem('e2e-setup', (tx) => 
+  const user = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
         email: `route_e2e_${company.id}@example.com`,
@@ -123,13 +150,18 @@ async function setupTenant(prisma: PrismaService, jwt: JwtService, config: Confi
         firstName: 'Admin',
         lastName: 'User',
         companyId: company.id,
-        roleId: role.id
-      }
-    })
+        roleId: role.id,
+      },
+    }),
   );
   const token = jwt.sign(
-    { sub: user.id, email: user.email, companyId: company.id, permissions: ['trips:read'] },
-    { secret: config.get('JWT_SECRET') }
+    {
+      sub: user.id,
+      email: user.email,
+      companyId: company.id,
+      permissions: ['trips:read'],
+    },
+    { secret: config.get('JWT_SECRET') },
   );
 
   return { companyId: company.id, token };

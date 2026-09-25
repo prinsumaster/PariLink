@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../platform/audit/audit.service';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
@@ -12,9 +16,11 @@ export class TripDesksService {
 
   async getDesks(companyId: string, tripId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const trip = await tx.trip.findUnique({ where: { id: tripId, companyId } });
+      const trip = await tx.trip.findUnique({
+        where: { id: tripId, companyId },
+      });
       if (!trip) throw new NotFoundException('Trip not found');
-      
+
       const desks = await tx.tripDesk.findMany({
         where: { tripId, companyId },
         orderBy: { createdAt: 'asc' },
@@ -23,7 +29,13 @@ export class TripDesksService {
     });
   }
 
-  async completeDesk(companyId: string, tripId: string, desk: string, user: AuthenticatedUser, notes?: string) {
+  async completeDesk(
+    companyId: string,
+    tripId: string,
+    desk: string,
+    user: AuthenticatedUser,
+    notes?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const tripDesk = await tx.tripDesk.findFirst({
         where: { tripId, companyId, desk: desk.toUpperCase() },
@@ -96,8 +108,8 @@ export class TripDesksService {
             include: {
               driver: true,
               vehicle: true,
-            }
-          }
+            },
+          },
         },
         orderBy: { trip: { startDate: 'asc' } },
       });

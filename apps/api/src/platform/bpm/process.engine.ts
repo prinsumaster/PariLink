@@ -27,7 +27,7 @@ export class ProcessEngine {
   private readonly logger = new Logger(ProcessEngine.name);
 
   constructor(
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
     private readonly automation: AutomationEngine,
@@ -257,7 +257,10 @@ export class ProcessEngine {
   ): string {
     return conditions[0].targetNode;
   }
-  private mockDefinitionLookup(_defId: string, _nodeId: string): NodeDefinition {
+  private mockDefinitionLookup(
+    _defId: string,
+    _nodeId: string,
+  ): NodeDefinition {
     return { type: 'END_EVENT', nextNodes: [] };
   }
 }

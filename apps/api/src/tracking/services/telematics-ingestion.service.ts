@@ -150,8 +150,12 @@ export class TelematicsIngestionService {
     }
 
     if (alertsToCreate.length > 0) {
-      const createdAlerts = await this.prisma.runAsTenant(companyId, async (tx) =>
-        Promise.all(alertsToCreate.map(alert => tx.alert.create({ data: alert })))
+      const createdAlerts = await this.prisma.runAsTenant(
+        companyId,
+        async (tx) =>
+          Promise.all(
+            alertsToCreate.map((alert) => tx.alert.create({ data: alert })),
+          ),
       );
       triggeredAlerts.push(...createdAlerts);
     }
@@ -314,7 +318,7 @@ export class TelematicsIngestionService {
         ),
       ]);
 
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _alertsByType = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.alert.groupBy({
         by: ['ruleId'],

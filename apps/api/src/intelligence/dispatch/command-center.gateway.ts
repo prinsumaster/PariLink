@@ -39,7 +39,7 @@ export class CommandCenterGateway
 
       const roomName = `tenant_${companyId}`;
       client.join(roomName);
-      
+
       // Store on client for convenience
       (client as any).companyId = companyId;
 

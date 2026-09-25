@@ -1,12 +1,5 @@
 import { IsString, IsNotEmpty, IsNotEmptyObject } from 'class-validator';
-import {
-  Controller,
-  Get,
-  Patch,
-  Body,
-  Param,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Get, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { GetUser } from '../../../auth/decorators/get-user.decorator';
@@ -21,8 +14,6 @@ export class UpdateTripStatusDto {
 @ApiTags('driver-portal/trips')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-
-
 @Controller('driver-portal/trips')
 export class DriverTripsController {
   constructor(private readonly driverTripsService: DriverTripsService) {}

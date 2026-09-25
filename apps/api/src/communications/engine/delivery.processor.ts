@@ -29,10 +29,12 @@ export class DeliveryProcessor extends WorkerHost {
       `Processing delivery job ${job.id} for delivery ${deliveryId}`,
     );
 
-    const delivery = await this.prisma.runAsSystem('[DeliveryProcessor.process] Background job bypass', async (tx) =>
-      tx.notificationDelivery.findUnique({
-        where: { id: deliveryId },
-      }),
+    const delivery = await this.prisma.runAsSystem(
+      '[DeliveryProcessor.process] Background job bypass',
+      async (tx) =>
+        tx.notificationDelivery.findUnique({
+          where: { id: deliveryId },
+        }),
     );
 
     if (!delivery || delivery.status !== 'PENDING') {
@@ -40,7 +42,7 @@ export class DeliveryProcessor extends WorkerHost {
     }
 
     try {
-  // @ts-ignore: reserved for future use
+      // @ts-ignore: reserved for future use
       let _success = false;
       let providerResponse = null;
 
@@ -66,15 +68,17 @@ export class DeliveryProcessor extends WorkerHost {
         throw new Error(`Unsupported channel: ${delivery.channel}`);
       }
 
-      await this.prisma.runAsSystem('[DeliveryProcessor.process] Background job bypass', async (tx) =>
-        tx.notificationDelivery.update({
-          where: { id: delivery.id },
-          data: {
-            status: 'DELIVERED',
-            sentAt: new Date(),
-            providerId: providerResponse?.id || 'mock_id',
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[DeliveryProcessor.process] Background job bypass',
+        async (tx) =>
+          tx.notificationDelivery.update({
+            where: { id: delivery.id },
+            data: {
+              status: 'DELIVERED',
+              sentAt: new Date(),
+              providerId: providerResponse?.id || 'mock_id',
+            },
+          }),
       );
 
       return { _success: true };
@@ -86,15 +90,17 @@ export class DeliveryProcessor extends WorkerHost {
       const retryCount = delivery.retryCount + 1;
       const newStatus = retryCount >= 3 ? 'FAILED' : 'PENDING';
 
-      await this.prisma.runAsSystem('[DeliveryProcessor.process] Background job bypass', async (tx) =>
-        tx.notificationDelivery.update({
-          where: { id: delivery.id },
-          data: {
-            status: newStatus,
-            errorMessage,
-            retryCount,
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[DeliveryProcessor.process] Background job bypass',
+        async (tx) =>
+          tx.notificationDelivery.update({
+            where: { id: delivery.id },
+            data: {
+              status: newStatus,
+              errorMessage,
+              retryCount,
+            },
+          }),
       );
 
       if (newStatus === 'PENDING') {

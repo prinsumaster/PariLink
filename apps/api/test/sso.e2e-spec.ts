@@ -24,7 +24,7 @@ describe('SSO Flow (e2e)', () => {
 
     prisma = app.get(PrismaService);
 
-    await prisma.runAsSystem('e2e-setup', async tx => {
+    await prisma.runAsSystem('e2e-setup', async (tx) => {
       company = await tx.company.create({
         data: { name: 'SSO Test Corp' },
       });

@@ -93,7 +93,9 @@ describe('Routes Module (e2e) — Route Planning', () => {
   describe('GET /routes/toll-estimate — Lookup from static toll table', () => {
     it('should return heuristic fallback for an un-geocodable random string', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/routes/toll-estimate?originCity=XYZQwerty123&destinationCity=ABCPoiuy098')
+        .get(
+          '/api/v1/routes/toll-estimate?originCity=XYZQwerty123&destinationCity=ABCPoiuy098',
+        )
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -103,10 +105,12 @@ describe('Routes Module (e2e) — Route Planning', () => {
       expect(res.body.distanceKm).toBeGreaterThan(0);
       expect(res.body.fastagCost).toBe(res.body.distanceKm * 3.0);
     });
-    
+
     it('should return OSRM distance for real cities', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune')
+        .get(
+          '/api/v1/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune',
+        )
         .set('Authorization', `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -119,11 +123,13 @@ describe('Routes Module (e2e) — Route Planning', () => {
 
   describe('POST /routes/:id/attach-to-trip — Attach to Trip', () => {
     let tripId: string;
-    
+
     beforeAll(async () => {
-      const prisma = app.get(require('../src/prisma/prisma.service').PrismaService);
+      const prisma = app.get(
+        require('../src/prisma/prisma.service').PrismaService,
+      );
       const companyId = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
-      
+
       await prisma.runAsTenant(companyId, async (tx: any) => {
         const trip = await tx.trip.create({
           data: {

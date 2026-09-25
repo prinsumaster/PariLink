@@ -5,7 +5,7 @@ import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const logger = new Logger('WorkerBootstrap');
-  
+
   // Force RUN_WORKERS to true for the worker process
   process.env.RUN_WORKERS = 'true';
 

@@ -37,7 +37,9 @@ describe('DispatchService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsSystem: jest
+      .fn()
+      .mockImplementation(async (_reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),

@@ -1,0 +1,413 @@
+
+> api@0.0.1 test:e2e
+> jest --config ./test/jest-e2e.json trip-reviews.e2e-spec.ts
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[PartitionMaintenanceService] [39m[31m[PARTITIONS] 6 rows are sitting in VehicleLocation_default. Either a partition-creation run was missed, or a device is reporting a clock-skewed gpsTimestamp. These rows are not partition-pruned and block creating the partition that should own them.[39m
+  console.log
+    [DEBUG IAM] roleId=e74c8522-f2ae-4620-bb37-08136db158b0, permissions= [
+      'trips:create',
+      'trips:update',
+      'trips:read',
+      'trips:dispatch',
+      'fleet:write',
+      'workshop:mechanic',
+      'workshop:gate',
+      'admin:manage'
+    ]
+
+      at IamPolicyEngineService.loadPermissions (../src/platform/iam/iam-policy-engine.service.ts:207:13)
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[POST] /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews - 400 - reviewerRole must be one of the following values: DISPATCHER, LOADER, SAFETY_OFFICER, UNLOADER, FLEET_MANAGER, WORKSHOP_MECHANIC, GATE_SECURITY, CUSTOMER_CONTACT,reviewerRole should not be empty,rating must not be greater than 5,rating must not be less than 1,rating must be an integer number,rating should not be empty[39m
+BadRequestException: Bad Request Exception
+    at ValidationPipe.exceptionFactory (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/common/pipes/validation.pipe.js:111:20)
+    at ValidationPipe.transform (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/common/pipes/validation.pipe.js:78:30)
+    at resolveParamValue (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/core/router/router-execution-context.js:159:23)
+    at async Promise.all (index 0)
+    at pipesFn (/Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/core/router/router-execution-context.js:162:13)
+    at /Users/vishalvirda/Desktop/PariLink/node_modules/@nestjs/core/router/router-execution-context.js:38:30
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: dispatch, action: manage, requiredPermission: dispatch:manage, auth.granted: false, auth.reason: MISSING_PERMISSION:dispatch:manage
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[POST] /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews - 403 - You do not have the dispatch:manage permission required to submit a DISPATCHER review.[39m
+ForbiddenException: You do not have the dispatch:manage permission required to submit a DISPATCHER review.
+    at TripsService.submitReview (/Users/vishalvirda/Desktop/PariLink/apps/api/src/trips/trips.service.ts:767:13)
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[PrismaService] [39m[31mPrisma Error: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31mFailed to append exception to EventStore[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39mPrismaClientUnknownRequestError: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+    at $n.handleRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:7505)
+    at $n.handleAndLogRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at runOp [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:55:24[90m)[39m
+    at Proxy._transactionWithCallback (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:8000)
+    at EventStoreService.append [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:92:7[90m)[39m
+    at GlobalExceptionFilter.catch [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/resilience/global-exception.filter.ts:60:9[90m)[39m {
+  clientVersion: [32m'5.22.0'[39m
+}
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: dispatch, action: manage, requiredPermission: dispatch:manage, auth.granted: false, auth.reason: MISSING_PERMISSION:dispatch:manage
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[POST] /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews - 403 - You do not have the dispatch:manage permission required to submit a DISPATCHER review.[39m
+ForbiddenException: You do not have the dispatch:manage permission required to submit a DISPATCHER review.
+    at TripsService.submitReview (/Users/vishalvirda/Desktop/PariLink/apps/api/src/trips/trips.service.ts:767:13)
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[PrismaService] [39m[31mPrisma Error: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31mFailed to append exception to EventStore[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39mPrismaClientUnknownRequestError: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+    at $n.handleRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:7505)
+    at $n.handleAndLogRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at runOp [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:55:24[90m)[39m
+    at Proxy._transactionWithCallback (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:8000)
+    at EventStoreService.append [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:92:7[90m)[39m
+    at GlobalExceptionFilter.catch [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/resilience/global-exception.filter.ts:60:9[90m)[39m {
+  clientVersion: [32m'5.22.0'[39m
+}
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: trips, action: update, requiredPermission: trips:update, auth.granted: true, auth.reason: ABAC_RBAC_GRANTED
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[QueryMonitor] [39m[31m[N+1 WARNING] POST /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews triggered 7 queries![39m
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: trips, action: update, requiredPermission: trips:update, auth.granted: true, auth.reason: ABAC_RBAC_GRANTED
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[QueryMonitor] [39m[31m[N+1 WARNING] POST /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews triggered 7 queries![39m
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: trips, action: update, requiredPermission: trips:update, auth.granted: true, auth.reason: ABAC_RBAC_GRANTED
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[QueryMonitor] [39m[31m[N+1 WARNING] POST /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews triggered 7 queries![39m
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: fleet, action: write, requiredPermission: fleet:write, auth.granted: true, auth.reason: ABAC_RBAC_GRANTED
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[QueryMonitor] [39m[31m[N+1 WARNING] POST /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews triggered 7 queries![39m
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=e74c8522-f2ae-4620-bb37-08136db158b0, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: 3c7b06d9-6244-4d10-b164-af983f189b6c, roleId: e74c8522-f2ae-4620-bb37-08136db158b0, resource: dispatch, action: manage, requiredPermission: dispatch:manage, auth.granted: false, auth.reason: MISSING_PERMISSION:dispatch:manage
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[POST] /api/v1/trips/3a042c8d-93ba-4c4a-a33c-8887b4ba2338/reviews - 403 - You do not have the dispatch:manage permission required to submit a DISPATCHER review.[39m
+ForbiddenException: You do not have the dispatch:manage permission required to submit a DISPATCHER review.
+    at TripsService.submitReview (/Users/vishalvirda/Desktop/PariLink/apps/api/src/trips/trips.service.ts:767:13)
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[PrismaService] [39m[31mPrisma Error: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31mFailed to append exception to EventStore[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39mPrismaClientUnknownRequestError: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+    at $n.handleRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:7505)
+    at $n.handleAndLogRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at runOp [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:55:24[90m)[39m
+    at Proxy._transactionWithCallback (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:8000)
+    at EventStoreService.append [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:92:7[90m)[39m
+    at GlobalExceptionFilter.catch [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/resilience/global-exception.filter.ts:60:9[90m)[39m {
+  clientVersion: [32m'5.22.0'[39m
+}
+  console.log
+    [DEBUG IAM] roleId=7fc01aa5-bf84-462f-a722-47a5a3f71467, permissions= [ 'trips:update', 'trips:read' ]
+
+      at IamPolicyEngineService.loadPermissions (../src/platform/iam/iam-policy-engine.service.ts:207:13)
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=read, roleId=7fc01aa5-bf84-462f-a722-47a5a3f71467, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[GET] /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321 - 404 - Trip with ID c52ff2f8-302a-4f49-8396-803309412321 not found[39m
+NotFoundException: Trip with ID c52ff2f8-302a-4f49-8396-803309412321 not found
+    at /Users/vishalvirda/Desktop/PariLink/apps/api/src/trips/trips.service.ts:275:15
+    at Proxy._transactionWithCallback (/Users/vishalvirda/Desktop/PariLink/node_modules/@prisma/client/runtime/library.js:130:8000)
+  console.log
+    [DEBUG] Guard authorize resource=trips, action=update, roleId=7fc01aa5-bf84-462f-a722-47a5a3f71467, decision= { granted: true, reason: 'ABAC_RBAC_GRANTED' }
+
+      at ../src/auth/guards/permissions.guard.ts:79:21
+          at async Promise.all (index 0)
+
+  console.log
+    [DEBUG IAM] reviewerId: bf089705-5170-4281-957e-9fc07291b07c, roleId: 7fc01aa5-bf84-462f-a722-47a5a3f71467, resource: dispatch, action: manage, requiredPermission: dispatch:manage, auth.granted: false, auth.reason: MISSING_PERMISSION:dispatch:manage
+
+      at TripsService.submitReview (../src/trips/trips.service.ts:764:13)
+
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31m[POST] /api/v1/trips/c52ff2f8-302a-4f49-8396-803309412321/reviews - 403 - You do not have the dispatch:manage permission required to submit a DISPATCHER review.[39m
+ForbiddenException: You do not have the dispatch:manage permission required to submit a DISPATCHER review.
+    at TripsService.submitReview (/Users/vishalvirda/Desktop/PariLink/apps/api/src/trips/trips.service.ts:767:13)
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[PrismaService] [39m[31mPrisma Error: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39m[31mFailed to append exception to EventStore[39m
+[31m[Nest] 17786  - [39m09/25/2026, 3:00:14 PM [31m  ERROR[39m [38;5;3m[GlobalExceptionFilter] [39mPrismaClientUnknownRequestError: 
+Invalid `tx.domainEvent.create()` invocation in
+/Users/vishalvirda/Desktop/PariLink/apps/api/src/platform/digital-twin/event-store.service.ts:55:45
+
+  52 }
+  53 
+  54 // 3. Append the new event
+→ 55 const newEvent = await tx.domainEvent.create(
+Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42501", message: "new row violates row-level security policy for table \"DomainEvent\"", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })
+    at $n.handleRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:7505)
+    at $n.handleAndLogRequestError (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6623)
+    at $n.request (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:121:6307)
+    at l (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:9633)
+    at runOp [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:55:24[90m)[39m
+    at Proxy._transactionWithCallback (/Users/vishalvirda/Desktop/PariLink/node_modules/[4m@prisma/client[24m/runtime/library.js:130:8000)
+    at EventStoreService.append [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/digital-twin/event-store.service.ts:92:7[90m)[39m
+    at GlobalExceptionFilter.catch [90m(/Users/vishalvirda/Desktop/PariLink/apps/api/[39msrc/platform/resilience/global-exception.filter.ts:60:9[90m)[39m {
+  clientVersion: [32m'5.22.0'[39m
+}
+  console.log
+    
+    ✅ Decisive RLS: Tenant A runAsTenant sees 4 reviews, all companyId=ca7a746d-86f9-457f-a19e-e56dcefaf2e3
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:251:13)
+
+  console.log
+    ✅ Source verified: submitReview uses runAsTenant context + companyId trip lookup, no stripped filter
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:252:13)
+
+FAIL test/trip-reviews.e2e-spec.ts
+  TripReviews (e2e)
+    ✓ /api/v1/trips/:id/reviews (POST) - validation fails on empty payload (49 ms)
+    ✕ /api/v1/trips/:id/reviews (POST) - accepts valid review (66 ms)
+    ✕ /api/v1/trips/:id/reviews (POST) - prevents duplicate role review (19 ms)
+    ✕ computes driver score exactly on the 5th review (77 ms)
+    ✕ GET trip with partial reviews returns score: null and pending status (13 ms)
+    ✕ Cross-tenant: Tenant B cannot read Tenant A trips or submit reviews (20 ms)
+    ✓ Decisive RLS: reviews are isolated by RLS even without app-layer filter (3 ms)
+
+  ● TripReviews (e2e) › /api/v1/trips/:id/reviews (POST) - accepts valid review
+
+    expected 201 "Created", got 403 "Forbidden"
+
+      106 |         comment: 'Fast and smooth'
+      107 |       })
+    > 108 |       .expect(201);
+          |        ^
+      109 |     
+      110 |     expect(res.body.reviewerRole).toBe('DISPATCHER');
+      111 |     expect(res.body.rating).toBe(5);
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:108:8)
+      ----
+      at Test._assertStatus (../../../node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/supertest/lib/test.js:152:11)
+
+  ● TripReviews (e2e) › /api/v1/trips/:id/reviews (POST) - prevents duplicate role review
+
+    expected 409 "Conflict", got 403 "Forbidden"
+
+      120 |         rating: 4,
+      121 |       })
+    > 122 |       .expect(409); // ConflictException
+          |        ^
+      123 |   });
+      124 |
+      125 |   it('computes driver score exactly on the 5th review', async () => {
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:122:8)
+      ----
+      at Test._assertStatus (../../../node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/supertest/lib/test.js:152:11)
+
+  ● TripReviews (e2e) › computes driver score exactly on the 5th review
+
+    expect(received).toBeCloseTo(expected, precision)
+
+    Matcher error: received value must be a number
+
+    Received has value: undefined
+
+      141 |     expect(score).toBeDefined();
+      142 |     // (5 + 4 + 3 + 5 + 4) / 5 = 21 / 5 = 4.2
+    > 143 |     expect(score?.total).toBeCloseTo(4.2, 1);
+          |                          ^
+      144 |   });
+      145 |
+      146 |   // ── Partial review state ──────────────────────────────────────────────────
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:143:26)
+
+  ● TripReviews (e2e) › GET trip with partial reviews returns score: null and pending status
+
+    expected 201 "Created", got 403 "Forbidden"
+
+      159 |       .set('Authorization', `Bearer ${adminToken}`)
+      160 |       .send({ reviewerRole: 'DISPATCHER', rating: 4 })
+    > 161 |       .expect(201);
+          |        ^
+      162 |
+      163 |     await request(app.getHttpServer())
+      164 |       .post(`/api/v1/trips/${partialTrip.id}/reviews`)
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:161:8)
+      ----
+      at Test._assertStatus (../../../node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/supertest/lib/test.js:152:11)
+
+  ● TripReviews (e2e) › Cross-tenant: Tenant B cannot read Tenant A trips or submit reviews
+
+    expected 404 "Not Found", got 403 "Forbidden"
+
+      220 |       .set('Authorization', `Bearer ${tokenB}`)
+      221 |       .send({ reviewerRole: 'DISPATCHER', rating: 5 })
+    > 222 |       .expect(404);
+          |        ^
+      223 |
+      224 |     console.log(`\n✅ Cross-tenant: Tenant B gets 404 on Tenant A trip GET and review POST`);
+      225 |   });
+
+      at Object.<anonymous> (trip-reviews.e2e-spec.ts:222:8)
+      ----
+      at Test._assertStatus (../../../node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/supertest/lib/test.js:152:11)
+
+Test Suites: 1 failed, 1 total
+Tests:       5 failed, 2 passed, 7 total
+Snapshots:   0 total
+Time:        3.642 s, estimated 4 s
+Ran all test suites matching /trip-reviews.e2e-spec.ts/i.
+npm error Lifecycle script `test:e2e` failed with error:
+npm error code 1
+npm error path /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error workspace api@0.0.1
+npm error location /Users/vishalvirda/Desktop/PariLink/apps/api
+npm error command failed
+npm error command sh -c jest --config ./test/jest-e2e.json trip-reviews.e2e-spec.ts

@@ -89,7 +89,6 @@ export class EventService {
 
     // Standalone: set tenant context so DomainEvent RLS policy allows the insert
     return this.prisma.runAsTenant(event.tenantId, async (tx) => {
-      // eslint-disable-next-line no-restricted-syntax
       return tx.domainEvent.create({ data: eventData });
     });
   }

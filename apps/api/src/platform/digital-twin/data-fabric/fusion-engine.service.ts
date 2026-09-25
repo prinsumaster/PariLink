@@ -45,36 +45,40 @@ export class FusionEngineService {
 
     // Save the raw location data for historical mapping
     if (event.latitude !== undefined && event.longitude !== undefined) {
-      await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
-        tx.vehicleLocation.create({
-          data: {
-            companyId: event.tenantId,
-            provider: event.provider,
-            providerVehicleId: event.providerVehicleId,
-            vehicleId: event.vehicleId,
-            latitude: event.latitude as number,
-            longitude: event.longitude as number,
-            speed: event.speed,
-            heading: event.heading,
-            ignition: event.ignition,
-            fuel: event.fuelLevel,
-            odometer: event.odometer,
-            gpsTimestamp: event.timestamp,
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[FusionEngineService.processTelemetry] Internal service operation bypass',
+        async (tx) =>
+          tx.vehicleLocation.create({
+            data: {
+              companyId: event.tenantId,
+              provider: event.provider,
+              providerVehicleId: event.providerVehicleId,
+              vehicleId: event.vehicleId,
+              latitude: event.latitude as number,
+              longitude: event.longitude as number,
+              speed: event.speed,
+              heading: event.heading,
+              ignition: event.ignition,
+              fuel: event.fuelLevel,
+              odometer: event.odometer,
+              gpsTimestamp: event.timestamp,
+            },
+          }),
       );
     }
 
     // Now, retrieve the current Digital Twin snapshot for this vehicle
-    const twin = await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
-      tx.twinSnapshot.findUnique({
-        where: {
-          twinId_twinType: {
-            twinId: event.vehicleId as string,
-            twinType: 'VEHICLE',
+    const twin = await this.prisma.runAsSystem(
+      '[FusionEngineService.processTelemetry] Internal service operation bypass',
+      async (tx) =>
+        tx.twinSnapshot.findUnique({
+          where: {
+            twinId_twinType: {
+              twinId: event.vehicleId as string,
+              twinType: 'VEHICLE',
+            },
           },
-        },
-      }),
+        }),
     );
 
     const currentState = twin ? (twin.state as any) : {};
@@ -100,27 +104,29 @@ export class FusionEngineService {
     const nextVersion = twin ? twin.version + 1 : 1;
 
     // Update the Digital Twin in the Database
-    await this.prisma.runAsSystem('[FusionEngineService.processTelemetry] Internal service operation bypass', async (tx) =>
-      tx.twinSnapshot.upsert({
-        where: {
-          twinId_twinType: {
+    await this.prisma.runAsSystem(
+      '[FusionEngineService.processTelemetry] Internal service operation bypass',
+      async (tx) =>
+        tx.twinSnapshot.upsert({
+          where: {
+            twinId_twinType: {
+              twinId: event.vehicleId as string,
+              twinType: 'VEHICLE',
+            },
+          },
+          create: {
+            companyId: event.tenantId,
             twinId: event.vehicleId as string,
             twinType: 'VEHICLE',
+            version: nextVersion,
+            state: newState,
           },
-        },
-        create: {
-          companyId: event.tenantId,
-          twinId: event.vehicleId as string,
-          twinType: 'VEHICLE',
-          version: nextVersion,
-          state: newState,
-        },
-        update: {
-          version: nextVersion,
-          state: newState,
-          timestamp: new Date(),
-        },
-      }),
+          update: {
+            version: nextVersion,
+            state: newState,
+            timestamp: new Date(),
+          },
+        }),
     );
 
     // Emit the Digital Twin State Change Event so other modules (Dispatch, AI) can react instantly

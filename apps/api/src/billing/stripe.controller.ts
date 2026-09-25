@@ -63,37 +63,40 @@ export class StripeController {
     }
 
     try {
-      await this.prisma.runAsSystem('[StripeController.handleWebhook] Webhook handler bypass', async (tx) => {
-        // Enforce Idempotency Lock
-        await tx.webhookDelivery.create({
-          data: {
-            id: event.id || `mock_${Date.now()}_${Math.random()}`,
-            companyId: 'SYSTEM',
-            direction: 'INCOMING',
-            endpointUrl: '/api/v1/billing/stripe/webhook',
-            eventTopic: event.type,
-            payload: event as any,
-            status: 'SUCCESS',
-          },
-        });
+      await this.prisma.runAsSystem(
+        '[StripeController.handleWebhook] Webhook handler bypass',
+        async (tx) => {
+          // Enforce Idempotency Lock
+          await tx.webhookDelivery.create({
+            data: {
+              id: event.id || `mock_${Date.now()}_${Math.random()}`,
+              companyId: 'SYSTEM',
+              direction: 'INCOMING',
+              endpointUrl: '/api/v1/billing/stripe/webhook',
+              eventTopic: event.type,
+              payload: event as any,
+              status: 'SUCCESS',
+            },
+          });
 
-        switch (event.type) {
-          case 'invoice.paid':
-            this.logger.log('Invoice paid event processed');
-            break;
-          case 'invoice.payment_failed':
-            this.logger.log('Invoice payment failed event processed');
-            break;
-          case 'customer.subscription.updated':
-            this.logger.log('Subscription updated event processed');
-            break;
-          case 'customer.subscription.deleted':
-            this.logger.log('Subscription deleted event processed');
-            break;
-          default:
-            this.logger.warn(`Unhandled Stripe event type: ${event.type}`);
-        }
-      });
+          switch (event.type) {
+            case 'invoice.paid':
+              this.logger.log('Invoice paid event processed');
+              break;
+            case 'invoice.payment_failed':
+              this.logger.log('Invoice payment failed event processed');
+              break;
+            case 'customer.subscription.updated':
+              this.logger.log('Subscription updated event processed');
+              break;
+            case 'customer.subscription.deleted':
+              this.logger.log('Subscription deleted event processed');
+              break;
+            default:
+              this.logger.warn(`Unhandled Stripe event type: ${event.type}`);
+          }
+        },
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

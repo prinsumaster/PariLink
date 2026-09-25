@@ -21,17 +21,26 @@ export class CreateFuelEntryDto {
   @IsNotEmpty()
   amount!: number;
 
-  @ApiPropertyOptional({ description: 'Pump / station name', example: 'HP Pump Nagpur' })
+  @ApiPropertyOptional({
+    description: 'Pump / station name',
+    example: 'HP Pump Nagpur',
+  })
   @IsOptional()
   @IsString()
   pump?: string;
 
-  @ApiPropertyOptional({ description: 'Fuel slip / bill number', example: 'SLIP-20260910-001' })
+  @ApiPropertyOptional({
+    description: 'Fuel slip / bill number',
+    example: 'SLIP-20260910-001',
+  })
   @IsOptional()
   @IsString()
   slipNo?: string;
 
-  @ApiPropertyOptional({ description: 'Date/time of fill', example: '2026-09-10T10:30:00Z' })
+  @ApiPropertyOptional({
+    description: 'Date/time of fill',
+    example: '2026-09-10T10:30:00Z',
+  })
   @IsOptional()
   @IsDateString()
   filledAt?: string;

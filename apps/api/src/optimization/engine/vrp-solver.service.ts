@@ -39,7 +39,7 @@ export interface VrpSolution {
 export class VrpSolverService {
   private readonly logger = new Logger(VrpSolverService.name);
 
-    // @ts-ignore: DI dependency reserved for future use
+  // @ts-ignore: DI dependency reserved for future use
   constructor(private readonly _prisma: PrismaService) {}
 
   /**

@@ -4,7 +4,8 @@ import * as XLSX from 'xlsx';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type ImportType = 'vehicles' | 'drivers' | 'customers' | 'vendors' | 'opening-balances';
+export type ImportType =
+  'vehicles' | 'drivers' | 'customers' | 'vendors' | 'opening-balances';
 
 export interface ImportRowResult {
   row: number;
@@ -24,11 +25,50 @@ export interface ImportReport {
 // ─── Column Templates ─────────────────────────────────────────────────────────
 
 export const TEMPLATES: Record<ImportType, string[]> = {
-  vehicles: ['licensePlate', 'make', 'model', 'year', 'type', 'capacityWeight', 'vin'],
-  drivers: ['firstName', 'lastName', 'phone', 'email', 'licenseNumber', 'licenseState', 'licenseExpiry'],
-  customers: ['name', 'email', 'phone', 'taxId', 'billingAddress', 'creditLimit', 'paymentTerms'],
-  vendors: ['name', 'email', 'phone', 'taxId', 'billingAddress', 'type', 'paymentTerms'],
-  'opening-balances': ['entityType', 'entityRef', 'amount', 'currency', 'description', 'date'],
+  vehicles: [
+    'licensePlate',
+    'make',
+    'model',
+    'year',
+    'type',
+    'capacityWeight',
+    'vin',
+  ],
+  drivers: [
+    'firstName',
+    'lastName',
+    'phone',
+    'email',
+    'licenseNumber',
+    'licenseState',
+    'licenseExpiry',
+  ],
+  customers: [
+    'name',
+    'email',
+    'phone',
+    'taxId',
+    'billingAddress',
+    'creditLimit',
+    'paymentTerms',
+  ],
+  vendors: [
+    'name',
+    'email',
+    'phone',
+    'taxId',
+    'billingAddress',
+    'type',
+    'paymentTerms',
+  ],
+  'opening-balances': [
+    'entityType',
+    'entityRef',
+    'amount',
+    'currency',
+    'description',
+    'date',
+  ],
 };
 
 // ─── Validators ───────────────────────────────────────────────────────────────
@@ -40,31 +80,39 @@ const TRUCK_PLATE_REGEX = /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$/;
 function validatePhone(phone: string | undefined): string | null {
   if (!phone) return null;
   const cleaned = phone.replace(/[\s\-]/g, '');
-  if (!PHONE_REGEX.test(cleaned)) return `Phone "${phone}" is not a valid Indian mobile number`;
+  if (!PHONE_REGEX.test(cleaned))
+    return `Phone "${phone}" is not a valid Indian mobile number`;
   return null;
 }
 
 function validateGst(gst: string | undefined): string | null {
   if (!gst) return null;
-  if (!GST_REGEX.test(gst.toUpperCase())) return `GST "${gst}" is not valid (expected 15-char GSTIN format)`;
+  if (!GST_REGEX.test(gst.toUpperCase()))
+    return `GST "${gst}" is not valid (expected 15-char GSTIN format)`;
   return null;
 }
 
 function validateLicensePlate(plate: string | undefined): string | null {
   if (!plate) return null;
   const normalized = plate.replace(/[\s\-]/g, '').toUpperCase();
-  if (!TRUCK_PLATE_REGEX.test(normalized)) return `License plate "${plate}" is not a valid Indian truck plate (e.g. GJ01AB1234)`;
+  if (!TRUCK_PLATE_REGEX.test(normalized))
+    return `License plate "${plate}" is not a valid Indian truck plate (e.g. GJ01AB1234)`;
   return null;
 }
 
 // ─── Parser ───────────────────────────────────────────────────────────────────
 
-function parseFile(buffer: Buffer, originalName: string): Record<string, unknown>[] {
+function parseFile(
+  buffer: Buffer,
+  originalName: string,
+): Record<string, unknown>[] {
   // @ts-ignore: reserved for future use
   const _ext = originalName.split('.').pop()?.toLowerCase();
   const workbook = XLSX.read(buffer, { type: 'buffer', cellDates: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' });
+  return XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+    defval: '',
+  });
 }
 
 // ─── Service ─────────────────────────────────────────────────────────────────
@@ -79,7 +127,9 @@ export class BulkImportService {
     // Header row + one example row
     const exampleRows: Record<string, string>[] = [];
     const example: Record<string, string> = {};
-    columns.forEach(col => { example[col] = `<${col}>`; });
+    columns.forEach((col) => {
+      example[col] = `<${col}>`;
+    });
     exampleRows.push(example);
     const ws = XLSX.utils.json_to_sheet(exampleRows, { header: columns });
     XLSX.utils.book_append_sheet(wb, ws, type);
@@ -134,7 +184,12 @@ export class BulkImportService {
           }
 
           if (errors.length > 0) {
-            report.results.push({ row: rowNum, status: 'skipped', reason: errors.join('; '), data: row });
+            report.results.push({
+              row: rowNum,
+              status: 'skipped',
+              reason: errors.join('; '),
+              data: row,
+            });
             report.skipped++;
           } else {
             report.results.push({ row: rowNum, status: 'imported', data: row });
@@ -166,12 +221,16 @@ export class BulkImportService {
     const plate = (row['licensePlate'] as string)?.trim();
     const make = (row['make'] as string)?.trim();
     const type = (row['type'] as string)?.trim() || 'TRUCK';
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _ownershipType = (row['ownershipType'] as string)?.trim() || 'OWNED';
 
     // Required field validation
-    if (!plate) { errors.push('licensePlate is required'); }
-    if (!make) { errors.push('make is required'); }
+    if (!plate) {
+      errors.push('licensePlate is required');
+    }
+    if (!make) {
+      errors.push('make is required');
+    }
     if (errors.length) return;
 
     // Format validation
@@ -181,13 +240,21 @@ export class BulkImportService {
 
     // Duplicate check
     const existing = await tx.vehicle.findFirst({
-      where: { companyId, licensePlate: plate.toUpperCase().replace(/[\s\-]/g, '') },
+      where: {
+        companyId,
+        licensePlate: plate.toUpperCase().replace(/[\s\-]/g, ''),
+      },
     });
-    if (existing) { errors.push(`Vehicle with plate ${plate} already exists`); return; }
+    if (existing) {
+      errors.push(`Vehicle with plate ${plate} already exists`);
+      return;
+    }
 
     const yearRaw = row['year'];
     const year = yearRaw ? parseInt(String(yearRaw), 10) : null;
-    const capacityWeight = row['capacityWeight'] ? parseFloat(String(row['capacityWeight'])) : null;
+    const capacityWeight = row['capacityWeight']
+      ? parseFloat(String(row['capacityWeight']))
+      : null;
 
     await tx.vehicle.create({
       data: {
@@ -225,13 +292,23 @@ export class BulkImportService {
 
     // Duplicate check by phone
     if (phone) {
-      const existing = await tx.driver.findFirst({ where: { companyId, phone } });
-      if (existing) { errors.push(`Driver with phone ${phone} already exists`); return; }
+      const existing = await tx.driver.findFirst({
+        where: { companyId, phone },
+      });
+      if (existing) {
+        errors.push(`Driver with phone ${phone} already exists`);
+        return;
+      }
     }
     // Duplicate check by license
     if (licenseNumber) {
-      const existing = await tx.driver.findFirst({ where: { companyId, licenseNumber } });
-      if (existing) { errors.push(`Driver with license ${licenseNumber} already exists`); return; }
+      const existing = await tx.driver.findFirst({
+        where: { companyId, licenseNumber },
+      });
+      if (existing) {
+        errors.push(`Driver with license ${licenseNumber} already exists`);
+        return;
+      }
     }
 
     let licenseExpiry: Date | null = null;
@@ -267,7 +344,10 @@ export class BulkImportService {
     const phone = (row['phone'] as string)?.trim();
     const taxId = (row['taxId'] as string)?.trim();
 
-    if (!name) { errors.push('name is required'); return; }
+    if (!name) {
+      errors.push('name is required');
+      return;
+    }
 
     const phoneErr = validatePhone(phone);
     if (phoneErr) errors.push(phoneErr);
@@ -276,11 +356,18 @@ export class BulkImportService {
     if (errors.length) return;
 
     if (email) {
-      const existing = await tx.customer.findFirst({ where: { companyId, email } });
-      if (existing) { errors.push(`Customer with email ${email} already exists`); return; }
+      const existing = await tx.customer.findFirst({
+        where: { companyId, email },
+      });
+      if (existing) {
+        errors.push(`Customer with email ${email} already exists`);
+        return;
+      }
     }
 
-    const creditLimit = row['creditLimit'] ? parseFloat(String(row['creditLimit'])) : 0;
+    const creditLimit = row['creditLimit']
+      ? parseFloat(String(row['creditLimit']))
+      : 0;
 
     await tx.customer.create({
       data: {
@@ -308,7 +395,10 @@ export class BulkImportService {
     const phone = (row['phone'] as string)?.trim();
     const taxId = (row['taxId'] as string)?.trim();
 
-    if (!name) { errors.push('name is required'); return; }
+    if (!name) {
+      errors.push('name is required');
+      return;
+    }
 
     const phoneErr = validatePhone(phone);
     if (phoneErr) errors.push(phoneErr);
@@ -317,8 +407,13 @@ export class BulkImportService {
     if (errors.length) return;
 
     if (email) {
-      const existing = await tx.vendor.findFirst({ where: { companyId, email } });
-      if (existing) { errors.push(`Vendor with email ${email} already exists`); return; }
+      const existing = await tx.vendor.findFirst({
+        where: { companyId, email },
+      });
+      if (existing) {
+        errors.push(`Vendor with email ${email} already exists`);
+        return;
+      }
     }
 
     await tx.vendor.create({
@@ -345,15 +440,20 @@ export class BulkImportService {
     const entityType = (row['entityType'] as string)?.trim();
     const entityRef = (row['entityRef'] as string)?.trim();
     const amountRaw = row['amount'];
-    const description = (row['description'] as string)?.trim() || 'Opening Balance';
+    const description =
+      (row['description'] as string)?.trim() || 'Opening Balance';
 
-    if (!entityType) errors.push('entityType is required (e.g. CUSTOMER, VENDOR)');
+    if (!entityType)
+      errors.push('entityType is required (e.g. CUSTOMER, VENDOR)');
     if (!entityRef) errors.push('entityRef is required (name or ID)');
     if (!amountRaw) errors.push('amount is required');
     if (errors.length) return;
 
     const amount = parseFloat(String(amountRaw));
-    if (isNaN(amount)) { errors.push(`amount "${amountRaw}" is not a valid number`); return; }
+    if (isNaN(amount)) {
+      errors.push(`amount "${amountRaw}" is not a valid number`);
+      return;
+    }
 
     let dateVal = new Date();
     const dateRaw = row['date'];

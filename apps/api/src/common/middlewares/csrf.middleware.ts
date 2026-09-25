@@ -48,7 +48,7 @@ export function csrfMiddleware(
     // and attach it to the X-XSRF-TOKEN header on subsequent requests.
     if (req.csrfToken) {
       res.cookie('XSRF-TOKEN', req.csrfToken(), {
-      domain: process.env.COOKIE_DOMAIN || undefined,
+        domain: process.env.COOKIE_DOMAIN || undefined,
         path: '/',
         httpOnly: false, // Must be readable by client JS
         secure: process.env.NODE_ENV === 'production',

@@ -9,6 +9,6 @@ import { PermissionsGuard } from '../guards/permissions.guard';
 export function RequireAuth() {
   return applyDecorators(
     ApiBearerAuth(),
-    UseGuards(JwtAuthGuard, PermissionsGuard)
+    UseGuards(JwtAuthGuard, PermissionsGuard),
   );
 }

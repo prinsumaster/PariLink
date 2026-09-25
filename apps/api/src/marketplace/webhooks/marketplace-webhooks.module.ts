@@ -12,7 +12,13 @@ import { PrismaModule } from '../../prisma/prisma.module';
       name: 'webhooks',
     }),
   ],
-  providers: [WebhookService, ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : [])] : []), EventBusListener],
+  providers: [
+    WebhookService,
+    ...(process.env.RUN_WORKERS === 'true'
+      ? [...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : [])]
+      : []),
+    EventBusListener,
+  ],
   exports: [WebhookService],
 })
 export class MarketplaceWebhooksModule {}

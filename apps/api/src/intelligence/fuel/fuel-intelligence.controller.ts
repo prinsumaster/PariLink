@@ -12,7 +12,9 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('intelligence/fuel')
 export class FuelIntelligenceController {
-  constructor(private readonly fuelIntelligenceService: FuelIntelligenceService) {}
+  constructor(
+    private readonly fuelIntelligenceService: FuelIntelligenceService,
+  ) {}
 
   @Get('anomalies')
   @RequirePermissions('reports:read')

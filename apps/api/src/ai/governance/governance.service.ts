@@ -115,10 +115,12 @@ export class AiGovernanceService {
   // ─── Recommendation Governance ────────────────────────────────────────────
 
   async evaluateRecommendation(recommendationId: string): Promise<boolean> {
-    const rec = await this.prisma.runAsSystem('[AiGovernanceService.evaluateRecommendation] Internal service operation bypass', async (tx) =>
-      tx.aiRecommendation.findUnique({
-        where: { id: recommendationId },
-      }),
+    const rec = await this.prisma.runAsSystem(
+      '[AiGovernanceService.evaluateRecommendation] Internal service operation bypass',
+      async (tx) =>
+        tx.aiRecommendation.findUnique({
+          where: { id: recommendationId },
+        }),
     );
     if (!rec) throw new ForbiddenException('Recommendation not found');
 
@@ -126,11 +128,13 @@ export class AiGovernanceService {
       this.logger.warn(
         `Recommendation ${recommendationId} rejected by Governance (confidence ${rec.confidence} < ${this.CONFIDENCE_THRESHOLD})`,
       );
-      await this.prisma.runAsSystem('[AiGovernanceService.evaluateRecommendation] Internal service operation bypass', async (tx) =>
-        tx.aiRecommendation.update({
-          where: { id: recommendationId },
-          data: { status: 'REJECTED' },
-        }),
+      await this.prisma.runAsSystem(
+        '[AiGovernanceService.evaluateRecommendation] Internal service operation bypass',
+        async (tx) =>
+          tx.aiRecommendation.update({
+            where: { id: recommendationId },
+            data: { status: 'REJECTED' },
+          }),
       );
       this.logGovernanceEvent(
         'RECOMMENDATION_REJECTED',
@@ -149,15 +153,17 @@ export class AiGovernanceService {
       'LOW',
       `Accepted by ${userId}`,
     );
-    return this.prisma.runAsSystem('[AiGovernanceService.acceptRecommendation] Internal service operation bypass', async (tx) =>
-      tx.aiRecommendation.update({
-        where: { id: recommendationId },
-        data: {
-          status: 'ACCEPTED',
-          actionTakenAt: new Date(),
-          actionTakenBy: userId,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[AiGovernanceService.acceptRecommendation] Internal service operation bypass',
+      async (tx) =>
+        tx.aiRecommendation.update({
+          where: { id: recommendationId },
+          data: {
+            status: 'ACCEPTED',
+            actionTakenAt: new Date(),
+            actionTakenBy: userId,
+          },
+        }),
     );
   }
 

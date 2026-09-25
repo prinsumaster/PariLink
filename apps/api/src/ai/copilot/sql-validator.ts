@@ -21,12 +21,33 @@ export interface SqlValidationResult {
 }
 
 const BANNED_WRITE_VERBS = [
-  'UPDATE', 'DELETE', 'INSERT', 'DROP', 'ALTER', 'TRUNCATE', 'GRANT',
-  'REVOKE', 'EXEC', 'EXECUTE', 'CALL', 'MERGE', 'CREATE', 'VACUUM',
-  'SET', 'SET_CONFIG', 'CURRENT_SETTING', 'PG_SLEEP'
+  'UPDATE',
+  'DELETE',
+  'INSERT',
+  'DROP',
+  'ALTER',
+  'TRUNCATE',
+  'GRANT',
+  'REVOKE',
+  'EXEC',
+  'EXECUTE',
+  'CALL',
+  'MERGE',
+  'CREATE',
+  'VACUUM',
+  'SET',
+  'SET_CONFIG',
+  'CURRENT_SETTING',
+  'PG_SLEEP',
 ];
 
-const CLAUSE_TERMINATORS = ['GROUP BY', 'ORDER BY', 'LIMIT', 'HAVING', 'OFFSET'];
+const CLAUSE_TERMINATORS = [
+  'GROUP BY',
+  'ORDER BY',
+  'LIMIT',
+  'HAVING',
+  'OFFSET',
+];
 
 export function validateGeneratedSql(
   rawQuery: string,
@@ -40,7 +61,10 @@ export function validateGeneratedSql(
 
   // 1. No statement stacking.
   if (query.includes(';')) {
-    return { ok: false, reason: 'Semicolons are not allowed (no statement stacking).' };
+    return {
+      ok: false,
+      reason: 'Semicolons are not allowed (no statement stacking).',
+    };
   }
 
   // 2. No comments — a comment can hide a "satisfied" placeholder check
@@ -74,7 +98,8 @@ export function validateGeneratedSql(
   // 6. Extract every table referenced via FROM/JOIN, with optional alias,
   // and reject if any table is outside the allowlist. This is a structural
   // check on the actual FROM/JOIN targets, not a prompt instruction.
-  const fromJoinRe = /\b(?:FROM|JOIN)\s+"?([A-Za-z_][A-Za-z0-9_]*)"?(?:\s+(?:AS\s+)?"?([A-Za-z_][A-Za-z0-9_]*)"?)?/gi;
+  const fromJoinRe =
+    /\b(?:FROM|JOIN)\s+"?([A-Za-z_][A-Za-z0-9_]*)"?(?:\s+(?:AS\s+)?"?([A-Za-z_][A-Za-z0-9_]*)"?)?/gi;
   const refs: { table: string; alias: string }[] = [];
   let m: RegExpExecArray | null;
   while ((m = fromJoinRe.exec(query)) !== null) {
@@ -82,19 +107,38 @@ export function validateGeneratedSql(
     // Guard against the alias capture accidentally eating a following
     // reserved keyword (ON, WHERE, JOIN, etc.) when there's no real alias.
     const nextWord = (m[2] || '').toUpperCase();
-    const reserved = ['ON', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'FULL', 'GROUP', 'ORDER', 'LIMIT', 'HAVING'];
-    const alias = reserved.includes(nextWord) ? table : (m[2] || table);
+    const reserved = [
+      'ON',
+      'WHERE',
+      'JOIN',
+      'INNER',
+      'LEFT',
+      'RIGHT',
+      'FULL',
+      'GROUP',
+      'ORDER',
+      'LIMIT',
+      'HAVING',
+    ];
+    const alias = reserved.includes(nextWord) ? table : m[2] || table;
     refs.push({ table, alias });
   }
 
   if (refs.length === 0) {
-    return { ok: false, reason: 'No FROM/JOIN targets could be identified — rejecting rather than guessing.' };
+    return {
+      ok: false,
+      reason:
+        'No FROM/JOIN targets could be identified — rejecting rather than guessing.',
+    };
   }
 
   const allowedSet = new Set(allowedTables);
   for (const { table } of refs) {
     if (!allowedSet.has(table)) {
-      return { ok: false, reason: `Table "${table}" is not in the allowed table list (${allowedTables.join(', ')}).` };
+      return {
+        ok: false,
+        reason: `Table "${table}" is not in the allowed table list (${allowedTables.join(', ')}).`,
+      };
     }
   }
 
@@ -102,7 +146,10 @@ export function validateGeneratedSql(
   // not merely present somewhere in the query string.
   const whereMatch = /\bWHERE\b/i.exec(query);
   if (!whereMatch) {
-    return { ok: false, reason: 'No WHERE clause found — every query must filter by companyId.' };
+    return {
+      ok: false,
+      reason: 'No WHERE clause found — every query must filter by companyId.',
+    };
   }
   let whereClause = query.slice(whereMatch.index + whereMatch[0].length);
   for (const terminator of CLAUSE_TERMINATORS) {
@@ -116,7 +163,7 @@ export function validateGeneratedSql(
   // 8. Require the companyId predicate to be the outermost conjunct.
   // The WHERE clause must begin exactly with the required tenant predicates,
   // chained by AND, so that they cannot be bypassed via OR.
-  const placeholder = "\\{\\{COMPANY_ID_PLACEHOLDER\\}\\}";
+  const placeholder = '\\{\\{COMPANY_ID_PLACEHOLDER\\}\\}';
   const uniqueAliases = Array.from(new Set(refs.map((r) => r.alias)));
   const usesAliases = refs.some((r) => r.alias !== r.table);
 
@@ -127,8 +174,15 @@ export function validateGeneratedSql(
     let matchedAny = false;
 
     // Check bare unaliased predicate
-    if (!usesAliases && uniqueAliases.length === 1 && !satisfied.has(uniqueAliases[0])) {
-      const bareRegex = new RegExp(`^"?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`, 'i');
+    if (
+      !usesAliases &&
+      uniqueAliases.length === 1 &&
+      !satisfied.has(uniqueAliases[0])
+    ) {
+      const bareRegex = new RegExp(
+        `^"?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`,
+        'i',
+      );
       const m = remaining.match(bareRegex);
       if (m) {
         satisfied.add(uniqueAliases[0]);
@@ -140,7 +194,10 @@ export function validateGeneratedSql(
     // Check alias-qualified predicate
     for (const alias of uniqueAliases) {
       if (satisfied.has(alias)) continue;
-      const qualifiedRegex = new RegExp(`^"?${alias}"?\\."?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`, 'i');
+      const qualifiedRegex = new RegExp(
+        `^"?${alias}"?\\."?companyId"?\\s*=\\s*'${placeholder}'(?:\\s+AND\\s+|$)`,
+        'i',
+      );
       const m = remaining.match(qualifiedRegex);
       if (m) {
         satisfied.add(alias);
@@ -153,16 +210,18 @@ export function validateGeneratedSql(
   }
 
   if (satisfied.size !== uniqueAliases.length) {
-    return { 
-      ok: false, 
-      reason: 'WHERE clause must begin exactly with all required companyId predicates chained by AND.' 
+    return {
+      ok: false,
+      reason:
+        'WHERE clause must begin exactly with all required companyId predicates chained by AND.',
     };
   }
 
   if (remaining.toLowerCase().includes('companyid')) {
-    return { 
-      ok: false, 
-      reason: 'companyId predicate must only appear at the very beginning of the WHERE clause.' 
+    return {
+      ok: false,
+      reason:
+        'companyId predicate must only appear at the very beginning of the WHERE clause.',
     };
   }
 

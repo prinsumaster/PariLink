@@ -66,7 +66,9 @@ export class SqlGeneratorService {
       });
       return result;
     } catch (error) {
-      this.logger.error(`Failed to execute generated SQL: ${(error as Error).message}`);
+      this.logger.error(
+        `Failed to execute generated SQL: ${(error as Error).message}`,
+      );
       throw new BadRequestException(
         'The generated query failed to execute safely.',
       );
@@ -125,13 +127,18 @@ export class SqlGeneratorService {
       this.logger.warn(
         `[SQL_GENERATOR] Rejected generated query for company ${companyId}: ${result.reason} | query: ${query}`,
       );
-      throw new ForbiddenException(`Generated query rejected: ${result.reason}`);
+      throw new ForbiddenException(
+        `Generated query rejected: ${result.reason}`,
+      );
     }
   }
 
   // Helper method to prepare parameterized query
   public injectCompanyId(query: string): string {
     // Replace the placeholder with the parameter marker $1
-    return query.replace(/'\{\{COMPANY_ID_PLACEHOLDER\}\}'|\{\{COMPANY_ID_PLACEHOLDER\}\}/g, '$1');
+    return query.replace(
+      /'\{\{COMPANY_ID_PLACEHOLDER\}\}'|\{\{COMPANY_ID_PLACEHOLDER\}\}/g,
+      '$1',
+    );
   }
 }

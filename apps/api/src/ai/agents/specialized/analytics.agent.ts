@@ -26,16 +26,22 @@ export class AnalyticsAgent extends BaseAgent {
         const parsed = JSON.parse(input);
         try {
           const [loadsCount, tripsCount, driversCount] = await Promise.all([
-            this.prisma.runAsSystem('[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-              tx.load.count({ where: { companyId: parsed.companyId } }),
+            this.prisma.runAsSystem(
+              '[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass',
+              async (tx) =>
+                tx.load.count({ where: { companyId: parsed.companyId } }),
             ),
-            this.prisma.runAsSystem('[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-              tx.trip.count({ where: { companyId: parsed.companyId } }),
+            this.prisma.runAsSystem(
+              '[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass',
+              async (tx) =>
+                tx.trip.count({ where: { companyId: parsed.companyId } }),
             ),
-            this.prisma.runAsSystem('[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-              tx.driver.count({
-                where: { companyId: parsed.companyId },
-              }),
+            this.prisma.runAsSystem(
+              '[AnalyticsAgent.unknownMethod] Autonomous AI Agent bypass',
+              async (tx) =>
+                tx.driver.count({
+                  where: { companyId: parsed.companyId },
+                }),
             ),
           ]);
           return JSON.stringify({

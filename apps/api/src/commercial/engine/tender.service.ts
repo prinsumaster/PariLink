@@ -9,7 +9,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class TenderService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

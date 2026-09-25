@@ -47,24 +47,28 @@ export class CustomerPromiseService {
 
     // When a speeding or route deviation alert is raised, flag delay risk for open loads
     if (['SPEEDING', 'DEVIATION'].includes(payload.ruleType)) {
-      const promise = await this.prisma.runAsSystem('[CustomerPromiseService.onAlertTriggered] Internal service operation bypass', async (tx) =>
-        tx.customerPromise.findFirst({
-          where: { companyId: tenantId, delayRiskScore: { lt: 1 } },
-        }),
+      const promise = await this.prisma.runAsSystem(
+        '[CustomerPromiseService.onAlertTriggered] Internal service operation bypass',
+        async (tx) =>
+          tx.customerPromise.findFirst({
+            where: { companyId: tenantId, delayRiskScore: { lt: 1 } },
+          }),
       );
       if (!promise) return;
 
       const newRisk = Math.min(1, promise.delayRiskScore + 0.1);
-      await this.prisma.runAsSystem('[CustomerPromiseService.onAlertTriggered] Internal service operation bypass', async (tx) =>
-        tx.customerPromise.update({
-          where: { id: promise.id },
-          data: {
-            delayRiskScore: newRisk,
-            confidenceScore: Math.max(0, promise.confidenceScore - 0.05),
-            reasonCode: payload.ruleType,
-            lastUpdatedAt: new Date(),
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[CustomerPromiseService.onAlertTriggered] Internal service operation bypass',
+        async (tx) =>
+          tx.customerPromise.update({
+            where: { id: promise.id },
+            data: {
+              delayRiskScore: newRisk,
+              confidenceScore: Math.max(0, promise.confidenceScore - 0.05),
+              reasonCode: payload.ruleType,
+              lastUpdatedAt: new Date(),
+            },
+          }),
       );
       this.logger.debug(
         `CustomerPromise for load ${promise.loadId} delay risk → ${newRisk}`,

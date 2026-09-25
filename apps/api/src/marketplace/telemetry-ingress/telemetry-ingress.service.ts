@@ -89,16 +89,18 @@ export class TelemetryIngressService {
 
     // In a real system, secretKey would be validated securely
     // For now, let's verify the installation exists
-    const installation = await this.prisma.runAsTenant(payload.companyId, async (tx) =>
-      tx.appInstallation.findUnique({
-        where: {
-          companyId_appId: {
-            companyId: payload.companyId,
-            appId: payload.appId,
+    const installation = await this.prisma.runAsTenant(
+      payload.companyId,
+      async (tx) =>
+        tx.appInstallation.findUnique({
+          where: {
+            companyId_appId: {
+              companyId: payload.companyId,
+              appId: payload.appId,
+            },
           },
-        },
-        include: { app: true },
-      }),
+          include: { app: true },
+        }),
     );
 
     if (!installation || installation.status !== 'ACTIVE') {
@@ -134,8 +136,10 @@ export class TelemetryIngressService {
         // an out-of-order or replayed ping overwriting a fresher fix with a
         // stale one; Prisma's upsert cannot express that condition, so this
         // is raw.
-        await this.prisma.runAsTenant(payload.companyId, async (tx) =>
-          tx.$executeRaw`
+        await this.prisma.runAsTenant(
+          payload.companyId,
+          async (tx) =>
+            tx.$executeRaw`
             INSERT INTO "VehicleCurrentPosition"
               ("companyId","providerVehicleId","provider","latitude","longitude",
                "speed","heading","ignition","gpsTimestamp","updatedAt")

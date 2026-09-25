@@ -40,7 +40,6 @@ export interface PostmortemInput {
 
 @Injectable()
 export class IncidentManagementService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly auditService: AuditService,
@@ -48,19 +47,21 @@ export class IncidentManagementService {
   ) {}
 
   async createIncident(input: CreateIncidentInput): Promise<unknown> {
-    const incident = await this.prisma.runAsSystem('[IncidentManagementService.createIncident] Internal service operation bypass', async (tx) =>
-      tx.incident.create({
-        data: {
-          companyId: input.companyId,
-          title: input.title,
-          description: input.description,
-          severity: input.severity,
-          status: 'INVESTIGATING',
-          assignedToId: input.assignedToId || null,
-          affectedServices: input.affectedServices,
-          startedAt: new Date(),
-        },
-      }),
+    const incident = await this.prisma.runAsSystem(
+      '[IncidentManagementService.createIncident] Internal service operation bypass',
+      async (tx) =>
+        tx.incident.create({
+          data: {
+            companyId: input.companyId,
+            title: input.title,
+            description: input.description,
+            severity: input.severity,
+            status: 'INVESTIGATING',
+            assignedToId: input.assignedToId || null,
+            affectedServices: input.affectedServices,
+            startedAt: new Date(),
+          },
+        }),
     );
 
     await this.addTimelineEvent({
@@ -112,8 +113,10 @@ export class IncidentManagementService {
     if (input.status === 'RESOLVED' && !incident.resolvedAt)
       data.resolvedAt = new Date();
 
-    const updated = await this.prisma.runAsSystem('[IncidentManagementService.updateIncidentStatus] Internal service operation bypass', async (tx) =>
-      tx.incident.update({ where: { id: input.incidentId }, data }),
+    const updated = await this.prisma.runAsSystem(
+      '[IncidentManagementService.updateIncidentStatus] Internal service operation bypass',
+      async (tx) =>
+        tx.incident.update({ where: { id: input.incidentId }, data }),
     );
 
     await this.addTimelineEvent({
@@ -163,19 +166,21 @@ export class IncidentManagementService {
     metadata?: Record<string, unknown>;
     actorId?: string;
   }): Promise<unknown> {
-    return this.prisma.runAsSystem('[IncidentManagementService.addTimelineEvent] Internal service operation bypass', async (tx) =>
-      tx.incidentTimelineEvent.create({
-        data: {
-          incidentId: data.incidentId,
-          companyId: data.companyId,
-          eventType: data.eventType,
-          description: data.description,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          metadata: (data.metadata || {}) as object,
-          actorId: data.actorId || null,
-          timestamp: new Date(),
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[IncidentManagementService.addTimelineEvent] Internal service operation bypass',
+      async (tx) =>
+        tx.incidentTimelineEvent.create({
+          data: {
+            incidentId: data.incidentId,
+            companyId: data.companyId,
+            eventType: data.eventType,
+            description: data.description,
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            metadata: (data.metadata || {}) as object,
+            actorId: data.actorId || null,
+            timestamp: new Date(),
+          },
+        }),
     );
   }
 
@@ -205,11 +210,13 @@ export class IncidentManagementService {
   }
 
   async savePostmortem(input: PostmortemInput): Promise<unknown> {
-    const timeline = await this.prisma.runAsSystem('[IncidentManagementService.savePostmortem] Internal service operation bypass', async (tx) =>
-      tx.incidentTimelineEvent.findMany({
-        where: { incidentId: input.incidentId },
-        orderBy: { timestamp: 'asc' },
-      }),
+    const timeline = await this.prisma.runAsSystem(
+      '[IncidentManagementService.savePostmortem] Internal service operation bypass',
+      async (tx) =>
+        tx.incidentTimelineEvent.findMany({
+          where: { incidentId: input.incidentId },
+          orderBy: { timestamp: 'asc' },
+        }),
     );
 
     const timelineSummary = timeline.map((t) => ({
@@ -230,12 +237,14 @@ export class IncidentManagementService {
       authorId: input.authorId || null,
     };
 
-    return this.prisma.runAsSystem('[IncidentManagementService.savePostmortem] Internal service operation bypass', async (tx) =>
-      tx.postmortemReport.upsert({
-        where: { incidentId: input.incidentId },
-        update: data,
-        create: { incidentId: input.incidentId, ...data },
-      }),
+    return this.prisma.runAsSystem(
+      '[IncidentManagementService.savePostmortem] Internal service operation bypass',
+      async (tx) =>
+        tx.postmortemReport.upsert({
+          where: { incidentId: input.incidentId },
+          update: data,
+          create: { incidentId: input.incidentId, ...data },
+        }),
     );
   }
 

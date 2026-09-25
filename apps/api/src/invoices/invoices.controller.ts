@@ -9,7 +9,7 @@ import {
   Param,
   Body,
   UseGuards,
-  Query
+  Query,
 } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -82,7 +82,14 @@ export class InvoicesController {
   recordPayment(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: { amount: number; method?: string; referenceNumber?: string; paymentDate?: string; notes?: string },
+    @Body()
+    body: {
+      amount: number;
+      method?: string;
+      referenceNumber?: string;
+      paymentDate?: string;
+      notes?: string;
+    },
   ) {
     return this.invoicesService.recordPayment(
       user.companyId,

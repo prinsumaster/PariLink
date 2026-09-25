@@ -24,7 +24,7 @@ export class PerformancePlatformService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _auditService: AuditService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -33,19 +33,21 @@ export class PerformancePlatformService {
    * Records an anomaly profile when slow queries, memory leaks, or CPU spikes occur.
    */
   async recordProfile(input: PerformanceProfileInput): Promise<unknown> {
-    const profile = await this.prisma.runAsSystem('[PerformancePlatformService.recordProfile] Internal service operation bypass', async (tx) =>
-      tx.performanceProfile.create({
-        data: {
-          companyId: input.companyId || null,
-          profileType: input.profileType,
-          targetResource: input.targetResource,
-          metricValue: input.metricValue,
-          thresholdValue: input.thresholdValue,
-          stackTraceOrQuery: input.stackTraceOrQuery || null,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          analysisDetails: (input.analysisDetails || {}) as object,
-        },
-      }),
+    const profile = await this.prisma.runAsSystem(
+      '[PerformancePlatformService.recordProfile] Internal service operation bypass',
+      async (tx) =>
+        tx.performanceProfile.create({
+          data: {
+            companyId: input.companyId || null,
+            profileType: input.profileType,
+            targetResource: input.targetResource,
+            metricValue: input.metricValue,
+            thresholdValue: input.thresholdValue,
+            stackTraceOrQuery: input.stackTraceOrQuery || null,
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            analysisDetails: (input.analysisDetails || {}) as object,
+          },
+        }),
     );
 
     this.eventEmitter.emit('Operations.Performance.AnomalyDetected', {
@@ -62,15 +64,17 @@ export class PerformancePlatformService {
    * Slow Query Detection: Scans query logs and returns slowest executing database operations.
    */
   async getSlowQueries(companyId?: string, limit = 20): Promise<unknown[]> {
-    return this.prisma.runAsSystem('[PerformancePlatformService.getSlowQueries] Internal service operation bypass', async (tx) =>
-      tx.performanceProfile.findMany({
-        where: {
-          ...(companyId ? { companyId } : {}),
-          profileType: 'SLOW_QUERY',
-        },
-        orderBy: { metricValue: 'desc' },
-        take: limit,
-      }),
+    return this.prisma.runAsSystem(
+      '[PerformancePlatformService.getSlowQueries] Internal service operation bypass',
+      async (tx) =>
+        tx.performanceProfile.findMany({
+          where: {
+            ...(companyId ? { companyId } : {}),
+            profileType: 'SLOW_QUERY',
+          },
+          orderBy: { metricValue: 'desc' },
+          take: limit,
+        }),
     );
   }
 
@@ -116,12 +120,14 @@ export class PerformancePlatformService {
     companyId?: string,
   ): Promise<Record<string, unknown>> {
     try {
-      const execHistory = await this.prisma.runAsSystem('[PerformancePlatformService.getWorkflowAndQueuePerformance] Internal service operation bypass', async (tx) =>
-        tx.ruleExecutionHistory.findMany({
-          where: companyId ? { rule: { companyId } } : {},
-          orderBy: { createdAt: 'desc' },
-          take: 200,
-        }),
+      const execHistory = await this.prisma.runAsSystem(
+        '[PerformancePlatformService.getWorkflowAndQueuePerformance] Internal service operation bypass',
+        async (tx) =>
+          tx.ruleExecutionHistory.findMany({
+            where: companyId ? { rule: { companyId } } : {},
+            orderBy: { createdAt: 'desc' },
+            take: 200,
+          }),
       );
 
       const durations = execHistory

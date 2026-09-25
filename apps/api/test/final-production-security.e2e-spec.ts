@@ -28,7 +28,10 @@ describe('Final Production Security Audit (e2e)', () => {
     it('Rejects requests with FORGED token', async () => {
       await request(app.getHttpServer())
         .get('/trips')
-        .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJjb21wYW55SWQiOiI0NTYifQ.invalid_signature')
+        .set(
+          'Authorization',
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJjb21wYW55SWQiOiI0NTYifQ.invalid_signature',
+        )
         .expect(401);
     });
 
@@ -55,8 +58,8 @@ describe('Final Production Security Audit (e2e)', () => {
         .post('/webhooks/stripe')
         .send({ id: 'evt_test', type: 'invoice.paid' })
         .set('stripe-signature', 't=invalid,v1=invalid');
-      
-      expect(res.status).toBe(400); 
+
+      expect(res.status).toBe(400);
     });
   });
 
@@ -82,7 +85,7 @@ describe('Final Production Security Audit (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: 'test@example.com', password: hugeString });
-      
+
       expect([400, 413, 429]).toContain(res.status);
     });
   });

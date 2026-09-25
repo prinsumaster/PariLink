@@ -34,9 +34,11 @@ import { mockDeep } from 'jest-mock-extended';
 const mockPrisma = mockDeep<any>();
 // Override runAsSystem and runAsTenant to pass the mock client back
 // Signature: runAsSystem(reason: string, callback: (tx) => Promise<T>)
-mockPrisma.runAsSystem.mockImplementation(async (_reason: any, callback: any) => {
-  return callback(mockPrisma);
-});
+mockPrisma.runAsSystem.mockImplementation(
+  async (_reason: any, callback: any) => {
+    return callback(mockPrisma);
+  },
+);
 // Signature: runAsTenant(tenantId: string, callback: (tx) => Promise<T>)
 mockPrisma.runAsTenant.mockImplementation(
   async (_tenantId: any, callback: any) => {
@@ -138,10 +140,26 @@ describe('Phase 3: Business Workflows Validation (Mocked E2E)', () => {
       vehicleId: 'veh-1',
     });
 
-    mockPrisma.driver.findUnique.mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE', companyId: 'tenant-1' });
-    mockPrisma.vehicle.findUnique.mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE', companyId: 'tenant-1' });
-    mockPrisma.driver.findFirst.mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE', companyId: 'tenant-1' });
-    mockPrisma.vehicle.findFirst.mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE', companyId: 'tenant-1' });
+    mockPrisma.driver.findUnique.mockResolvedValue({
+      id: 'driver-1',
+      status: 'AVAILABLE',
+      companyId: 'tenant-1',
+    });
+    mockPrisma.vehicle.findUnique.mockResolvedValue({
+      id: 'veh-1',
+      status: 'IN_SERVICE',
+      companyId: 'tenant-1',
+    });
+    mockPrisma.driver.findFirst.mockResolvedValue({
+      id: 'driver-1',
+      status: 'AVAILABLE',
+      companyId: 'tenant-1',
+    });
+    mockPrisma.vehicle.findFirst.mockResolvedValue({
+      id: 'veh-1',
+      status: 'IN_SERVICE',
+      companyId: 'tenant-1',
+    });
 
     const res = await request(app.getHttpServer())
       .post('/api/v1/trips')

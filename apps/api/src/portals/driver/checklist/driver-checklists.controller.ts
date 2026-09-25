@@ -1,11 +1,5 @@
 import { IsNotEmptyObject } from 'class-validator';
-import {
-  Controller,
-  Post,
-  Body,
-  Param,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
 import { GetUser } from '../../../auth/decorators/get-user.decorator';
@@ -19,8 +13,6 @@ export class SubmitChecklistDto {
 @ApiTags('driver-portal/checklists')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-
-
 @Controller('driver-portal/checklists')
 export class DriverChecklistsController {
   constructor(

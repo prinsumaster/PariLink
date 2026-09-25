@@ -43,21 +43,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: { sub: string; cid: string; rid: string }) {
-    const user = await this.prisma.runAsSystem('[JwtStrategy.validate] Security/Auth lifecycle bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { id: payload.sub },
-        select: {
-          id: true,
-          email: true,
-          status: true,
-          deletedAt: true,
-          roleId: true,
-          companyId: true,
-          customerId: true,
-          vendorId: true,
-          driver: { select: { id: true } },
-        },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[JwtStrategy.validate] Security/Auth lifecycle bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { id: payload.sub },
+          select: {
+            id: true,
+            email: true,
+            status: true,
+            deletedAt: true,
+            roleId: true,
+            companyId: true,
+            customerId: true,
+            vendorId: true,
+            driver: { select: { id: true } },
+          },
+        }),
     );
 
     if (!user || user.status !== 'ACTIVE' || user.deletedAt) {

@@ -19,7 +19,7 @@ describe('Driver Drill Down', () => {
       .post('/auth/login')
       .send({ email: 'admin@parilink.com', password: 'password123' })
       .expect(200);
-      
+
     adminToken = loginRes.body.access_token;
   });
 
@@ -32,10 +32,10 @@ describe('Driver Drill Down', () => {
         lastName: 'Driver',
         email: `test-${Date.now()}@driver.com`,
         licenseNumber: `DL-${Date.now()}`,
-        status: 'AVAILABLE'
+        status: 'AVAILABLE',
       })
       .expect(201);
-      
+
     const driverId = driverRes.body.id;
 
     await request(app.getHttpServer())
@@ -46,7 +46,7 @@ describe('Driver Drill Down', () => {
     const getRes = await request(app.getHttpServer())
       .get(`/drivers/${driverId}`)
       .set('Authorization', `Bearer ${adminToken}`);
-      
+
     console.log('GET STATUS:', getRes.status);
     console.log('GET BODY:', getRes.body);
   });

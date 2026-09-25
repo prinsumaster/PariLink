@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
-import {
-  PerformancePlatformService
-} from './performance-platform.service';
+import { PerformancePlatformService } from './performance-platform.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
@@ -9,7 +7,14 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
-import { IsString, IsOptional, IsNumber, IsEnum, IsObject, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsObject,
+  IsNotEmpty,
+} from 'class-validator';
 
 export enum ProfileType {
   SLOW_QUERY = 'SLOW_QUERY',
@@ -48,7 +53,9 @@ export class CreatePerformanceProfileDto {
 @SkipThrottle()
 @Controller('operations/performance')
 export class PerformancePlatformController {
-  constructor(private readonly performanceService: PerformancePlatformService) {}
+  constructor(
+    private readonly performanceService: PerformancePlatformService,
+  ) {}
 
   @Post('profiles')
   @RequirePermissions('operations:performance:write')
@@ -75,7 +82,10 @@ export class PerformancePlatformController {
     @GetUser() user: { companyId: string },
     @Query('limit') limit = '20',
   ) {
-    return this.performanceService.getSlowQueries(user.companyId, parseInt(limit, 10));
+    return this.performanceService.getSlowQueries(
+      user.companyId,
+      parseInt(limit, 10),
+    );
   }
 
   @Get('resource-utilization')
@@ -100,6 +110,8 @@ export class PerformancePlatformController {
     summary: 'Get workflow execution and queue processing latency metrics',
   })
   async getWorkflowPerformance(@GetUser() user: { companyId: string }) {
-    return this.performanceService.getWorkflowAndQueuePerformance(user.companyId);
+    return this.performanceService.getWorkflowAndQueuePerformance(
+      user.companyId,
+    );
   }
 }

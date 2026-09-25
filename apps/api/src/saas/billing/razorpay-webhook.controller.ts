@@ -18,7 +18,6 @@ import { SecretsService } from '../../platform/security/secrets/secrets.service'
 @ApiTags('Razorpay Webhooks')
 @Controller('webhooks/razorpay')
 export class RazorpayWebhookController {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly billingService: BillingService,
     private readonly secretsService: SecretsService,

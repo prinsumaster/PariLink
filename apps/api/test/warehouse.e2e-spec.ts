@@ -21,7 +21,9 @@ describe('Warehouse (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     app.setGlobalPrefix('api/v1');
     await app.init();
 
@@ -47,14 +49,14 @@ describe('Warehouse (e2e)', () => {
     const whRes = await request(app.getHttpServer())
       .post('/api/v1/warehouse')
       .set('Authorization', `Bearer ${tenantA.token}`)
-      .send({ 
-        name: 'Central Hub', 
+      .send({
+        name: 'Central Hub',
         code: 'CH-01',
         address: '123 Main St',
         city: 'New York',
-        state: 'NY'
+        state: 'NY',
       });
-    
+
     expect(whRes.status).toBe(201);
     warehouseA = whRes.body.id;
 
@@ -64,7 +66,7 @@ describe('Warehouse (e2e)', () => {
       .set('Authorization', `Bearer ${tenantA.token}`)
       .send({ name: 'Receiving', code: 'RCV', type: 'STAGING' })
       .expect(201);
-    
+
     zoneA = zoneRes.body.id;
 
     // 3. Create Bin
@@ -73,7 +75,7 @@ describe('Warehouse (e2e)', () => {
       .set('Authorization', `Bearer ${tenantA.token}`)
       .send({ code: 'RCV-01', status: 'AVAILABLE' })
       .expect(201);
-    
+
     binA = binRes.body.id;
   });
 
@@ -90,12 +92,12 @@ describe('Warehouse (e2e)', () => {
         reference: 'ASN-1234',
         asnNumber: 'ASN-1234',
         expectedDate: new Date().toISOString(),
-        items: [{ sku: 'SKU-001', expectedQty: 100 }]
+        items: [{ sku: 'SKU-001', expectedQty: 100 }],
       });
-    
+
     // Fix: If it's 409 because of unique constraint on duplicate run, use a unique reference
     if (asnRes.status === 409) {
-       const asnRes2 = await request(app.getHttpServer())
+      const asnRes2 = await request(app.getHttpServer())
         .post('/api/v1/warehouse/inbound/asn')
         .set('Authorization', `Bearer ${tenantA.token}`)
         .send({
@@ -103,15 +105,15 @@ describe('Warehouse (e2e)', () => {
           reference: 'ASN-1234-' + Date.now(),
           asnNumber: 'ASN-1234-' + Date.now(),
           expectedDate: new Date().toISOString(),
-          items: [{ sku: 'SKU-001', expectedQty: 100 }]
+          items: [{ sku: 'SKU-001', expectedQty: 100 }],
         });
-       expect(asnRes2.status).toBe(201);
-       receiptId = asnRes2.body.id;
-       itemId = asnRes2.body.items[0].id;
+      expect(asnRes2.status).toBe(201);
+      receiptId = asnRes2.body.id;
+      itemId = asnRes2.body.items[0].id;
     } else {
-       expect(asnRes.status).toBe(201);
-       receiptId = asnRes.body.id;
-       itemId = asnRes.body.items[0].id;
+      expect(asnRes.status).toBe(201);
+      receiptId = asnRes.body.id;
+      itemId = asnRes.body.items[0].id;
     }
 
     // 2. Receive Goods
@@ -120,7 +122,7 @@ describe('Warehouse (e2e)', () => {
       .set('Authorization', `Bearer ${tenantA.token}`)
       .send({
         stagingBinId: binA,
-        items: [{ itemId: itemId, qty: 100, damagedQty: 0 }]
+        items: [{ itemId: itemId, qty: 100, damagedQty: 0 }],
       });
     expect(recRes.status).toBe(201);
   });
@@ -131,7 +133,7 @@ describe('Warehouse (e2e)', () => {
       .set('Authorization', `Bearer ${tenantA.token}`)
       .send({
         orderNumber: 'OUT-1001-' + Date.now(),
-        items: [{ sku: 'SKU-001', requestedQty: 50 }]
+        items: [{ sku: 'SKU-001', requestedQty: 50 }],
       });
     expect(outRes.status).toBe(201);
   });
@@ -144,7 +146,7 @@ describe('Warehouse (e2e)', () => {
 
     expect(res.status).toBe(404);
   });
-  
+
   it('prints isolation proof (Step 2d)', async () => {
     const res = await request(app.getHttpServer())
       .get(`/api/v1/warehouse/${warehouseA}/topology`)
@@ -178,14 +180,25 @@ describe('Warehouse (e2e)', () => {
   });
 });
 
-async function setupTenant(prisma: PrismaService, jwt: JwtService, config: ConfigService, name: string) {
-  const company = await prisma.runAsSystem('e2e-setup', (tx) => 
-    tx.company.create({ data: { name } })
+async function setupTenant(
+  prisma: PrismaService,
+  jwt: JwtService,
+  config: ConfigService,
+  name: string,
+) {
+  const company = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.company.create({ data: { name } }),
   );
-  const role = await prisma.runAsSystem('e2e-setup', (tx) => 
-    tx.role.create({ data: { name: 'Admin', companyId: company.id, permissions: ['warehouse:read', 'warehouse:write'] } })
+  const role = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.role.create({
+      data: {
+        name: 'Admin',
+        companyId: company.id,
+        permissions: ['warehouse:read', 'warehouse:write'],
+      },
+    }),
   );
-  const user = await prisma.runAsSystem('e2e-setup', (tx) => 
+  const user = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
         email: `wh_e2e_${company.id}@example.com`,
@@ -193,13 +206,18 @@ async function setupTenant(prisma: PrismaService, jwt: JwtService, config: Confi
         firstName: 'Admin',
         lastName: 'User',
         companyId: company.id,
-        roleId: role.id
-      }
-    })
+        roleId: role.id,
+      },
+    }),
   );
   const token = jwt.sign(
-    { sub: user.id, email: user.email, companyId: company.id, permissions: ['warehouse:read', 'warehouse:write'] },
-    { secret: config.get('JWT_SECRET') }
+    {
+      sub: user.id,
+      email: user.email,
+      companyId: company.id,
+      permissions: ['warehouse:read', 'warehouse:write'],
+    },
+    { secret: config.get('JWT_SECRET') },
   );
 
   return { companyId: company.id, token };

@@ -2,7 +2,9 @@ import { PrismaClient } from '@prisma/client';
 
 async function main() {
   const prisma = new PrismaClient({
-    datasources: { db: { url: "postgresql://postgres:postgres@localhost:5434/postgres" } }
+    datasources: {
+      db: { url: 'postgresql://postgres:postgres@localhost:5434/postgres' },
+    },
   });
 
   // @ts-ignore: reserved for future use
@@ -12,37 +14,71 @@ async function main() {
   await prisma.company.upsert({
     where: { id: companyB },
     update: {},
-    create: { id: companyB, name: 'Company B' }
+    create: { id: companyB, name: 'Company B' },
   });
 
   const driver = await prisma.driver.create({
-    data: { id: 'd2222222-2222-2222-2222-222222222222', companyId: companyB, firstName: 'Driver', lastName: 'B' }
+    data: {
+      id: 'd2222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      firstName: 'Driver',
+      lastName: 'B',
+    },
   });
 
   const vehicle = await prisma.vehicle.create({
-    data: { id: 'v2222222-2222-2222-2222-222222222222', companyId: companyB, licensePlate: 'BB-1234' }
+    data: {
+      id: 'v2222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      licensePlate: 'BB-1234',
+    },
   });
 
   const tripB = await prisma.trip.create({
-    data: { id: 'tr222222-2222-2222-2222-222222222222', companyId: companyB, tripNumber: 'TRIP-B', driverId: driver.id, vehicleId: vehicle.id }
+    data: {
+      id: 'tr222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      tripNumber: 'TRIP-B',
+      driverId: driver.id,
+      vehicleId: vehicle.id,
+    },
   });
 
   // TripDesk for B
   await prisma.tripDesk.create({
-    data: { id: 't2222222-2222-2222-2222-222222222222', companyId: companyB, tripId: tripB.id, desk: 'Desk B' }
+    data: {
+      id: 't2222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      tripId: tripB.id,
+      desk: 'Desk B',
+    },
   });
 
   // User for B
   await prisma.user.create({
-    data: { id: 'u2222222-2222-2222-2222-222222222222', companyId: companyB, email: 'userb@b.com', password: 'password', firstName: 'User', lastName: 'B' }
+    data: {
+      id: 'u2222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      email: 'userb@b.com',
+      password: 'password',
+      firstName: 'User',
+      lastName: 'B',
+    },
   });
 
   // TruckProfitability for B
   await prisma.truckProfitability.create({
-    data: { id: 'p2222222-2222-2222-2222-222222222222', companyId: companyB, vehicleId: vehicle.id, month: new Date(), revenue: 10000, netProfit: 5000 }
+    data: {
+      id: 'p2222222-2222-2222-2222-222222222222',
+      companyId: companyB,
+      vehicleId: vehicle.id,
+      month: new Date(),
+      revenue: 10000,
+      netProfit: 5000,
+    },
   });
 
-  console.log("Seeded");
+  console.log('Seeded');
 }
 
 main().catch(console.error);

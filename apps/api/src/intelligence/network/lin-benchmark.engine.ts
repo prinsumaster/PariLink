@@ -27,10 +27,12 @@ export class LinBenchmarkEngine {
   }
 
   private async computeAiApprovalRate() {
-    const events = await this.prisma.runAsSystem('[LinBenchmarkEngine.computeAiApprovalRate] Internal service operation bypass', async (tx) =>
-      tx.linEventArchive.findMany({
-        where: { eventType: 'anomaly.resolved' },
-      }),
+    const events = await this.prisma.runAsSystem(
+      '[LinBenchmarkEngine.computeAiApprovalRate] Internal service operation bypass',
+      async (tx) =>
+        tx.linEventArchive.findMany({
+          where: { eventType: 'anomaly.resolved' },
+        }),
     );
 
     if (events.length === 0) return;
@@ -49,12 +51,14 @@ export class LinBenchmarkEngine {
   }
 
   private async computeAverageHealthScore() {
-    const events = await this.prisma.runAsSystem('[LinBenchmarkEngine.computeAverageHealthScore] Internal service operation bypass', async (tx) =>
-      tx.linEventArchive.findMany({
-        where: { eventType: 'business_health.updated' },
-        orderBy: { timestamp: 'desc' },
-        take: 1000, // Sample size of recent pulses across the network
-      }),
+    const events = await this.prisma.runAsSystem(
+      '[LinBenchmarkEngine.computeAverageHealthScore] Internal service operation bypass',
+      async (tx) =>
+        tx.linEventArchive.findMany({
+          where: { eventType: 'business_health.updated' },
+          orderBy: { timestamp: 'desc' },
+          take: 1000, // Sample size of recent pulses across the network
+        }),
     );
 
     if (events.length === 0) return;
@@ -79,21 +83,23 @@ export class LinBenchmarkEngine {
     confidenceScore: number,
     sampleSize: number,
   ) {
-    await this.prisma.runAsSystem('[LinBenchmarkEngine.upsertBenchmark] Internal service operation bypass', async (tx) =>
-      tx.linBenchmark.upsert({
-        where: { metricName },
-        update: {
-          value,
-          confidenceScore,
-          sampleSize,
-        },
-        create: {
-          metricName,
-          value,
-          confidenceScore,
-          sampleSize,
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[LinBenchmarkEngine.upsertBenchmark] Internal service operation bypass',
+      async (tx) =>
+        tx.linBenchmark.upsert({
+          where: { metricName },
+          update: {
+            value,
+            confidenceScore,
+            sampleSize,
+          },
+          create: {
+            metricName,
+            value,
+            confidenceScore,
+            sampleSize,
+          },
+        }),
     );
     this.logger.debug(
       `[LIN] Updated benchmark ${metricName} = ${value.toFixed(2)}`,

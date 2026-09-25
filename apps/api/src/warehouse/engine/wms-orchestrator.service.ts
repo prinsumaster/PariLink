@@ -14,11 +14,11 @@ export class WmsOrchestratorService {
   private readonly logger = new Logger(WmsOrchestratorService.name);
 
   constructor(
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
     private readonly lifecycle: LifecycleEngineService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _invoicesService: InvoicesService,
   ) {}
 

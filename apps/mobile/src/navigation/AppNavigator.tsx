@@ -21,6 +21,7 @@ import { LoginScreen }         from '../screens/auth/LoginScreen';
 // ── Main Tab Screens ──────────────────────────────────────────────────────────
 import { DashboardScreen }     from '../screens/dashboard/DashboardScreen';
 import { TripDetailScreen }    from '../screens/trips/TripDetailScreen';
+import { LorryReceiptsScreen } from '../screens/documents/LorryReceiptsScreen';
 import { DocumentCameraScreen }from '../screens/documents/DocumentCameraScreen';
 import { ExpenseFormScreen }   from '../screens/expenses/ExpenseFormScreen';
 import { EmergencySOSScreen }  from '../screens/emergency/EmergencySOSScreen';
@@ -65,7 +66,7 @@ function MainTabs() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Home' }} />
       <Tab.Screen name="Trips"     component={DashboardScreen} options={{ title: 'Trips' }} />
-      <Tab.Screen name="Documents" component={DashboardScreen} options={{ title: 'Docs' }} />
+      <Tab.Screen name="Documents" component={LorryReceiptsScreen} options={{ title: 'Docs' }} />
       <Tab.Screen name="Finance"   component={DashboardScreen} options={{ title: 'Finance' }} />
       <Tab.Screen name="More"      component={DashboardScreen} options={{ title: 'More' }} />
     </Tab.Navigator>

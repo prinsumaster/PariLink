@@ -13,7 +13,7 @@ export class FuelOptimizationAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _prisma: PrismaService,
     private readonly fuelIntelligence: FuelIntelligenceService,
   ) {
@@ -42,16 +42,17 @@ export class FuelOptimizationAgent extends BaseAgent {
     }),
     new DynamicTool({
       name: 'get_fuel_anomalies',
-      description: 'Get a list of fuel anomalies (possible theft, pilferage, mechanical issues) for a company. Identifies worst drivers and trucks. Input: {"companyId": "string"}',
+      description:
+        'Get a list of fuel anomalies (possible theft, pilferage, mechanical issues) for a company. Identifies worst drivers and trucks. Input: {"companyId": "string"}',
       func: async (input: string) => {
         try {
           const { companyId } = JSON.parse(input);
           const anomalies = await this.fuelIntelligence.getAnomalies(companyId);
           return JSON.stringify(anomalies);
         } catch (e) {
-          return "Failed to fetch fuel anomalies";
+          return 'Failed to fetch fuel anomalies';
         }
-      }
+      },
     }),
   ];
 }

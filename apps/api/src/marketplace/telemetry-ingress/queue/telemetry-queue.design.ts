@@ -50,7 +50,6 @@ export interface TelemetryJob {
  */
 @Injectable()
 export class TelemetryIngressProducer {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(@InjectQueue(TELEMETRY_QUEUE) private readonly queue: Queue) {}
 
   /**
@@ -61,8 +60,15 @@ export class TelemetryIngressProducer {
    * analysis. HMAC over the raw body fixes both -- the secret never travels,
    * and timingSafeEqual does not short-circuit.
    */
-  verifySignature(rawBody: Buffer, signatureHeader: string, secret: string): void {
-    const expected = crypto.createHmac('sha256', secret).update(rawBody).digest();
+  verifySignature(
+    rawBody: Buffer,
+    signatureHeader: string,
+    secret: string,
+  ): void {
+    const expected = crypto
+      .createHmac('sha256', secret)
+      .update(rawBody)
+      .digest();
     let provided: Buffer;
     try {
       provided = Buffer.from(signatureHeader.replace(/^sha256=/, ''), 'hex');
@@ -71,7 +77,10 @@ export class TelemetryIngressProducer {
     }
     // Length must match before timingSafeEqual, which throws on mismatch --
     // compare lengths separately so that check is not itself a side channel.
-    if (provided.length !== expected.length || !crypto.timingSafeEqual(provided, expected)) {
+    if (
+      provided.length !== expected.length ||
+      !crypto.timingSafeEqual(provided, expected)
+    ) {
       throw new UnauthorizedException('Invalid telemetry signature');
     }
   }
@@ -95,7 +104,6 @@ export class TelemetryIngressProducer {
 export class TelemetryIngressWorker extends WorkerHost {
   private static readonly CHUNK = 500;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {
     super();
   }

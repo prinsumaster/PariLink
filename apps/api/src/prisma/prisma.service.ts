@@ -23,7 +23,8 @@ export class PrismaService
   private readonly systemClient: PrismaClient;
 
   constructor() {
-    let datasourceUrl = process.env.APP_DATABASE_URL || process.env.DATABASE_URL;
+    let datasourceUrl =
+      process.env.APP_DATABASE_URL || process.env.DATABASE_URL;
     if (datasourceUrl) {
       try {
         const url = new URL(datasourceUrl);
@@ -37,9 +38,9 @@ export class PrismaService
           // Connection math (max_connections=100, reserve 10 for maintenance → budget=90):
           // Main datasource:   16 connections/instance
           // System datasource:  2 connections/instance
-          // Total per instance: 18 connections
-          // 5 instances × 18 = 90 = budget. At 4 instances: 4 × 18 = 72 (safe head-room).
-          url.searchParams.set('connection_limit', '16');
+          // Total per instance: 42 connections
+          // 2 instances × 42 = 84 = budget.
+          url.searchParams.set('connection_limit', '40');
         }
         datasourceUrl = url.toString();
       } catch (e) {
@@ -171,7 +172,7 @@ export class PrismaService
       if (store) {
         store.count++;
       }
-      
+
       if (!params.model) return next(params);
 
       const model = this.dmmfModels.get(params.model);
@@ -197,8 +198,11 @@ export class PrismaService
         // Detect if this is a drill-down lookup (explicitly querying by ID)
         const isDrillDown = params.args?.where?.id !== undefined;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const injectSoftDelete = (args: any, modelName: string, isRoot = false) => {
+        const injectSoftDelete = (
+          args: any,
+          modelName: string,
+          isRoot = false,
+        ) => {
           if (!args) return;
           const currentModel = this.dmmfModels.get(modelName);
           if (!currentModel) return;
@@ -284,14 +288,11 @@ export class PrismaService
 
         injectSoftDelete(params.args, params.model, true);
       }
-      
+
       const result = await next(params);
-      
+
       // Post-process the result to append deleted: true flag
-      if (
-        params.action === 'findFirst' ||
-        params.action === 'findMany'
-      ) {
+      if (params.action === 'findFirst' || params.action === 'findMany') {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const flagDeleted = (obj: any, seen = new Set()) => {
           if (!obj || typeof obj !== 'object') return;
@@ -312,12 +313,12 @@ export class PrismaService
         };
 
         if (Array.isArray(result)) {
-          result.forEach(item => flagDeleted(item));
+          result.forEach((item) => flagDeleted(item));
         } else {
           flagDeleted(result);
         }
       }
-      
+
       return result;
       // We DO NOT convert 'update' to 'updateMany' because updateMany does not support 'include'/'select'
       // and returns a BatchPayload { count: number } instead of the updated object.
@@ -398,7 +399,7 @@ export class PrismaService
             return function (this: any, ...args: any[]) {
               let queryStr = '';
               const firstArg = args[0];
-              
+
               if (Array.isArray(firstArg)) {
                 // Prisma.Sql template literal — strings[] joined with param placeholders
                 queryStr = firstArg.join('');
@@ -412,7 +413,7 @@ export class PrismaService
 
               if (/set_config\s*\(/i.test(queryStr)) {
                 throw new Error(
-                  'Forbidden raw query pattern: session configuration injection is blocked by security interceptor'
+                  'Forbidden raw query pattern: session configuration injection is blocked by security interceptor',
                 );
               }
 
@@ -420,11 +421,11 @@ export class PrismaService
             };
           }
           return Reflect.get(target, prop, receiver);
-        }
+        },
       });
 
       // Execute the business logic within the RLS-constrained transaction
-      return callback(safeTx as any);
+      return callback(safeTx);
     });
   }
 
@@ -464,19 +465,19 @@ export class PrismaService
     }
 
     this.logger.warn(
-      `[SECURITY_AUDIT] SYSTEM_BYPASS: Bypassing RLS. Reason: ${reason}`
+      `[SECURITY_AUDIT] SYSTEM_BYPASS: Bypassing RLS. Reason: ${reason}`,
     );
 
     // Execute the business logic using the system-level connection inside a transaction
     // to guarantee connection isolation, configuring maxWait to prevent pool exhaustion timeouts.
     return this.systemClient.$transaction(
       async (tx) => {
-        return callback(tx as any);
+        return callback(tx);
       },
       {
         maxWait: 10000, // 10 seconds to wait for a connection in the pool
         timeout: 20000, // 20 seconds max for the transaction itself
-      }
+      },
     );
   }
 
@@ -559,7 +560,9 @@ export class PrismaService
       );
     }
 
-    const configResult = await tx.$queryRaw<{ current_company_id: string | null }[]>`SELECT current_setting('app.current_company_id', true) as current_company_id`;
+    const configResult = await tx.$queryRaw<
+      { current_company_id: string | null }[]
+    >`SELECT current_setting('app.current_company_id', true) as current_company_id`;
     const companyId = configResult[0]?.current_company_id;
 
     const finalWhere: any = { id };

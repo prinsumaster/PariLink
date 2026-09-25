@@ -1,4 +1,10 @@
-import { Controller, Get, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { TenantCacheInterceptor } from '../interceptors/tenant-cache.interceptor';
 import { PrismaService } from '../prisma/prisma.service';
@@ -98,26 +104,29 @@ export class ExecutiveDashboardController {
           take: 5,
           include: {
             documents: { select: { id: true } },
-          }
-        })
+          },
+        }),
       ]);
     });
 
-    const topClientIds = topClientsAgg.map(c => c.customerId);
-    const customers = await this.prisma.runAsTenant(companyId, async (tx) => 
-      tx.customer.findMany({ where: { id: { in: topClientIds } }, select: { id: true, name: true } })
+    const topClientIds = topClientsAgg.map((c) => c.customerId);
+    const customers = await this.prisma.runAsTenant(companyId, async (tx) =>
+      tx.customer.findMany({
+        where: { id: { in: topClientIds } },
+        select: { id: true, name: true },
+      }),
     );
-    
-    const topClients = topClientsAgg.map(tc => {
-       const customer = customers.find(c => c.id === tc.customerId);
-       return {
-         id: tc.customerId,
-         name: customer?.name || 'Unknown',
-         amount: tc._sum.amount || 0
-       };
+
+    const topClients = topClientsAgg.map((tc) => {
+      const customer = customers.find((c) => c.id === tc.customerId);
+      return {
+        id: tc.customerId,
+        name: customer?.name || 'Unknown',
+        amount: tc._sum.amount || 0,
+      };
     });
 
-    const recentBookings = recentLoads.map(load => ({
+    const recentBookings = recentLoads.map((load) => ({
       id: load.id,
       lrNumber: null,
       originCity: load.originCity,
@@ -133,7 +142,7 @@ export class ExecutiveDashboardController {
       outstanding: outstandingRes._sum?.amount || 0,
       activeVehicles,
       topClients,
-      recentBookings
+      recentBookings,
     };
   }
 
@@ -141,22 +150,22 @@ export class ExecutiveDashboardController {
   async getVehicles(@Req() req: any) {
     const companyId = req.user?.companyId;
     if (!companyId) return [];
-    
+
     // Limit to 100 for safety, map to LiveVehicle
     const vehicles = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.vehicle.findMany({
         where: { companyId, status: 'ACTIVE' },
         take: 100,
-      })
+      }),
     );
-    return vehicles.map(v => ({
+    return vehicles.map((v) => ({
       id: v.id,
       name: v.licensePlate || 'Unknown',
       lat: 0, // Fallback coordinates
       lng: 0,
       status: 'IDLE',
       heading: 0,
-      speed: 0
+      speed: 0,
     }));
   }
 
@@ -174,26 +183,30 @@ export class ExecutiveDashboardController {
   async getShipments(@Req() req: any) {
     const companyId = req.user?.companyId;
     if (!companyId) return [];
-    
+
     // Fetch trips instead of loads to match the KPI tile "Live trips in progress"
-    const trips = await this.prisma.runAsTenant(companyId, async (tx) => 
+    const trips = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.trip.findMany({
         where: { companyId, status: { in: ['DISPATCHED', 'IN_TRANSIT'] } },
         include: { loads: true },
         take: 50,
-        orderBy: { createdAt: 'desc' }
-      })
+        orderBy: { createdAt: 'desc' },
+      }),
     );
-    return trips.map(trip => {
+    return trips.map((trip) => {
       const load = trip.loads?.[0];
       return {
         id: trip.id,
         trackingNumber: trip.tripNumber,
         status: trip.status,
         origin: load ? `${load.originCity}, ${load.originState}` : 'TBD',
-        destination: load ? `${load.destinationCity}, ${load.destinationState}` : 'TBD',
-        eta: trip.eta ? new Date(trip.eta).toISOString() : new Date().toISOString(),
-        slaStatus: 'MET'
+        destination: load
+          ? `${load.destinationCity}, ${load.destinationState}`
+          : 'TBD',
+        eta: trip.eta
+          ? new Date(trip.eta).toISOString()
+          : new Date().toISOString(),
+        slaStatus: 'MET',
       };
     });
   }

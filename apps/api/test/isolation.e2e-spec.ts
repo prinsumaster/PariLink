@@ -41,7 +41,8 @@ describe('A1 Lock Monitor (Real Database RLS)', () => {
     // 2. Test runAsTenant with tenant-a
     await prisma.runAsTenant('tenant-a', async (tx) => {
       // Verify app.current_company_id is set
-      const rlsCheck = await tx.$queryRaw<any>`SELECT current_setting('app.current_company_id', true) as cid`;
+      const rlsCheck =
+        await tx.$queryRaw<any>`SELECT current_setting('app.current_company_id', true) as cid`;
       expect(rlsCheck[0].cid).toBe('tenant-a');
 
       // Attempt to read own data (Should Succeed)
@@ -58,12 +59,15 @@ describe('A1 Lock Monitor (Real Database RLS)', () => {
       expect(custB).toBeNull();
 
       // RAW SQL CROSS-TENANT READ (Should Return 0 rows due to RLS)
-      const rawCustB = await tx.$queryRaw<any>`SELECT * FROM "Customer" WHERE id = 'cust-b-456'`;
+      const rawCustB =
+        await tx.$queryRaw<any>`SELECT * FROM "Customer" WHERE id = 'cust-b-456'`;
       expect(rawCustB.length).toBe(0);
 
       // GUC RE-POINT ATTACK (Should trigger Interceptor Exception)
       expect(() => {
-        tx.$executeRawUnsafe(`SELECT set_config('app.current_company_id', 'tenant-b', true)`)
+        tx.$executeRawUnsafe(
+          `SELECT set_config('app.current_company_id', 'tenant-b', true)`,
+        );
       }).toThrow('Forbidden raw query pattern');
     });
 

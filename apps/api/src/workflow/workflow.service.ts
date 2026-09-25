@@ -233,7 +233,7 @@ export class WorkflowService {
 
   async importRules(companyId: string, dto: ImportRulesDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-  // @ts-ignore: reserved for future use
+      // @ts-ignore: reserved for future use
       const _createdRules = [];
       const skippedRules = [];
 

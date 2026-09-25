@@ -1,6 +1,14 @@
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
-import { Controller, Get, Post, Body, Query, UseGuards, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
@@ -64,8 +72,14 @@ export class EnterpriseEventBusController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: { streamId: string; fromVersion: number; toVersion: number },
   ) {
-    if (!dto || typeof dto.streamId !== 'string' || dto.streamId.trim() === '') {
-      throw new BadRequestException('streamId is required and must be a non-empty string');
+    if (
+      !dto ||
+      typeof dto.streamId !== 'string' ||
+      dto.streamId.trim() === ''
+    ) {
+      throw new BadRequestException(
+        'streamId is required and must be a non-empty string',
+      );
     }
     return this.eventBus.replayEvents(
       user.companyId,

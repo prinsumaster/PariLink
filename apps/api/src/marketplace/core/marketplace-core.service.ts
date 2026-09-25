@@ -39,20 +39,22 @@ export class MarketplaceCoreService {
       ];
     }
 
-    const apps = await this.prisma.runAsSystem('[MarketplaceCoreService.getCatalog] Internal service operation bypass', async (tx) =>
-      tx.marketplaceApp.findMany({
-        where: whereClause,
-        include: {
-          category: true,
-          developer: true,
-          versions: {
-            where: { isLatest: true },
-            take: 1,
+    const apps = await this.prisma.runAsSystem(
+      '[MarketplaceCoreService.getCatalog] Internal service operation bypass',
+      async (tx) =>
+        tx.marketplaceApp.findMany({
+          where: whereClause,
+          include: {
+            category: true,
+            developer: true,
+            versions: {
+              where: { isLatest: true },
+              take: 1,
+            },
+            permissions: true,
           },
-          permissions: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
+          orderBy: { createdAt: 'desc' },
+        }),
     );
 
     return apps;
@@ -62,21 +64,23 @@ export class MarketplaceCoreService {
    * Retrieves a single app's details
    */
   async getAppDetails(appId: string) {
-    const app = await this.prisma.runAsSystem('[MarketplaceCoreService.getAppDetails] Internal service operation bypass', async (tx) =>
-      tx.marketplaceApp.findUnique({
-        where: { id: appId },
-        include: {
-          category: true,
-          developer: true,
-          versions: {
-            orderBy: { createdAt: 'desc' },
+    const app = await this.prisma.runAsSystem(
+      '[MarketplaceCoreService.getAppDetails] Internal service operation bypass',
+      async (tx) =>
+        tx.marketplaceApp.findUnique({
+          where: { id: appId },
+          include: {
+            category: true,
+            developer: true,
+            versions: {
+              orderBy: { createdAt: 'desc' },
+            },
+            permissions: true,
+            screenshots: {
+              orderBy: { order: 'asc' },
+            },
           },
-          permissions: true,
-          screenshots: {
-            orderBy: { order: 'asc' },
-          },
-        },
-      }),
+        }),
     );
 
     if (!app) {

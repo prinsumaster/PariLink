@@ -50,7 +50,7 @@ export class ProfitabilityService {
             },
           },
         });
-        fuel = fuelAggr._sum.totalCost ?? (trip.fuelExpenses ?? 0);
+        fuel = fuelAggr._sum.totalCost ?? trip.fuelExpenses ?? 0;
       } else {
         fuel = trip.fuelExpenses ?? 0;
       }
@@ -65,14 +65,28 @@ export class ProfitabilityService {
         _sum: { amount: true },
         where: {
           tripId: trip.id,
-          type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'fuel', 'toll', 'diesel', 'Fuel', 'Toll', 'Diesel'] },
+          type: {
+            notIn: [
+              'FUEL',
+              'TOLL',
+              'DIESEL',
+              'fuel',
+              'toll',
+              'diesel',
+              'Fuel',
+              'Toll',
+              'Diesel',
+            ],
+          },
         },
       });
-      const bhattaOther = (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
+      const bhattaOther =
+        (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
 
       const totalCost = fuel + toll + bhattaOther;
       const profit = revenue - totalCost;
-      const marginPct = revenue > 0 ? Math.round((profit / revenue) * 1000) / 10 : 0;
+      const marginPct =
+        revenue > 0 ? Math.round((profit / revenue) * 1000) / 10 : 0;
 
       return {
         trip: {
@@ -112,7 +126,7 @@ export class ProfitabilityService {
             vehicleId: true,
             fuelExpenses: true,
             otherExpenses: true,
-          }
+          },
         }),
         tx.trip.count({ where: { companyId } }),
       ]);
@@ -143,7 +157,7 @@ export class ProfitabilityService {
                 },
               },
             });
-            fuel = fuelAggr._sum.totalCost ?? (trip.fuelExpenses ?? 0);
+            fuel = fuelAggr._sum.totalCost ?? trip.fuelExpenses ?? 0;
           } else {
             fuel = trip.fuelExpenses ?? 0;
           }
@@ -158,14 +172,28 @@ export class ProfitabilityService {
             _sum: { amount: true },
             where: {
               tripId: trip.id,
-              type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'fuel', 'toll', 'diesel', 'Fuel', 'Toll', 'Diesel'] },
+              type: {
+                notIn: [
+                  'FUEL',
+                  'TOLL',
+                  'DIESEL',
+                  'fuel',
+                  'toll',
+                  'diesel',
+                  'Fuel',
+                  'Toll',
+                  'Diesel',
+                ],
+              },
             },
           });
-          const bhattaOther = (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
+          const bhattaOther =
+            (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
 
           const totalCost = fuel + toll + bhattaOther;
           const profit = revenue - totalCost;
-          const marginPct = revenue > 0 ? Math.round((profit / revenue) * 1000) / 10 : 0;
+          const marginPct =
+            revenue > 0 ? Math.round((profit / revenue) * 1000) / 10 : 0;
 
           return {
             trip: {
@@ -195,9 +223,11 @@ export class ProfitabilityService {
 
   async vehiclePnl(companyId: string, vehicleId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId, companyId } });
+      const vehicle = await tx.vehicle.findUnique({
+        where: { id: vehicleId, companyId },
+      });
       if (!vehicle) throw new NotFoundException('Vehicle not found');
-      
+
       const trips = await tx.trip.findMany({
         where: { companyId, vehicleId },
         select: {
@@ -232,7 +262,7 @@ export class ProfitabilityService {
               },
             },
           });
-          fuel = fuelAggr._sum.totalCost ?? (trip.fuelExpenses ?? 0);
+          fuel = fuelAggr._sum.totalCost ?? trip.fuelExpenses ?? 0;
         } else {
           fuel = trip.fuelExpenses ?? 0;
         }
@@ -247,16 +277,32 @@ export class ProfitabilityService {
           _sum: { amount: true },
           where: {
             tripId: trip.id,
-            type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'fuel', 'toll', 'diesel', 'Fuel', 'Toll', 'Diesel'] },
+            type: {
+              notIn: [
+                'FUEL',
+                'TOLL',
+                'DIESEL',
+                'fuel',
+                'toll',
+                'diesel',
+                'Fuel',
+                'Toll',
+                'Diesel',
+              ],
+            },
           },
         });
-        const bhattaOther = (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
+        const bhattaOther =
+          (expensesAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
 
         totalCost += fuel + toll + bhattaOther;
       }
 
       const totalProfit = totalRevenue - totalCost;
-      const avgMarginPct = totalRevenue > 0 ? Math.round((totalProfit / totalRevenue) * 1000) / 10 : 0;
+      const avgMarginPct =
+        totalRevenue > 0
+          ? Math.round((totalProfit / totalRevenue) * 1000) / 10
+          : 0;
 
       return {
         vehicleId,
@@ -279,7 +325,10 @@ export class ProfitabilityService {
       }
       const endDateBound = to ? new Date(to) : null;
 
-      const whereClause: any = { companyId, startDate: { gte: startDateBound } };
+      const whereClause: any = {
+        companyId,
+        startDate: { gte: startDateBound },
+      };
       if (endDateBound) {
         whereClause.startDate.lte = endDateBound;
       }
@@ -297,20 +346,70 @@ export class ProfitabilityService {
         },
       });
 
-      const tripIds = trips.map(t => t.id);
-      
-      const [loadsRev, tollGroup, expGroup, firstLoads, fuelTxns] = await Promise.all([
-        tx.load.groupBy({ by: ['tripId'], _sum: { rate: true }, where: { companyId, deletedAt: null, tripId: { in: tripIds } } }),
-        tx.tollTransaction.groupBy({ by: ['tripId'], _sum: { amount: true }, where: { companyId, tripId: { in: tripIds } } }),
-        tx.expense.groupBy({ by: ['tripId'], _sum: { amount: true }, where: { companyId, tripId: { in: tripIds }, type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'fuel', 'toll', 'diesel', 'Fuel', 'Toll', 'Diesel'] } } }),
-        tx.load.findMany({ where: { companyId, deletedAt: null, tripId: { in: tripIds } }, select: { tripId: true, originCity: true, destinationCity: true }, orderBy: { createdAt: 'asc' } }),
-        tx.fuelTransaction.findMany({ where: { companyId, transactionTime: { gte: startDateBound } } })
-      ]);
+      const tripIds = trips.map((t) => t.id);
 
-      const revenueMap = new Map(loadsRev.map((l: any) => [l.tripId, l._sum.rate ? Number(l._sum.rate) : 0]));
-      const tollMap = new Map(tollGroup.map((t: any) => [t.tripId, t._sum.amount ? Number(t._sum.amount) : 0]));
-      const expMap = new Map(expGroup.map((e: any) => [e.tripId, e._sum.amount ? Number(e._sum.amount) : 0]));
-      
+      const [loadsRev, tollGroup, expGroup, firstLoads, fuelTxns] =
+        await Promise.all([
+          tx.load.groupBy({
+            by: ['tripId'],
+            _sum: { rate: true },
+            where: { companyId, deletedAt: null, tripId: { in: tripIds } },
+          }),
+          tx.tollTransaction.groupBy({
+            by: ['tripId'],
+            _sum: { amount: true },
+            where: { companyId, tripId: { in: tripIds } },
+          }),
+          tx.expense.groupBy({
+            by: ['tripId'],
+            _sum: { amount: true },
+            where: {
+              companyId,
+              tripId: { in: tripIds },
+              type: {
+                notIn: [
+                  'FUEL',
+                  'TOLL',
+                  'DIESEL',
+                  'fuel',
+                  'toll',
+                  'diesel',
+                  'Fuel',
+                  'Toll',
+                  'Diesel',
+                ],
+              },
+            },
+          }),
+          tx.load.findMany({
+            where: { companyId, deletedAt: null, tripId: { in: tripIds } },
+            select: { tripId: true, originCity: true, destinationCity: true },
+            orderBy: { createdAt: 'asc' },
+          }),
+          tx.fuelTransaction.findMany({
+            where: { companyId, transactionTime: { gte: startDateBound } },
+          }),
+        ]);
+
+      const revenueMap = new Map(
+        loadsRev.map((l: any) => [
+          l.tripId,
+          l._sum.rate ? Number(l._sum.rate) : 0,
+        ]),
+      );
+      const tollMap = new Map(
+        tollGroup.map((t: any) => [
+          t.tripId,
+          t._sum.amount ? Number(t._sum.amount) : 0,
+        ]),
+      );
+      const expMap = new Map(
+        expGroup.map((e: any) => [
+          e.tripId,
+          e._sum.amount ? Number(e._sum.amount) : 0,
+        ]),
+      );
+
       const routeMap = new Map();
       for (const l of firstLoads) {
         if (!routeMap.has(l.tripId)) {
@@ -320,24 +419,38 @@ export class ProfitabilityService {
 
       let totalRevenue = 0;
       let totalCost = 0;
-      
-      const vehicleStats: Record<string, { revenue: number, cost: number, profit: number }> = {};
-      const laneStats: Record<string, { revenue: number, cost: number, profit: number }> = {};
+
+      const vehicleStats: Record<
+        string,
+        { revenue: number; cost: number; profit: number }
+      > = {};
+      const laneStats: Record<
+        string,
+        { revenue: number; cost: number; profit: number }
+      > = {};
 
       for (const trip of trips) {
         const revenue = revenueMap.get(trip.id) ?? 0;
         totalRevenue += revenue;
 
         let fuel = 0;
-         if (trip.vehicleId && trip.startDate) {
-           fuel = fuelTxns
-             .filter((f: any) => f.vehicleId === trip.vehicleId && f.transactionTime && trip.startDate && f.transactionTime >= trip.startDate && (!trip.endDate || f.transactionTime <= trip.endDate))
-             .reduce((sum: number, f: any) => sum + Number(f.totalCost), 0);
+        if (trip.vehicleId && trip.startDate) {
+          fuel = fuelTxns
+            .filter(
+              (f: any) =>
+                f.vehicleId === trip.vehicleId &&
+                f.transactionTime &&
+                trip.startDate &&
+                f.transactionTime >= trip.startDate &&
+                (!trip.endDate || f.transactionTime <= trip.endDate),
+            )
+            .reduce((sum: number, f: any) => sum + Number(f.totalCost), 0);
         }
         if (fuel === 0 && trip.fuelExpenses) fuel = trip.fuelExpenses;
 
         const toll = tollMap.get(trip.id) ?? 0;
-        const bhattaOther = (expMap.get(trip.id) ?? 0) + (trip.otherExpenses ?? 0);
+        const bhattaOther =
+          (expMap.get(trip.id) ?? 0) + (trip.otherExpenses ?? 0);
 
         const tripCost = fuel + toll + bhattaOther;
         totalCost += tripCost;
@@ -367,18 +480,34 @@ export class ProfitabilityService {
 
       let bestTruck = null;
       let worstTruck = null;
-      const vehicleEntries = Object.entries(vehicleStats).sort((a, b) => b[1].profit - a[1].profit);
+      const vehicleEntries = Object.entries(vehicleStats).sort(
+        (a, b) => b[1].profit - a[1].profit,
+      );
       if (vehicleEntries.length > 0) {
-        bestTruck = { vehicleId: vehicleEntries[0][0], profit: vehicleEntries[0][1].profit };
-        worstTruck = { vehicleId: vehicleEntries[vehicleEntries.length - 1][0], profit: vehicleEntries[vehicleEntries.length - 1][1].profit };
+        bestTruck = {
+          vehicleId: vehicleEntries[0][0],
+          profit: vehicleEntries[0][1].profit,
+        };
+        worstTruck = {
+          vehicleId: vehicleEntries[vehicleEntries.length - 1][0],
+          profit: vehicleEntries[vehicleEntries.length - 1][1].profit,
+        };
       }
 
       let bestLane = null;
       let worstLane = null;
-      const laneEntries = Object.entries(laneStats).sort((a, b) => b[1].profit - a[1].profit);
+      const laneEntries = Object.entries(laneStats).sort(
+        (a, b) => b[1].profit - a[1].profit,
+      );
       if (laneEntries.length > 0) {
-        bestLane = { lane: laneEntries[0][0], profit: laneEntries[0][1].profit };
-        worstLane = { lane: laneEntries[laneEntries.length - 1][0], profit: laneEntries[laneEntries.length - 1][1].profit };
+        bestLane = {
+          lane: laneEntries[0][0],
+          profit: laneEntries[0][1].profit,
+        };
+        worstLane = {
+          lane: laneEntries[laneEntries.length - 1][0],
+          profit: laneEntries[laneEntries.length - 1][1].profit,
+        };
       }
 
       return {
@@ -386,7 +515,10 @@ export class ProfitabilityService {
         totalCost,
         totalProfit,
         tripCount: trips.length,
-        avgMarginPct: totalRevenue > 0 ? Math.round((totalProfit / totalRevenue) * 1000) / 10 : 0,
+        avgMarginPct:
+          totalRevenue > 0
+            ? Math.round((totalProfit / totalRevenue) * 1000) / 10
+            : 0,
         bestTruck,
         worstTruck,
         bestLane,
@@ -397,17 +529,26 @@ export class ProfitabilityService {
 
   async aggregateVehicles(companyId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      // For this step, we'll implement a simple snapshot aggregation 
+      // For this step, we'll implement a simple snapshot aggregation
       // of all closed trips in the current month to feed TruckProfitability.
       // In a real production system, this would iterate over months and all expenses.
-      
+
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
       const trips = await tx.trip.findMany({
-        where: { companyId, status: 'COMPLETED', endDate: { gte: startOfMonth } },
-        select: { id: true, vehicleId: true, fuelExpenses: true, otherExpenses: true }
+        where: {
+          companyId,
+          status: 'COMPLETED',
+          endDate: { gte: startOfMonth },
+        },
+        select: {
+          id: true,
+          vehicleId: true,
+          fuelExpenses: true,
+          otherExpenses: true,
+        },
       });
 
       const vehicleStats: Record<string, any> = {};
@@ -415,7 +556,14 @@ export class ProfitabilityService {
       for (const trip of trips) {
         if (!trip.vehicleId) continue;
         if (!vehicleStats[trip.vehicleId]) {
-          vehicleStats[trip.vehicleId] = { revenue: 0, fuelCost: 0, tollCost: 0, maintCost: 0, driverCost: 0, otherCost: 0 };
+          vehicleStats[trip.vehicleId] = {
+            revenue: 0,
+            fuelCost: 0,
+            tollCost: 0,
+            maintCost: 0,
+            driverCost: 0,
+            otherCost: 0,
+          };
         }
 
         const loadsAggr = await tx.load.aggregate({
@@ -431,29 +579,55 @@ export class ProfitabilityService {
         vehicleStats[trip.vehicleId].tollCost += tollAggr._sum.amount ?? 0;
 
         vehicleStats[trip.vehicleId].fuelCost += trip.fuelExpenses ?? 0;
-        
+
         // Driver cost (bhatta)
         const driverExpAggr = await tx.expense.aggregate({
           _sum: { amount: true },
-          where: { tripId: trip.id, type: { in: ['BHATTA', 'DRIVER_ALLOWANCE', 'bhatta'] } },
+          where: {
+            tripId: trip.id,
+            type: { in: ['BHATTA', 'DRIVER_ALLOWANCE', 'bhatta'] },
+          },
         });
-        vehicleStats[trip.vehicleId].driverCost += driverExpAggr._sum.amount ?? 0;
-        
+        vehicleStats[trip.vehicleId].driverCost +=
+          driverExpAggr._sum.amount ?? 0;
+
         // Other cost
         const otherExpAggr = await tx.expense.aggregate({
           _sum: { amount: true },
-          where: { tripId: trip.id, type: { notIn: ['FUEL', 'TOLL', 'DIESEL', 'BHATTA', 'DRIVER_ALLOWANCE', 'bhatta'] } },
+          where: {
+            tripId: trip.id,
+            type: {
+              notIn: [
+                'FUEL',
+                'TOLL',
+                'DIESEL',
+                'BHATTA',
+                'DRIVER_ALLOWANCE',
+                'bhatta',
+              ],
+            },
+          },
         });
-        vehicleStats[trip.vehicleId].otherCost += (otherExpAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
+        vehicleStats[trip.vehicleId].otherCost +=
+          (otherExpAggr._sum.amount ?? 0) + (trip.otherExpenses ?? 0);
       }
 
       for (const [vehicleId, stats] of Object.entries(vehicleStats)) {
         // We do not overwrite maintCost here since it is updated directly when Jobs are closed.
-        const netProfit = stats.revenue - (stats.fuelCost + stats.tollCost + stats.driverCost + stats.otherCost);
-        
+        const netProfit =
+          stats.revenue -
+          (stats.fuelCost +
+            stats.tollCost +
+            stats.driverCost +
+            stats.otherCost);
+
         await tx.truckProfitability.upsert({
           where: {
-            companyId_vehicleId_month: { companyId, vehicleId, month: startOfMonth }
+            companyId_vehicleId_month: {
+              companyId,
+              vehicleId,
+              month: startOfMonth,
+            },
           },
           update: {
             revenue: stats.revenue,
@@ -462,7 +636,7 @@ export class ProfitabilityService {
             driverCost: stats.driverCost,
             otherCost: stats.otherCost,
             // netProfit is calculated by triggers or on-the-fly, but we'll store a baseline
-            netProfit: netProfit
+            netProfit: netProfit,
           },
           create: {
             companyId,
@@ -474,12 +648,15 @@ export class ProfitabilityService {
             driverCost: stats.driverCost,
             otherCost: stats.otherCost,
             netProfit: netProfit,
-            maintCost: 0
-          }
+            maintCost: 0,
+          },
         });
       }
 
-      return { success: true, aggregatedVehicles: Object.keys(vehicleStats).length };
+      return {
+        success: true,
+        aggregatedVehicles: Object.keys(vehicleStats).length,
+      };
     });
   }
 
@@ -496,13 +673,15 @@ export class ProfitabilityService {
       const records = await tx.truckProfitability.findMany({
         where: whereClause,
         include: {
-          vehicle: { select: { id: true, licensePlate: true, status: true, type: true } }
-        }
+          vehicle: {
+            select: { id: true, licensePlate: true, status: true, type: true },
+          },
+        },
       });
 
       // Group by vehicleId across all matching months
       const grouped: Record<string, any> = {};
-      
+
       for (const r of records) {
         if (!grouped[r.vehicleId]) {
           grouped[r.vehicleId] = {
@@ -514,7 +693,7 @@ export class ProfitabilityService {
             driverCost: 0,
             otherCost: 0,
             netProfit: 0,
-            distance: 0 // Mock distance for Rs/km
+            distance: 0, // Mock distance for Rs/km
           };
         }
         grouped[r.vehicleId].revenue += r.revenue;
@@ -523,10 +702,12 @@ export class ProfitabilityService {
         grouped[r.vehicleId].maintCost += r.maintCost;
         grouped[r.vehicleId].driverCost += r.driverCost;
         grouped[r.vehicleId].otherCost += r.otherCost;
-        
+
         // Re-calculate net profit accurately including maintCost
-        grouped[r.vehicleId].netProfit += r.revenue - (r.fuelCost + r.tollCost + r.driverCost + r.otherCost + r.maintCost);
-        
+        grouped[r.vehicleId].netProfit +=
+          r.revenue -
+          (r.fuelCost + r.tollCost + r.driverCost + r.otherCost + r.maintCost);
+
         // Rough estimate of km driven for Rs/km metric
         grouped[r.vehicleId].distance += (r.fuelCost / 80) * 4; // Assume Rs 80/L and 4km/L
       }
@@ -535,7 +716,7 @@ export class ProfitabilityService {
         return {
           ...v,
           profitPerKm: v.distance > 0 ? v.netProfit / v.distance : 0,
-          marginPct: v.revenue > 0 ? (v.netProfit / v.revenue) * 100 : 0
+          marginPct: v.revenue > 0 ? (v.netProfit / v.revenue) * 100 : 0,
         };
       });
 

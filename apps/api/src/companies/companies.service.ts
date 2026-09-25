@@ -20,31 +20,41 @@ export class CompaniesService {
   ) {}
 
   async create(createCompanyDto: CreateCompanyDto, userId?: string) {
-    return this.prisma.runAsSystem('[CompaniesService.create] Internal service operation bypass', async (tx) => {
-      const company = await tx.company.create({
-        data: createCompanyDto,
-      });
+    return this.prisma.runAsSystem(
+      '[CompaniesService.create] Internal service operation bypass',
+      async (tx) => {
+        const company = await tx.company.create({
+          data: createCompanyDto,
+        });
 
-      await this.auditService.logEvent({
-        action: 'COMPANY_CREATED',
-        entity: 'Company',
-        entityId: company.id,
-        companyId: company.id,
-        source: 'API',
-        details: { name: company.name },
-      }, null, tx);
+        await this.auditService.logEvent(
+          {
+            action: 'COMPANY_CREATED',
+            entity: 'Company',
+            entityId: company.id,
+            companyId: company.id,
+            source: 'API',
+            details: { name: company.name },
+          },
+          null,
+          tx,
+        );
 
-      await this.eventStore.append({
-        tenantId: company.id,
-        streamType: 'COMPANY',
-        streamId: company.id,
-        eventType: 'CompanyCreated',
-        payload: { name: company.name },
-        userId,
-      }, tx);
+        await this.eventStore.append(
+          {
+            tenantId: company.id,
+            streamType: 'COMPANY',
+            streamId: company.id,
+            eventType: 'CompanyCreated',
+            payload: { name: company.name },
+            userId,
+          },
+          tx,
+        );
 
-      return company;
-    });
+        return company;
+      },
+    );
   }
 
   async findAll(query: CompanyQueryDto, companyId?: string) {
@@ -69,25 +79,32 @@ export class CompaniesService {
     }
 
     const [data, total] = await Promise.all([
-      this.prisma.runAsSystem('[CompaniesService.findAll] Internal service operation bypass', async (tx) =>
-        tx.company.findMany({
-          where,
-          skip,
-          take,
-          orderBy: { createdAt: 'desc' },
-        }),
+      this.prisma.runAsSystem(
+        '[CompaniesService.findAll] Internal service operation bypass',
+        async (tx) =>
+          tx.company.findMany({
+            where,
+            skip,
+            take,
+            orderBy: { createdAt: 'desc' },
+          }),
       ),
-      this.prisma.runAsSystem('[CompaniesService.findAll] Internal service operation bypass', async (tx) => tx.company.count({ where })),
+      this.prisma.runAsSystem(
+        '[CompaniesService.findAll] Internal service operation bypass',
+        async (tx) => tx.company.count({ where }),
+      ),
     ]);
 
     return createPaginationResponse(data, total, page, limit);
   }
 
   async findOne(id: string) {
-    const company = await this.prisma.runAsSystem('[CompaniesService.findOne] Internal service operation bypass', async (tx) =>
-      tx.company.findFirst({
-        where: { id },
-      }),
+    const company = await this.prisma.runAsSystem(
+      '[CompaniesService.findOne] Internal service operation bypass',
+      async (tx) =>
+        tx.company.findFirst({
+          where: { id },
+        }),
     );
 
     if (!company) {
@@ -102,59 +119,65 @@ export class CompaniesService {
     userId?: string,
   ) {
     await this.findOne(id); // verify existence
-    return this.prisma.runAsSystem('[CompaniesService.update] Internal service operation bypass', async (tx) => {
-      const company = await tx.company.update({
-        where: { id },
-        data: updateCompanyDto,
-      });
+    return this.prisma.runAsSystem(
+      '[CompaniesService.update] Internal service operation bypass',
+      async (tx) => {
+        const company = await tx.company.update({
+          where: { id },
+          data: updateCompanyDto,
+        });
 
-      await this.auditService.logEvent({
-        action: 'COMPANY_UPDATED',
-        entity: 'Company',
-        entityId: company.id,
-        companyId: company.id,
-        source: 'API',
-      });
+        await this.auditService.logEvent({
+          action: 'COMPANY_UPDATED',
+          entity: 'Company',
+          entityId: company.id,
+          companyId: company.id,
+          source: 'API',
+        });
 
-      await this.eventStore.append({
-        tenantId: company.id,
-        streamType: 'COMPANY',
-        streamId: company.id,
-        eventType: 'CompanyUpdated',
-        payload: updateCompanyDto,
-        userId,
-      });
+        await this.eventStore.append({
+          tenantId: company.id,
+          streamType: 'COMPANY',
+          streamId: company.id,
+          eventType: 'CompanyUpdated',
+          payload: updateCompanyDto,
+          userId,
+        });
 
-      return company;
-    });
+        return company;
+      },
+    );
   }
 
   async remove(id: string, userId?: string) {
     await this.findOne(id); // verify existence
-    return this.prisma.runAsSystem('[CompaniesService.remove] Internal service operation bypass', async (tx) => {
-      const company = await tx.company.update({
-        where: { id },
-        data: { deletedAt: new Date(), status: 'INACTIVE' },
-      });
+    return this.prisma.runAsSystem(
+      '[CompaniesService.remove] Internal service operation bypass',
+      async (tx) => {
+        const company = await tx.company.update({
+          where: { id },
+          data: { deletedAt: new Date(), status: 'INACTIVE' },
+        });
 
-      await this.auditService.logEvent({
-        action: 'COMPANY_DELETED',
-        entity: 'Company',
-        entityId: company.id,
-        companyId: company.id,
-        source: 'API',
-      });
+        await this.auditService.logEvent({
+          action: 'COMPANY_DELETED',
+          entity: 'Company',
+          entityId: company.id,
+          companyId: company.id,
+          source: 'API',
+        });
 
-      await this.eventStore.append({
-        tenantId: company.id,
-        streamType: 'COMPANY',
-        streamId: company.id,
-        eventType: 'CompanyDeleted',
-        payload: {},
-        userId,
-      });
+        await this.eventStore.append({
+          tenantId: company.id,
+          streamType: 'COMPANY',
+          streamId: company.id,
+          eventType: 'CompanyDeleted',
+          payload: {},
+          userId,
+        });
 
-      return company;
-    });
+        return company;
+      },
+    );
   }
 }

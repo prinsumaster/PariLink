@@ -10,7 +10,6 @@ import type { RateCard } from '@prisma/client';
 
 @Injectable()
 export class PricingService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

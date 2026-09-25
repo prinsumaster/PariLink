@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRateCardDto } from './dto/create-rate-card.dto';
-import { GenerateInvoiceDto, GenerateInvoiceFromTripsDto } from './dto/generate-invoice.dto';
+import {
+  GenerateInvoiceDto,
+  GenerateInvoiceFromTripsDto,
+} from './dto/generate-invoice.dto';
 import { AddWorkshopCostsDto } from './dto/add-workshop-costs.dto';
 import * as crypto from 'crypto';
 import { WorkflowService } from '../workflow/workflow.service';
@@ -192,7 +195,9 @@ export class BillingService {
     const invoice = await this.prisma.runAsTenant(companyId, async (tx) => {
       // 1. Fetch Company and Customer for GST state matching
       const company = await tx.company.findUnique({ where: { id: companyId } });
-      const customer = await tx.customer.findUnique({ where: { id: dto.customerId } });
+      const customer = await tx.customer.findUnique({
+        where: { id: dto.customerId },
+      });
       if (!company || !customer) {
         throw new BadRequestException('Company or Customer not found');
       }
@@ -200,7 +205,7 @@ export class BillingService {
       // Fetch trips with their invoice line items to check if already invoiced
       const trips = await tx.trip.findMany({
         where: { id: { in: dto.tripIds }, companyId },
-        include: { invoiceLineItems: true, loads: true, lorryReceipt: true }
+        include: { invoiceLineItems: true, loads: true, lorryReceipt: true },
       });
 
       if (trips.length !== dto.tripIds.length) {
@@ -209,40 +214,48 @@ export class BillingService {
 
       for (const trip of trips) {
         if (trip.status !== 'COMPLETED') {
-          throw new BadRequestException(`Trip ${trip.tripNumber} is not COMPLETED.`);
+          throw new BadRequestException(
+            `Trip ${trip.tripNumber} is not COMPLETED.`,
+          );
         }
         if (trip.invoiceLineItems && trip.invoiceLineItems.length > 0) {
-          throw new BadRequestException(`Trip ${trip.tripNumber} has already been invoiced.`);
+          throw new BadRequestException(
+            `Trip ${trip.tripNumber} has already been invoiced.`,
+          );
         }
         // Verify trip belongs to customer (by checking its loads)
-        const hasOtherCustomer = trip.loads.some(l => l.customerId !== dto.customerId);
+        const hasOtherCustomer = trip.loads.some(
+          (l) => l.customerId !== dto.customerId,
+        );
         if (hasOtherCustomer) {
-           throw new BadRequestException(`Trip ${trip.tripNumber} contains loads for a different customer.`);
+          throw new BadRequestException(
+            `Trip ${trip.tripNumber} contains loads for a different customer.`,
+          );
         }
       }
 
       // Compute subtotals from trip rates and LRs
       let subtotal = 0;
-      const lineItemsData = trips.map(trip => {
+      const lineItemsData = trips.map((trip) => {
         const rate = trip.rate || 0;
         const lr = trip.lorryReceipt;
         const loadedQty = lr?.grossWeight || 1; // Fallback if no LR or weight
         const unloadedQty = lr?.netWeight || loadedQty; // simplified
-        
+
         // As per standard freight billing, amount = rate * quantity (usually net weight in tons, but let's assume rate is fixed or rate * qty)
         // If rate is meant to be a fixed flat-rate per trip, the prompt previously had flat rate.
         // The new prompt says "pulls qty/rate from each trip and its LR, computes line items ... Amount (Rate×Qty)"
         // Let's assume rate is per ton, and Qty = unloadedQty / 1000 (if weight is kg) or just use rate * unloadedQty.
         // To be safe and predictable for E2E tests: let's do rate * unloadedQty.
-        // Actually, if LR stores weight in Kg (e.g. 15000), then unloadedQty=10000. 
+        // Actually, if LR stores weight in Kg (e.g. 15000), then unloadedQty=10000.
         // Let's just do: amount = rate * (unloadedQty / 1000). Let's convert kg to tons if it's large, or just use unloadedQty.
         // I will use `amount = rate * unloadedQty` and structure the E2E test to match.
         // Actually the prompt says: "(loaded, tons), U.Qty (unloaded, tons)" so if LR weights are in Kg, I should divide by 1000.
         const qtyInTons = unloadedQty / 1000;
         const amt = rate * qtyInTons;
-        
+
         subtotal += amt;
-        
+
         return {
           description: `Freight for Trip ${trip.tripNumber}`,
           quantity: 1, // keeping this for schema compat
@@ -253,7 +266,7 @@ export class BillingService {
           amount: amt,
           type: 'LINE_HAUL',
           sourceType: 'TRIP',
-          trip: { connect: { id: trip.id } }
+          trip: { connect: { id: trip.id } },
         };
       });
 
@@ -261,22 +274,25 @@ export class BillingService {
       let cgst = 0;
       let sgst = 0;
       let igst = 0;
-      
-      const isInterstate = company.state && customer.state && company.state.toLowerCase() !== customer.state.toLowerCase();
-      
+
+      const isInterstate =
+        company.state &&
+        customer.state &&
+        company.state.toLowerCase() !== customer.state.toLowerCase();
+
       if (isInterstate) {
         igst = subtotal * 0.18;
       } else {
         cgst = subtotal * 0.09;
         sgst = subtotal * 0.09;
       }
-      
+
       const tax = cgst + sgst + igst;
       const grandTotal = subtotal + tax;
 
       // Generate invoice number
       const invoiceNumber = `INV-${require('crypto').randomBytes(4).toString('hex').toUpperCase()}`;
-      
+
       // Compute amount in words (simplified stub for MVP)
       const amountInWords = `Rupees ${Math.floor(grandTotal)} Only`; // Real implementation would use a library
 
@@ -285,7 +301,7 @@ export class BillingService {
           companyId,
           customerId: dto.customerId,
           invoiceNumber,
-          amount: grandTotal, 
+          amount: grandTotal,
           subtotal,
           cgst,
           sgst,
@@ -311,7 +327,10 @@ export class BillingService {
           entityType: 'Invoice',
           entityId: generatedInvoice.id,
           action: 'INVOICE_GENERATED_FROM_TRIPS',
-          details: { amount: generatedInvoice.grandTotal, tripIds: dto.tripIds },
+          details: {
+            amount: generatedInvoice.grandTotal,
+            tripIds: dto.tripIds,
+          },
           source: 'BILLING_SERVICE',
         },
         null,
@@ -334,7 +353,15 @@ export class BillingService {
     return invoice;
   }
 
-  async getInvoices(companyId: string, query?: { status?: string, customerId?: string, startDate?: string, endDate?: string }) {
+  async getInvoices(
+    companyId: string,
+    query?: {
+      status?: string;
+      customerId?: string;
+      startDate?: string;
+      endDate?: string;
+    },
+  ) {
     const where: any = { companyId };
     if (query?.status) where.status = query.status;
     if (query?.customerId) where.customerId = query.customerId;
@@ -343,21 +370,23 @@ export class BillingService {
       if (query.startDate) where.createdAt.gte = new Date(query.startDate);
       if (query.endDate) where.createdAt.lte = new Date(query.endDate);
     }
-    
+
     return this.prisma.invoice.findMany({
       where,
       include: { customer: true },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async getInvoiceById(companyId: string, id: string) {
     const invoice = await this.prisma.invoice.findFirst({
       where: { id, companyId },
-      include: { 
-        customer: true, 
-        lineItems: { include: { trip: { include: { lorryReceipt: true } }, jobCard: true } }
-      }
+      include: {
+        customer: true,
+        lineItems: {
+          include: { trip: { include: { lorryReceipt: true } }, jobCard: true },
+        },
+      },
     });
     if (!invoice) throw new NotFoundException('Invoice not found');
     return invoice;
@@ -368,18 +397,24 @@ export class BillingService {
       where: {
         companyId,
         status: 'SENT',
-        dueDate: { lt: new Date() }
+        dueDate: { lt: new Date() },
       },
       include: { customer: true },
-      orderBy: { dueDate: 'asc' }
+      orderBy: { dueDate: 'asc' },
     });
   }
 
-  async updateInvoiceStatus(companyId: string, id: string, status: string, _userId: string, paymentRef?: string) {
+  async updateInvoiceStatus(
+    companyId: string,
+    id: string,
+    status: string,
+    _userId: string,
+    paymentRef?: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const invoice = await tx.invoice.findFirst({ where: { id, companyId } });
       if (!invoice) throw new NotFoundException('Invoice not found');
-      
+
       const updateData: any = { status };
       if (status === 'PAID') {
         updateData.amountPaid = invoice.grandTotal;
@@ -387,10 +422,10 @@ export class BillingService {
         updateData.paidAt = new Date();
         if (paymentRef) updateData.paymentRef = paymentRef;
       }
-      
+
       const updated = await tx.invoice.update({
         where: { id },
-        data: updateData
+        data: updateData,
       });
 
       await this.auditService.logEvent(
@@ -523,11 +558,15 @@ export class BillingService {
     });
   }
 
-  async addWorkshopCosts(companyId: string, invoiceId: string, dto: AddWorkshopCostsDto) {
+  async addWorkshopCosts(
+    companyId: string,
+    invoiceId: string,
+    dto: AddWorkshopCostsDto,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const invoice = await tx.invoice.findFirst({
         where: { id: invoiceId, companyId },
-        include: { lineItems: true, customer: true }
+        include: { lineItems: true, customer: true },
       });
       if (!invoice) throw new NotFoundException('Invoice not found');
       if (invoice.status !== 'DRAFT') {
@@ -537,7 +576,7 @@ export class BillingService {
       // 1. Fetch job cards
       const jobCards = await tx.jobCard.findMany({
         where: { id: { in: dto.jobCardIds }, companyId },
-        include: { parts: true }
+        include: { parts: true },
       });
 
       if (jobCards.length !== dto.jobCardIds.length) {
@@ -550,9 +589,11 @@ export class BillingService {
           // Wait, the prompt says "from a completed Workshop job card".
         }
         // check if already added
-        const exists = invoice.lineItems.find(li => li.jobCardId === jc.id);
+        const exists = invoice.lineItems.find((li) => li.jobCardId === jc.id);
         if (exists) {
-          throw new BadRequestException(`Job Card ${jc.id} already added to this invoice`);
+          throw new BadRequestException(
+            `Job Card ${jc.id} already added to this invoice`,
+          );
         }
       }
 
@@ -564,7 +605,7 @@ export class BillingService {
         for (const p of jc.parts) {
           partsCost += p.quantity * p.unitCost;
         }
-        
+
         // If totalCost is defined, labor is totalCost - partsCost. Otherwise labor is 0 and totalCost is partsCost.
         const total = jc.totalCost || partsCost;
         addedAmount += total;
@@ -582,26 +623,29 @@ export class BillingService {
 
       // 2. Add Line Items
       await tx.invoiceLineItem.createMany({
-        data: newLineItems.map(li => ({ ...li, invoiceId: invoice.id }))
+        data: newLineItems.map((li) => ({ ...li, invoiceId: invoice.id })),
       });
 
       // 3. Recompute Totals
       const newSubtotal = invoice.subtotal + addedAmount;
-      
+
       const company = await tx.company.findUnique({ where: { id: companyId } });
-      const isInterstate = company?.state && invoice.customer?.state && company.state.toLowerCase() !== invoice.customer.state.toLowerCase();
-      
+      const isInterstate =
+        company?.state &&
+        invoice.customer?.state &&
+        company.state.toLowerCase() !== invoice.customer.state.toLowerCase();
+
       let cgst = 0;
       let sgst = 0;
       let igst = 0;
-      
+
       if (isInterstate) {
         igst = newSubtotal * 0.18;
       } else {
         cgst = newSubtotal * 0.09;
         sgst = newSubtotal * 0.09;
       }
-      
+
       const tax = cgst + sgst + igst;
       const grandTotal = newSubtotal + tax;
 
@@ -620,9 +664,9 @@ export class BillingService {
           grandTotal,
           balanceDue: grandTotal,
           amount: grandTotal,
-          amountInWords
+          amountInWords,
         },
-        include: { lineItems: true }
+        include: { lineItems: true },
       });
 
       await this.auditService.logEvent(
@@ -662,80 +706,78 @@ export class BillingService {
       const doc = new PDFDocument({ margin: 50 });
 
       // Header
+      doc.fontSize(20).text('TAX INVOICE', { align: 'center' }).moveDown();
+
+      // Company Info
       doc
-        .fontSize(20)
-        .text('TAX INVOICE', { align: 'center' })
+        .fontSize(10)
+        .text(`Company: ${invoice.company.name}`)
+        .text(`GSTIN: ${invoice.company.taxId || 'N/A'}`)
         .moveDown();
 
-    // Company Info
-    doc
-      .fontSize(10)
-      .text(`Company: ${invoice.company.name}`)
-      .text(`GSTIN: ${invoice.company.taxId || 'N/A'}`)
-      .moveDown();
+      // Customer Info
+      doc
+        .text(`Billed To: ${invoice.customer.name}`)
+        .text(
+          `Address: ${invoice.customer.billingAddress || ''}, ${invoice.customer.state || ''}`,
+        )
+        .text(`GSTIN: ${invoice.customer.taxId || 'N/A'}`)
+        .moveDown();
 
-    // Customer Info
-    doc
-      .text(`Billed To: ${invoice.customer.name}`)
-      .text(`Address: ${invoice.customer.billingAddress || ''}, ${invoice.customer.state || ''}`)
-      .text(`GSTIN: ${invoice.customer.taxId || 'N/A'}`)
-      .moveDown();
+      // Invoice Details
+      doc
+        .text(`Invoice No: ${invoice.invoiceNumber}`)
+        .text(`Date: ${invoice.createdAt.toDateString()}`)
+        .moveDown();
 
-    // Invoice Details
-    doc
-      .text(`Invoice No: ${invoice.invoiceNumber}`)
-      .text(`Date: ${invoice.createdAt.toDateString()}`)
-      .moveDown();
+      // Line Items Header
+      const tableTop = doc.y;
+      doc.font('Helvetica-Bold');
+      doc.text('Description', 50, tableTop);
+      doc.text('Qty', 300, tableTop);
+      doc.text('Unit Price', 350, tableTop);
+      doc.text('Amount', 450, tableTop);
+      doc.font('Helvetica');
 
-    // Line Items Header
-    const tableTop = doc.y;
-    doc.font('Helvetica-Bold');
-    doc.text('Description', 50, tableTop);
-    doc.text('Qty', 300, tableTop);
-    doc.text('Unit Price', 350, tableTop);
-    doc.text('Amount', 450, tableTop);
-    doc.font('Helvetica');
+      let y = tableTop + 20;
 
-    let y = tableTop + 20;
+      // Line Items
+      for (const item of invoice.lineItems) {
+        doc.text(item.description, 50, y, { width: 240 });
+        doc.text(item.quantity.toString(), 300, y);
+        doc.text(item.unitPrice.toString(), 350, y);
+        doc.text(item.amount.toString(), 450, y);
+        y += 20;
+      }
 
-    // Line Items
-    for (const item of invoice.lineItems) {
-      doc.text(item.description, 50, y, { width: 240 });
-      doc.text(item.quantity.toString(), 300, y);
-      doc.text(item.unitPrice.toString(), 350, y);
-      doc.text(item.amount.toString(), 450, y);
-      y += 20;
-    }
+      doc.moveDown(2);
 
-    doc.moveDown(2);
+      // Totals
+      const totalsY = doc.y + 20;
+      doc.text('Subtotal:', 350, totalsY);
+      doc.text(invoice.subtotal.toString(), 450, totalsY);
 
-    // Totals
-    const totalsY = doc.y + 20;
-    doc.text('Subtotal:', 350, totalsY);
-    doc.text(invoice.subtotal.toString(), 450, totalsY);
+      if (invoice.cgst > 0) {
+        doc.text('CGST (9%):', 350, totalsY + 15);
+        doc.text(invoice.cgst.toString(), 450, totalsY + 15);
+        doc.text('SGST (9%):', 350, totalsY + 30);
+        doc.text(invoice.sgst.toString(), 450, totalsY + 30);
+      } else if (invoice.igst > 0) {
+        doc.text('IGST (18%):', 350, totalsY + 15);
+        doc.text(invoice.igst.toString(), 450, totalsY + 15);
+      }
 
-    if (invoice.cgst > 0) {
-      doc.text('CGST (9%):', 350, totalsY + 15);
-      doc.text(invoice.cgst.toString(), 450, totalsY + 15);
-      doc.text('SGST (9%):', 350, totalsY + 30);
-      doc.text(invoice.sgst.toString(), 450, totalsY + 30);
-    } else if (invoice.igst > 0) {
-      doc.text('IGST (18%):', 350, totalsY + 15);
-      doc.text(invoice.igst.toString(), 450, totalsY + 15);
-    }
+      doc.font('Helvetica-Bold');
+      doc.text('Grand Total:', 350, totalsY + 50);
+      doc.text(invoice.grandTotal.toString(), 450, totalsY + 50);
+      doc.font('Helvetica');
 
-    doc.font('Helvetica-Bold');
-    doc.text('Grand Total:', 350, totalsY + 50);
-    doc.text(invoice.grandTotal.toString(), 450, totalsY + 50);
-    doc.font('Helvetica');
+      doc.moveDown(4);
+      doc.text(`Amount in Words: ${invoice.amountInWords}`);
 
-    doc.moveDown(4);
-    doc.text(`Amount in Words: ${invoice.amountInWords}`);
+      doc.end();
 
-    doc.end();
-
-    return doc;
+      return doc;
     });
   }
 }
-

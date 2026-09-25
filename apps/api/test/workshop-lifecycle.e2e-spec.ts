@@ -11,7 +11,7 @@ describe('Workshop Lifecycle (e2e)', () => {
   let mechanicToken: string;
   let mechanicUserId: string;
   let prisma: PrismaService;
-  let companyId = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3'; // Company A
+  const companyId = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3'; // Company A
   let vehicleId: string;
   let workshopId: string;
 
@@ -22,9 +22,11 @@ describe('Workshop Lifecycle (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
-    
+
     prisma = app.get(PrismaService);
 
     // Admin Login
@@ -35,17 +37,17 @@ describe('Workshop Lifecycle (e2e)', () => {
 
     // Create a mechanic user and role
     mechanicUserId = require('crypto').randomUUID();
-    const mechanicEmail = `mechanic_${mechanicUserId.substring(0,8)}@parilink.com`;
+    const mechanicEmail = `mechanic_${mechanicUserId.substring(0, 8)}@parilink.com`;
     const bcrypt = require('bcrypt');
     const hash = await bcrypt.hash('password123', 10);
-    
+
     await prisma.runAsSystem('E2E Setup Lifecycle', async (tx) => {
       const role = await tx.role.create({
         data: {
           companyId,
-          name: `E2E Mechanic ${mechanicUserId.substring(0,4)}`,
-          permissions: ['workshop:mechanic', 'fleet:read']
-        }
+          name: `E2E Mechanic ${mechanicUserId.substring(0, 4)}`,
+          permissions: ['workshop:mechanic', 'fleet:read'],
+        },
       });
       await tx.user.create({
         data: {
@@ -56,8 +58,8 @@ describe('Workshop Lifecycle (e2e)', () => {
           lastName: 'Mechanic',
           companyId,
           status: 'ACTIVE',
-          roleId: role.id
-        }
+          roleId: role.id,
+        },
       });
     });
 
@@ -75,19 +77,24 @@ describe('Workshop Lifecycle (e2e)', () => {
           model: 'TestModel',
           licensePlate: `TEST-${Date.now()}`,
           type: 'TRUCK',
-          status: 'IN_SERVICE'
-        }
+          status: 'IN_SERVICE',
+        },
       });
       vehicleId = v.id;
 
       const w = await tx.workshop.create({
-        data: { companyId, name: 'Main Workshop', type: 'INTERNAL' }
+        data: { companyId, name: 'Main Workshop', type: 'INTERNAL' },
       });
       workshopId = w.id;
-      
+
       // Setup Maintenance Schedule for A6
       await tx.maintenanceSchedule.create({
-        data: { companyId, vehicleId, taskName: 'SCHEDULED_MAINTENANCE', intervalKm: 10000 }
+        data: {
+          companyId,
+          vehicleId,
+          taskName: 'SCHEDULED_MAINTENANCE',
+          intervalKm: 10000,
+        },
       });
     });
   });
@@ -95,10 +102,21 @@ describe('Workshop Lifecycle (e2e)', () => {
   afterAll(async () => {
     if (mechanicUserId) {
       await prisma.runAsSystem('E2E Teardown', async (tx) => {
-        try { await tx.user.delete({ where: { id: mechanicUserId } }); } catch (e) {}
-        try { await tx.role.deleteMany({ where: { name: { startsWith: 'E2E Mechanic' } } }); } catch (e) {}
-        try { if (workshopId) await tx.workshop.delete({ where: { id: workshopId } }); } catch (e) {}
-        try { if (vehicleId) await tx.vehicle.delete({ where: { id: vehicleId } }); } catch(e) {}
+        try {
+          await tx.user.delete({ where: { id: mechanicUserId } });
+        } catch (e) {}
+        try {
+          await tx.role.deleteMany({
+            where: { name: { startsWith: 'E2E Mechanic' } },
+          });
+        } catch (e) {}
+        try {
+          if (workshopId)
+            await tx.workshop.delete({ where: { id: workshopId } });
+        } catch (e) {}
+        try {
+          if (vehicleId) await tx.vehicle.delete({ where: { id: vehicleId } });
+        } catch (e) {}
       });
     }
     await app.close();
@@ -163,20 +181,23 @@ describe('Workshop Lifecycle (e2e)', () => {
 
   describe('High Cost Approval (A9)', () => {
     let expensiveJobId: string;
-    
+
     beforeAll(async () => {
       const res = await request(app.getHttpServer())
         .post('/api/v1/workshop/job-cards')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ vehicleId, workshopId, issueReported: 'Engine Replacement' });
-      
+
       if (!res.body.id) {
         console.error('Failed to create expensive job card:', res.body);
       }
       expensiveJobId = res.body.id;
 
       await prisma.runAsSystem('Update cost', async (tx) => {
-        await tx.jobCard.update({ where: { id: expensiveJobId }, data: { totalCost: 60000, status: 'IN_REPAIR' } });
+        await tx.jobCard.update({
+          where: { id: expensiveJobId },
+          data: { totalCost: 60000, status: 'IN_REPAIR' },
+        });
       });
     });
 
@@ -207,22 +228,31 @@ describe('Workshop Lifecycle (e2e)', () => {
         .post('/api/v1/workshop/parts')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ name: 'Oil Filter', unitCost: 100 });
-      
+
       const partId = pRes.body.id;
 
       await prisma.runAsSystem('Update part', async (tx) => {
-        await tx.part.update({ where: { id: partId }, data: { quantity: 10, reorderLevel: 5 } });
+        await tx.part.update({
+          where: { id: partId },
+          data: { quantity: 10, reorderLevel: 5 },
+        });
       });
 
       const jcRes = await request(app.getHttpServer())
         .post('/api/v1/workshop/job-cards')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ vehicleId, workshopId, issueReported: 'Oil Change' });
-      
+
       let maintJobId;
       await prisma.runAsSystem('Seed Maint Job', async (tx) => {
         const mj = await tx.maintenanceJob.create({
-          data: { companyId, vehicleId, type: 'SCHEDULED', status: 'COMPLETED', openedAt: new Date() }
+          data: {
+            companyId,
+            vehicleId,
+            type: 'SCHEDULED',
+            status: 'COMPLETED',
+            openedAt: new Date(),
+          },
         });
         maintJobId = mj.id;
       });
@@ -230,14 +260,14 @@ describe('Workshop Lifecycle (e2e)', () => {
       await request(app.getHttpServer())
         .post('/api/v1/workshop/job-parts')
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ 
-          maintenanceJobId: maintJobId, 
-          jobCardId: jcRes.body.id, 
-          partId, 
-          name: 'Oil Filter', 
-          qty: 6, 
-          unitCost: 100, 
-          amount: 600 
+        .send({
+          maintenanceJobId: maintJobId,
+          jobCardId: jcRes.body.id,
+          partId,
+          name: 'Oil Filter',
+          qty: 6,
+          unitCost: 100,
+          amount: 600,
         })
         .expect(201);
 
@@ -254,11 +284,25 @@ describe('Workshop Lifecycle (e2e)', () => {
     it('Maintenance Due detection (A6)', async () => {
       await prisma.runAsSystem('Seed Maint', async (tx) => {
         await tx.jobCard.create({
-          data: { companyId, vehicleId, workshopId, issueReported: 'SCHEDULED_MAINTENANCE', odometer: 10000, status: 'CLOSED' }
+          data: {
+            companyId,
+            vehicleId,
+            workshopId,
+            issueReported: 'SCHEDULED_MAINTENANCE',
+            odometer: 10000,
+            status: 'CLOSED',
+          },
         });
-        
+
         await tx.jobCard.create({
-          data: { companyId, vehicleId, workshopId, issueReported: 'Regular Check', odometer: 21000, status: 'OPEN' }
+          data: {
+            companyId,
+            vehicleId,
+            workshopId,
+            issueReported: 'Regular Check',
+            odometer: 21000,
+            status: 'OPEN',
+          },
         });
       });
 

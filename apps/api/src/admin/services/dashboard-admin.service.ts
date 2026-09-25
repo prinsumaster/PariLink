@@ -6,7 +6,7 @@ import { AuditService } from '../../platform/audit/audit.service';
 export class DashboardAdminService {
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _audit: AuditService,
   ) {}
 

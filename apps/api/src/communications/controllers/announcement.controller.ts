@@ -16,11 +16,13 @@ export class AnnouncementController {
   @Get()
   @ApiOperation({ summary: 'Get active company announcements' })
   async getAnnouncements(@GetUser() user: AuthenticatedUser) {
-    const announcements = await this.prisma.runAsTenant(user.companyId, async (tx) =>
-      tx.announcement.findMany({
-        where: { companyId: user.companyId, status: 'PUBLISHED' },
-        orderBy: { createdAt: 'desc' },
-      }),
+    const announcements = await this.prisma.runAsTenant(
+      user.companyId,
+      async (tx) =>
+        tx.announcement.findMany({
+          where: { companyId: user.companyId, status: 'PUBLISHED' },
+          orderBy: { createdAt: 'desc' },
+        }),
     );
 
     return { data: announcements };
@@ -33,15 +35,17 @@ export class AnnouncementController {
     @Body() dto: CreateAnnouncementDto,
   ) {
     // Only admins would typically do this, governed by RBAC
-    const announcement = await this.prisma.runAsTenant(user.companyId, async (tx) =>
-      tx.announcement.create({
-        data: {
-          companyId: user.companyId,
-          title: (dto as any).title,
-          content: (dto as any).content,
-          status: 'PUBLISHED',
-        },
-      }),
+    const announcement = await this.prisma.runAsTenant(
+      user.companyId,
+      async (tx) =>
+        tx.announcement.create({
+          data: {
+            companyId: user.companyId,
+            title: (dto as any).title,
+            content: (dto as any).content,
+            status: 'PUBLISHED',
+          },
+        }),
     );
 
     return { data: announcement };

@@ -10,7 +10,6 @@ export interface ProfitabilityMetrics {
 
 @Injectable()
 export class ProfitabilityService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**

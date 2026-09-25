@@ -73,11 +73,13 @@ export class PatService {
   async validatePat(rawToken: string) {
     const tokenHash = this.hashToken(rawToken);
 
-    const pat = await this.prisma.runAsSystem('[PatService.validatePat] Internal service operation bypass', async (tx) =>
-      tx.personalAccessToken.findFirst({
-        where: { tokenHash, revokedAt: null },
-        include: { user: true, company: true },
-      }),
+    const pat = await this.prisma.runAsSystem(
+      '[PatService.validatePat] Internal service operation bypass',
+      async (tx) =>
+        tx.personalAccessToken.findFirst({
+          where: { tokenHash, revokedAt: null },
+          include: { user: true, company: true },
+        }),
     );
 
     if (!pat) {
@@ -90,11 +92,13 @@ export class PatService {
 
     // Update lastUsed asynchronously
     this.prisma
-      .runAsSystem('[PatService.validatePat] Internal service operation bypass', async (tx) =>
-        tx.personalAccessToken.update({
-          where: { id: pat.id },
-          data: { lastUsedAt: new Date() },
-        }),
+      .runAsSystem(
+        '[PatService.validatePat] Internal service operation bypass',
+        async (tx) =>
+          tx.personalAccessToken.update({
+            where: { id: pat.id },
+            data: { lastUsedAt: new Date() },
+          }),
       )
       .catch(() => {}); // Fire and forget
 

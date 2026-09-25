@@ -12,7 +12,7 @@ export class DriverSafetyAgent extends BaseAgent {
 
   constructor(
     llmManager: LlmManagerService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _prisma: PrismaService,
   ) {
     super(llmManager);

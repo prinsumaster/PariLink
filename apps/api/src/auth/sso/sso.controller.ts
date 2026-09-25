@@ -73,7 +73,7 @@ export class SsoController {
     if (result.requiresMfa) {
       // Need a way to pass the partial token to frontend. Usually URL params or cookie.
       res.cookie('mfa_token', result.mfaToken, {
-      domain: process.env.COOKIE_DOMAIN || undefined,
+        domain: process.env.COOKIE_DOMAIN || undefined,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',

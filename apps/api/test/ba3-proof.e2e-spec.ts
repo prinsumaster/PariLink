@@ -6,7 +6,7 @@ import { AppModule } from './../src/app.module';
 describe('BA3 Proof', () => {
   let app: INestApplication;
   let adminToken: string;
-  
+
   let customerId: string;
   let invoiceId: string;
 
@@ -23,7 +23,7 @@ describe('BA3 Proof', () => {
       .post('/auth/login')
       .send({ email: 'admin@parilink.com', password: 'password123' })
       .expect(200);
-      
+
     adminToken = loginRes.body.access_token;
   });
 
@@ -35,10 +35,10 @@ describe('BA3 Proof', () => {
       .send({
         name: `Customer for BA3 ${Date.now()}`,
         email: `ba3-${Date.now()}@customer.com`,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
       .expect(201);
-    
+
     customerId = custRes.body.id;
 
     // 3. Create paid invoice for customer
@@ -52,18 +52,20 @@ describe('BA3 Proof', () => {
         status: 'PAID',
         invoiceNumber: `INV-${Date.now()}`,
         issueDate: new Date().toISOString(),
-        dueDate: new Date().toISOString()
+        dueDate: new Date().toISOString(),
       })
       .expect(201);
-      
+
     invoiceId = invRes.body.id;
 
     const { PrismaService } = require('./../src/prisma/prisma.service');
     const prisma = app.get(PrismaService);
-    await prisma.runAsSystem('e2e-setup', async (tx: any) => tx.invoice.update({
-      where: { id: invoiceId },
-      data: { status: 'PAID' }
-    }));
+    await prisma.runAsSystem('e2e-setup', async (tx: any) =>
+      tx.invoice.update({
+        where: { id: invoiceId },
+        data: { status: 'PAID' },
+      }),
+    );
 
     // 4. Soft delete the customer
     await request(app.getHttpServer())
@@ -73,13 +75,12 @@ describe('BA3 Proof', () => {
 
     // 5. Removed: no GET /finance/invoices/:id endpoint
 
-
     // 6. GET /customers/:id -> consistent with your policy, not a bare 404
     const getCust = await request(app.getHttpServer())
       .get(`/customers/${customerId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-      
+
     console.log('GET /customers/:id status:', getCust.status);
     console.log('GET /customers/:id deleted flag:', getCust.body.deleted);
 
@@ -90,10 +91,15 @@ describe('BA3 Proof', () => {
       .expect(200);
 
     const data = listInv.body.data || listInv.body.items || listInv.body;
-    const invoiceRow = Array.isArray(data) ? data.find((i: any) => i.id === invoiceId) : undefined;
-    
+    const invoiceRow = Array.isArray(data)
+      ? data.find((i: any) => i.id === invoiceId)
+      : undefined;
+
     console.log('Invoice list length:', Array.isArray(data) ? data.length : 0);
-    console.log('Invoice list customer name resolved:', invoiceRow?.customer?.name ? true : false);
+    console.log(
+      'Invoice list customer name resolved:',
+      invoiceRow?.customer?.name ? true : false,
+    );
   });
 
   afterAll(async () => {

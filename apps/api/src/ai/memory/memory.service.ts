@@ -115,12 +115,14 @@ export class EnterpriseMemoryService {
    */
   async getConversationContext(sessionId: string): Promise<string> {
     try {
-      const messages = await this.prisma.runAsSystem('[EnterpriseMemoryService.getConversationContext] Internal service operation bypass', async (tx) =>
-        tx.aiChatMessage.findMany({
-          where: { sessionId },
-          orderBy: { createdAt: 'desc' },
-          take: 10, // Last 10 messages
-        }),
+      const messages = await this.prisma.runAsSystem(
+        '[EnterpriseMemoryService.getConversationContext] Internal service operation bypass',
+        async (tx) =>
+          tx.aiChatMessage.findMany({
+            where: { sessionId },
+            orderBy: { createdAt: 'desc' },
+            take: 10, // Last 10 messages
+          }),
       );
 
       if (messages.length === 0) return '';

@@ -43,7 +43,7 @@ export class CreateAsnDto {
   @IsOptional() @IsString() loadId?: string;
   @IsString() @IsNotEmpty() asnNumber!: string;
   @IsString() @IsNotEmpty() expectedDate!: string;
-  
+
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
@@ -59,7 +59,7 @@ export class ReceiveGoodsItemDto {
 
 export class ReceiveGoodsDto {
   @IsString() @IsNotEmpty() stagingBinId!: string;
-  
+
   @IsArray()
   @ArrayNotEmpty()
   @ValidateNested({ each: true })
@@ -123,7 +123,7 @@ export class ScheduleDockDto {
 export class WarehouseController {
   constructor(
     private readonly masterData: WarehouseMasterService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _inventory: InventoryService,
     private readonly inbound: InboundService,
     private readonly outbound: OutboundService,
@@ -174,10 +174,7 @@ export class WarehouseController {
 
   @Post('inbound/asn')
   @RequirePermissions('warehouse:write')
-  createAsn(
-    @GetUser() user: AuthenticatedUser,
-    @Body() data: CreateAsnDto,
-  ) {
+  createAsn(@GetUser() user: AuthenticatedUser, @Body() data: CreateAsnDto) {
     return this.inbound.createASN(
       user.companyId,
       data.warehouseId,
@@ -197,8 +194,8 @@ export class WarehouseController {
       user.companyId,
       id,
       data.stagingBinId,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.items as any,
+
+      data.items,
       user.userId,
     );
   }
@@ -224,12 +221,7 @@ export class WarehouseController {
     @Param('id') id: string,
     @Body() data: PickOrderDto,
   ) {
-    return this.outbound.pickOrder(
-      user.companyId,
-      id,
-      data.picks,
-      user.userId,
-    );
+    return this.outbound.pickOrder(user.companyId, id, data.picks, user.userId);
   }
 
   @Post('docks/schedule')

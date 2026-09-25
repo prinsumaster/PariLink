@@ -4,7 +4,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 // ---------------------------------------------------------------------------
 // Cause definitions
 // ---------------------------------------------------------------------------
-export type RootCause = 'DRIVER' | 'MECHANICAL' | 'ROUTE' | 'INVESTIGATE' | 'INSUFFICIENT_DATA' | 'NORMAL';
+export type RootCause =
+  | 'DRIVER'
+  | 'MECHANICAL'
+  | 'ROUTE'
+  | 'INVESTIGATE'
+  | 'INSUFFICIENT_DATA'
+  | 'NORMAL';
 
 export interface RootCauseEntry {
   fuelEntryId: string;
@@ -60,8 +66,14 @@ export class FuelIntelligenceService {
         }
       });
 
-      const truckMap = new Map<string, { name: string; variances: number[]; drivers: Set<string> }>();
-      const driverMap = new Map<string, { name: string; variances: number[]; trucks: Set<string> }>();
+      const truckMap = new Map<
+        string,
+        { name: string; variances: number[]; drivers: Set<string> }
+      >();
+      const driverMap = new Map<
+        string,
+        { name: string; variances: number[]; trucks: Set<string> }
+      >();
 
       entries.forEach((entry: any) => {
         if (!entry.vehicleId || !entry.driverId) return;
@@ -78,7 +90,9 @@ export class FuelIntelligenceService {
 
         if (!driverMap.has(entry.driverId)) {
           driverMap.set(entry.driverId, {
-            name: `${entry.driver?.firstName || ''} ${entry.driver?.lastName || ''}`.trim() || entry.driverId,
+            name:
+              `${entry.driver?.firstName || ''} ${entry.driver?.lastName || ''}`.trim() ||
+              entry.driverId,
             variances: [],
             trucks: new Set(),
           });
@@ -89,7 +103,8 @@ export class FuelIntelligenceService {
 
       truckMap.forEach((data, vehicleId) => {
         const avgVariance =
-          data.variances.reduce((a: number, b: number) => a + b, 0) / data.variances.length;
+          data.variances.reduce((a: number, b: number) => a + b, 0) /
+          data.variances.length;
         if (avgVariance > 15 && data.drivers.size > 0) {
           anomalies.push({
             entityType: 'TRUCK',
@@ -105,7 +120,8 @@ export class FuelIntelligenceService {
 
       driverMap.forEach((data, driverId) => {
         const avgVariance =
-          data.variances.reduce((a: number, b: number) => a + b, 0) / data.variances.length;
+          data.variances.reduce((a: number, b: number) => a + b, 0) /
+          data.variances.length;
         if (avgVariance > 15 && data.trucks.size > 0) {
           anomalies.push({
             entityType: 'DRIVER',
@@ -127,9 +143,15 @@ export class FuelIntelligenceService {
   async getSummary(companyId: string) {
     const anomalies = await this.getAnomalies(companyId);
     return {
-      worstTrucks: anomalies.filter((a: any) => a.entityType === 'TRUCK').slice(0, 5),
-      worstDrivers: anomalies.filter((a: any) => a.entityType === 'DRIVER').slice(0, 5),
-      criticalTrips: anomalies.filter((a: any) => a.entityType === 'TRIP').slice(0, 5),
+      worstTrucks: anomalies
+        .filter((a: any) => a.entityType === 'TRUCK')
+        .slice(0, 5),
+      worstDrivers: anomalies
+        .filter((a: any) => a.entityType === 'DRIVER')
+        .slice(0, 5),
+      criticalTrips: anomalies
+        .filter((a: any) => a.entityType === 'TRIP')
+        .slice(0, 5),
       totalAnomalies: anomalies.length,
     };
   }
@@ -169,9 +191,10 @@ export class FuelIntelligenceService {
       const byDriverVehicle = new Map<string, any[]>();
 
       for (const e of entries) {
-        const routeKey = e.originCity && e.destinationCity
-          ? `${e.originCity}:${e.destinationCity}`
-          : null;
+        const routeKey =
+          e.originCity && e.destinationCity
+            ? `${e.originCity}:${e.destinationCity}`
+            : null;
 
         const vk = `${e.vehicleId}:${routeKey ?? 'UNKNOWN_ROUTE'}`;
         const dk = `${e.driverId}:${routeKey ?? 'UNKNOWN_ROUTE'}`;
@@ -188,12 +211,14 @@ export class FuelIntelligenceService {
       }
 
       const results: RootCauseEntry[] = entries.map((e: any) => {
-        const routeKey = e.originCity && e.destinationCity
-          ? `${e.originCity}:${e.destinationCity}`
-          : null;
+        const routeKey =
+          e.originCity && e.destinationCity
+            ? `${e.originCity}:${e.destinationCity}`
+            : null;
 
         const driverName =
-          `${e.driver?.firstName ?? ''} ${e.driver?.lastName ?? ''}`.trim() || e.driverId;
+          `${e.driver?.firstName ?? ''} ${e.driver?.lastName ?? ''}`.trim() ||
+          e.driverId;
         const licensePlate = e.vehicle?.licensePlate || e.vehicleId;
         const variancePct = e.variancePct ?? null;
 
@@ -206,8 +231,12 @@ export class FuelIntelligenceService {
         const driverRouteGroup = byDriverRoute.get(dk)!;
         const driverVehicleGroup = byDriverVehicle.get(dvk)!;
 
-        const uniqueDriversOnVehicleRoute = new Set(vehicleRouteGroup.map((x: any) => x.driverId));
-        const uniqueVehiclesOnDriverRoute = new Set(driverRouteGroup.map((x: any) => x.vehicleId));
+        const uniqueDriversOnVehicleRoute = new Set(
+          vehicleRouteGroup.map((x: any) => x.driverId),
+        );
+        const uniqueVehiclesOnDriverRoute = new Set(
+          driverRouteGroup.map((x: any) => x.vehicleId),
+        );
         const uniqueRoutesForDriverVehicle = new Set(
           driverVehicleGroup
             .filter((x: any) => x.originCity && x.destinationCity)
@@ -216,9 +245,12 @@ export class FuelIntelligenceService {
 
         // ── DRIVER isolation: same vehicle+route, multiple drivers
         if (uniqueDriversOnVehicleRoute.size >= 2 && routeKey) {
-          const groupVariances = vehicleRouteGroup.map((x: any) => x.variancePct ?? 0);
+          const groupVariances = vehicleRouteGroup.map(
+            (x: any) => x.variancePct ?? 0,
+          );
           const avgGroupVariance =
-            groupVariances.reduce((a: number, b: number) => a + b, 0) / groupVariances.length;
+            groupVariances.reduce((a: number, b: number) => a + b, 0) /
+            groupVariances.length;
           const eVariance = variancePct ?? 0;
           const isHighDriver = eVariance > avgGroupVariance + 5;
 
@@ -244,9 +276,12 @@ export class FuelIntelligenceService {
 
         // ── MECHANICAL isolation: same driver+route, multiple vehicles
         if (uniqueVehiclesOnDriverRoute.size >= 2 && routeKey) {
-          const groupVariances = driverRouteGroup.map((x: any) => x.variancePct ?? 0);
+          const groupVariances = driverRouteGroup.map(
+            (x: any) => x.variancePct ?? 0,
+          );
           const avgGroupVariance =
-            groupVariances.reduce((a: number, b: number) => a + b, 0) / groupVariances.length;
+            groupVariances.reduce((a: number, b: number) => a + b, 0) /
+            groupVariances.length;
           const eVariance = variancePct ?? 0;
           const isHighMechanical = eVariance > avgGroupVariance + 5;
 
@@ -272,9 +307,12 @@ export class FuelIntelligenceService {
 
         // ── ROUTE isolation: same driver+vehicle, multiple routes
         if (uniqueRoutesForDriverVehicle.size >= 2 && routeKey) {
-          const groupVariances = driverVehicleGroup.map((x: any) => x.variancePct ?? 0);
+          const groupVariances = driverVehicleGroup.map(
+            (x: any) => x.variancePct ?? 0,
+          );
           const avgGroupVariance =
-            groupVariances.reduce((a: number, b: number) => a + b, 0) / groupVariances.length;
+            groupVariances.reduce((a: number, b: number) => a + b, 0) /
+            groupVariances.length;
           const eVariance = variancePct ?? 0;
           const isHighRoute = eVariance > avgGroupVariance + 5;
 

@@ -125,12 +125,7 @@ export class CommercialController {
     @Param('tenderId') tenderId: string,
     @Body() dto: SubmitBidDto,
   ) {
-    return this.tender.submitBid(
-      user.companyId,
-      tenderId,
-      dto.vendorId,
-      dto,
-    );
+    return this.tender.submitBid(user.companyId, tenderId, dto.vendorId, dto);
   }
 
   @Post('tenders/:tenderId/award/:bidId')

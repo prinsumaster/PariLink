@@ -1,4 +1,4 @@
-import { createDefaultTripDesks } from "./trip-desks.util";
+import { createDefaultTripDesks } from './trip-desks.util';
 import { CreateLorryReceiptDto } from '../lorry-receipts/dto/create-lorry-receipt.dto';
 
 import { AuditService } from '../platform/audit/audit.service';
@@ -128,7 +128,9 @@ export class TripsService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new BadRequestException('Trip creation rejected by business rules.');
+        throw new BadRequestException(
+          'Trip creation rejected by business rules.',
+        );
       }
 
       await this.auditService.logEvent(
@@ -166,18 +168,26 @@ export class TripsService {
     return trip;
   }
 
-  async generateLorryReceipt(companyId: string, tripId: string, dto: CreateLorryReceiptDto) {
+  async generateLorryReceipt(
+    companyId: string,
+    tripId: string,
+    dto: CreateLorryReceiptDto,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trip = await tx.trip.findFirst({
         where: { id: tripId, companyId },
-        select: { vehicleId: true, driverId: true, lorryReceipt: true }
+        select: { vehicleId: true, driverId: true, lorryReceipt: true },
       });
       if (!trip) throw new NotFoundException('Trip not found');
       if (!trip.vehicleId || !trip.driverId) {
-        throw new BadRequestException('Trip must have an assigned vehicle and driver to generate LR');
+        throw new BadRequestException(
+          'Trip must have an assigned vehicle and driver to generate LR',
+        );
       }
       if (trip.lorryReceipt) {
-        throw new ConflictException('Lorry Receipt already exists for this trip');
+        throw new ConflictException(
+          'Lorry Receipt already exists for this trip',
+        );
       }
 
       const lrNumber = `LR-${Date.now().toString().slice(-6)}-${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
@@ -198,7 +208,7 @@ export class TripsService {
           gstNo: dto.gstNo,
           gateInTime: dto.gateInTime ? new Date(dto.gateInTime) : null,
           gateOutTime: dto.gateOutTime ? new Date(dto.gateOutTime) : null,
-        }
+        },
       });
       return lr;
     });
@@ -264,7 +274,12 @@ export class TripsService {
           vehicle: true,
           trailer: true,
           loads: {
-            select: { id: true, originCity: true, destinationCity: true, createdAt: true },
+            select: {
+              id: true,
+              originCity: true,
+              destinationCity: true,
+              createdAt: true,
+            },
             orderBy: { createdAt: 'asc' },
           },
           tripReviews: true,
@@ -490,7 +505,9 @@ export class TripsService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new BadRequestException('Load assignment rejected by business rules.');
+        throw new BadRequestException(
+          'Load assignment rejected by business rules.',
+        );
       }
 
       // Verify that all loads are unassigned before assigning them
@@ -641,10 +658,13 @@ export class TripsService {
         throw new BadRequestException('Trip is already completed');
       }
 
-      const pendingDesks = existingTrip.TripDesk?.filter(d => d.status === 'PENDING') || [];
+      const pendingDesks =
+        existingTrip.TripDesk?.filter((d) => d.status === 'PENDING') || [];
       if (pendingDesks.length > 0) {
-        const deskNames = pendingDesks.map(d => d.desk).join(', ');
-        throw new BadRequestException(`Cannot close trip. Pending desks: ${deskNames}`);
+        const deskNames = pendingDesks.map((d) => d.desk).join(', ');
+        throw new BadRequestException(
+          `Cannot close trip. Pending desks: ${deskNames}`,
+        );
       }
 
       const updatedTrip = await tx.trip.update({
@@ -690,12 +710,24 @@ export class TripsService {
     });
   }
 
-  async submitDriverScore(companyId: string, id: string, data: { onTime: boolean; podUploaded: boolean; fuelScore: number; damageScore: number; behaviourScore: number }, ratedBy: string) {
+  async submitDriverScore(
+    companyId: string,
+    id: string,
+    data: {
+      onTime: boolean;
+      podUploaded: boolean;
+      fuelScore: number;
+      damageScore: number;
+      behaviourScore: number;
+    },
+    ratedBy: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trip = await tx.trip.findFirst({ where: { id, companyId } });
       if (!trip) throw new NotFoundException('Trip not found');
-      if (!trip.driverId) throw new BadRequestException('Trip has no driver assigned');
-      
+      if (!trip.driverId)
+        throw new BadRequestException('Trip has no driver assigned');
+
       // Calculate weighted total (0-100)
       // onTime (20), podUploaded (10), fuelScore (30), damageScore (20), behaviourScore (20)
       const onTimeVal = data.onTime ? 20 : 0;
@@ -703,9 +735,11 @@ export class TripsService {
       // Convert fuel/damage/behaviour out of 10 or 100 to the weight
       // Assume inputs are 0-100 scales for fuel, damage, behaviour
       const fuelVal = (Math.max(0, Math.min(100, data.fuelScore)) / 100) * 30;
-      const damageVal = (Math.max(0, Math.min(100, data.damageScore)) / 100) * 20;
-      const behaviourVal = (Math.max(0, Math.min(100, data.behaviourScore)) / 100) * 20;
-      
+      const damageVal =
+        (Math.max(0, Math.min(100, data.damageScore)) / 100) * 20;
+      const behaviourVal =
+        (Math.max(0, Math.min(100, data.behaviourScore)) / 100) * 20;
+
       const total = onTimeVal + podVal + fuelVal + damageVal + behaviourVal;
 
       return tx.driverScore.create({
@@ -721,33 +755,45 @@ export class TripsService {
           behaviourScore: data.behaviourScore,
           total,
           ratedBy,
-          ratedAt: new Date()
-        }
+          ratedAt: new Date(),
+        },
       });
     });
   }
   async getTripReviews(companyId: string, tripId: string) {
     return this.prisma.tripReview.findMany({
       where: { companyId, tripId },
-      orderBy: { createdAt: 'asc' }
+      orderBy: { createdAt: 'asc' },
     });
   }
 
-  async submitReview(companyId: string, tripId: string, reviewerId: string, dto: CreateTripReviewDto) {
+  async submitReview(
+    companyId: string,
+    tripId: string,
+    reviewerId: string,
+    dto: CreateTripReviewDto,
+  ) {
     // 1. Role-based RBAC Enforcements
     let requiredPermission = 'trips:update';
-    if (dto.reviewerRole === ReviewRole.DISPATCHER) requiredPermission = 'dispatch:manage';
-    if (dto.reviewerRole === ReviewRole.FLEET_MANAGER) requiredPermission = 'fleet:write';
-    if (dto.reviewerRole === ReviewRole.WORKSHOP_MECHANIC) requiredPermission = 'workshop:mechanic';
-    if (dto.reviewerRole === ReviewRole.GATE_SECURITY) requiredPermission = 'workshop:gate';
-    if (dto.reviewerRole === ReviewRole.CUSTOMER_CONTACT) requiredPermission = 'admin:manage'; // Customer fallback to admin
+    if (dto.reviewerRole === ReviewRole.DISPATCHER)
+      requiredPermission = 'dispatch:manage';
+    if (dto.reviewerRole === ReviewRole.FLEET_MANAGER)
+      requiredPermission = 'fleet:write';
+    if (dto.reviewerRole === ReviewRole.WORKSHOP_MECHANIC)
+      requiredPermission = 'workshop:mechanic';
+    if (dto.reviewerRole === ReviewRole.GATE_SECURITY)
+      requiredPermission = 'workshop:gate';
+    if (dto.reviewerRole === ReviewRole.CUSTOMER_CONTACT)
+      requiredPermission = 'admin:manage'; // Customer fallback to admin
 
     const [resource, action] = requiredPermission.split(':');
-    
-    const userRecord = await this.prisma.user.findFirst({
-      where: { id: reviewerId, companyId },
-      select: { roleId: true }
-    });
+
+    const userRecord = await this.prisma.runAsTenant(companyId, (tx) =>
+      tx.user.findFirst({
+        where: { id: reviewerId, companyId },
+        select: { roleId: true },
+      }),
+    );
 
     if (!userRecord) {
       throw new ForbiddenException('User not found in tenant context');
@@ -758,23 +804,34 @@ export class TripsService {
       companyId,
       roleId: userRecord.roleId,
       resource,
-      action
+      action,
     });
 
     if (!auth.granted) {
-      throw new ForbiddenException(`You do not have the ${requiredPermission} permission required to submit a ${dto.reviewerRole} review.`);
+      throw new ForbiddenException(
+        `You do not have the ${requiredPermission} permission required to submit a ${dto.reviewerRole} review.`,
+      );
     }
 
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const trip = await tx.trip.findFirst({ where: { id: tripId, companyId } });
+      const trip = await tx.trip.findFirst({
+        where: { id: tripId, companyId },
+      });
       if (!trip) throw new NotFoundException('Trip not found');
-      if (!trip.driverId) throw new BadRequestException('Trip has no driver assigned');
-      if (trip.status !== 'COMPLETED') throw new BadRequestException('Reviews can only be submitted after the trip is COMPLETED.');
+      if (!trip.driverId)
+        throw new BadRequestException('Trip has no driver assigned');
+      if (trip.status !== 'COMPLETED')
+        throw new BadRequestException(
+          'Reviews can only be submitted after the trip is COMPLETED.',
+        );
 
       const existing = await tx.tripReview.findFirst({
-        where: { tripId: tripId, reviewerRole: dto.reviewerRole }
+        where: { tripId: tripId, reviewerRole: dto.reviewerRole },
       });
-      if (existing) throw new ConflictException(`Review for role ${dto.reviewerRole} already exists`);
+      if (existing)
+        throw new ConflictException(
+          `Review for role ${dto.reviewerRole} already exists`,
+        );
 
       const review = await tx.tripReview.create({
         data: {
@@ -784,11 +841,11 @@ export class TripsService {
           reviewerRole: dto.reviewerRole,
           rating: dto.rating,
           comment: dto.comment,
-        }
+        },
       });
 
       const allReviews = await tx.tripReview.findMany({
-        where: { tripId: tripId }
+        where: { tripId: tripId },
       });
 
       if (allReviews.length === 5) {
@@ -796,27 +853,48 @@ export class TripsService {
         const distance = trip.actualDistance || trip.estimatedDistance || 0;
         const fuel = trip.fuelExpenses || 0;
         let mileageScore = 5.0; // Default if no fuel data
-        
+
         if (fuel > 0 && distance > 0) {
-           const actualKmL = distance / fuel;
-           const EXPECTED_KM_LITER = 5.0;
-           // Max 5 points, Min 1 point
-           mileageScore = Math.min(5, Math.max(1, (actualKmL / EXPECTED_KM_LITER) * 5));
+          const actualKmL = distance / fuel;
+          const EXPECTED_KM_LITER = 5.0;
+          // Max 5 points, Min 1 point
+          mileageScore = Math.min(
+            5,
+            Math.max(1, (actualKmL / EXPECTED_KM_LITER) * 5),
+          );
         }
 
         const scores: any = {
-           dispatcherScore: allReviews.find(r => r.reviewerRole === ReviewRole.DISPATCHER)?.rating || 0,
-           fleetManagerScore: allReviews.find(r => r.reviewerRole === ReviewRole.FLEET_MANAGER)?.rating || 0,
-           workshopScore: allReviews.find(r => r.reviewerRole === ReviewRole.WORKSHOP_MECHANIC)?.rating || 0,
-           securityScore: allReviews.find(r => r.reviewerRole === ReviewRole.GATE_SECURITY)?.rating || 0,
-           customerScore: allReviews.find(r => r.reviewerRole === ReviewRole.CUSTOMER_CONTACT)?.rating || 0,
-           mileageScore,
+          dispatcherScore:
+            allReviews.find((r) => r.reviewerRole === ReviewRole.DISPATCHER)
+              ?.rating || 0,
+          fleetManagerScore:
+            allReviews.find((r) => r.reviewerRole === ReviewRole.FLEET_MANAGER)
+              ?.rating || 0,
+          workshopScore:
+            allReviews.find(
+              (r) => r.reviewerRole === ReviewRole.WORKSHOP_MECHANIC,
+            )?.rating || 0,
+          securityScore:
+            allReviews.find((r) => r.reviewerRole === ReviewRole.GATE_SECURITY)
+              ?.rating || 0,
+          customerScore:
+            allReviews.find(
+              (r) => r.reviewerRole === ReviewRole.CUSTOMER_CONTACT,
+            )?.rating || 0,
+          mileageScore,
         };
-        
-        const avgRoleScore = (scores.dispatcherScore + scores.fleetManagerScore + scores.workshopScore + scores.securityScore + scores.customerScore) / 5;
+
+        const avgRoleScore =
+          (scores.dispatcherScore +
+            scores.fleetManagerScore +
+            scores.workshopScore +
+            scores.securityScore +
+            scores.customerScore) /
+          5;
         // Total score factors in the mileage score (e.g. 70% role, 30% mileage)
-        const total = (avgRoleScore * 0.7) + (mileageScore * 0.3);
-        
+        const total = avgRoleScore * 0.7 + mileageScore * 0.3;
+
         await tx.driverScore.create({
           data: {
             companyId,
@@ -826,25 +904,27 @@ export class TripsService {
             total,
             ratedBy: 'SYSTEM_AGGREGATE',
             ratedAt: new Date(),
-          }
+          },
         });
 
         // Update the driver's overall running average score
         const driverScores = await tx.driverScore.findMany({
-          where: { driverId: trip.driverId }
+          where: { driverId: trip.driverId },
         });
-        const runningTotal = driverScores.reduce((sum, ds) => sum + ds.total, 0) / driverScores.length;
-        
+        const runningTotal =
+          driverScores.reduce((sum, ds) => sum + ds.total, 0) /
+          driverScores.length;
+
         await tx.driver.update({
           where: { id: trip.driverId },
-          data: { overallScore: runningTotal }
+          data: { overallScore: runningTotal },
         });
 
         this.eventEmitter.emit('driver.score.updated', {
           companyId,
           driverId: trip.driverId,
           tripId: trip.id,
-          score: runningTotal
+          score: runningTotal,
         });
       }
 

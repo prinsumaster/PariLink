@@ -13,7 +13,9 @@ export class DispatchAiService {
     private readonly prisma: PrismaService,
     @InjectQueue('ai-inference') private readonly aiQueue: Queue,
   ) {
-    this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'mock-key' });
+    this.ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY || 'mock-key',
+    });
   }
 
   async requestRecommendation(
@@ -21,7 +23,9 @@ export class DispatchAiService {
     loadId: string,
     userId: string,
   ) {
-    this.logger.log(`Requesting AI dispatch recommendation for load: ${loadId}`);
+    this.logger.log(
+      `Requesting AI dispatch recommendation for load: ${loadId}`,
+    );
 
     const load = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.load.findUnique({
@@ -64,21 +68,21 @@ export class DispatchAiService {
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.trip.findMany({
           where: { companyId, status: 'PENDING' },
-          take: 10
-        })
+          take: 10,
+        }),
       ),
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.vehicle.findMany({
           where: { companyId, status: 'ACTIVE' },
-          take: 10
-        })
+          take: 10,
+        }),
       ),
       this.prisma.runAsTenant(companyId, async (tx) =>
         tx.driver.findMany({
           where: { companyId, status: 'AVAILABLE' },
-          take: 10
-        })
-      )
+          take: 10,
+        }),
+      ),
     ]);
 
     if (trips.length === 0) return [];
@@ -93,9 +97,9 @@ Constraints:
     `.trim();
 
     const prompt = `
-Trips: ${JSON.stringify(trips.map(t => ({ id: t.id, tripNumber: t.tripNumber })))}
-Vehicles: ${JSON.stringify(vehicles.map(v => ({ id: v.id, name: v.licensePlate })))}
-Drivers: ${JSON.stringify(drivers.map(d => ({ id: d.id, name: d.firstName + ' ' + d.lastName })))}
+Trips: ${JSON.stringify(trips.map((t) => ({ id: t.id, tripNumber: t.tripNumber })))}
+Vehicles: ${JSON.stringify(vehicles.map((v) => ({ id: v.id, name: v.licensePlate })))}
+Drivers: ${JSON.stringify(drivers.map((d) => ({ id: d.id, name: d.firstName + ' ' + d.lastName })))}
     `.trim();
 
     try {
@@ -117,35 +121,48 @@ Drivers: ${JSON.stringify(drivers.map(d => ({ id: d.id, name: d.firstName + ' ' 
                 driverId: { type: Type.STRING, nullable: true },
                 driverName: { type: Type.STRING },
                 confidenceScore: { type: Type.INTEGER },
-                reasoning: { type: Type.STRING }
+                reasoning: { type: Type.STRING },
               },
-              required: ["tripId", "tripNumber", "vehicleName", "driverName", "confidenceScore", "reasoning"]
-            }
-          }
-        }
+              required: [
+                'tripId',
+                'tripNumber',
+                'vehicleName',
+                'driverName',
+                'confidenceScore',
+                'reasoning',
+              ],
+            },
+          },
+        },
       });
 
       const resultText = response.text;
       if (resultText) {
         return JSON.parse(resultText);
       }
-      throw new Error("No response text from LLM");
+      throw new Error('No response text from LLM');
     } catch (error) {
-      this.logger.error('AI SDK call failed, falling back to mock logic', error);
+      this.logger.error(
+        'AI SDK call failed, falling back to mock logic',
+        error,
+      );
       // Fallback logic
       return trips.map((trip, index) => {
         const vehicle = vehicles[index % vehicles.length];
         const driver = drivers[index % drivers.length];
-        
+
         return {
           tripId: trip.id,
           tripNumber: trip.tripNumber,
           vehicleId: vehicle?.id || null,
           vehicleName: vehicle?.licensePlate || 'Unknown Vehicle',
           driverId: driver?.id || null,
-          driverName: driver ? `${driver.firstName} ${driver.lastName}` : 'Unknown Driver',
+          driverName: driver
+            ? `${driver.firstName} ${driver.lastName}`
+            : 'Unknown Driver',
           confidenceScore: Math.floor(Math.random() * (99 - 85 + 1) + 85),
-          reasoning: 'Fallback: Optimal route match based on historical performance.',
+          reasoning:
+            'Fallback: Optimal route match based on historical performance.',
         };
       });
     }

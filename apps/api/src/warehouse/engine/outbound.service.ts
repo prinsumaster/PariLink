@@ -10,7 +10,6 @@ import { EventStoreService } from '../../platform/digital-twin/event-store.servi
 
 @Injectable()
 export class OutboundService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventStore: EventStoreService,

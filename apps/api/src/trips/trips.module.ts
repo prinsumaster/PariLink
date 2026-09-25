@@ -13,8 +13,23 @@ import { PlatformModule } from '../platform/platform.module';
 
 @Module({
   imports: [WorkflowModule, PlatformModule],
-  controllers: [TripDesksController, LoadingEventsController, FuelEntriesController, TripsController],
-  providers: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],
-  exports: [TripsService, TripDesksService, LoadingEventsService, FuelEntriesService],
+  controllers: [
+    TripDesksController,
+    LoadingEventsController,
+    FuelEntriesController,
+    TripsController,
+  ],
+  providers: [
+    TripsService,
+    TripDesksService,
+    LoadingEventsService,
+    FuelEntriesService,
+  ],
+  exports: [
+    TripsService,
+    TripDesksService,
+    LoadingEventsService,
+    FuelEntriesService,
+  ],
 })
 export class TripsModule {}

@@ -13,7 +13,7 @@ import { TenantCacheInterceptor } from '../interceptors/tenant-cache.interceptor
       useFactory: () => {
         // Synchronous require so this works in both Node runtime and Jest
         // (jest doesn't support dynamic import() without --experimental-vm-modules)
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
+
         const store = require('cache-manager-redis-store');
         return {
           store: store.redisStore,
@@ -23,7 +23,12 @@ import { TenantCacheInterceptor } from '../interceptors/tenant-cache.interceptor
       },
     }),
   ],
-  controllers: [ExecutiveDashboardController, DashboardBuilderController, OrdersController, SettingsController],
+  controllers: [
+    ExecutiveDashboardController,
+    DashboardBuilderController,
+    OrdersController,
+    SettingsController,
+  ],
   providers: [DashboardBuilderService, TenantCacheInterceptor],
   exports: [DashboardBuilderService],
 })

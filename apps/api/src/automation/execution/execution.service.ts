@@ -21,11 +21,13 @@ export class ExecutionService {
 
     // In a real DAG, we would identify root nodes and execute them.
     // For MVP, we fetch PENDING steps and execute them sequentially or in parallel based on graph dependencies.
-    const steps = await this.prisma.runAsSystem('[ExecutionService.startExecution] Internal service operation bypass', async (tx) =>
-      tx.workflowExecutionStep.findMany({
-        where: { executionId, status: 'PENDING' },
-        orderBy: { executedAt: 'asc' }, // Simplified execution order
-      }),
+    const steps = await this.prisma.runAsSystem(
+      '[ExecutionService.startExecution] Internal service operation bypass',
+      async (tx) =>
+        tx.workflowExecutionStep.findMany({
+          where: { executionId, status: 'PENDING' },
+          orderBy: { executedAt: 'asc' }, // Simplified execution order
+        }),
     );
 
     for (const step of steps) {
@@ -37,11 +39,13 @@ export class ExecutionService {
    * Executes a single step using the assigned Digital Worker
    */
   private async executeStep(stepId: string) {
-    const step = await this.prisma.runAsSystem('[ExecutionService.executeStep] Internal service operation bypass', async (tx) =>
-      tx.workflowExecutionStep.findUnique({
-        where: { id: stepId },
-        include: { execution: true },
-      }),
+    const step = await this.prisma.runAsSystem(
+      '[ExecutionService.executeStep] Internal service operation bypass',
+      async (tx) =>
+        tx.workflowExecutionStep.findUnique({
+          where: { id: stepId },
+          include: { execution: true },
+        }),
     );
 
     if (!step) return;
@@ -54,11 +58,13 @@ export class ExecutionService {
 
       const outputs = await worker.executeTask(step.nodeId, step.inputs);
 
-      await this.prisma.runAsSystem('[ExecutionService.executeStep] Internal service operation bypass', async (tx) =>
-        tx.workflowExecutionStep.update({
-          where: { id: stepId },
-          data: { status: 'SUCCESS', outputs },
-        }),
+      await this.prisma.runAsSystem(
+        '[ExecutionService.executeStep] Internal service operation bypass',
+        async (tx) =>
+          tx.workflowExecutionStep.update({
+            where: { id: stepId },
+            data: { status: 'SUCCESS', outputs },
+          }),
       );
 
       // Realtime Progress Tracking update
@@ -84,11 +90,13 @@ export class ExecutionService {
       this.logger.warn(
         `Retrying step ${step.nodeId} (Attempt ${step.retryCount + 1})`,
       );
-      await this.prisma.runAsSystem('[ExecutionService.handleStepFailure] Internal service operation bypass', async (tx) =>
-        tx.workflowExecutionStep.update({
-          where: { id: step.id },
-          data: { retryCount: step.retryCount + 1, error: errorMessage },
-        }),
+      await this.prisma.runAsSystem(
+        '[ExecutionService.handleStepFailure] Internal service operation bypass',
+        async (tx) =>
+          tx.workflowExecutionStep.update({
+            where: { id: step.id },
+            data: { retryCount: step.retryCount + 1, error: errorMessage },
+          }),
       );
       // Exponential Backoff in real implementation, here we re-execute immediately
       return this.executeStep(step.id);
@@ -98,11 +106,13 @@ export class ExecutionService {
     this.logger.error(
       `Max retries reached for step ${step.nodeId}. Initiating Rollback.`,
     );
-    await this.prisma.runAsSystem('[ExecutionService.handleStepFailure] Internal service operation bypass', async (tx) =>
-      tx.workflowExecutionStep.update({
-        where: { id: step.id },
-        data: { status: 'FAILED', error: errorMessage },
-      }),
+    await this.prisma.runAsSystem(
+      '[ExecutionService.handleStepFailure] Internal service operation bypass',
+      async (tx) =>
+        tx.workflowExecutionStep.update({
+          where: { id: step.id },
+          data: { status: 'FAILED', error: errorMessage },
+        }),
     );
 
     if (step.rollbackAction) {
@@ -118,11 +128,13 @@ export class ExecutionService {
     }
 
     // Fail the entire execution
-    await this.prisma.runAsSystem('[ExecutionService.handleStepFailure] Internal service operation bypass', async (tx) =>
-      tx.workflowExecution.update({
-        where: { id: step.executionId },
-        data: { status: 'FAILED', error: errorMessage },
-      }),
+    await this.prisma.runAsSystem(
+      '[ExecutionService.handleStepFailure] Internal service operation bypass',
+      async (tx) =>
+        tx.workflowExecution.update({
+          where: { id: step.executionId },
+          data: { status: 'FAILED', error: errorMessage },
+        }),
     );
 
     this.eventService.publish('Execution.StepUpdated', {

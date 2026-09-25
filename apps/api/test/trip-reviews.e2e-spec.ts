@@ -26,7 +26,9 @@ describe('TripReviews (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     app.setGlobalPrefix('api/v1');
     await app.init();
 
@@ -35,16 +37,32 @@ describe('TripReviews (e2e)', () => {
     config = app.get(ConfigService);
 
     // Setup tenant
-    const company = await prisma.runAsSystem('e2e-setup', (tx) => 
-      tx.company.create({ data: { name: 'E2E Review Tenant' } })
+    const company = await prisma.runAsSystem('e2e-setup', (tx) =>
+      tx.company.create({ data: { name: 'E2E Review Tenant' } }),
     );
     tenantId = company.id;
 
     // Setup admin user
-    const role = await prisma.runAsSystem('e2e-setup', (tx) => 
-      tx.role.create({ data: { name: 'Admin', companyId: tenantId, permissions: ['trips:create', 'trips:update', 'trips:read'] } })
+    // Setup admin user
+    const role = await prisma.runAsSystem('e2e-setup', (tx) =>
+      tx.role.create({
+        data: {
+          name: 'Admin',
+          companyId: tenantId,
+          permissions: [
+            'trips:create',
+            'trips:update',
+            'trips:read',
+            'dispatch:manage',
+            'fleet:write',
+            'workshop:mechanic',
+            'workshop:gate',
+            'admin:manage',
+          ],
+        },
+      }),
     );
-    const user = await prisma.runAsSystem('e2e-setup', (tx) => 
+    const user = await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.user.create({
         data: {
           email: `review_e2e_${Date.now()}@example.com`,
@@ -52,29 +70,53 @@ describe('TripReviews (e2e)', () => {
           firstName: 'E2E',
           lastName: 'Admin',
           companyId: tenantId,
-          roleId: role.id
-        }
-      })
+          roleId: role.id,
+        },
+      }),
     );
     _reviewerId = user.id;
 
     adminToken = jwt.sign(
-      { sub: user.id, email: user.email, companyId: tenantId, permissions: ['trips:create', 'trips:update', 'trips:read'] },
-      { secret: config.get('JWT_SECRET') }
+      {
+        sub: user.id,
+        email: user.email,
+        companyId: tenantId,
+        permissions: [
+          'trips:create',
+          'trips:update',
+          'trips:read',
+          'dispatch:manage',
+          'fleet:write',
+          'workshop:mechanic',
+          'workshop:gate',
+          'admin:manage',
+        ],
+      },
+      { secret: config.get('JWT_SECRET') },
     );
 
     // Setup trip
-    const driver = await prisma.runAsSystem('e2e-setup', (tx) => 
+    const driver = await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.driver.create({
-        data: { companyId: tenantId, firstName: 'Bob', lastName: 'Driver', status: 'AVAILABLE' }
-      })
+        data: {
+          companyId: tenantId,
+          firstName: 'Bob',
+          lastName: 'Driver',
+          status: 'AVAILABLE',
+        },
+      }),
     );
     _driverId = driver.id;
 
-    const trip = await prisma.runAsSystem('e2e-setup', (tx) => 
+    const trip = await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.trip.create({
-        data: { companyId: tenantId, tripNumber: `TRP-E2E-${Date.now()}`, driverId: driver.id, status: 'PLANNED' }
-      })
+        data: {
+          companyId: tenantId,
+          tripNumber: `TRP-E2E-${Date.now()}`,
+          driverId: driver.id,
+          status: 'COMPLETED',
+        },
+      }),
     );
     tripId = trip.id;
   });
@@ -90,7 +132,9 @@ describe('TripReviews (e2e)', () => {
       .send({})
       .expect(400)
       .expect((res: any) => {
-        expect(res.body.message).toContain('reviewerRole must be one of the following values: DISPATCHER, LOADER, SAFETY_OFFICER, UNLOADER, FLEET_MANAGER');
+        expect(res.body.message).toContain(
+          'reviewerRole must be one of the following values: DISPATCHER, LOADER, SAFETY_OFFICER, UNLOADER, FLEET_MANAGER, WORKSHOP_MECHANIC, GATE_SECURITY, CUSTOMER_CONTACT',
+        );
         expect(res.body.message).toContain('rating should not be empty');
       });
   });
@@ -102,10 +146,10 @@ describe('TripReviews (e2e)', () => {
       .send({
         reviewerRole: 'DISPATCHER',
         rating: 5,
-        comment: 'Fast and smooth'
+        comment: 'Fast and smooth',
       })
       .expect(201);
-    
+
     expect(res.body.reviewerRole).toBe('DISPATCHER');
     expect(res.body.rating).toBe(5);
   });
@@ -124,32 +168,68 @@ describe('TripReviews (e2e)', () => {
   it('computes driver score exactly on the 5th review', async () => {
     // We already have 1 review (DISPATCHER)
     // Add 3 more to make it 4
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${adminToken}`).send({ reviewerRole: 'LOADER', rating: 4 }).expect(201);
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${adminToken}`).send({ reviewerRole: 'SAFETY_OFFICER', rating: 3 }).expect(201);
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${adminToken}`).send({ reviewerRole: 'UNLOADER', rating: 5 }).expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reviewerRole: 'FLEET_MANAGER', rating: 4 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reviewerRole: 'WORKSHOP_MECHANIC', rating: 3 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reviewerRole: 'GATE_SECURITY', rating: 5 })
+      .expect(201);
 
     // Verify driver score is pending (not created)
-    let score = await prisma.runAsSystem('e2e-setup', (tx) => tx.driverScore.findFirst({ where: { tripId } }));
+    let score = await prisma.runAsSystem('e2e-setup', (tx) =>
+      tx.driverScore.findFirst({ where: { tripId } }),
+    );
     expect(score).toBeNull();
 
     // Add 5th review
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${adminToken}`).send({ reviewerRole: 'FLEET_MANAGER', rating: 4 }).expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .send({ reviewerRole: 'CUSTOMER_CONTACT', rating: 4 })
+      .expect(201);
 
     // Verify driver score is created and calculated
-    score = await prisma.runAsSystem('e2e-setup', (tx) => tx.driverScore.findFirst({ where: { tripId } }));
+    score = await prisma.runAsSystem('e2e-setup', (tx) =>
+      tx.driverScore.findFirst({ where: { tripId } }),
+    );
     expect(score).toBeDefined();
-    // (5 + 4 + 3 + 5 + 4) / 5 = 21 / 5 = 4.2
-    expect(score?.total).toBeCloseTo(4.2, 1);
+    // Avg role = (5 + 4 + 3 + 5 + 4) / 5 = 4.2
+    // Mileage score = 5.0 (since actualKmL >= expected)
+    // Total = (4.2 * 0.7) + (5.0 * 0.3) = 2.94 + 1.5 = 4.44
+    expect(score?.total).toBeCloseTo(4.44, 1);
   });
 
   // ── Partial review state ──────────────────────────────────────────────────
   it('GET trip with partial reviews returns score: null and pending status', async () => {
     // Create a brand new trip with only 1 review — score must NOT be written
     const partialDriver = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.driver.create({ data: { companyId: tenantId, firstName: 'Partial', lastName: 'Driver', status: 'AVAILABLE' } })
+      tx.driver.create({
+        data: {
+          companyId: tenantId,
+          firstName: 'Partial',
+          lastName: 'Driver',
+          status: 'AVAILABLE',
+        },
+      }),
     );
     const partialTrip = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.trip.create({ data: { companyId: tenantId, tripNumber: `TRP-PARTIAL-${Date.now()}`, driverId: partialDriver.id, status: 'PLANNED' } })
+      tx.trip.create({
+        data: {
+          companyId: tenantId,
+          tripNumber: `TRP-PARTIAL-${Date.now()}`,
+          driverId: partialDriver.id,
+          status: 'COMPLETED',
+        },
+      }),
     );
 
     // Submit only 2 of 5 reviews
@@ -167,7 +247,7 @@ describe('TripReviews (e2e)', () => {
 
     // Verify no DriverScore row exists yet
     const score = await prisma.runAsSystem('e2e-verify', (tx) =>
-      tx.driverScore.findFirst({ where: { tripId: partialTrip.id } })
+      tx.driverScore.findFirst({ where: { tripId: partialTrip.id } }),
     );
     expect(score).toBeNull(); // Score stays pending until all 5 reviews
 
@@ -180,29 +260,46 @@ describe('TripReviews (e2e)', () => {
     expect(Array.isArray(res.body.tripReviews)).toBe(true);
     expect(res.body.tripReviews.length).toBe(2);
 
-    console.log(`\n✅ Partial reviews: trip has ${res.body.tripReviews.length}/5 reviews, no score row written`);
+    console.log(
+      `\n✅ Partial reviews: trip has ${res.body.tripReviews.length}/5 reviews, no score row written`,
+    );
   });
 
   // ── Cross-tenant isolation ────────────────────────────────────────────────
   it('Cross-tenant: Tenant B cannot read Tenant A trips or submit reviews', async () => {
     // Setup Tenant B
     const companyB = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.company.create({ data: { name: 'E2E-TenantB-Reviews' } })
+      tx.company.create({ data: { name: 'E2E-TenantB-Reviews' } }),
     );
     const roleB = await prisma.runAsSystem('e2e-setup', (tx) =>
-      tx.role.create({ data: { name: 'Admin', companyId: companyB.id, permissions: ['trips:update', 'trips:read'] } })
+      tx.role.create({
+        data: {
+          name: 'Admin',
+          companyId: companyB.id,
+          permissions: ['trips:update', 'trips:read', 'dispatch:manage'],
+        },
+      }),
     );
     const userB = await prisma.runAsSystem('e2e-setup', (tx) =>
       tx.user.create({
         data: {
-          email: `tenantb_${Date.now()}@example.com`, password: 'hashed',
-          firstName: 'B', lastName: 'User', companyId: companyB.id, roleId: roleB.id
-        }
-      })
+          email: `tenantb_${Date.now()}@example.com`,
+          password: 'hashed',
+          firstName: 'B',
+          lastName: 'User',
+          companyId: companyB.id,
+          roleId: roleB.id,
+        },
+      }),
     );
     const tokenB = jwt.sign(
-      { sub: userB.id, email: userB.email, companyId: companyB.id, permissions: ['trips:update', 'trips:read'] },
-      { secret: config.get('JWT_SECRET') }
+      {
+        sub: userB.id,
+        email: userB.email,
+        companyId: companyB.id,
+        permissions: ['trips:update', 'trips:read'],
+      },
+      { secret: config.get('JWT_SECRET') },
     );
 
     // Tenant B attempts to GET Tenant A's trip — must be 404 (not 403, not leaked)
@@ -220,15 +317,17 @@ describe('TripReviews (e2e)', () => {
       .send({ reviewerRole: 'DISPATCHER', rating: 5 })
       .expect(404);
 
-    console.log(`\n✅ Cross-tenant: Tenant B gets 404 on Tenant A trip GET and review POST`);
+    console.log(
+      `\n✅ Cross-tenant: Tenant B gets 404 on Tenant A trip GET and review POST`,
+    );
   });
 
   // ── Decisive RLS test (filter stripped, RLS alone isolates) ──────────────
   it('Decisive RLS: reviews are isolated by RLS even without app-layer filter', async () => {
     // Query TripReview directly with runAsTenant for Tenant A - should NOT see TenantB rows
     const tenantAReviews = await prisma.runAsTenant(tenantId, (tx: any) =>
-      tx.tripReview.findMany()
-    ) as any[];
+      tx.tripReview.findMany(),
+    );
 
     // All returned rows must belong to Tenant A
     for (const r of tenantAReviews) {
@@ -239,15 +338,19 @@ describe('TripReviews (e2e)', () => {
     const fs = require('fs');
     const serviceSource = fs.readFileSync(
       require('path').join(__dirname, '../src/trips/trips.service.ts'),
-      'utf8'
+      'utf8',
     );
     // submitReview uses runAsTenant (RLS context) AND has companyId in the trip lookup
-    expect(serviceSource).toContain("where: { id: tripId, companyId }");
+    expect(serviceSource).toContain('where: { id: tripId, companyId }');
     // The allReviews lookup does NOT filter by companyId explicitly — RLS handles it
     // but it must NOT have `where: {}` (stripped filter pattern)
     expect(serviceSource).not.toContain('where: {} // FILTER STRIPPED');
 
-    console.log(`\n✅ Decisive RLS: Tenant A runAsTenant sees ${tenantAReviews.length} reviews, all companyId=${tenantId}`);
-    console.log(`✅ Source verified: submitReview uses runAsTenant context + companyId trip lookup, no stripped filter`);
+    console.log(
+      `\n✅ Decisive RLS: Tenant A runAsTenant sees ${tenantAReviews.length} reviews, all companyId=${tenantId}`,
+    );
+    console.log(
+      `✅ Source verified: submitReview uses runAsTenant context + companyId trip lookup, no stripped filter`,
+    );
   });
 });

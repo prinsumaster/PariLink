@@ -330,10 +330,12 @@ export class LicenseAdminService {
 
   // ─── List all subscription plans ────────────────────────────────────────────
   async listPlans() {
-    return this.prisma.runAsSystem('[LicenseAdminService.listPlans] Internal service operation bypass', async (tx) =>
-      tx.subscriptionPlan.findMany({
-        orderBy: { defaultMaxVehicles: 'asc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[LicenseAdminService.listPlans] Internal service operation bypass',
+      async (tx) =>
+        tx.subscriptionPlan.findMany({
+          orderBy: { defaultMaxVehicles: 'asc' },
+        }),
     );
   }
 
@@ -344,41 +346,49 @@ export class LicenseAdminService {
 
   // ─── List all tenants with license summary (for Super Admin Center) ──────────
   async listAllTenantsWithLicense() {
-    const companies = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
-      tx.company.findMany({
-        include: {
-          subscriptionPlan: true,
-          tenantConfiguration: true,
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 200,
-      }),
+    const companies = await this.prisma.runAsSystem(
+      '[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass',
+      async (tx) =>
+        tx.company.findMany({
+          include: {
+            subscriptionPlan: true,
+            tenantConfiguration: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 200,
+        }),
     );
 
     const companyIds = companies.map((c) => c.id);
 
-    const configs = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
-      tx.tenantConfig.findMany({ where: { companyId: { in: companyIds } } }),
+    const configs = await this.prisma.runAsSystem(
+      '[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass',
+      async (tx) =>
+        tx.tenantConfig.findMany({ where: { companyId: { in: companyIds } } }),
     );
     const configMap = new Map(configs.map((c) => [c.companyId, c]));
 
-    const vehicleCounts = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
-      tx.vehicle.groupBy({
-        by: ['companyId'],
-        where: { companyId: { in: companyIds } },
-        _count: true,
-      }),
+    const vehicleCounts = await this.prisma.runAsSystem(
+      '[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass',
+      async (tx) =>
+        tx.vehicle.groupBy({
+          by: ['companyId'],
+          where: { companyId: { in: companyIds } },
+          _count: true,
+        }),
     );
     const vehicleCountMap = new Map(
       vehicleCounts.map((v) => [v.companyId, v._count]),
     );
 
-    const driverCounts = await this.prisma.runAsSystem('[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass', async (tx) =>
-      tx.driver.groupBy({
-        by: ['companyId'],
-        where: { companyId: { in: companyIds } },
-        _count: true,
-      }),
+    const driverCounts = await this.prisma.runAsSystem(
+      '[LicenseAdminService.listAllTenantsWithLicense] Internal service operation bypass',
+      async (tx) =>
+        tx.driver.groupBy({
+          by: ['companyId'],
+          where: { companyId: { in: companyIds } },
+          _count: true,
+        }),
     );
     const driverCountMap = new Map(
       driverCounts.map((d) => [d.companyId, d._count]),

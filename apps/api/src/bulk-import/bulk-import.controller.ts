@@ -16,7 +16,13 @@ import { BulkImportService, ImportType } from './bulk-import.service';
 import { ApiTags, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-const VALID_TYPES: ImportType[] = ['vehicles', 'drivers', 'customers', 'vendors', 'opening-balances'];
+const VALID_TYPES: ImportType[] = [
+  'vehicles',
+  'drivers',
+  'customers',
+  'vendors',
+  'opening-balances',
+];
 
 @ApiTags('Bulk Import')
 @ApiBearerAuth('JWT-auth')
@@ -39,7 +45,8 @@ export class BulkImportController {
 
     const buffer = this.importService.getTemplate(type as ImportType);
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': `attachment; filename="${type}-template.xlsx"`,
       'Content-Length': buffer.length,
     });
@@ -62,8 +69,16 @@ export class BulkImportController {
           'text/csv',
           'application/csv',
         ];
-        if (!allowed.includes(file.mimetype) && !file.originalname.match(/\.(xlsx|xls|csv)$/i)) {
-          cb(new BadRequestException('Only .xlsx, .xls, and .csv files are accepted'), false);
+        if (
+          !allowed.includes(file.mimetype) &&
+          !file.originalname.match(/\.(xlsx|xls|csv)$/i)
+        ) {
+          cb(
+            new BadRequestException(
+              'Only .xlsx, .xls, and .csv files are accepted',
+            ),
+            false,
+          );
         } else {
           cb(null, true);
         }
@@ -90,7 +105,9 @@ export class BulkImportController {
       );
     }
     if (!file) {
-      throw new BadRequestException('No file uploaded. Use multipart/form-data with field "file".');
+      throw new BadRequestException(
+        'No file uploaded. Use multipart/form-data with field "file".',
+      );
     }
 
     // Extract companyId from JWT claims (attached by auth guard)
@@ -99,7 +116,9 @@ export class BulkImportController {
     const userId = user?.id || user?.sub;
 
     if (!companyId) {
-      throw new BadRequestException('Cannot determine company from token. Ensure you are authenticated.');
+      throw new BadRequestException(
+        'Cannot determine company from token. Ensure you are authenticated.',
+      );
     }
 
     const report = await this.importService.import(

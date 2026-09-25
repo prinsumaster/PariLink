@@ -80,8 +80,10 @@ export class LlmManagerService {
       ];
 
       // Security Tracing: Log the final context sent to the LLM to verify tenant isolation
-      this.logger.log(`[AI_SECURITY_TRACE] Payload context: ${JSON.stringify(context)}`);
-      
+      this.logger.log(
+        `[AI_SECURITY_TRACE] Payload context: ${JSON.stringify(context)}`,
+      );
+
       const response = await model.invoke(messages);
       const duration = Date.now() - startTime;
 

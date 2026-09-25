@@ -11,7 +11,6 @@ import { WorkflowService } from '../../workflow/workflow.service';
 
 @Injectable()
 export class InventoryService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly eventStore: EventStoreService,

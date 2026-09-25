@@ -19,7 +19,7 @@ export interface GovernancePolicy {
 export class GovernanceService {
   private readonly logger = new Logger(GovernanceService.name);
 
-    // @ts-ignore: DI dependency reserved for future use
+  // @ts-ignore: DI dependency reserved for future use
   constructor(private readonly _prisma: PrismaService) {}
 
   /**

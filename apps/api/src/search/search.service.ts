@@ -10,7 +10,7 @@ export class SearchService {
       return { results: [] };
     }
 
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _searchQuery = `%${query}%`;
 
     // Perform parallel searches across domains

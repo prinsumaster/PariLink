@@ -78,7 +78,9 @@ export class ModelRouterService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   onModuleInit() {
-    this.refreshModels().catch(err => this.logger.error('Failed to init models', err));
+    this.refreshModels().catch((err) =>
+      this.logger.error('Failed to init models', err),
+    );
   }
 
   async refreshModels() {
@@ -87,11 +89,13 @@ export class ModelRouterService implements OnModuleInit {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let configs: any[] = [];
     try {
-      configs = await this.prisma.runAsSystem('[ModelRouterService.refreshModels] Internal service operation bypass', async (tx) =>
-        tx.aiModelConfig.findMany({
-          where: { isActive: true },
-          orderBy: { priority: 'desc' },
-        }),
+      configs = await this.prisma.runAsSystem(
+        '[ModelRouterService.refreshModels] Internal service operation bypass',
+        async (tx) =>
+          tx.aiModelConfig.findMany({
+            where: { isActive: true },
+            orderBy: { priority: 'desc' },
+          }),
       );
     } catch {
       this.logger.warn(

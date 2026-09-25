@@ -18,7 +18,10 @@ import { WebhookProcessor } from './webhook.processor';
       },
     }),
   ],
-  providers: [WebhookService, ...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : [])],
+  providers: [
+    WebhookService,
+    ...(process.env.RUN_WORKERS === 'true' ? [WebhookProcessor] : []),
+  ],
   exports: [WebhookService],
 })
 export class WebhookModule {}

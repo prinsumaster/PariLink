@@ -46,7 +46,10 @@ export class AuditInterceptor implements NestInterceptor {
             source: 'API_INTERCEPTOR',
           });
         } catch (error) {
-          this.logger.error(`Failed to write audit log for ${entityType} ${entityId}`, error);
+          this.logger.error(
+            `Failed to write audit log for ${entityType} ${entityId}`,
+            error,
+          );
         }
 
         return data;

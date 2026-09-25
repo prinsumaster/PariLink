@@ -18,7 +18,7 @@ export class MdmSearchService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _iam: IamPolicyEngineService, // Used for Data Governance/Permissions
   ) {}
 

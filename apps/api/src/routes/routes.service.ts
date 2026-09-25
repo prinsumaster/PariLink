@@ -22,12 +22,17 @@ export class RoutesService {
    * Geocode a city name using Nominatim (OpenStreetMap).
    * Note: This is a free rate-limited API.
    */
-  private async geocodeCity(city: string): Promise<{ lat: number, lon: number } | null> {
+  private async geocodeCity(
+    city: string,
+  ): Promise<{ lat: number; lon: number } | null> {
     try {
       // Nominatim requires a user agent
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city + ', India')}&format=json&limit=1`, {
-        headers: { 'User-Agent': 'PariLink-Enterprise/1.0' }
-      });
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city + ', India')}&format=json&limit=1`,
+        {
+          headers: { 'User-Agent': 'PariLink-Enterprise/1.0' },
+        },
+      );
       if (!res.ok) return null;
       const data = await res.json();
       if (data && data.length > 0) {
@@ -83,7 +88,7 @@ export class RoutesService {
 
     // Heavy commercial vehicle toll avg ₹3.0 / km
     const estimatedTolls = distanceKm * 3.0;
-    
+
     // Average speed ~50km/h for trucks in India
     const estimatedHours = distanceKm / 50;
 
@@ -92,11 +97,15 @@ export class RoutesService {
       estimatedTolls,
       estimatedHours,
       distanceSource,
-      tollEstimateType: 'CALCULATED_AVERAGE'
+      tollEstimateType: 'CALCULATED_AVERAGE',
     };
   }
 
-  async getTollEstimate(companyId: string, originCity: string, destinationCity: string) {
+  async getTollEstimate(
+    companyId: string,
+    originCity: string,
+    destinationCity: string,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const dbRoute = await tx.routeTollRate.findFirst({
         where: {
@@ -119,7 +128,10 @@ export class RoutesService {
       }
 
       // Fallback to routing API or heuristic
-      const routeData = await this.calculateRouteInternal(originCity, destinationCity);
+      const routeData = await this.calculateRouteInternal(
+        originCity,
+        destinationCity,
+      );
       return {
         originCity,
         destinationCity,
@@ -141,14 +153,24 @@ export class RoutesService {
     });
   }
 
-  async createRoute(companyId: string, origin: string, destination: string, providedDistance?: number, providedTolls?: number) {
+  async createRoute(
+    companyId: string,
+    origin: string,
+    destination: string,
+    providedDistance?: number,
+    providedTolls?: number,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const routeData = await this.calculateRouteInternal(origin, destination);
-      
+
       const distance = providedDistance || routeData.distanceKm;
       const estimatedTolls = providedTolls || routeData.estimatedTolls;
-      const distanceSource = providedDistance ? 'USER_PROVIDED' : routeData.distanceSource;
-      const tollEstimateType = providedTolls ? 'USER_PROVIDED' : routeData.tollEstimateType;
+      const distanceSource = providedDistance
+        ? 'USER_PROVIDED'
+        : routeData.distanceSource;
+      const tollEstimateType = providedTolls
+        ? 'USER_PROVIDED'
+        : routeData.tollEstimateType;
 
       return tx.route.create({
         data: {
@@ -158,7 +180,7 @@ export class RoutesService {
           distance,
           estimatedTolls,
           distanceSource,
-          tollEstimateType
+          tollEstimateType,
         },
       });
     });
@@ -166,15 +188,19 @@ export class RoutesService {
 
   async attachRouteToTrip(companyId: string, tripId: string, routeId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const route = await tx.route.findFirst({ where: { id: routeId, companyId } });
+      const route = await tx.route.findFirst({
+        where: { id: routeId, companyId },
+      });
       if (!route) throw new NotFoundException('Route not found');
-      
-      const trip = await tx.trip.findFirst({ where: { id: tripId, companyId } });
+
+      const trip = await tx.trip.findFirst({
+        where: { id: tripId, companyId },
+      });
       if (!trip) throw new NotFoundException('Trip not found');
 
       return tx.trip.update({
         where: { id: tripId },
-        data: { route: JSON.parse(JSON.stringify(route)) }
+        data: { route: JSON.parse(JSON.stringify(route)) },
       });
     });
   }

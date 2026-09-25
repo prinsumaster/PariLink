@@ -1,11 +1,10 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CacheManagerService } from '../../platform/performance/cache-manager.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 
 @Injectable()
 export class LiveFleetService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: CacheManagerService,
@@ -67,7 +66,12 @@ export class LiveFleetService {
         where: {
           companyId,
           ...(activeVehiclesIds.length > 0
-            ? { OR: [{ vehicleId: { in: activeVehiclesIds } }, { vehicleId: null }] }
+            ? {
+                OR: [
+                  { vehicleId: { in: activeVehiclesIds } },
+                  { vehicleId: null },
+                ],
+              }
             : {}),
         },
       }),
@@ -109,11 +113,7 @@ export class LiveFleetService {
   /**
    * Returns the last N fixes for a vehicle (for polyline rendering and 10× replay).
    */
-  async getVehicleTrail(
-    companyId: string,
-    vehicleId: string,
-    maxPoints = 90,
-  ) {
+  async getVehicleTrail(companyId: string, vehicleId: string, maxPoints = 90) {
     const locations = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.vehicleLocation.findMany({
         where: {

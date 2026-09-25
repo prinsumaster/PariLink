@@ -225,30 +225,36 @@ export class ChatService {
   }
 
   async addReaction(userId: string, messageId: string, emoji: string) {
-    return this.prisma.runAsSystem('[ChatService.addReaction] Internal service operation bypass', async (tx) =>
-      tx.messageReaction.upsert({
-        where: { messageId_userId_emoji: { messageId, userId, emoji } },
-        update: {},
-        create: { messageId, userId, emoji },
-      }),
+    return this.prisma.runAsSystem(
+      '[ChatService.addReaction] Internal service operation bypass',
+      async (tx) =>
+        tx.messageReaction.upsert({
+          where: { messageId_userId_emoji: { messageId, userId, emoji } },
+          update: {},
+          create: { messageId, userId, emoji },
+        }),
     );
   }
 
   async removeReaction(userId: string, messageId: string, emoji: string) {
-    return this.prisma.runAsSystem('[ChatService.removeReaction] Internal service operation bypass', async (tx) =>
-      tx.messageReaction.deleteMany({
-        where: { messageId, userId, emoji },
-      }),
+    return this.prisma.runAsSystem(
+      '[ChatService.removeReaction] Internal service operation bypass',
+      async (tx) =>
+        tx.messageReaction.deleteMany({
+          where: { messageId, userId, emoji },
+        }),
     );
   }
 
   async joinChannel(userId: string, channelId: string) {
-    return this.prisma.runAsSystem('[ChatService.joinChannel] Internal service operation bypass', async (tx) =>
-      tx.chatChannelMember.upsert({
-        where: { channelId_userId: { channelId, userId } },
-        update: {},
-        create: { channelId, userId },
-      }),
+    return this.prisma.runAsSystem(
+      '[ChatService.joinChannel] Internal service operation bypass',
+      async (tx) =>
+        tx.chatChannelMember.upsert({
+          where: { channelId_userId: { channelId, userId } },
+          update: {},
+          create: { channelId, userId },
+        }),
     );
   }
 

@@ -35,10 +35,10 @@ export class RequireApprovalGuard implements CanActivate {
       );
     }
 
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _payload = request.body || {};
     const resourceId = request.params.id || 'bulk';
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _action = request.method;
     const resourceType = request.url.split('/')[2] || 'unknown';
 

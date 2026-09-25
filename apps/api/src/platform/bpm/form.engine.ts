@@ -18,7 +18,7 @@ export class FormEngine {
   private readonly logger = new Logger(FormEngine.name);
 
   constructor(
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _prisma: PrismaService,
     private readonly eventStore: EventStoreService,
   ) {}

@@ -121,25 +121,27 @@ export class DistributedTracingService {
     events: Record<string, unknown>[];
   }): Promise<unknown> {
     try {
-      const span = await this.prisma.runAsSystem('[DistributedTracingService.recordSpan] Internal service operation bypass', async (tx) =>
-        tx.traceSpan.create({
-          data: {
-            traceId: data.traceId,
-            spanId: data.spanId,
-            parentSpanId: data.parentSpanId || null,
-            companyId: data.companyId || null,
-            serviceName: data.serviceName,
-            operationName: data.operationName,
-            startTime: data.startTime,
-            endTime: data.endTime,
-            durationMs: data.durationMs,
-            status: data.status,
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            tags: data.tags as object,
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            events: data.events as object[],
-          },
-        }),
+      const span = await this.prisma.runAsSystem(
+        '[DistributedTracingService.recordSpan] Internal service operation bypass',
+        async (tx) =>
+          tx.traceSpan.create({
+            data: {
+              traceId: data.traceId,
+              spanId: data.spanId,
+              parentSpanId: data.parentSpanId || null,
+              companyId: data.companyId || null,
+              serviceName: data.serviceName,
+              operationName: data.operationName,
+              startTime: data.startTime,
+              endTime: data.endTime,
+              durationMs: data.durationMs,
+              status: data.status,
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+              tags: data.tags as object,
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+              events: data.events as object[],
+            },
+          }),
       );
 
       this.eventEmitter.emit('Operations.TraceSpan.Recorded', {
@@ -266,11 +268,13 @@ export class DistributedTracingService {
    * Trace Explorer: Retrieves a full trace tree by Trace ID, organizing parent-child span hierarchy.
    */
   async getTraceTree(traceId: string): Promise<TraceTree> {
-    const spans = await this.prisma.runAsSystem('[DistributedTracingService.getTraceTree] Internal service operation bypass', async (tx) =>
-      tx.traceSpan.findMany({
-        where: { traceId },
-        orderBy: { startTime: 'asc' },
-      }),
+    const spans = await this.prisma.runAsSystem(
+      '[DistributedTracingService.getTraceTree] Internal service operation bypass',
+      async (tx) =>
+        tx.traceSpan.findMany({
+          where: { traceId },
+          orderBy: { startTime: 'asc' },
+        }),
     );
 
     if (spans.length === 0) {
@@ -369,12 +373,14 @@ export class DistributedTracingService {
     }
     if (filter.minDurationMs) where.durationMs = { gte: filter.minDurationMs };
 
-    const spans = await this.prisma.runAsSystem('[DistributedTracingService.searchTraces] Internal service operation bypass', async (tx) =>
-      tx.traceSpan.findMany({
-        where,
-        orderBy: { startTime: 'desc' },
-        take: filter.limit || 100,
-      }),
+    const spans = await this.prisma.runAsSystem(
+      '[DistributedTracingService.searchTraces] Internal service operation bypass',
+      async (tx) =>
+        tx.traceSpan.findMany({
+          where,
+          orderBy: { startTime: 'desc' },
+          take: filter.limit || 100,
+        }),
     );
 
     return spans.map((s) => ({

@@ -48,7 +48,7 @@ export class OperationsDashboardService {
     private readonly prisma: PrismaService,
     private readonly healthService: EnterpriseHealthService,
     private readonly metricsService: MetricsPlatformService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _incidentService: IncidentManagementService,
     private readonly performanceService: PerformancePlatformService,
   ) {}
@@ -119,28 +119,32 @@ export class OperationsDashboardService {
   }
 
   private async getActiveIncidents(companyId?: string): Promise<unknown[]> {
-    return this.prisma.runAsSystem('[OperationsDashboardService.getActiveIncidents] Internal service operation bypass', async (tx) =>
-      tx.incident.findMany({
-        where: {
-          ...(companyId ? { companyId } : {}),
-          status: { in: ['INVESTIGATING', 'IDENTIFIED', 'MONITORING'] },
-        },
-        orderBy: { startedAt: 'desc' },
-        take: 10,
-      }),
+    return this.prisma.runAsSystem(
+      '[OperationsDashboardService.getActiveIncidents] Internal service operation bypass',
+      async (tx) =>
+        tx.incident.findMany({
+          where: {
+            ...(companyId ? { companyId } : {}),
+            status: { in: ['INVESTIGATING', 'IDENTIFIED', 'MONITORING'] },
+          },
+          orderBy: { startedAt: 'desc' },
+          take: 10,
+        }),
     );
   }
 
   private async getCurrentAlerts(companyId?: string): Promise<unknown[]> {
-    return this.prisma.runAsSystem('[OperationsDashboardService.getCurrentAlerts] Internal service operation bypass', async (tx) =>
-      tx.alert.findMany({
-        where: {
-          ...(companyId ? { companyId } : {}),
-          status: { in: ['NEW', 'ACKNOWLEDGED'] },
-        },
-        orderBy: { timestamp: 'desc' },
-        take: 15,
-      }),
+    return this.prisma.runAsSystem(
+      '[OperationsDashboardService.getCurrentAlerts] Internal service operation bypass',
+      async (tx) =>
+        tx.alert.findMany({
+          where: {
+            ...(companyId ? { companyId } : {}),
+            status: { in: ['NEW', 'ACKNOWLEDGED'] },
+          },
+          orderBy: { timestamp: 'desc' },
+          take: 15,
+        }),
     );
   }
 
@@ -150,17 +154,19 @@ export class OperationsDashboardService {
     { companyId: string; companyName: string; requestCount: number }[]
   > {
     try {
-      const logs = await this.prisma.runAsSystem('[OperationsDashboardService.getTopApiConsumers] Internal service operation bypass', async (tx) =>
-        tx.apiAnalyticsLog.groupBy({
-          by: ['companyId'],
-          where: {
-            companyId: { not: null },
-            timestamp: { gte: new Date(Date.now() - 86400000) }, // Last 24h
-          },
-          _count: { endpoint: true },
-          orderBy: { _count: { endpoint: 'desc' } },
-          take: 5,
-        }),
+      const logs = await this.prisma.runAsSystem(
+        '[OperationsDashboardService.getTopApiConsumers] Internal service operation bypass',
+        async (tx) =>
+          tx.apiAnalyticsLog.groupBy({
+            by: ['companyId'],
+            where: {
+              companyId: { not: null },
+              timestamp: { gte: new Date(Date.now() - 86400000) }, // Last 24h
+            },
+            _count: { endpoint: true },
+            orderBy: { _count: { endpoint: 'desc' } },
+            take: 5,
+          }),
       );
 
       const results: {
@@ -170,8 +176,10 @@ export class OperationsDashboardService {
       }[] = [];
       for (const item of logs) {
         if (!item.companyId) continue;
-        const comp = await this.prisma.runAsSystem('[OperationsDashboardService.getTopApiConsumers] Internal service operation bypass', async (tx) =>
-          tx.company.findUnique({ where: { id: item.companyId as string } }),
+        const comp = await this.prisma.runAsSystem(
+          '[OperationsDashboardService.getTopApiConsumers] Internal service operation bypass',
+          async (tx) =>
+            tx.company.findUnique({ where: { id: item.companyId as string } }),
         );
         results.push({
           companyId: item.companyId,
@@ -204,14 +212,16 @@ export class OperationsDashboardService {
 
   private async getActiveSecurityLocks(companyId?: string): Promise<number> {
     try {
-      const locks = await this.prisma.runAsSystem('[OperationsDashboardService.getActiveSecurityLocks] Internal service operation bypass', async (tx) =>
-        tx.auditLog.count({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            action: { contains: 'LOCK' },
-            createdAt: { gte: new Date(Date.now() - 3600000) },
-          },
-        }),
+      const locks = await this.prisma.runAsSystem(
+        '[OperationsDashboardService.getActiveSecurityLocks] Internal service operation bypass',
+        async (tx) =>
+          tx.auditLog.count({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              action: { contains: 'LOCK' },
+              createdAt: { gte: new Date(Date.now() - 3600000) },
+            },
+          }),
       );
       return locks;
     } catch (e) {

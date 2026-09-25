@@ -43,7 +43,7 @@ export class EnterpriseHealthService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _auditService: AuditService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -138,22 +138,26 @@ export class EnterpriseHealthService {
     const start = Date.now();
     try {
       // Query recent API Request logs or error rates from schema
-      const recentErrors = await this.prisma.runAsSystem('[EnterpriseHealthService.checkApiHealth] Internal service operation bypass', async (tx) =>
-        tx.apiAnalyticsLog.count({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            statusCode: { gte: 500 },
-            timestamp: { gte: new Date(Date.now() - 300000) }, // Last 5 mins
-          },
-        }),
+      const recentErrors = await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkApiHealth] Internal service operation bypass',
+        async (tx) =>
+          tx.apiAnalyticsLog.count({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              statusCode: { gte: 500 },
+              timestamp: { gte: new Date(Date.now() - 300000) }, // Last 5 mins
+            },
+          }),
       );
-      const totalRequests = await this.prisma.runAsSystem('[EnterpriseHealthService.checkApiHealth] Internal service operation bypass', async (tx) =>
-        tx.apiAnalyticsLog.count({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            timestamp: { gte: new Date(Date.now() - 300000) },
-          },
-        }),
+      const totalRequests = await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkApiHealth] Internal service operation bypass',
+        async (tx) =>
+          tx.apiAnalyticsLog.count({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              timestamp: { gte: new Date(Date.now() - 300000) },
+            },
+          }),
       );
 
       const errorRatePct =
@@ -192,7 +196,10 @@ export class EnterpriseHealthService {
   async checkDatabaseHealth(): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      await this.prisma.runAsSystem('[EnterpriseHealthService.checkDatabaseHealth] Internal service operation bypass', async (tx) => tx.$queryRaw`SELECT 1`);
+      await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkDatabaseHealth] Internal service operation bypass',
+        async (tx) => tx.$queryRaw`SELECT 1`,
+      );
       const latencyMs = Date.now() - start;
       const status = latencyMs > 500 ? 'DEGRADED' : 'HEALTHY';
       return {
@@ -237,21 +244,25 @@ export class EnterpriseHealthService {
   async checkQueueHealth(companyId?: string): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      const pendingJobs = await this.prisma.runAsSystem('[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass', async (tx) =>
-        tx.backgroundJob.count({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            status: 'PENDING',
-          },
-        }),
+      const pendingJobs = await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass',
+        async (tx) =>
+          tx.backgroundJob.count({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              status: 'PENDING',
+            },
+          }),
       );
-      const failedJobs = await this.prisma.runAsSystem('[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass', async (tx) =>
-        tx.backgroundJob.count({
-          where: {
-            ...(companyId ? { companyId } : {}),
-            status: 'FAILED',
-          },
-        }),
+      const failedJobs = await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkQueueHealth] Internal service operation bypass',
+        async (tx) =>
+          tx.backgroundJob.count({
+            where: {
+              ...(companyId ? { companyId } : {}),
+              status: 'FAILED',
+            },
+          }),
       );
 
       const latencyMs = Date.now() - start;
@@ -324,10 +335,12 @@ export class EnterpriseHealthService {
   ): Promise<HealthComponentStatus> {
     const start = Date.now();
     try {
-      const activeConnections = await this.prisma.runAsSystem('[EnterpriseHealthService.checkIntegrationHealth] Internal service operation bypass', async (tx) =>
-        tx.integrationConnection.count({
-          where: { ...(companyId ? { companyId } : {}), status: 'ENABLED' },
-        }),
+      const activeConnections = await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.checkIntegrationHealth] Internal service operation bypass',
+        async (tx) =>
+          tx.integrationConnection.count({
+            where: { ...(companyId ? { companyId } : {}), status: 'ENABLED' },
+          }),
       );
       return {
         component: 'ENTERPRISE_INTEGRATION_HUB',
@@ -403,10 +416,12 @@ export class EnterpriseHealthService {
         details: comp.details as object,
       }));
 
-      await this.prisma.runAsSystem('[EnterpriseHealthService.recordHealthSnapshot] Internal service operation bypass', async (tx) =>
-        tx.systemHealthLog.createMany({
-          data: logEntries,
-        }),
+      await this.prisma.runAsSystem(
+        '[EnterpriseHealthService.recordHealthSnapshot] Internal service operation bypass',
+        async (tx) =>
+          tx.systemHealthLog.createMany({
+            data: logEntries,
+          }),
       );
 
       this.eventEmitter.emit('Operations.HealthSnapshot.Recorded', {

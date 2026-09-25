@@ -51,8 +51,9 @@ export class CsvImportProcessor {
           throw new Error('Missing required mapped fields');
         }
 
-        await this.prisma.runAsSystem('[CsvImportProcessor.handleDriverImport] Background job bypass', async (tx) =>
-          tx.driver.create({ data: driverData }),
+        await this.prisma.runAsSystem(
+          '[CsvImportProcessor.handleDriverImport] Background job bypass',
+          async (tx) => tx.driver.create({ data: driverData }),
         );
         successCount++;
       } catch (err) {

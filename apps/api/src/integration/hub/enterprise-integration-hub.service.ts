@@ -12,7 +12,6 @@ import { AuditService } from '../../platform/audit/audit.service';
 
 @Injectable()
 export class EnterpriseIntegrationHubService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly registry: ConnectorRegistryService,
@@ -21,11 +20,13 @@ export class EnterpriseIntegrationHubService {
   ) {}
 
   async getCatalog() {
-    const dbConnectors = await this.prisma.runAsSystem('[EnterpriseIntegrationHubService.getCatalog] Internal service operation bypass', async (tx) =>
-      tx.integrationConnector.findMany({
-        where: { status: 'ACTIVE' },
-        include: { category: true },
-      }),
+    const dbConnectors = await this.prisma.runAsSystem(
+      '[EnterpriseIntegrationHubService.getCatalog] Internal service operation bypass',
+      async (tx) =>
+        tx.integrationConnector.findMany({
+          where: { status: 'ACTIVE' },
+          include: { category: true },
+        }),
     );
     return dbConnectors;
   }
@@ -46,7 +47,7 @@ export class EnterpriseIntegrationHubService {
           createdAt: true,
           updatedAt: true,
           connector: true,
-          syncJobs: { take: 5, orderBy: { createdAt: 'desc' } }
+          syncJobs: { take: 5, orderBy: { createdAt: 'desc' } },
         },
       });
     });

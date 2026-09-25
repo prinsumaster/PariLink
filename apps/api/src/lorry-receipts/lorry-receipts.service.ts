@@ -38,7 +38,7 @@ export class LorryReceiptsService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const lr = await tx.lorryReceipt.findFirst({
         where: { id, companyId },
-        include: { trip: true, driver: true, vehicle: true }
+        include: { trip: true, driver: true, vehicle: true },
       });
       if (!lr) {
         throw new NotFoundException(`Lorry Receipt not found`);
@@ -55,8 +55,8 @@ export class LorryReceiptsService {
           trip: true,
           driver: true,
           vehicle: true,
-          company: true
-        }
+          company: true,
+        },
       });
 
       if (!lr) {
@@ -66,7 +66,10 @@ export class LorryReceiptsService {
       const PDFDocument = require('pdfkit');
       const doc = new PDFDocument({ margin: 50 });
 
-      doc.fontSize(20).text('LORRY RECEIPT / BILTY', { align: 'center' }).moveDown();
+      doc
+        .fontSize(20)
+        .text('LORRY RECEIPT / BILTY', { align: 'center' })
+        .moveDown();
 
       doc.fontSize(10).text(`Company: ${lr.company.name}`);
       doc.text(`LR Number: ${lr.lrNumber}`);

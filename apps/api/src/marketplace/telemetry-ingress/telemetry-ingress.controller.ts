@@ -1,4 +1,12 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Req, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Req,
+  Headers,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { TelemetryIngressService } from './telemetry-ingress.service';
 import type { StandardTelemetryPayload } from './telemetry-ingress.service';

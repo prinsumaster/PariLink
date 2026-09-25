@@ -15,7 +15,7 @@ export class QueryMonitorInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const store = { count: 0 };
-    
+
     return queryMonitorStorage.run(store, () => {
       const request = context.switchToHttp().getRequest();
       const method = request.method;

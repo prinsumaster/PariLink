@@ -21,7 +21,7 @@ export class CommandGateway {
 
   private readonly logger = new Logger(CommandGateway.name);
 
-    // @ts-ignore: DI dependency reserved for future use
+  // @ts-ignore: DI dependency reserved for future use
   constructor(private readonly _bpm?: ProcessEngine) {}
 
   @SubscribeMessage('dispatch_action')

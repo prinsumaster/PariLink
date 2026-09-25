@@ -22,7 +22,6 @@ export class SubmitClaimDto {
   @IsString() @IsNotEmpty() reason!: string;
 }
 
-
 export class UpdateClaimStatusDto {
   @IsString() @IsNotEmpty() status!: string;
 }
@@ -30,8 +29,6 @@ export class UpdateClaimStatusDto {
 @ApiTags('portals-customer-claims')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-
-
 @Controller('portals/customer/claims')
 export class ClaimsController {
   constructor(private readonly claimsService: ClaimsService) {}
@@ -75,10 +72,6 @@ export class ClaimsController {
     @Param('id') id: string,
     @Body() dto: UpdateClaimStatusDto,
   ) {
-    return this.claimsService.updateClaimStatus(
-      user.companyId,
-      id,
-      dto.status,
-    );
+    return this.claimsService.updateClaimStatus(user.companyId, id, dto.status);
   }
 }

@@ -103,16 +103,29 @@ export class DriversService {
   private mapDriver(d: any) {
     // Map dynamic driver scores based on actual DriverScore relation
     const driverScores = Array.isArray(d.driverScore) ? d.driverScore : [];
-    
+
     let totalScore = 0;
     let avgFuel = 0;
     if (driverScores.length > 0) {
-      totalScore = driverScores.reduce((sum: number, s: any) => sum + (s.total ?? 0), 0) / driverScores.length;
-      avgFuel = driverScores.reduce((sum: number, s: any) => sum + (s.fuelScore ?? 0), 0) / driverScores.length;
+      totalScore =
+        driverScores.reduce((sum: number, s: any) => sum + (s.total ?? 0), 0) /
+        driverScores.length;
+      avgFuel =
+        driverScores.reduce(
+          (sum: number, s: any) => sum + (s.fuelScore ?? 0),
+          0,
+        ) / driverScores.length;
     }
 
     const score = driverScores.length > 0 ? totalScore : 0;
-    const riskRating = score >= 85 ? 'LOW' : score >= 70 ? 'MEDIUM' : score > 0 ? 'HIGH' : 'UNRATED';
+    const riskRating =
+      score >= 85
+        ? 'LOW'
+        : score >= 70
+          ? 'MEDIUM'
+          : score > 0
+            ? 'HIGH'
+            : 'UNRATED';
 
     return {
       ...d,
@@ -132,13 +145,15 @@ export class DriversService {
 
   async getLorryReceipts(companyId: string, driverId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const driver = await tx.driver.findFirst({ where: { id: driverId, companyId } });
+      const driver = await tx.driver.findFirst({
+        where: { id: driverId, companyId },
+      });
       if (!driver) throw new NotFoundException('Driver not found');
-      
+
       return tx.lorryReceipt.findMany({
         where: { driverId, companyId, status: 'SHARED' },
         orderBy: { createdAt: 'desc' },
-        include: { trip: true, vehicle: true }
+        include: { trip: true, vehicle: true },
       });
     });
   }
@@ -176,10 +191,13 @@ export class DriversService {
         tx.driver.count({ where }),
       ]);
 
-      let mappedData = data.map((d) => this.mapDriver(d));
-      
+      const mappedData = data.map((d) => this.mapDriver(d));
+
       if (query.sort === 'score') {
-        mappedData.sort((a, b) => b.safetyAnalytics.driverScore - a.safetyAnalytics.driverScore);
+        mappedData.sort(
+          (a, b) =>
+            b.safetyAnalytics.driverScore - a.safetyAnalytics.driverScore,
+        );
       }
 
       return createPaginationResponse(mappedData, total, page, limit);
@@ -378,7 +396,11 @@ export class DriversService {
         where: { driverId, companyId },
         orderBy: { createdAt: 'desc' },
         take: 10,
-        include: { trip: { select: { id: true, tripNumber: true, status: true, endDate: true } } }
+        include: {
+          trip: {
+            select: { id: true, tripNumber: true, status: true, endDate: true },
+          },
+        },
       });
 
       if (scores.length === 0) {
@@ -393,20 +415,35 @@ export class DriversService {
           customerAvg: 0,
           mileageAvg: 0,
           trend: 'stable',
-          recentTrips: []
+          recentTrips: [],
         };
       }
 
-      const totalScore = scores.reduce((sum, s) => sum + s.total, 0) / scores.length;
-      const onTimeAvg = (scores.filter(s => s.onTime).length / scores.length) * 100;
-      const podAvg = (scores.filter(s => s.podUploaded).length / scores.length) * 100;
-      
-      const dispatcherAvg = scores.reduce((sum, s) => sum + (s.dispatcherScore || 0), 0) / scores.length;
-      const fleetManagerAvg = scores.reduce((sum, s) => sum + (s.fleetManagerScore || 0), 0) / scores.length;
-      const workshopAvg = scores.reduce((sum, s) => sum + (s.workshopScore || 0), 0) / scores.length;
-      const securityAvg = scores.reduce((sum, s) => sum + (s.securityScore || 0), 0) / scores.length;
-      const customerAvg = scores.reduce((sum, s) => sum + (s.customerScore || 0), 0) / scores.length;
-      const mileageAvg = scores.reduce((sum, s) => sum + (s.mileageScore || 0), 0) / scores.length;
+      const totalScore =
+        scores.reduce((sum, s) => sum + s.total, 0) / scores.length;
+      const onTimeAvg =
+        (scores.filter((s) => s.onTime).length / scores.length) * 100;
+      const podAvg =
+        (scores.filter((s) => s.podUploaded).length / scores.length) * 100;
+
+      const dispatcherAvg =
+        scores.reduce((sum, s) => sum + (s.dispatcherScore || 0), 0) /
+        scores.length;
+      const fleetManagerAvg =
+        scores.reduce((sum, s) => sum + (s.fleetManagerScore || 0), 0) /
+        scores.length;
+      const workshopAvg =
+        scores.reduce((sum, s) => sum + (s.workshopScore || 0), 0) /
+        scores.length;
+      const securityAvg =
+        scores.reduce((sum, s) => sum + (s.securityScore || 0), 0) /
+        scores.length;
+      const customerAvg =
+        scores.reduce((sum, s) => sum + (s.customerScore || 0), 0) /
+        scores.length;
+      const mileageAvg =
+        scores.reduce((sum, s) => sum + (s.mileageScore || 0), 0) /
+        scores.length;
 
       let trend = 'stable';
       if (scores.length >= 2) {
@@ -427,11 +464,11 @@ export class DriversService {
         customerAvg,
         mileageAvg,
         trend,
-        recentTrips: scores.map(s => ({
+        recentTrips: scores.map((s) => ({
           tripNumber: s.trip.tripNumber,
           date: s.trip.endDate,
-          score: s.total
-        }))
+          score: s.total,
+        })),
       };
     });
   }

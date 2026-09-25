@@ -39,7 +39,9 @@ export class SettlementEngine {
       // 2. Validate that NO trips are already settled
       const alreadySettled = trips.filter((t) => t.settlementId !== null);
       if (alreadySettled.length > 0) {
-        this.logger.error(`Attempt to double-settle trips: ${alreadySettled.map(t => t.id).join(', ')}`);
+        this.logger.error(
+          `Attempt to double-settle trips: ${alreadySettled.map((t) => t.id).join(', ')}`,
+        );
         throw new BadRequestException('One or more trips are already settled');
       }
 
@@ -71,8 +73,8 @@ export class SettlementEngine {
             periodEnd: new Date(),
             status: 'PENDING_APPROVAL',
             trips: {
-              connect: trips.map(t => ({ id: t.id }))
-            }
+              connect: trips.map((t) => ({ id: t.id })),
+            },
           },
         });
         return settlement;

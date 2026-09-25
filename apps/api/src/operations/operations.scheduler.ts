@@ -52,8 +52,9 @@ export class OperationsScheduler {
       );
 
       if (unhealthyComps.length > 0) {
-        const company = await this.prisma.runAsSystem('[OperationsScheduler.collectHealthPulse] Internal service operation bypass', async (tx) =>
-          tx.company.findFirst({ where: { status: 'ACTIVE' } }),
+        const company = await this.prisma.runAsSystem(
+          '[OperationsScheduler.collectHealthPulse] Internal service operation bypass',
+          async (tx) => tx.company.findFirst({ where: { status: 'ACTIVE' } }),
         );
         if (company) {
           await Promise.all(
@@ -93,7 +94,7 @@ export class OperationsScheduler {
   async collectSystemMetrics(): Promise<void> {
     try {
       const metrics = await this.metricsService.getSystemMetrics();
-  // @ts-ignore: reserved for future use
+      // @ts-ignore: reserved for future use
       const _SENTINEL_COMPANY_ID = 'SYSTEM_INTERNAL';
 
       // Threshold detection: Heap > 800MB
@@ -138,12 +139,14 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_30_SECONDS)
   async monitorQueueDepth(): Promise<void> {
     try {
-      const failedJobs = await this.prisma.runAsSystem('[OperationsScheduler.monitorQueueDepth] Internal service operation bypass', async (tx) =>
-        tx.backgroundJob.count({ where: { status: 'FAILED' } }),
+      const failedJobs = await this.prisma.runAsSystem(
+        '[OperationsScheduler.monitorQueueDepth] Internal service operation bypass',
+        async (tx) => tx.backgroundJob.count({ where: { status: 'FAILED' } }),
       );
-  // @ts-ignore: reserved for future use
-      const _pendingJobs = await this.prisma.runAsSystem('[OperationsScheduler.monitorQueueDepth] Internal service operation bypass', async (tx) =>
-        tx.backgroundJob.count({ where: { status: 'PENDING' } }),
+      // @ts-ignore: reserved for future use
+      const _pendingJobs = await this.prisma.runAsSystem(
+        '[OperationsScheduler.monitorQueueDepth] Internal service operation bypass',
+        async (tx) => tx.backgroundJob.count({ where: { status: 'PENDING' } }),
       );
 
       if (failedJobs > 20) {
@@ -165,15 +168,17 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async detectSlowEndpoints(): Promise<void> {
     try {
-      const slowLogs = await this.prisma.runAsSystem('[OperationsScheduler.detectSlowEndpoints] Internal service operation bypass', async (tx) =>
-        tx.apiAnalyticsLog.findMany({
-          where: {
-            latencyMs: { gte: 3000 }, // > 3 seconds
-            timestamp: { gte: new Date(Date.now() - 600000) }, // Last 10 min
-          },
-          take: 50,
-          orderBy: { latencyMs: 'desc' },
-        }),
+      const slowLogs = await this.prisma.runAsSystem(
+        '[OperationsScheduler.detectSlowEndpoints] Internal service operation bypass',
+        async (tx) =>
+          tx.apiAnalyticsLog.findMany({
+            where: {
+              latencyMs: { gte: 3000 }, // > 3 seconds
+              timestamp: { gte: new Date(Date.now() - 600000) }, // Last 10 min
+            },
+            take: 50,
+            orderBy: { latencyMs: 'desc' },
+          }),
       );
 
       await Promise.all(
@@ -213,13 +218,17 @@ export class OperationsScheduler {
     try {
       const window = new Date(Date.now() - 300000); // 5 minutes
       const [total, errors] = await Promise.all([
-        this.prisma.runAsSystem('[OperationsScheduler.monitorErrorRates] Internal service operation bypass', async (tx) =>
-          tx.apiAnalyticsLog.count({ where: { timestamp: { gte: window } } }),
+        this.prisma.runAsSystem(
+          '[OperationsScheduler.monitorErrorRates] Internal service operation bypass',
+          async (tx) =>
+            tx.apiAnalyticsLog.count({ where: { timestamp: { gte: window } } }),
         ),
-        this.prisma.runAsSystem('[OperationsScheduler.monitorErrorRates] Internal service operation bypass', async (tx) =>
-          tx.apiAnalyticsLog.count({
-            where: { timestamp: { gte: window }, statusCode: { gte: 500 } },
-          }),
+        this.prisma.runAsSystem(
+          '[OperationsScheduler.monitorErrorRates] Internal service operation bypass',
+          async (tx) =>
+            tx.apiAnalyticsLog.count({
+              where: { timestamp: { gte: window }, statusCode: { gte: 500 } },
+            }),
         ),
       ]);
 
@@ -255,8 +264,10 @@ export class OperationsScheduler {
       '[Backup Scheduler] Starting daily automated database backups...',
     );
     try {
-      const companies = await this.prisma.runAsSystem('[OperationsScheduler.scheduleDailyBackups] Internal service operation bypass', async (tx) =>
-        tx.company.findMany({ where: { status: 'ACTIVE' }, take: 50 }),
+      const companies = await this.prisma.runAsSystem(
+        '[OperationsScheduler.scheduleDailyBackups] Internal service operation bypass',
+        async (tx) =>
+          tx.company.findMany({ where: { status: 'ACTIVE' }, take: 50 }),
       );
 
       await Promise.all(
@@ -324,11 +335,13 @@ export class OperationsScheduler {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async expireMaintenanceWindows(): Promise<void> {
     try {
-      const expired = await this.prisma.runAsSystem('[OperationsScheduler.expireMaintenanceWindows] Internal service operation bypass', async (tx) =>
-        tx.maintenanceWindow.updateMany({
-          where: { isActive: true, endTime: { lt: new Date() } },
-          data: { isActive: false },
-        }),
+      const expired = await this.prisma.runAsSystem(
+        '[OperationsScheduler.expireMaintenanceWindows] Internal service operation bypass',
+        async (tx) =>
+          tx.maintenanceWindow.updateMany({
+            where: { isActive: true, endTime: { lt: new Date() } },
+            data: { isActive: false },
+          }),
       );
       if (expired.count > 0) {
         this.logger.log(

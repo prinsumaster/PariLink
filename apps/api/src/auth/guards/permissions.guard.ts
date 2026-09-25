@@ -54,8 +54,12 @@ export class PermissionsGuard implements CanActivate {
     // No @RequirePermissions decorator — deny by default (fail-closed)
     // To explicitly allow public access, a @Public decorator should be used.
     if (!requiredPermissions || requiredPermissions.length === 0) {
-      this.logger.warn(`[IAM] Fail-closed: Endpoint ${request.method} ${request.url} has no @RequirePermissions`);
-      throw new ForbiddenException('Authorization configuration missing. Access denied by default.');
+      this.logger.warn(
+        `[IAM] Fail-closed: Endpoint ${request.method} ${request.url} has no @RequirePermissions`,
+      );
+      throw new ForbiddenException(
+        'Authorization configuration missing. Access denied by default.',
+      );
     }
 
     if (!user) {
@@ -84,7 +88,7 @@ export class PermissionsGuard implements CanActivate {
 
     if (!allGranted) {
       const denied = decisions.find(({ decision }) => !decision.granted)!;
-      
+
       this.logger.warn(
         `[IAM] Authorization denied: user=${user.id} tenant=${user.companyId} ` +
           `permission=${denied.permission} reason=${denied.decision.reason} path=${request.url}`,

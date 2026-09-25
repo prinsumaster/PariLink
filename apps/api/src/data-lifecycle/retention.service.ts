@@ -91,10 +91,12 @@ export class RetentionService {
 
   private async purgeLocationHistory(retentionDays: number): Promise<number> {
     const cutoff = this.getCutoffDate(retentionDays);
-    const result = await this.prisma.runAsSystem('[RetentionService.purgeLocationHistory] Internal service operation bypass', async (tx) =>
-      tx.locationHistory.deleteMany({
-        where: { timestamp: { lt: cutoff } },
-      }),
+    const result = await this.prisma.runAsSystem(
+      '[RetentionService.purgeLocationHistory] Internal service operation bypass',
+      async (tx) =>
+        tx.locationHistory.deleteMany({
+          where: { timestamp: { lt: cutoff } },
+        }),
     );
     if (result.count > 0) {
       this.logger.log(`[Retention] Purged ${result.count} expired GPS records`);
@@ -111,10 +113,12 @@ export class RetentionService {
   private async purgeDomainEvents(retentionDays: number): Promise<number> {
     const cutoff = this.getCutoffDate(retentionDays);
     try {
-      const result = await this.prisma.runAsSystem('[RetentionService.purgeDomainEvents] Internal service operation bypass', async (tx) =>
-        tx.domainEvent.deleteMany({
-          where: { timestamp: { lt: cutoff } },
-        }),
+      const result = await this.prisma.runAsSystem(
+        '[RetentionService.purgeDomainEvents] Internal service operation bypass',
+        async (tx) =>
+          tx.domainEvent.deleteMany({
+            where: { timestamp: { lt: cutoff } },
+          }),
       );
       if (result.count > 0) {
         this.logger.log(`[Retention] Purged ${result.count} domain events`);
@@ -134,10 +138,12 @@ export class RetentionService {
   private async purgeAiLogs(retentionDays: number): Promise<number> {
     const cutoff = this.getCutoffDate(retentionDays);
     try {
-      const result = await this.prisma.runAsSystem('[RetentionService.purgeAiLogs] Internal service operation bypass', async (tx) =>
-        tx.aiInteractionLog.deleteMany({
-          where: { createdAt: { lt: cutoff } },
-        }),
+      const result = await this.prisma.runAsSystem(
+        '[RetentionService.purgeAiLogs] Internal service operation bypass',
+        async (tx) =>
+          tx.aiInteractionLog.deleteMany({
+            where: { createdAt: { lt: cutoff } },
+          }),
       );
       if (result.count > 0) {
         this.logger.log(
@@ -159,10 +165,12 @@ export class RetentionService {
   private async purgePlatformMetrics(retentionDays: number): Promise<number> {
     const cutoff = this.getCutoffDate(retentionDays);
     try {
-      const result = await this.prisma.runAsSystem('[RetentionService.purgePlatformMetrics] Internal service operation bypass', async (tx) =>
-        tx.platformMetric.deleteMany({
-          where: { recordedAt: { lt: cutoff } },
-        }),
+      const result = await this.prisma.runAsSystem(
+        '[RetentionService.purgePlatformMetrics] Internal service operation bypass',
+        async (tx) =>
+          tx.platformMetric.deleteMany({
+            where: { recordedAt: { lt: cutoff } },
+          }),
       );
       if (result.count > 0) {
         this.logger.log(`[Retention] Purged ${result.count} platform metrics`);
@@ -182,13 +190,15 @@ export class RetentionService {
   private async purgeWebhookDeliveries(retentionDays: number): Promise<number> {
     const cutoff = this.getCutoffDate(retentionDays);
     try {
-      const result = await this.prisma.runAsSystem('[RetentionService.purgeWebhookDeliveries] Webhook handler bypass', async (tx) =>
-        tx.webhookDelivery.deleteMany({
-          where: {
-            createdAt: { lt: cutoff },
-            status: { in: ['SUCCESS', 'FAILED'] },
-          },
-        }),
+      const result = await this.prisma.runAsSystem(
+        '[RetentionService.purgeWebhookDeliveries] Webhook handler bypass',
+        async (tx) =>
+          tx.webhookDelivery.deleteMany({
+            where: {
+              createdAt: { lt: cutoff },
+              status: { in: ['SUCCESS', 'FAILED'] },
+            },
+          }),
       );
       if (result.count > 0) {
         this.logger.log(
@@ -210,14 +220,16 @@ export class RetentionService {
   private async archiveOldInvoices(): Promise<number> {
     const tenYearsAgo = new Date();
     tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
-    const result = await this.prisma.runAsSystem('[RetentionService.archiveOldInvoices] Internal service operation bypass', async (tx) =>
-      tx.invoice.updateMany({
-        where: {
-          createdAt: { lt: tenYearsAgo },
-          status: { in: ['PAID', 'CANCELLED'] },
-        },
-        data: { status: 'ARCHIVED' },
-      }),
+    const result = await this.prisma.runAsSystem(
+      '[RetentionService.archiveOldInvoices] Internal service operation bypass',
+      async (tx) =>
+        tx.invoice.updateMany({
+          where: {
+            createdAt: { lt: tenYearsAgo },
+            status: { in: ['PAID', 'CANCELLED'] },
+          },
+          data: { status: 'ARCHIVED' },
+        }),
     );
     if (result.count > 0) {
       this.logger.log(`[Retention] Archived ${result.count} legacy invoices`);

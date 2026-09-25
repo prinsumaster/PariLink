@@ -3,7 +3,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class ExternalIdentityMappingService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -18,7 +17,6 @@ export class ExternalIdentityMappingService {
     // @ts-ignore: reserved for future use
     const _extRef = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.externalReference.findUnique({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
         where: {
           masterRecordId_sourceSystem: {
             // This relies on the unique compound index but Prisma handles it
@@ -30,10 +28,10 @@ export class ExternalIdentityMappingService {
 
     const ref = await this.prisma.runAsTenant(companyId, async (tx) =>
       tx.externalReference.findFirst({
-        where: { 
-          sourceSystem, 
+        where: {
+          sourceSystem,
           externalId,
-          masterRecord: { companyId } 
+          masterRecord: { companyId },
         },
         select: {
           masterRecordId: true,
@@ -62,34 +60,38 @@ export class ExternalIdentityMappingService {
     priority = 0,
     rawData?: Record<string, any>,
   ) {
-    const master = await this.prisma.runAsSystem('[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass', async (tx) =>
-      tx.masterRecord.findUnique({
-        where: { id: masterRecordId },
-      }),
+    const master = await this.prisma.runAsSystem(
+      '[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass',
+      async (tx) =>
+        tx.masterRecord.findUnique({
+          where: { id: masterRecordId },
+        }),
     );
     if (!master || !master.isGolden) {
       throw new NotFoundException('Golden record not found or has been merged');
     }
 
-    return this.prisma.runAsSystem('[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass', async (tx) =>
-      tx.externalReference.upsert({
-        where: {
-          masterRecordId_sourceSystem: { masterRecordId, sourceSystem },
-        },
-        update: {
-          externalId,
-          priority,
-          rawData,
-          lastSyncedAt: new Date(),
-        },
-        create: {
-          masterRecordId,
-          sourceSystem,
-          externalId,
-          priority,
-          rawData,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[ExternalIdentityMappingService.linkExternalIdentity] Internal service operation bypass',
+      async (tx) =>
+        tx.externalReference.upsert({
+          where: {
+            masterRecordId_sourceSystem: { masterRecordId, sourceSystem },
+          },
+          update: {
+            externalId,
+            priority,
+            rawData,
+            lastSyncedAt: new Date(),
+          },
+          create: {
+            masterRecordId,
+            sourceSystem,
+            externalId,
+            priority,
+            rawData,
+          },
+        }),
     );
   }
 
@@ -97,11 +99,13 @@ export class ExternalIdentityMappingService {
    * Fetch all external identities for a Golden Record.
    */
   async getLinkedIdentities(masterRecordId: string) {
-    return this.prisma.runAsSystem('[ExternalIdentityMappingService.getLinkedIdentities] Internal service operation bypass', async (tx) =>
-      tx.externalReference.findMany({
-        where: { masterRecordId },
-        orderBy: { priority: 'desc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[ExternalIdentityMappingService.getLinkedIdentities] Internal service operation bypass',
+      async (tx) =>
+        tx.externalReference.findMany({
+          where: { masterRecordId },
+          orderBy: { priority: 'desc' },
+        }),
     );
   }
 }

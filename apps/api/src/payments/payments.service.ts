@@ -112,16 +112,25 @@ export class PaymentsService {
 
       // 4. Create double-entry JournalEntry for payment receipt
       // Ensure CASH and ACCOUNTS_RECEIVABLE accounts exist
-      let cashAccount = await tx.account.findFirst({ where: { companyId, code: '1000' } });
+      let cashAccount = await tx.account.findFirst({
+        where: { companyId, code: '1000' },
+      });
       if (!cashAccount) {
         cashAccount = await tx.account.create({
-          data: { companyId, code: '1000', name: 'Cash', type: 'ASSET' }
+          data: { companyId, code: '1000', name: 'Cash', type: 'ASSET' },
         });
       }
-      let arAccount = await tx.account.findFirst({ where: { companyId, code: '1200' } });
+      let arAccount = await tx.account.findFirst({
+        where: { companyId, code: '1200' },
+      });
       if (!arAccount) {
         arAccount = await tx.account.create({
-          data: { companyId, code: '1200', name: 'Accounts Receivable', type: 'ASSET' }
+          data: {
+            companyId,
+            code: '1200',
+            name: 'Accounts Receivable',
+            type: 'ASSET',
+          },
         });
       }
 

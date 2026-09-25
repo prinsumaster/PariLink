@@ -48,7 +48,10 @@ export class DriversController {
   @Get(':id/lorry-receipts')
   @RequirePermissions('documents:read')
   @ApiOperation({ summary: 'Get Lorry Receipts shared with a driver' })
-  getLorryReceipts(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+  getLorryReceipts(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ) {
     return this.driversService.getLorryReceipts(user.companyId, id);
   }
 
@@ -73,8 +76,13 @@ export class DriversController {
   @Get(':id/score')
   @RequirePermissions('drivers:read')
   @ApiOperation({ summary: 'Get a driver running score' })
-  async getDriverScore(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
-    const driver = await this.driversService.findOne(user.companyId, id).catch(() => null);
+  async getDriverScore(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ) {
+    const driver = await this.driversService
+      .findOne(user.companyId, id)
+      .catch(() => null);
     if (!driver) throw new NotFoundException('Driver not found');
     return this.driversService.getDriverScore(user.companyId, id);
   }

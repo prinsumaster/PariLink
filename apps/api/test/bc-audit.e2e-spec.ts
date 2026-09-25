@@ -19,11 +19,13 @@ describe('BC Tests - Security Audit', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
 
     // Log in as admin (seeded)
@@ -31,7 +33,8 @@ describe('BC Tests - Security Audit', () => {
       .post('/api/v1/auth/login')
       .send({ email: 'admin@parilink.com', password: 'password123' });
     adminToken = loginRes.body.access_token;
-    if (!adminToken) throw new Error(`Admin login failed: ${JSON.stringify(loginRes.body)}`);
+    if (!adminToken)
+      throw new Error(`Admin login failed: ${JSON.stringify(loginRes.body)}`);
 
     // Create customers
     const cust1Res = await request(app.getHttpServer())
@@ -87,7 +90,10 @@ describe('BC Tests - Security Audit', () => {
       });
     if (u1Res.status === 201) {
       await prisma.runAsSystem('bc-audit-setup', (tx) =>
-        tx.user.update({ where: { id: u1Res.body.id }, data: { customerId: customerId1 } })
+        tx.user.update({
+          where: { id: u1Res.body.id },
+          data: { customerId: customerId1 },
+        }),
       );
       const l1Res = await request(app.getHttpServer())
         .post('/api/v1/auth/login')
@@ -106,7 +112,10 @@ describe('BC Tests - Security Audit', () => {
       });
     if (u2Res.status === 201) {
       await prisma.runAsSystem('bc-audit-setup', (tx) =>
-        tx.user.update({ where: { id: u2Res.body.id }, data: { customerId: customerId2 } })
+        tx.user.update({
+          where: { id: u2Res.body.id },
+          data: { customerId: customerId2 },
+        }),
       );
       const l2Res = await request(app.getHttpServer())
         .post('/api/v1/auth/login')
@@ -121,7 +130,9 @@ describe('BC Tests - Security Audit', () => {
 
   it('BC0(b) - Customer 2 cannot track Customer 1s load (IDOR check)', async () => {
     if (!customer2Token || !loadForCustomer1) {
-      console.warn('Skipping: user portal tokens not set up (admin user endpoint unavailable)');
+      console.warn(
+        'Skipping: user portal tokens not set up (admin user endpoint unavailable)',
+      );
       return;
     }
     const res = await request(app.getHttpServer())
@@ -150,10 +161,7 @@ describe('BC Tests - Security Audit', () => {
   });
 
   it('BC1 - Empty POST on WMS and CRM endpoints return 4xx', async () => {
-    const endpoints = [
-      '/api/v1/wms/barcode/scan',
-      '/api/v1/crm/leads',
-    ];
+    const endpoints = ['/api/v1/wms/barcode/scan', '/api/v1/crm/leads'];
 
     for (const ep of endpoints) {
       const res = await request(app.getHttpServer())

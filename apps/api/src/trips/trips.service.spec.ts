@@ -21,10 +21,14 @@ describe('TripsService', () => {
       update: jest.fn(),
     },
     driver: {
-      findFirst: jest.fn().mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE' }),
+      findFirst: jest
+        .fn()
+        .mockResolvedValue({ id: 'driver-1', status: 'AVAILABLE' }),
     },
     vehicle: {
-      findFirst: jest.fn().mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE' }),
+      findFirst: jest
+        .fn()
+        .mockResolvedValue({ id: 'veh-1', status: 'IN_SERVICE' }),
     },
     load: { updateMany: jest.fn(), findMany: jest.fn().mockResolvedValue([]) },
     auditLog: { create: jest.fn() },
@@ -33,7 +37,9 @@ describe('TripsService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsSystem: jest
+      .fn()
+      .mockImplementation(async (_reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
@@ -78,7 +84,7 @@ describe('TripsService', () => {
       };
       mockTx.trip.create.mockResolvedValue(mockTrip);
 
-      const result = await service.create('company-1', dto as any);
+      const result = await service.create('company-1', dto);
 
       expect(result.tripNumber).toMatch(/TRP-/);
       expect(mockEventEmitter.emit).toHaveBeenCalledWith(
@@ -133,7 +139,10 @@ describe('TripsService', () => {
       expect(result).toEqual(mockTrip);
       expect(mockTx.trip.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', id: 'trip-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            id: 'trip-1',
+          }),
         }),
       );
     });
@@ -191,7 +200,10 @@ describe('TripsService', () => {
 
       expect(mockTx.load.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', tripId: 'trip-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            tripId: 'trip-1',
+          }),
           data: { tripId: null, status: 'PENDING' },
         }),
       );

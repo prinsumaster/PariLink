@@ -8,7 +8,7 @@ import {
   Param,
   Body,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

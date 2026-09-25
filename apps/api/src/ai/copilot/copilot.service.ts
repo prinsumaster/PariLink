@@ -19,10 +19,10 @@ export class CopilotService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _security: SecurityContextService,
     private readonly bpm: ProcessEngine,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _eventStore: EventStoreService,
     private readonly observability: CopilotObservabilityService,
     private readonly sqlGenerator: SqlGeneratorService,
@@ -38,11 +38,13 @@ export class CopilotService {
     );
 
     // 1. Role & Permission Verification
-    const user = await this.prisma.runAsSystem('[CopilotService.processRequest] Internal service operation bypass', async (tx) =>
-      tx.user.findUnique({
-        where: { id: req.userId },
-        include: { role: true },
-      }),
+    const user = await this.prisma.runAsSystem(
+      '[CopilotService.processRequest] Internal service operation bypass',
+      async (tx) =>
+        tx.user.findUnique({
+          where: { id: req.userId },
+          include: { role: true },
+        }),
     );
     const roles = user?.role ? [user.role.name.toUpperCase()] : [];
 
@@ -148,7 +150,9 @@ export class CopilotService {
         data: sqlResult,
       };
     } catch (e) {
-      this.logger.error('Error executing AI SQL query: ' + (e as Error).message);
+      this.logger.error(
+        'Error executing AI SQL query: ' + (e as Error).message,
+      );
       throw e;
     }
   }

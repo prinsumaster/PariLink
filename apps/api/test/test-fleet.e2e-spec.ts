@@ -14,7 +14,9 @@ describe('Fleet API Bug', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
 
     const loginAdmin = await request(app.getHttpServer())
@@ -35,7 +37,7 @@ describe('Fleet API Bug', () => {
         licensePlate: 'TEST-1234',
         make: 'Tata',
         model: 'Signa',
-        type: 'TRUCK'
+        type: 'TRUCK',
       });
 
     console.log(JSON.stringify(response.body, null, 2));

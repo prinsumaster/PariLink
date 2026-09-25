@@ -13,10 +13,12 @@ export class BillingService {
   ) {}
 
   async getSubscriptionPlans() {
-    return this.prisma.runAsSystem('[BillingService.getSubscriptionPlans] Internal service operation bypass', (tx) =>
-      tx.subscriptionPlan.findMany({
-        orderBy: { price: 'asc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[BillingService.getSubscriptionPlans] Internal service operation bypass',
+      (tx) =>
+        tx.subscriptionPlan.findMany({
+          orderBy: { price: 'asc' },
+        }),
     );
   }
 
@@ -73,35 +75,38 @@ export class BillingService {
   async handleWebhook(event: any) {
     this.logger.log(`Handling stripe webhook: ${event.type}`);
     try {
-      await this.prisma.runAsSystem('[BillingService.handleWebhook] Webhook handler bypass', async (tx) => {
-        // Idempotency Check: Insert WebhookDelivery using event.id as primary key
-        // If the event was already processed, Prisma will throw a P2002 Unique Constraint violation
-        await tx.webhookDelivery.create({
-          data: {
-            id: event.id, // Enforce exact-once processing via DB primary key constraint
-            companyId: 'SYSTEM', // Billing webhooks are cross-tenant
-            direction: 'INCOMING',
-            endpointUrl: '/api/v1/webhooks/stripe',
-            eventTopic: event.type,
-            payload: event,
-            status: 'SUCCESS',
-          },
-        });
+      await this.prisma.runAsSystem(
+        '[BillingService.handleWebhook] Webhook handler bypass',
+        async (tx) => {
+          // Idempotency Check: Insert WebhookDelivery using event.id as primary key
+          // If the event was already processed, Prisma will throw a P2002 Unique Constraint violation
+          await tx.webhookDelivery.create({
+            data: {
+              id: event.id, // Enforce exact-once processing via DB primary key constraint
+              companyId: 'SYSTEM', // Billing webhooks are cross-tenant
+              direction: 'INCOMING',
+              endpointUrl: '/api/v1/webhooks/stripe',
+              eventTopic: event.type,
+              payload: event,
+              status: 'SUCCESS',
+            },
+          });
 
-        if (event.type === 'checkout.session.completed') {
-          const session = event.data.object;
-          const companyId = session.metadata?.companyId;
-          const subscriptionId = session.subscription;
+          if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+            const companyId = session.metadata?.companyId;
+            const subscriptionId = session.subscription;
 
-          if (companyId && subscriptionId) {
-            // Use updateMany to prevent P2025 errors and transaction rollback if companyId is invalid
-            await tx.company.updateMany({
-              where: { id: companyId },
-              data: { stripeSubscriptionId: subscriptionId as string },
-            });
+            if (companyId && subscriptionId) {
+              // Use updateMany to prevent P2025 errors and transaction rollback if companyId is invalid
+              await tx.company.updateMany({
+                where: { id: companyId },
+                data: { stripeSubscriptionId: subscriptionId as string },
+              });
+            }
           }
-        }
-      });
+        },
+      );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
@@ -130,37 +135,40 @@ export class BillingService {
         .digest('hex');
 
     try {
-      await this.prisma.runAsSystem('[BillingService.handleRazorpayWebhook] Webhook handler bypass', async (tx) => {
-        // Idempotency Check: Insert WebhookDelivery using uniqueId as primary key
-        await tx.webhookDelivery.create({
-          data: {
-            id: uniqueId,
-            companyId: 'SYSTEM',
-            direction: 'INCOMING',
-            endpointUrl: '/api/v1/webhooks/razorpay',
-            eventTopic: event.event,
-            payload: event,
-            status: 'SUCCESS',
-          },
-        });
+      await this.prisma.runAsSystem(
+        '[BillingService.handleRazorpayWebhook] Webhook handler bypass',
+        async (tx) => {
+          // Idempotency Check: Insert WebhookDelivery using uniqueId as primary key
+          await tx.webhookDelivery.create({
+            data: {
+              id: uniqueId,
+              companyId: 'SYSTEM',
+              direction: 'INCOMING',
+              endpointUrl: '/api/v1/webhooks/razorpay',
+              eventTopic: event.event,
+              payload: event,
+              status: 'SUCCESS',
+            },
+          });
 
-        if (
-          event.event === 'subscription.authenticated' ||
-          event.event === 'subscription.charged'
-        ) {
-          const subscription = event.payload.subscription.entity;
-          const companyId = subscription.notes?.companyId;
-          const subscriptionId = subscription.id;
+          if (
+            event.event === 'subscription.authenticated' ||
+            event.event === 'subscription.charged'
+          ) {
+            const subscription = event.payload.subscription.entity;
+            const companyId = subscription.notes?.companyId;
+            const subscriptionId = subscription.id;
 
-          if (companyId && subscriptionId) {
-            // Use updateMany to prevent P2025 errors and transaction rollback if companyId is invalid
-            await tx.company.updateMany({
-              where: { id: companyId },
-              data: { stripeSubscriptionId: subscriptionId },
-            });
+            if (companyId && subscriptionId) {
+              // Use updateMany to prevent P2025 errors and transaction rollback if companyId is invalid
+              await tx.company.updateMany({
+                where: { id: companyId },
+                data: { stripeSubscriptionId: subscriptionId },
+              });
+            }
           }
-        }
-      });
+        },
+      );
     } catch (error: any) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

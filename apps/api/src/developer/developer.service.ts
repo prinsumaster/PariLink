@@ -84,7 +84,7 @@ export class DeveloperService {
     userId: string,
     dto: UpdateDeveloperAppDto,
   ) {
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _app = await this.getApp(companyId, id);
 
     const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
@@ -114,7 +114,7 @@ export class DeveloperService {
   }
 
   async rotateSecret(companyId: string, id: string, userId: string) {
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _app = await this.getApp(companyId, id);
     const newSecret = this.generateClientSecret();
 

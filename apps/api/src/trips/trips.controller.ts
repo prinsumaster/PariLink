@@ -10,7 +10,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
@@ -112,10 +112,15 @@ export class TripsController {
   submitDriverScore(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: DriverScoreDto
+    @Body() body: DriverScoreDto,
   ) {
     // @ts-ignore
-    return this.tripsService.submitDriverScore(user.companyId, id, body, user.id);
+    return this.tripsService.submitDriverScore(
+      user.companyId,
+      id,
+      body,
+      user.id,
+    );
   }
 
   @Post(':id/reviews')
@@ -124,7 +129,7 @@ export class TripsController {
   submitReview(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: CreateTripReviewDto
+    @Body() body: CreateTripReviewDto,
   ) {
     return this.tripsService.submitReview(user.companyId, id, user.id, body);
   }

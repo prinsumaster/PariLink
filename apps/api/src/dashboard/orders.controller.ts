@@ -4,12 +4,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
-  
   @Get()
   async getOrders(@Req() _req: any, @Query() query: any) {
     const page = parseInt(query.page) || 1;
     const limit = parseInt(query.limit) || 20;
-    
+
     // Return mock paginated orders for now
     return {
       data: [],
@@ -18,7 +17,7 @@ export class OrdersController {
         page,
         limit,
         totalPages: 0,
-      }
+      },
     };
   }
 }

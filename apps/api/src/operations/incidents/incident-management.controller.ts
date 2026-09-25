@@ -7,9 +7,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import {
-  IncidentManagementService
-} from './incident-management.service';
+import { IncidentManagementService } from './incident-management.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';

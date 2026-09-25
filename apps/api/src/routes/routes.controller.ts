@@ -20,15 +20,17 @@ export class RoutesController {
     @Query('originCity') originCity: string,
     @Query('destinationCity') destinationCity: string,
   ) {
-    return this.routesService.getTollEstimate(user.companyId, originCity, destinationCity);
+    return this.routesService.getTollEstimate(
+      user.companyId,
+      originCity,
+      destinationCity,
+    );
   }
 
   @Get()
   @RequirePermissions('trips:read')
   @ApiOperation({ summary: 'List all routes' })
-  getRoutes(
-    @GetUser() user: AuthenticatedUser,
-  ) {
+  getRoutes(@GetUser() user: AuthenticatedUser) {
     return this.routesService.getRoutes(user.companyId);
   }
 
@@ -37,9 +39,21 @@ export class RoutesController {
   @ApiOperation({ summary: 'Create a new route' })
   createRoute(
     @GetUser() user: AuthenticatedUser,
-    @Body() body: { origin: string, destination: string, distance?: number, estimatedTolls?: number },
+    @Body()
+    body: {
+      origin: string;
+      destination: string;
+      distance?: number;
+      estimatedTolls?: number;
+    },
   ) {
-    return this.routesService.createRoute(user.companyId, body.origin, body.destination, body.distance, body.estimatedTolls);
+    return this.routesService.createRoute(
+      user.companyId,
+      body.origin,
+      body.destination,
+      body.distance,
+      body.estimatedTolls,
+    );
   }
 
   @Post(':id/attach-to-trip')
@@ -50,6 +64,10 @@ export class RoutesController {
     @Param('id') id: string,
     @Body() body: { tripId: string },
   ) {
-    return this.routesService.attachRouteToTrip(user.companyId, body.tripId, id);
+    return this.routesService.attachRouteToTrip(
+      user.companyId,
+      body.tripId,
+      id,
+    );
   }
 }

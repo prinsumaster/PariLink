@@ -24,8 +24,6 @@ import { EventStoreService } from '../platform/digital-twin/event-store.service'
 
 @Injectable()
 export class VehiclesService {
-
-
   constructor(
     private readonly auditService: AuditService,
     private prisma: PrismaService,
@@ -74,7 +72,9 @@ export class VehiclesService {
       });
 
       if (ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')) {
-        throw new BadRequestException('Vehicle creation rejected by business rules.');
+        throw new BadRequestException(
+          'Vehicle creation rejected by business rules.',
+        );
       }
 
       // 3. Audit Logging
@@ -114,7 +114,8 @@ export class VehiclesService {
 
     const maintenanceHistory = (v.WorkOrder || []).map((wo: any) => ({
       id: wo.id,
-      title: wo.type === 'BREAKDOWN' ? 'Emergency Repair' : 'Preventive Maintenance',
+      title:
+        wo.type === 'BREAKDOWN' ? 'Emergency Repair' : 'Preventive Maintenance',
       description: wo.description || `${wo.type} service`,
       scheduledDate: wo.scheduledDate?.toISOString?.() || wo.scheduledDate,
       completedDate: wo.completedDate?.toISOString?.() || wo.completedDate,
@@ -140,15 +141,22 @@ export class VehiclesService {
       odometer: latestTelem?.odometer ?? latestLoc?.odometer ?? 350000,
       engineHours: latestTelem?.engineHours ?? latestLoc?.engineHours ?? 4500,
       fuelLevel: latestTelem?.fuelLevel ?? latestLoc?.fuel ?? 75,
-      batteryStatus: (latestTelem?.batteryVolts && latestTelem.batteryVolts < 11.5) ? 'CRITICAL' : 'GOOD',
+      batteryStatus:
+        latestTelem?.batteryVolts && latestTelem.batteryVolts < 11.5
+          ? 'CRITICAL'
+          : 'GOOD',
       gpsStatus: latestLoc ? 'ONLINE' : 'OFFLINE',
-      location: latestLoc ? {
-        lat: latestLoc.latitude,
-        lng: latestLoc.longitude,
-        heading: latestLoc.heading ?? 0,
-        speed: latestLoc.speed ?? 0,
-        lastUpdated: latestLoc.gpsTimestamp ? new Date(latestLoc.gpsTimestamp).toISOString() : new Date().toISOString(),
-      } : undefined,
+      location: latestLoc
+        ? {
+            lat: latestLoc.latitude,
+            lng: latestLoc.longitude,
+            heading: latestLoc.heading ?? 0,
+            speed: latestLoc.speed ?? 0,
+            lastUpdated: latestLoc.gpsTimestamp
+              ? new Date(latestLoc.gpsTimestamp).toISOString()
+              : new Date().toISOString(),
+          }
+        : undefined,
       maintenanceHistory,
       documents,
     };
@@ -206,18 +214,19 @@ export class VehiclesService {
         where: { vehicleId: id, companyId },
         orderBy: { filledAt: 'desc' },
         take: 10,
-        include: { trip: true }
+        include: { trip: true },
       });
 
-      const trend = fuelEntries.map(entry => {
-        const distance = entry.trip?.actualDistance || entry.trip?.estimatedDistance || 1000;
+      const trend = fuelEntries.map((entry) => {
+        const distance =
+          entry.trip?.actualDistance || entry.trip?.estimatedDistance || 1000;
         const actualMileage = entry.litres > 0 ? distance / entry.litres : 0;
         const expectedMileage = 4.0;
         return {
           date: entry.filledAt,
           actualKmpl: Number(actualMileage.toFixed(2)),
           expectedKmpl: expectedMileage,
-          variancePct: entry.variancePct
+          variancePct: entry.variancePct,
         };
       });
 
@@ -298,7 +307,9 @@ export class VehiclesService {
         if (
           ruleResult.triggeredActions.some((a) => a.actionType === 'REJECT')
         ) {
-          throw new BadRequestException('Vehicle update rejected by business rules.');
+          throw new BadRequestException(
+            'Vehicle update rejected by business rules.',
+          );
         }
 
         // Audit Logging
@@ -378,20 +389,29 @@ export class VehiclesService {
 
     return deletedVehicle;
   }
-  async getVehicleTCO(companyId: string, vehicleId: string, fromDate?: string, toDate?: string) {
+  async getVehicleTCO(
+    companyId: string,
+    vehicleId: string,
+    fromDate?: string,
+    toDate?: string,
+  ) {
     const cacheKey = `tco:${companyId}:${vehicleId}:${fromDate || 'all'}:${toDate || 'all'}`;
     const startTime = performance.now();
-    
+
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       const endTime = performance.now();
-      console.log(`[CACHE HIT] getVehicleTCO (${endTime - startTime}ms) for ${cacheKey}`);
+      console.log(
+        `[CACHE HIT] getVehicleTCO (${endTime - startTime}ms) for ${cacheKey}`,
+      );
       return cached;
     }
 
     return this.prisma.runAsTenant(companyId, async (tx) => {
       // 1. Validate vehicle exists
-      const vehicle = await tx.vehicle.findFirst({ where: { id: vehicleId, companyId } });
+      const vehicle = await tx.vehicle.findFirst({
+        where: { id: vehicleId, companyId },
+      });
       if (!vehicle) throw new NotFoundException('Vehicle not found');
 
       // Date range filters
@@ -401,12 +421,25 @@ export class VehiclesService {
       if (toDate) dateFilter.lte = new Date(toDate);
 
       const fuelWhere: any = { vehicleId, companyId, status: 'FILLED' };
-      const jobCardWhere: any = { vehicleId, companyId, status: { not: 'CANCELLED' } };
+      const jobCardWhere: any = {
+        vehicleId,
+        companyId,
+        status: { not: 'CANCELLED' },
+      };
       const insuranceWhere: any = { vehicleId, companyId };
 
-      const fuelWhereRange = Object.keys(dateFilter).length > 0 ? { ...fuelWhere, filledAt: dateFilter } : fuelWhere;
-      const jobCardWhereRange = Object.keys(dateFilter).length > 0 ? { ...jobCardWhere, openedAt: dateFilter } : jobCardWhere;
-      const insuranceWhereRange = Object.keys(dateFilter).length > 0 ? { ...insuranceWhere, issueDate: dateFilter } : insuranceWhere;
+      const fuelWhereRange =
+        Object.keys(dateFilter).length > 0
+          ? { ...fuelWhere, filledAt: dateFilter }
+          : fuelWhere;
+      const jobCardWhereRange =
+        Object.keys(dateFilter).length > 0
+          ? { ...jobCardWhere, openedAt: dateFilter }
+          : jobCardWhere;
+      const insuranceWhereRange =
+        Object.keys(dateFilter).length > 0
+          ? { ...insuranceWhere, issueDate: dateFilter }
+          : insuranceWhere;
 
       // Fuel costs
       const fuelTotalObj = await tx.fuelEntry.aggregate({
@@ -444,7 +477,8 @@ export class VehiclesService {
 
       const fuelLifetime = fuelTotalLifetimeObj._sum.amount || 0;
       const workshopLifetime = workshopTotalLifetimeObj._sum.totalCost || 0;
-      const insuranceLifetime = insuranceTotalLifetimeObj._sum.premiumAmount || 0;
+      const insuranceLifetime =
+        insuranceTotalLifetimeObj._sum.premiumAmount || 0;
 
       const rangeTotal = fuel + workshop + insurance;
       const lifetimeTotal = fuelLifetime + workshopLifetime + insuranceLifetime;
@@ -466,7 +500,9 @@ export class VehiclesService {
 
       await this.cacheManager.set(cacheKey, result, 300000); // 5 mins cache
       const endTime = performance.now();
-      console.log(`[CACHE MISS] getVehicleTCO computed in ${endTime - startTime}ms for ${cacheKey}`);
+      console.log(
+        `[CACHE MISS] getVehicleTCO computed in ${endTime - startTime}ms for ${cacheKey}`,
+      );
 
       return result;
     });

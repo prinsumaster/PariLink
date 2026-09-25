@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
@@ -33,12 +26,14 @@ export class NotificationController {
     if (status === 'unread') whereClause.isRead = false;
     if (status === 'archived') whereClause.isArchived = true;
 
-    const notifications = await this.prisma.runAsTenant(user.companyId, async (tx) =>
-      tx.notification.findMany({
-        where: whereClause,
-        orderBy: { createdAt: 'desc' },
-        take: 50,
-      }),
+    const notifications = await this.prisma.runAsTenant(
+      user.companyId,
+      async (tx) =>
+        tx.notification.findMany({
+          where: whereClause,
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        }),
     );
 
     const today = new Date();
@@ -64,16 +59,20 @@ export class NotificationController {
     @Param('id') id: string,
     @GetUser() user: AuthenticatedUser,
   ) {
-    const updated = await this.prisma.runAsTenant(user.companyId, async (tx) => {
-      const existing = await tx.notification.findUnique({
-        where: { id },
-      });
-      if (!existing || existing.userId !== user.id) throw new Error('Not found');
-      return tx.notification.update({
-        where: { id },
-        data: { isRead: true, readAt: new Date() },
-      });
-    });
+    const updated = await this.prisma.runAsTenant(
+      user.companyId,
+      async (tx) => {
+        const existing = await tx.notification.findUnique({
+          where: { id },
+        });
+        if (!existing || existing.userId !== user.id)
+          throw new Error('Not found');
+        return tx.notification.update({
+          where: { id },
+          data: { isRead: true, readAt: new Date() },
+        });
+      },
+    );
 
     this.sseService.emitToUser(user.id, { type: 'NOTIFICATION_READ', id });
     return updated;
@@ -89,7 +88,8 @@ export class NotificationController {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
-      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      if (!existing || existing.userId !== user.id)
+        throw new Error('Not found');
       return tx.notification.update({
         where: { id },
         data: { isRead: false, readAt: null },
@@ -104,7 +104,8 @@ export class NotificationController {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
-      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      if (!existing || existing.userId !== user.id)
+        throw new Error('Not found');
       return tx.notification.update({
         where: { id },
         data: { isArchived: true },
@@ -119,7 +120,8 @@ export class NotificationController {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
-      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      if (!existing || existing.userId !== user.id)
+        throw new Error('Not found');
       return tx.notification.update({
         where: { id },
         data: { isPinned: true },
@@ -134,7 +136,8 @@ export class NotificationController {
       const existing = await tx.notification.findUnique({
         where: { id },
       });
-      if (!existing || existing.userId !== user.id) throw new Error('Not found');
+      if (!existing || existing.userId !== user.id)
+        throw new Error('Not found');
       return tx.notification.update({
         where: { id },
         data: { isPinned: false },

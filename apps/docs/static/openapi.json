@@ -3543,6 +3543,51 @@
         ]
       }
     },
+    "/api/v1/vehicles/{id}/tco": {
+      "get": {
+        "operationId": "VehiclesController_getVehicleTCO_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Total Cost of Ownership (TCO) breakdown for a vehicle",
+        "tags": [
+          "vehicles"
+        ]
+      }
+    },
     "/api/v1/workflow/rules/simulate": {
       "post": {
         "operationId": "WorkflowController_simulateRule_v1",
@@ -6972,6 +7017,35 @@
           }
         ],
         "summary": "Create a new route",
+        "tags": [
+          "routes"
+        ]
+      }
+    },
+    "/api/v1/routes/{id}/attach-to-trip": {
+      "post": {
+        "operationId": "RoutesController_attachToTrip_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Attach a route to a trip",
         "tags": [
           "routes"
         ]
@@ -21782,6 +21856,73 @@
         ]
       }
     },
+    "/api/v1/fuel-cards": {
+      "get": {
+        "operationId": "FuelController_getFuelCards_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all fuel cards",
+        "tags": [
+          "fuel"
+        ]
+      },
+      "post": {
+        "operationId": "FuelController_createFuelCard_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new fuel card",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/fuel-cards/{id}/billing-status": {
+      "get": {
+        "operationId": "FuelController_getFuelCardBillingStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Check if fuel card is overdue",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
     "/api/v1/fuel-logs": {
       "get": {
         "operationId": "FuelController_getFuelLogs_v1",
@@ -21807,7 +21948,7 @@
         ],
         "summary": "List all fuel logs",
         "tags": [
-          "fuel-logs"
+          "fuel"
         ]
       },
       "post": {
@@ -21823,9 +21964,67 @@
             "bearer": []
           }
         ],
-        "summary": "Create a new fuel log",
+        "summary": "Create a new fuel log request",
         "tags": [
-          "fuel-logs"
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/fuel-logs/{id}/approve": {
+      "patch": {
+        "operationId": "FuelController_approveFuelLog_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Approve a fuel log request and generate OTP",
+        "tags": [
+          "fuel"
+        ]
+      }
+    },
+    "/api/v1/fuel-logs/{id}/fill": {
+      "post": {
+        "operationId": "FuelController_fillFuelLog_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Complete a fuel log fill using OTP",
+        "tags": [
+          "fuel"
         ]
       }
     },
@@ -21852,9 +22051,9 @@
             "bearer": []
           }
         ],
-        "summary": "Approve or update fuel log status",
+        "summary": "Legacy generic status update",
         "tags": [
-          "fuel-logs"
+          "fuel"
         ]
       }
     }

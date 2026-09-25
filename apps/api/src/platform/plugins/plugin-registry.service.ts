@@ -23,7 +23,7 @@ export class PluginRegistryService {
   private readonly logger = new Logger(PluginRegistryService.name);
   private plugins = new Map<string, PluginManifest>();
 
-    // @ts-ignore: DI dependency reserved for future use
+  // @ts-ignore: DI dependency reserved for future use
   constructor(private _eventService: EventService) {}
 
   /**

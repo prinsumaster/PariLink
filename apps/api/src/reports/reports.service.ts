@@ -27,10 +27,18 @@ export class ReportsService {
         activeTripsCount,
         totalVehicleCount,
       ] = await Promise.all([
-        tx.invoice.aggregate({ where: { status: 'PAID' }, _sum: { amount: true } }),
-        tx.invoice.aggregate({ where: { status: { in: ['DRAFT', 'SENT', 'OVERDUE'] } }, _sum: { amount: true } }),
+        tx.invoice.aggregate({
+          where: { status: 'PAID' },
+          _sum: { amount: true },
+        }),
+        tx.invoice.aggregate({
+          where: { status: { in: ['DRAFT', 'SENT', 'OVERDUE'] } },
+          _sum: { amount: true },
+        }),
         tx.load.count({ where: { status: 'DELIVERED' } }),
-        tx.trip.count({ where: { status: { in: ['IN_PROGRESS', 'DISPATCHED'] } } }),
+        tx.trip.count({
+          where: { status: { in: ['IN_PROGRESS', 'DISPATCHED'] } },
+        }),
         tx.vehicle.count(),
       ]);
 
@@ -45,10 +53,34 @@ export class ReportsService {
       const outstandingReceivables = Math.max(0, grossUnpaid - partialPayments);
 
       const kpis = [
-        { title: 'Total Revenue (YTD)', value: totalRevenue, change: 12.4, trend: 'up' as const, format: 'currency' as const },
-        { title: 'Outstanding Receivables', value: outstandingReceivables, change: -5.1, trend: 'down' as const, format: 'currency' as const },
-        { title: 'Loads Delivered', value: deliveredLoadsCount, change: 8.2, trend: 'up' as const, format: 'number' as const },
-        { title: 'Active Trips', value: activeTripsCount, change: 0, trend: 'neutral' as const, format: 'number' as const },
+        {
+          title: 'Total Revenue (YTD)',
+          value: totalRevenue,
+          change: 12.4,
+          trend: 'up' as const,
+          format: 'currency' as const,
+        },
+        {
+          title: 'Outstanding Receivables',
+          value: outstandingReceivables,
+          change: -5.1,
+          trend: 'down' as const,
+          format: 'currency' as const,
+        },
+        {
+          title: 'Loads Delivered',
+          value: deliveredLoadsCount,
+          change: 8.2,
+          trend: 'up' as const,
+          format: 'number' as const,
+        },
+        {
+          title: 'Active Trips',
+          value: activeTripsCount,
+          change: 0,
+          trend: 'neutral' as const,
+          format: 'number' as const,
+        },
       ];
 
       // ── Revenue vs Expenses per month (last 12 months) ────────────
@@ -66,7 +98,20 @@ export class ReportsService {
         }),
       ]);
 
-      const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const MONTHS = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       const revenueByMonth: Record<number, number> = {};
       const expensesByMonth: Record<number, number> = {};
 
@@ -91,12 +136,21 @@ export class ReportsService {
       // Seed realistic-looking data for months with no seeded transactions
       const baseRevenue = 850000;
       const baseExpenses = 520000;
-      const revenueData = Array.from({ length: now.getMonth() + 1 }, (_, m) => ({
-        month: MONTHS[m],
-        revenue: revenueByMonth[m] > 0 ? revenueByMonth[m] : Math.round(baseRevenue * (0.8 + Math.sin(m * 0.5) * 0.2)),
-        expenses: expensesByMonth[m] > 0 ? expensesByMonth[m] : Math.round(baseExpenses * (0.75 + Math.cos(m * 0.4) * 0.15)),
-        profit: 0,
-      })).map(d => ({ ...d, profit: d.revenue - d.expenses }));
+      const revenueData = Array.from(
+        { length: now.getMonth() + 1 },
+        (_, m) => ({
+          month: MONTHS[m],
+          revenue:
+            revenueByMonth[m] > 0
+              ? revenueByMonth[m]
+              : Math.round(baseRevenue * (0.8 + Math.sin(m * 0.5) * 0.2)),
+          expenses:
+            expensesByMonth[m] > 0
+              ? expensesByMonth[m]
+              : Math.round(baseExpenses * (0.75 + Math.cos(m * 0.4) * 0.15)),
+          profit: 0,
+        }),
+      ).map((d) => ({ ...d, profit: d.revenue - d.expenses }));
 
       // ── Fleet Utilisation — last 7 days ──────────────────────────
       const sevenDaysAgo = new Date();
@@ -109,21 +163,32 @@ export class ReportsService {
       });
 
       const maintenanceCount = await tx.maintenanceJob.count({
-        where: { createdAt: { gte: sevenDaysAgo }, status: { in: ['OPEN', 'IN_PROGRESS'] } },
+        where: {
+          createdAt: { gte: sevenDaysAgo },
+          status: { in: ['OPEN', 'IN_PROGRESS'] },
+        },
       });
       const maintenancePerDay = Math.max(1, Math.round(maintenanceCount / 7));
 
       const fleetData = Array.from({ length: 7 }, (_, i) => {
         const d = new Date(sevenDaysAgo);
         d.setDate(d.getDate() + i);
-        const dayLabel = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric' });
+        const dayLabel = d.toLocaleDateString('en-IN', {
+          weekday: 'short',
+          day: 'numeric',
+        });
 
-        const dayTrips = tripsLast7.filter(t => {
+        const dayTrips = tripsLast7.filter((t) => {
           const td = t.startDate ? new Date(t.startDate) : null;
           return td && td.toDateString() === d.toDateString();
         });
 
-        const active = Math.max(dayTrips.filter(t => ['IN_PROGRESS', 'DISPATCHED'].includes(t.status)).length, i === 6 ? activeTripsCount : 2);
+        const active = Math.max(
+          dayTrips.filter((t) =>
+            ['IN_PROGRESS', 'DISPATCHED'].includes(t.status),
+          ).length,
+          i === 6 ? activeTripsCount : 2,
+        );
         const maintenance = maintenancePerDay;
         const idle = Math.max(0, totalVehicleCount - active - maintenance);
 
@@ -132,10 +197,30 @@ export class ReportsService {
 
       // ── Regional data ─────────────────────────────────────────────
       const regionalData = [
-        { region: 'West (Mumbai / Pune)', deliveries: Math.max(deliveredLoadsCount, 3), onTimePercentage: 94, revenue: Math.round(totalRevenue * 0.35) },
-        { region: 'North (Delhi / Jaipur)', deliveries: 2, onTimePercentage: 97, revenue: Math.round(totalRevenue * 0.28) },
-        { region: 'South (Bengaluru / Chennai)', deliveries: 2, onTimePercentage: 91, revenue: Math.round(totalRevenue * 0.22) },
-        { region: 'Gujarat (Ahmedabad / Surat)', deliveries: 1, onTimePercentage: 99, revenue: Math.round(totalRevenue * 0.15) },
+        {
+          region: 'West (Mumbai / Pune)',
+          deliveries: Math.max(deliveredLoadsCount, 3),
+          onTimePercentage: 94,
+          revenue: Math.round(totalRevenue * 0.35),
+        },
+        {
+          region: 'North (Delhi / Jaipur)',
+          deliveries: 2,
+          onTimePercentage: 97,
+          revenue: Math.round(totalRevenue * 0.28),
+        },
+        {
+          region: 'South (Bengaluru / Chennai)',
+          deliveries: 2,
+          onTimePercentage: 91,
+          revenue: Math.round(totalRevenue * 0.22),
+        },
+        {
+          region: 'Gujarat (Ahmedabad / Surat)',
+          deliveries: 1,
+          onTimePercentage: 99,
+          revenue: Math.round(totalRevenue * 0.15),
+        },
       ];
 
       const result = {

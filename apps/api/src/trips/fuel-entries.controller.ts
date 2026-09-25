@@ -1,12 +1,5 @@
 import { CreateFuelEntryDto } from './dto/create-fuel-entry.dto';
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, UseGuards } from '@nestjs/common';
 import { FuelEntriesService } from './fuel-entries.service';
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
@@ -36,10 +29,7 @@ export class FuelEntriesController {
   @Get(':id/fuel')
   @RequirePermissions('trips:read')
   @ApiOperation({ summary: 'Get fuel entries for a trip' })
-  getFuel(
-    @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-  ) {
+  getFuel(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.fuelEntriesService.getFuelByTrip(user.companyId, id);
   }
 }

@@ -75,11 +75,13 @@ export class ApiKeyService {
   async validateApiKey(rawKey: string) {
     const keyHash = this.hashKey(rawKey);
 
-    const apiKey = await this.prisma.runAsSystem('[ApiKeyService.validateApiKey] Internal service operation bypass', async (tx) =>
-      tx.apiKey.findFirst({
-        where: { keyHash, isActive: true },
-        include: { user: true, company: true },
-      }),
+    const apiKey = await this.prisma.runAsSystem(
+      '[ApiKeyService.validateApiKey] Internal service operation bypass',
+      async (tx) =>
+        tx.apiKey.findFirst({
+          where: { keyHash, isActive: true },
+          include: { user: true, company: true },
+        }),
     );
 
     if (!apiKey) {
@@ -92,11 +94,13 @@ export class ApiKeyService {
 
     // Update lastUsed asynchronously
     this.prisma
-      .runAsSystem('[ApiKeyService.validateApiKey] Internal service operation bypass', async (tx) =>
-        tx.apiKey.update({
-          where: { id: apiKey.id },
-          data: { lastUsed: new Date() },
-        }),
+      .runAsSystem(
+        '[ApiKeyService.validateApiKey] Internal service operation bypass',
+        async (tx) =>
+          tx.apiKey.update({
+            where: { id: apiKey.id },
+            data: { lastUsed: new Date() },
+          }),
       )
       .catch(() => {}); // Fire and forget
 

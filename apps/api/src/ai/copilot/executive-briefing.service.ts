@@ -56,7 +56,7 @@ export class ExecutiveBriefingService {
             bottlenecks: 1,
           };
 
-  // @ts-ignore: reserved for future use
+      // @ts-ignore: reserved for future use
       const _financialMetrics = finProvider
         ? await finProvider.getAnalytics(companyId, 'ALL')
         : {

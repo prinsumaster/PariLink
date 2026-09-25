@@ -29,10 +29,21 @@ import { csrfMiddleware } from './common/middlewares/csrf.middleware';
 
 async function bootstrap() {
   const jwtKeyRaw = process.env.JWT_PUBLIC_KEY || '';
-  const pubKey = jwtKeyRaw ? Buffer.from(jwtKeyRaw, 'base64').toString('utf8') : '';
-  const pubKeyFingerprint = jwtKeyRaw ? require('crypto').createHash('sha256').update(pubKey).digest('hex').substring(0, 8) : 'none';
-  const gitSha = process.env.NEXT_PUBLIC_GIT_SHA || process.env.GIT_SHA || 'unknown';
-  console.log(`[BOOTSTRAP] DEPLOY FINGERPRINT: GitSHA=${gitSha} | JWT_ALG=RS256 | PubKeyFingerprint=${pubKeyFingerprint}`);
+  const pubKey = jwtKeyRaw
+    ? Buffer.from(jwtKeyRaw, 'base64').toString('utf8')
+    : '';
+  const pubKeyFingerprint = jwtKeyRaw
+    ? require('crypto')
+        .createHash('sha256')
+        .update(pubKey)
+        .digest('hex')
+        .substring(0, 8)
+    : 'none';
+  const gitSha =
+    process.env.NEXT_PUBLIC_GIT_SHA || process.env.GIT_SHA || 'unknown';
+  console.log(
+    `[BOOTSTRAP] DEPLOY FINGERPRINT: GitSHA=${gitSha} | JWT_ALG=RS256 | PubKeyFingerprint=${pubKeyFingerprint}`,
+  );
 
   // ── Pre-boot security configuration verification (Fail-Fast)
   const requiredEnvVars = [
@@ -65,7 +76,6 @@ async function bootstrap() {
       // process.exit(1);
     }
   }
-
 
   if (!process.env.MASTER_ENCRYPTION_KEY_V1) {
     console.warn(
@@ -183,12 +193,16 @@ async function bootstrap() {
   app.use((req: any, res: any, next: any) => {
     const origin = req.headers.origin;
     if (!isOriginPermitted(origin)) {
-      appLogger.warn(`[CORS] Rejected request from unauthorized origin: ${origin}`);
+      appLogger.warn(
+        `[CORS] Rejected request from unauthorized origin: ${origin}`,
+      );
       // Matches GlobalExceptionFilter's error shape. This middleware runs
       // before Nest's pipeline, so the filter never sees it and the
       // correlation id has to be attached here.
       const correlationId =
-        req.correlationId ?? req.headers['x-correlation-id'] ?? 'no-correlation-id';
+        req.correlationId ??
+        req.headers['x-correlation-id'] ??
+        'no-correlation-id';
       res.setHeader('X-Correlation-Id', correlationId);
       return res.status(403).json({
         success: false,

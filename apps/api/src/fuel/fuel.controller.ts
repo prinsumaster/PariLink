@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { FuelService } from './fuel.service';
 import { RequireAuth } from '../auth/decorators/require-auth.decorator';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -30,7 +38,10 @@ export class FuelController {
   @Get('fuel-cards/:id/billing-status')
   @RequirePermissions('fleet:read')
   @ApiOperation({ summary: 'Check if fuel card is overdue' })
-  getFuelCardBillingStatus(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
+  getFuelCardBillingStatus(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+  ) {
     return this.fuelService.getFuelCardBillingStatus(user.companyId, id);
   }
 
@@ -48,20 +59,14 @@ export class FuelController {
   @Post('fuel-logs')
   @RequirePermissions('fleet:write')
   @ApiOperation({ summary: 'Create a new fuel log request' })
-  createFuelLog(
-    @GetUser() user: AuthenticatedUser,
-    @Body() dto: any,
-  ) {
+  createFuelLog(@GetUser() user: AuthenticatedUser, @Body() dto: any) {
     return this.fuelService.createFuelLog(user.companyId, dto);
   }
 
   @Patch('fuel-logs/:id/approve')
   @RequirePermissions('fleet:write')
   @ApiOperation({ summary: 'Approve a fuel log request and generate OTP' })
-  approveFuelLog(
-    @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-  ) {
+  approveFuelLog(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.fuelService.approveFuelLog(user.companyId, id);
   }
 
@@ -84,6 +89,10 @@ export class FuelController {
     @Param('id') id: string,
     @Body() body: { status: string },
   ) {
-    return this.fuelService.updateFuelLogStatus(user.companyId, id, body.status);
+    return this.fuelService.updateFuelLogStatus(
+      user.companyId,
+      id,
+      body.status,
+    );
   }
 }

@@ -9,7 +9,7 @@ describe('LorryReceipt Flow (e2e)', () => {
   let app: INestApplication;
   let tokenA: string;
   let prisma: PrismaService;
-  let companyId: string = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
+  const companyId: string = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
   let testDriverId: string;
   let testVehicleId: string;
   let testTripId: string;
@@ -22,9 +22,11 @@ describe('LorryReceipt Flow (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
-    
+
     prisma = app.get(PrismaService);
 
     const loginA = await request(app.getHttpServer())
@@ -42,8 +44,8 @@ describe('LorryReceipt Flow (e2e)', () => {
           model: 'Prima',
           year: 2023,
           type: 'TRUCK',
-          status: 'ACTIVE'
-        }
+          status: 'ACTIVE',
+        },
       });
       testVehicleId = v.id;
 
@@ -54,8 +56,8 @@ describe('LorryReceipt Flow (e2e)', () => {
           lastName: 'Bhai',
           phone: `+91${Date.now().toString().slice(-10)}`,
           status: 'ACTIVE',
-          licenseNumber: `LIC${Date.now()}`
-        }
+          licenseNumber: `LIC${Date.now()}`,
+        },
       });
       testDriverId = d.id;
 
@@ -65,8 +67,8 @@ describe('LorryReceipt Flow (e2e)', () => {
           tripNumber: `TRP-E2E-${Date.now()}`,
           vehicleId: testVehicleId,
           driverId: testDriverId,
-          status: 'PLANNED'
-        }
+          status: 'PLANNED',
+        },
       });
       testTripId = t.id;
     });
@@ -86,7 +88,7 @@ describe('LorryReceipt Flow (e2e)', () => {
         product: 'Steel Coils',
         grossWeight: 15000,
         tareWeight: 5000,
-        netWeight: 10000
+        netWeight: 10000,
       });
 
     expect(res.status).toBe(201);
@@ -108,7 +110,7 @@ describe('LorryReceipt Flow (e2e)', () => {
         product: 'Steel Coils',
         grossWeight: 15000,
         tareWeight: 5000,
-        netWeight: 10000
+        netWeight: 10000,
       });
 
     expect(res.status).toBe(409); // ConflictException
@@ -119,7 +121,7 @@ describe('LorryReceipt Flow (e2e)', () => {
       .post(`/api/v1/lorry-receipts/${lrId}/share`)
       .set('Authorization', `Bearer ${tokenA}`)
       .send({
-        driverId: testDriverId
+        driverId: testDriverId,
       });
 
     expect(res.status).toBe(201);

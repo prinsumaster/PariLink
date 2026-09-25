@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -28,7 +32,8 @@ export class JobsService {
         where: { id: jobId, companyId },
       });
       if (!job) throw new NotFoundException('Job not found');
-      if (job.status === 'CLOSED') throw new BadRequestException('Cannot add parts to a closed job');
+      if (job.status === 'CLOSED')
+        throw new BadRequestException('Cannot add parts to a closed job');
 
       const qty = data.qty || 1;
       const unitCost = data.unitCost || 0;
@@ -97,7 +102,9 @@ export class JobsService {
 
   async getJobsByVehicle(companyId: string, vehicleId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId, companyId } });
+      const vehicle = await tx.vehicle.findUnique({
+        where: { id: vehicleId, companyId },
+      });
       if (!vehicle) throw new NotFoundException('Vehicle not found');
 
       const jobs = await tx.maintenanceJob.findMany({
@@ -106,7 +113,7 @@ export class JobsService {
         orderBy: { openedAt: 'desc' },
       });
 
-      return jobs.map(job => {
+      return jobs.map((job) => {
         const partsTotal = job.parts.reduce((sum, p) => sum + p.amount, 0);
         return {
           ...job,

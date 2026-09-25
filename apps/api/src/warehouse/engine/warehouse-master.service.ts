@@ -3,7 +3,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class WarehouseMasterService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private readonly prisma: PrismaService) {}
 
   async getWarehouses(companyId: string) {
@@ -56,8 +55,8 @@ export class WarehouseMasterService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       // First verify the zone belongs to a warehouse of the tenant
       const zone = await tx.warehouseZone.findFirst({
-        where: { 
-          id: zoneId, 
+        where: {
+          id: zoneId,
           warehouse: { companyId },
         },
       });

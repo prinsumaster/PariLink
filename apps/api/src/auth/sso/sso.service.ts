@@ -143,8 +143,9 @@ export class SsoService {
   }
 
   private async getProvider(idpId: string) {
-    const idp = await this.prisma.runAsSystem('[SsoService.getProvider] Internal service operation bypass', async (tx) =>
-      tx.identityProvider.findUnique({ where: { id: idpId } }),
+    const idp = await this.prisma.runAsSystem(
+      '[SsoService.getProvider] Internal service operation bypass',
+      async (tx) => tx.identityProvider.findUnique({ where: { id: idpId } }),
     );
     if (!idp || idp.status !== 'ACTIVE') {
       throw new NotFoundException('Identity Provider not found or inactive');
@@ -155,24 +156,27 @@ export class SsoService {
   private async processSsoLogin(idp: any, profile: any, req: Request) {
     // profile should have { id (providerUserId), email, firstName, lastName, groups? }
     const providerUserId = profile.id;
-    let userIdentity = await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-      tx.userIdentity.findUnique({
-        where: {
-          identityProviderId_providerUserId: {
-            identityProviderId: idp.id,
-            providerUserId,
+    let userIdentity = await this.prisma.runAsSystem(
+      '[SsoService.processSsoLogin] Internal service operation bypass',
+      async (tx) =>
+        tx.userIdentity.findUnique({
+          where: {
+            identityProviderId_providerUserId: {
+              identityProviderId: idp.id,
+              providerUserId,
+            },
           },
-        },
-        include: { user: true },
-      }),
+          include: { user: true },
+        }),
     );
 
     let user: any;
 
     if (!userIdentity) {
       // Identity doesn't exist. Check if user with email exists.
-      user = await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-        tx.user.findUnique({ where: { email: profile.email } }),
+      user = await this.prisma.runAsSystem(
+        '[SsoService.processSsoLogin] Internal service operation bypass',
+        async (tx) => tx.user.findUnique({ where: { email: profile.email } }),
       );
 
       if (!user) {
@@ -196,18 +200,20 @@ export class SsoService {
         }
 
         // Create new user (JIT)
-        user = await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-          tx.user.create({
-            data: {
-              email: profile.email,
-              firstName: profile.firstName || 'Unknown',
-              lastName: profile.lastName || 'Unknown',
-              password: crypto.randomUUID(), // Dummy password since they login via SSO
-              companyId: idp.companyId,
-              roleId: idp.jitDefaultRoleId || null,
-              status: 'ACTIVE',
-            },
-          }),
+        user = await this.prisma.runAsSystem(
+          '[SsoService.processSsoLogin] Internal service operation bypass',
+          async (tx) =>
+            tx.user.create({
+              data: {
+                email: profile.email,
+                firstName: profile.firstName || 'Unknown',
+                lastName: profile.lastName || 'Unknown',
+                password: crypto.randomUUID(), // Dummy password since they login via SSO
+                companyId: idp.companyId,
+                roleId: idp.jitDefaultRoleId || null,
+                status: 'ACTIVE',
+              },
+            }),
         );
 
         this.logger.log(
@@ -229,16 +235,18 @@ export class SsoService {
       }
 
       // Link identity
-      userIdentity = await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-        tx.userIdentity.create({
-          data: {
-            userId: user.id,
-            identityProviderId: idp.id,
-            providerUserId,
-            profileData: profile,
-          },
-          include: { user: true },
-        }),
+      userIdentity = await this.prisma.runAsSystem(
+        '[SsoService.processSsoLogin] Internal service operation bypass',
+        async (tx) =>
+          tx.userIdentity.create({
+            data: {
+              userId: user.id,
+              identityProviderId: idp.id,
+              providerUserId,
+              profileData: profile,
+            },
+            include: { user: true },
+          }),
       );
     } else {
       user = userIdentity.user;
@@ -248,11 +256,13 @@ export class SsoService {
 
       // Update profile data in background
       this.prisma
-        .runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-          tx.userIdentity.update({
-            where: { id: userIdentity?.id || '' },
-            data: { profileData: profile, updatedAt: new Date() },
-          }),
+        .runAsSystem(
+          '[SsoService.processSsoLogin] Internal service operation bypass',
+          async (tx) =>
+            tx.userIdentity.update({
+              where: { id: userIdentity?.id || '' },
+              data: { profileData: profile, updatedAt: new Date() },
+            }),
         )
         .catch((err) =>
           this.logger.error('Failed to update UserIdentity profile data', err),
@@ -270,11 +280,13 @@ export class SsoService {
         if (mapping[group]) {
           const newRoleId = mapping[group];
           if (user.roleId !== newRoleId) {
-            await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-              tx.user.update({
-                where: { id: user.id },
-                data: { roleId: newRoleId },
-              }),
+            await this.prisma.runAsSystem(
+              '[SsoService.processSsoLogin] Internal service operation bypass',
+              async (tx) =>
+                tx.user.update({
+                  where: { id: user.id },
+                  data: { roleId: newRoleId },
+                }),
             );
             user.roleId = newRoleId;
             this.logger.log(
@@ -288,21 +300,23 @@ export class SsoService {
 
     // Record SSO session
     if (profile.sessionId) {
-      await this.prisma.runAsSystem('[SsoService.processSsoLogin] Internal service operation bypass', async (tx) =>
-        tx.ssoSession.upsert({
-          where: {
-            identityProviderId_sessionId: {
+      await this.prisma.runAsSystem(
+        '[SsoService.processSsoLogin] Internal service operation bypass',
+        async (tx) =>
+          tx.ssoSession.upsert({
+            where: {
+              identityProviderId_sessionId: {
+                identityProviderId: idp.id,
+                sessionId: profile.sessionId,
+              },
+            },
+            create: {
               identityProviderId: idp.id,
               sessionId: profile.sessionId,
+              userId: user.id,
             },
-          },
-          create: {
-            identityProviderId: idp.id,
-            sessionId: profile.sessionId,
-            userId: user.id,
-          },
-          update: { userId: user.id },
-        }),
+            update: { userId: user.id },
+          }),
       );
     }
 

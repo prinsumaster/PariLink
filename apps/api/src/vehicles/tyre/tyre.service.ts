@@ -37,21 +37,28 @@ export class TyreService {
     });
   }
 
-  async getVehicleTyres(companyId: string, vehicleId: string, currentKm: number) {
+  async getVehicleTyres(
+    companyId: string,
+    vehicleId: string,
+    currentKm: number,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const vehicle = await tx.vehicle.findUnique({ where: { id: vehicleId, companyId } });
+      const vehicle = await tx.vehicle.findUnique({
+        where: { id: vehicleId, companyId },
+      });
       if (!vehicle) throw new NotFoundException('Vehicle not found');
 
       const tyres = await tx.tyre.findMany({
         where: { vehicleId, companyId, status: 'ACTIVE' },
       });
 
-      return tyres.map(tyre => {
+      return tyres.map((tyre) => {
         // Assume fallback for UI if currentKm is not provided or is lower than fittedAtKm
-        const actualCurrentKm = (!currentKm || currentKm < tyre.fittedAtKm) 
-            ? tyre.fittedAtKm + 5000 
+        const actualCurrentKm =
+          !currentKm || currentKm < tyre.fittedAtKm
+            ? tyre.fittedAtKm + 5000
             : currentKm;
-            
+
         const kmDriven = actualCurrentKm - tyre.fittedAtKm;
         const lifeUsedPct = (kmDriven / tyre.expectedLifeKm) * 100;
         const costPerKm = kmDriven > 0 ? tyre.cost / kmDriven : 0;

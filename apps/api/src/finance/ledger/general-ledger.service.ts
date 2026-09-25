@@ -3,7 +3,6 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class GeneralLedgerService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async createJournalEntry(

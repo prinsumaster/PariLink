@@ -178,6 +178,9 @@ export const DriverAPI = {
 
   getAttendance: (driverId: string, params: { month: string }) =>
     apiClient.get(`/drivers/${driverId}/attendance`, { params }),
+
+  getLorryReceipts: (driverId: string) =>
+    apiClient.get(`/drivers/${driverId}/lorry-receipts`),
 };
 
 // ─── Notifications API ────────────────────────────────────────────────────────

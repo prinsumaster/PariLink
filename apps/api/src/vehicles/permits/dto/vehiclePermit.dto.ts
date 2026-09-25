@@ -1,7 +1,4 @@
-import {
-  IsOptional,
-  IsString
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateVehiclePermitDto {
   @IsOptional() @IsString() id?: string;

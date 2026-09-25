@@ -72,10 +72,20 @@ export class InvoicesService {
       });
       if (!invoice) throw new NotFoundException('Invoice not found');
 
-      const totalPaid = invoice.payments?.reduce((sum, p) => sum + p.amount, 0) || (invoice.status === 'PAID' ? invoice.amount : 0);
-      const subtotal = invoice.lineItems?.filter(i => i.type !== 'TAX').reduce((sum, i) => sum + i.amount, 0) || Math.round(invoice.amount / 1.05);
-      const taxTotal = invoice.lineItems?.filter(i => i.type === 'TAX').reduce((sum, i) => sum + i.amount, 0) || (invoice.amount - subtotal);
-      const balanceDue = invoice.status === 'PAID' ? 0 : Math.max(0, invoice.amount - totalPaid);
+      const totalPaid =
+        invoice.payments?.reduce((sum, p) => sum + p.amount, 0) ||
+        (invoice.status === 'PAID' ? invoice.amount : 0);
+      const subtotal =
+        invoice.lineItems
+          ?.filter((i) => i.type !== 'TAX')
+          .reduce((sum, i) => sum + i.amount, 0) ||
+        Math.round(invoice.amount / 1.05);
+      const taxTotal =
+        invoice.lineItems
+          ?.filter((i) => i.type === 'TAX')
+          .reduce((sum, i) => sum + i.amount, 0) || invoice.amount - subtotal;
+      const balanceDue =
+        invoice.status === 'PAID' ? 0 : Math.max(0, invoice.amount - totalPaid);
 
       return {
         ...invoice,
@@ -92,10 +102,22 @@ export class InvoicesService {
   async recordPayment(
     companyId: string,
     invoiceId: string,
-    payload: { amount: number; method?: string; referenceNumber?: string; paymentDate?: string; notes?: string },
+    payload: {
+      amount: number;
+      method?: string;
+      referenceNumber?: string;
+      paymentDate?: string;
+      notes?: string;
+    },
     _userId?: string,
   ) {
-    const { amount, method = 'NEFT', referenceNumber, paymentDate = new Date().toISOString(), notes } = payload;
+    const {
+      amount,
+      method = 'NEFT',
+      referenceNumber,
+      paymentDate = new Date().toISOString(),
+      notes,
+    } = payload;
     if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
       throw new BadRequestException('Payment amount must be a positive number');
     }
@@ -107,7 +129,10 @@ export class InvoicesService {
       });
       if (!invoice) throw new NotFoundException('Invoice not found');
 
-      const existingPaid = invoice.payments.reduce((sum, p) => sum + p.amount, 0);
+      const existingPaid = invoice.payments.reduce(
+        (sum, p) => sum + p.amount,
+        0,
+      );
       const newTotalPaid = existingPaid + amount;
       const newStatus = newTotalPaid >= invoice.amount ? 'PAID' : 'PARTIAL';
 
@@ -129,13 +154,31 @@ export class InvoicesService {
       });
 
       // Post double entry journal
-      let bankAcct = await tx.account.findFirst({ where: { companyId, code: '1000' } });
+      let bankAcct = await tx.account.findFirst({
+        where: { companyId, code: '1000' },
+      });
       if (!bankAcct) {
-        bankAcct = await tx.account.create({ data: { companyId, code: '1000', name: 'HDFC Current Account', type: 'ASSET' } });
+        bankAcct = await tx.account.create({
+          data: {
+            companyId,
+            code: '1000',
+            name: 'HDFC Current Account',
+            type: 'ASSET',
+          },
+        });
       }
-      let arAcct = await tx.account.findFirst({ where: { companyId, code: '1200' } });
+      let arAcct = await tx.account.findFirst({
+        where: { companyId, code: '1200' },
+      });
       if (!arAcct) {
-        arAcct = await tx.account.create({ data: { companyId, code: '1200', name: 'Accounts Receivable', type: 'ASSET' } });
+        arAcct = await tx.account.create({
+          data: {
+            companyId,
+            code: '1200',
+            name: 'Accounts Receivable',
+            type: 'ASSET',
+          },
+        });
       }
 
       await tx.journalEntry.create({
@@ -147,8 +190,20 @@ export class InvoicesService {
           status: 'POSTED',
           lines: {
             create: [
-              { companyId, accountId: bankAcct.id, debit: amount, credit: 0, description: 'Bank receipt' },
-              { companyId, accountId: arAcct.id, debit: 0, credit: amount, description: 'AR reduction' },
+              {
+                companyId,
+                accountId: bankAcct.id,
+                debit: amount,
+                credit: 0,
+                description: 'Bank receipt',
+              },
+              {
+                companyId,
+                accountId: arAcct.id,
+                debit: 0,
+                credit: amount,
+                description: 'AR reduction',
+              },
             ],
           },
         },

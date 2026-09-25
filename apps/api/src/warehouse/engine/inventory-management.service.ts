@@ -21,7 +21,7 @@ export class InventoryManagementService {
     private readonly prisma: PrismaService,
     private readonly cache: CacheManagerService,
     private readonly eventStore: EventStoreService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _lifecycle: LifecycleEngineService,
   ) {}
 

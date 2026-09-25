@@ -1,9 +1,8 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class BackgroundJobsService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(private prisma: PrismaService) {}
 
   async createJob(
@@ -54,56 +53,64 @@ export class BackgroundJobsService {
     progress: number,
     status: string = 'PROCESSING',
   ) {
-    return this.prisma.runAsSystem('[BackgroundJobsService.updateJobProgress] Background job bypass', async (tx) =>
-      tx.backgroundJob.update({
-        where: { id: jobId },
-        data: {
-          progress,
-          status,
-          ...(status === 'PROCESSING' && progress === 0
-            ? { startedAt: new Date() }
-            : {}),
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[BackgroundJobsService.updateJobProgress] Background job bypass',
+      async (tx) =>
+        tx.backgroundJob.update({
+          where: { id: jobId },
+          data: {
+            progress,
+            status,
+            ...(status === 'PROCESSING' && progress === 0
+              ? { startedAt: new Date() }
+              : {}),
+          },
+        }),
     );
   }
 
   async completeJob(jobId: string, result: any = {}) {
-    return this.prisma.runAsSystem('[BackgroundJobsService.completeJob] Background job bypass', async (tx) =>
-      tx.backgroundJob.update({
-        where: { id: jobId },
-        data: {
-          status: 'COMPLETED',
-          progress: 100,
-          completedAt: new Date(),
-          result,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[BackgroundJobsService.completeJob] Background job bypass',
+      async (tx) =>
+        tx.backgroundJob.update({
+          where: { id: jobId },
+          data: {
+            status: 'COMPLETED',
+            progress: 100,
+            completedAt: new Date(),
+            result,
+          },
+        }),
     );
   }
 
   async failJob(jobId: string, error: string) {
-    return this.prisma.runAsSystem('[BackgroundJobsService.failJob] Background job bypass', async (tx) =>
-      tx.backgroundJob.update({
-        where: { id: jobId },
-        data: {
-          status: 'FAILED',
-          completedAt: new Date(),
-          error,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[BackgroundJobsService.failJob] Background job bypass',
+      async (tx) =>
+        tx.backgroundJob.update({
+          where: { id: jobId },
+          data: {
+            status: 'FAILED',
+            completedAt: new Date(),
+            error,
+          },
+        }),
     );
   }
 
   async cancelJob(jobId: string) {
-    return this.prisma.runAsSystem('[BackgroundJobsService.cancelJob] Background job bypass', async (tx) =>
-      tx.backgroundJob.update({
-        where: { id: jobId },
-        data: {
-          status: 'CANCELLED',
-          completedAt: new Date(),
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[BackgroundJobsService.cancelJob] Background job bypass',
+      async (tx) =>
+        tx.backgroundJob.update({
+          where: { id: jobId },
+          data: {
+            status: 'CANCELLED',
+            completedAt: new Date(),
+          },
+        }),
     );
   }
 }

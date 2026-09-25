@@ -14,7 +14,7 @@ describe('DTO Validation Regression (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    
+
     // Exact same ValidationPipe config as main.ts
     app.useGlobalPipes(
       new ValidationPipe({
@@ -25,7 +25,7 @@ describe('DTO Validation Regression (e2e)', () => {
         stopAtFirstError: false,
       }),
     );
-    
+
     await app.init();
     prisma = app.get(PrismaService);
 
@@ -34,8 +34,8 @@ describe('DTO Validation Regression (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@parilink.com', password: 'password123' })
       .expect(200); // Wait, in nestjs post is 201 by default unless configured.
-      // Actually auth.e2e-spec expects 200 for login.
-      
+    // Actually auth.e2e-spec expects 200 for login.
+
     adminToken = loginRes.body.access_token || loginRes.body.data?.access_token;
   }, 30000);
 
@@ -79,7 +79,7 @@ describe('DTO Validation Regression (e2e)', () => {
           .post(endpoint)
           .set('Authorization', `Bearer ${adminToken}`)
           .send({});
-          
+
         expect(res.status).toBe(400);
       });
     }

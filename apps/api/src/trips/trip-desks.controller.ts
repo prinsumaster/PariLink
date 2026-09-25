@@ -36,6 +36,12 @@ export class TripDesksController {
     @Param('desk') desk: string,
     @Body('notes') notes?: string,
   ) {
-    return this.tripDesksService.completeDesk(user.companyId, id, desk, user, notes);
+    return this.tripDesksService.completeDesk(
+      user.companyId,
+      id,
+      desk,
+      user,
+      notes,
+    );
   }
 }

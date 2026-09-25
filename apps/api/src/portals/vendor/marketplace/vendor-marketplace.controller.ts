@@ -21,8 +21,6 @@ export class SubmitBidDto {
 @ApiTags('vendor-portal/marketplace')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-
-
 @Controller('vendor-portal/marketplace')
 export class VendorMarketplaceController {
   constructor(

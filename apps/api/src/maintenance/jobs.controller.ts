@@ -4,14 +4,7 @@ export class CreateJobDto {
   @IsString() @IsOptional() assignedTo?: string;
   @IsNumber() @IsOptional() estimatedCost?: number;
 }
-import {
-  Controller,
-  Post,
-  Get,
-  Param,
-  Body,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Post, Get, Param, Body, UseGuards } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';

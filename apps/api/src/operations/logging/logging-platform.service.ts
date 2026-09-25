@@ -46,7 +46,7 @@ export class LoggingPlatformService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _auditService: AuditService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -87,22 +87,24 @@ export class LoggingPlatformService {
     }
 
     try {
-      const logRecord = await this.prisma.runAsSystem('[LoggingPlatformService.log] Internal service operation bypass', async (tx) =>
-        tx.enterpriseLog.create({
-          data: {
-            companyId: input.companyId || null,
-            level: input.level,
-            service: input.service,
-            message: input.message,
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            structuredData: structuredData as object,
-            correlationId: input.correlationId || null,
-            traceId: input.traceId || null,
-            spanId: input.spanId || null,
-            errorGroup,
-            isRedacted,
-          },
-        }),
+      const logRecord = await this.prisma.runAsSystem(
+        '[LoggingPlatformService.log] Internal service operation bypass',
+        async (tx) =>
+          tx.enterpriseLog.create({
+            data: {
+              companyId: input.companyId || null,
+              level: input.level,
+              service: input.service,
+              message: input.message,
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+              structuredData: structuredData as object,
+              correlationId: input.correlationId || null,
+              traceId: input.traceId || null,
+              spanId: input.spanId || null,
+              errorGroup,
+              isRedacted,
+            },
+          }),
       );
 
       if (input.level === 'ERROR' || input.level === 'FATAL') {
@@ -145,12 +147,14 @@ export class LoggingPlatformService {
       if (filter.endTime) where.timestamp.lte = filter.endTime;
     }
 
-    const logs = await this.prisma.runAsSystem('[LoggingPlatformService.searchLogs] Internal service operation bypass', async (tx) =>
-      tx.enterpriseLog.findMany({
-        where,
-        orderBy: { timestamp: 'desc' },
-        take: filter.limit || 250,
-      }),
+    const logs = await this.prisma.runAsSystem(
+      '[LoggingPlatformService.searchLogs] Internal service operation bypass',
+      async (tx) =>
+        tx.enterpriseLog.findMany({
+          where,
+          orderBy: { timestamp: 'desc' },
+          take: filter.limit || 250,
+        }),
     );
 
     return logs;
@@ -178,12 +182,14 @@ export class LoggingPlatformService {
     };
     if (companyId) where.companyId = companyId;
 
-    const errors = await this.prisma.runAsSystem('[LoggingPlatformService.getErrorGroupsSummary] Internal service operation bypass', async (tx) =>
-      tx.enterpriseLog.findMany({
-        where,
-        orderBy: { timestamp: 'desc' },
-        take: 1000,
-      }),
+    const errors = await this.prisma.runAsSystem(
+      '[LoggingPlatformService.getErrorGroupsSummary] Internal service operation bypass',
+      async (tx) =>
+        tx.enterpriseLog.findMany({
+          where,
+          orderBy: { timestamp: 'desc' },
+          take: 1000,
+        }),
     );
 
     const counts: Record<
@@ -250,12 +256,14 @@ export class LoggingPlatformService {
     retentionDays = 30,
   ): Promise<{ deletedCount: number }> {
     const cutoffDate = new Date(Date.now() - retentionDays * 86400000);
-    const result = await this.prisma.runAsSystem('[LoggingPlatformService.purgeExpiredLogs] Internal service operation bypass', async (tx) =>
-      tx.enterpriseLog.deleteMany({
-        where: {
-          timestamp: { lt: cutoffDate },
-        },
-      }),
+    const result = await this.prisma.runAsSystem(
+      '[LoggingPlatformService.purgeExpiredLogs] Internal service operation bypass',
+      async (tx) =>
+        tx.enterpriseLog.deleteMany({
+          where: {
+            timestamp: { lt: cutoffDate },
+          },
+        }),
     );
     this.logger.log(
       `[Log Retention] Purged ${result.count} expired enterprise logs older than ${retentionDays} days.`,

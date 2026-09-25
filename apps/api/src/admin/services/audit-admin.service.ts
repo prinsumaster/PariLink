@@ -61,7 +61,9 @@ export class AuditAdminService {
           },
         }),
       ),
-      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) =>
+        tx.auditLog.count({ where }),
+      ),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -113,7 +115,9 @@ export class AuditAdminService {
           },
         }),
       ),
-      this.prisma.runAsTenant(companyId, async (tx) => tx.auditLog.count({ where })),
+      this.prisma.runAsTenant(companyId, async (tx) =>
+        tx.auditLog.count({ where }),
+      ),
     ]);
 
     return { data, total, page, limit, totalPages: Math.ceil(total / limit) };

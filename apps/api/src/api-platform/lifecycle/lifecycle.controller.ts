@@ -16,10 +16,12 @@ export class LifecycleController {
   @Get('versions')
   @ApiOperation({ summary: 'List all supported API versions and deprecations' })
   async getVersions() {
-    return this.prisma.runAsSystem('[LifecycleController.getVersions] Global controller bypass', async (tx) =>
-      tx.apiVersion.findMany({
-        orderBy: { releaseDate: 'desc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[LifecycleController.getVersions] Global controller bypass',
+      async (tx) =>
+        tx.apiVersion.findMany({
+          orderBy: { releaseDate: 'desc' },
+        }),
     );
   }
 
@@ -27,16 +29,18 @@ export class LifecycleController {
   @Get('changelog')
   @ApiOperation({ summary: 'Get latest API changelogs' })
   async getChangelogs() {
-    return this.prisma.runAsSystem('[LifecycleController.getChangelogs] Global controller bypass', async (tx) =>
-      tx.apiVersion.findMany({
-        select: {
-          version: true,
-          changelogUrl: true,
-          features: true,
-          status: true,
-        },
-        orderBy: { releaseDate: 'desc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[LifecycleController.getChangelogs] Global controller bypass',
+      async (tx) =>
+        tx.apiVersion.findMany({
+          select: {
+            version: true,
+            changelogUrl: true,
+            features: true,
+            status: true,
+          },
+          orderBy: { releaseDate: 'desc' },
+        }),
     );
   }
 }

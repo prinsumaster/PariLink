@@ -65,43 +65,49 @@ export class AlertEngineService {
 
     let ruleId = input.ruleId;
     if (!ruleId) {
-      let rule = await this.prisma.runAsSystem('[AlertEngineService.triggerAlert] Internal service operation bypass', async (tx) =>
-        tx.alertRule.findFirst({
-          where: { companyId: input.companyId, type: input.type },
-        }),
+      let rule = await this.prisma.runAsSystem(
+        '[AlertEngineService.triggerAlert] Internal service operation bypass',
+        async (tx) =>
+          tx.alertRule.findFirst({
+            where: { companyId: input.companyId, type: input.type },
+          }),
       );
       if (!rule) {
-        rule = await this.prisma.runAsSystem('[AlertEngineService.triggerAlert] Internal service operation bypass', async (tx) =>
-          tx.alertRule.create({
-            data: {
-              companyId: input.companyId,
-              name: `System Rule - ${input.type}`,
-              type: input.type,
-              condition: 'EXCEEDS',
-              threshold: 0,
-              severity: input.severity,
-              isActive: true,
-            },
-          }),
+        rule = await this.prisma.runAsSystem(
+          '[AlertEngineService.triggerAlert] Internal service operation bypass',
+          async (tx) =>
+            tx.alertRule.create({
+              data: {
+                companyId: input.companyId,
+                name: `System Rule - ${input.type}`,
+                type: input.type,
+                condition: 'EXCEEDS',
+                threshold: 0,
+                severity: input.severity,
+                isActive: true,
+              },
+            }),
         );
       }
       ruleId = rule.id;
     }
 
-    const alert = await this.prisma.runAsSystem('[AlertEngineService.triggerAlert] Internal service operation bypass', async (tx) =>
-      tx.alert.create({
-        data: {
-          companyId: input.companyId,
-          ruleId,
-          vehicleId: input.vehicleId || null,
-          driverId: input.driverId || null,
-          severity: input.severity,
-          message: input.message,
-          status: 'NEW',
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          metadata: (input.metadata || {}) as object,
-        },
-      }),
+    const alert = await this.prisma.runAsSystem(
+      '[AlertEngineService.triggerAlert] Internal service operation bypass',
+      async (tx) =>
+        tx.alert.create({
+          data: {
+            companyId: input.companyId,
+            ruleId,
+            vehicleId: input.vehicleId || null,
+            driverId: input.driverId || null,
+            severity: input.severity,
+            message: input.message,
+            status: 'NEW',
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            metadata: (input.metadata || {}) as object,
+          },
+        }),
     );
 
     await this.processEscalation(input.companyId, alert);
@@ -248,18 +254,20 @@ export class AlertEngineService {
     endTime: Date;
     affectedServices: string[];
   }): Promise<unknown> {
-    return this.prisma.runAsSystem('[AlertEngineService.createMaintenanceWindow] Internal service operation bypass', async (tx) =>
-      tx.maintenanceWindow.create({
-        data: {
-          companyId: data.companyId,
-          name: data.name,
-          description: data.description || null,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          affectedServices: data.affectedServices,
-          isActive: true,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[AlertEngineService.createMaintenanceWindow] Internal service operation bypass',
+      async (tx) =>
+        tx.maintenanceWindow.create({
+          data: {
+            companyId: data.companyId,
+            name: data.name,
+            description: data.description || null,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            affectedServices: data.affectedServices,
+            isActive: true,
+          },
+        }),
     );
   }
 
@@ -269,17 +277,19 @@ export class AlertEngineService {
     severity: string;
     steps: Record<string, unknown>[];
   }): Promise<unknown> {
-    return this.prisma.runAsSystem('[AlertEngineService.createEscalationPolicy] Internal service operation bypass', async (tx) =>
-      tx.alertEscalationPolicy.create({
-        data: {
-          companyId: data.companyId,
-          name: data.name,
-          severity: data.severity,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-          steps: data.steps as object[],
-          isActive: true,
-        },
-      }),
+    return this.prisma.runAsSystem(
+      '[AlertEngineService.createEscalationPolicy] Internal service operation bypass',
+      async (tx) =>
+        tx.alertEscalationPolicy.create({
+          data: {
+            companyId: data.companyId,
+            name: data.name,
+            severity: data.severity,
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+            steps: data.steps as object[],
+            isActive: true,
+          },
+        }),
     );
   }
 }

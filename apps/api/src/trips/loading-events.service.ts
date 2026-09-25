@@ -31,7 +31,12 @@ export class LoadingEventsService {
     });
   }
 
-  async addEvent(companyId: string, tripId: string, data: CreateLoadingEventDto, _user: AuthenticatedUser) {
+  async addEvent(
+    companyId: string,
+    tripId: string,
+    data: CreateLoadingEventDto,
+    _user: AuthenticatedUser,
+  ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trip = await tx.trip.findFirst({
         where: { id: tripId, companyId },
@@ -83,7 +88,7 @@ export class LoadingEventsService {
             category: 'MISC',
             amount: data.hamaliCost,
             note: `Hamali for ${data.type} at ${data.point}`,
-          }
+          },
         });
         additionalExpenses += data.hamaliCost;
       }
@@ -96,7 +101,7 @@ export class LoadingEventsService {
             category: 'MISC',
             amount: detentionCharge,
             note: `Detention charge (${detentionHrs} hrs) for ${data.type} at ${data.point}`,
-          }
+          },
         });
         additionalExpenses += detentionCharge;
       }
@@ -106,9 +111,9 @@ export class LoadingEventsService {
           where: { id: trip.id },
           data: {
             otherExpenses: {
-              increment: additionalExpenses
-            }
-          }
+              increment: additionalExpenses,
+            },
+          },
         });
       }
 

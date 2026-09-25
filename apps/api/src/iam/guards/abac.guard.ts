@@ -43,11 +43,13 @@ export class AbacGuard implements CanActivate {
     // Here we do a simplified check against user's extended properties or company settings.
 
     // For demonstration, fetch user's company and check its region/department
-    const company = await this.prisma.runAsSystem('[AbacGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-      tx.company.findUnique({
-        where: { id: user.companyId },
-        include: { tenantConfiguration: true },
-      }),
+    const company = await this.prisma.runAsSystem(
+      '[AbacGuard.canActivate] Security/Auth lifecycle bypass',
+      async (tx) =>
+        tx.company.findUnique({
+          where: { id: user.companyId },
+          include: { tenantConfiguration: true },
+        }),
     );
 
     const userMetadata = {}; // Usually fetched from user profile/attributes

@@ -1,7 +1,4 @@
-import {
-  IsOptional,
-  IsString
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreatePayrollRunDto {
   @IsOptional() @IsString() id?: string;

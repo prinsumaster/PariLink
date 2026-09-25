@@ -12,7 +12,7 @@ export class TallySyncProcessor {
 
   @Process('export-vouchers')
   async exportInvoicesToTally(job: Job) {
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const { companyId, _dateRange } = job.data;
     this.logger.log(`Starting Tally Sync for company ${companyId}`);
 
@@ -60,7 +60,7 @@ export class TallySyncProcessor {
       ledger.ele('DATE', inv.createdAt.toISOString());
     });
 
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const _xmlPayload = root.end({ pretty: true });
 
     // In production, this posts to the Tally ERP 9 / Prime local server endpoint.

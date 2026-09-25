@@ -182,15 +182,17 @@ export class SimulatorService {
     progress: number,
     status: string = 'PROCESSING',
   ) {
-    await this.prisma.runAsSystem('[SimulatorService.updateJobProgress] Internal service operation bypass', async (tx) =>
-      tx.backgroundJob.update({
-        where: { id },
-        data: {
-          progress,
-          status,
-          ...(status === 'COMPLETED' ? { completedAt: new Date() } : {}),
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[SimulatorService.updateJobProgress] Internal service operation bypass',
+      async (tx) =>
+        tx.backgroundJob.update({
+          where: { id },
+          data: {
+            progress,
+            status,
+            ...(status === 'COMPLETED' ? { completedAt: new Date() } : {}),
+          },
+        }),
     );
   }
 }

@@ -20,7 +20,14 @@ import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
-import { IsString, IsNotEmpty, IsOptional, IsObject, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsObject,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateGoldenRecordDto {
@@ -107,7 +114,11 @@ export class MdmController {
     @Param('entityType') entityType: string,
     @Body() payload: EvaluateQualityDto,
   ) {
-    return this.dqEngine.evaluateQuality(user.companyId, entityType, payload.payload);
+    return this.dqEngine.evaluateQuality(
+      user.companyId,
+      entityType,
+      payload.payload,
+    );
   }
 
   // ── 3. External Identity APIs ────────────────────────────────────────────

@@ -45,7 +45,9 @@ export class DispatchOperationsController {
 
   @Get('live-fleet/trail/:vehicleId')
   @RequirePermissions('dispatch:read')
-  @ApiOperation({ summary: 'Get vehicle GPS trail (last 90 fixes) for polyline + replay' })
+  @ApiOperation({
+    summary: 'Get vehicle GPS trail (last 90 fixes) for polyline + replay',
+  })
   async getVehicleTrail(
     @GetUser() user: AuthenticatedUser,
     @Param('vehicleId') vehicleId: string,

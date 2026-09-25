@@ -1,12 +1,6 @@
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  Res,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Res } from '@nestjs/common';
 import { ExportService } from './export.service';
 import { ImportService } from './import.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,7 +13,7 @@ import type { Response } from 'express';
 export class DataController {
   constructor(
     private readonly exportService: ExportService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _importService: ImportService,
   ) {}
 

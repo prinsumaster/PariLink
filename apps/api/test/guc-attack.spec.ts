@@ -11,7 +11,7 @@
 import { PrismaService } from '../src/prisma/prisma.service';
 
 // Silence NestJS Logger noise during the test
-jest.spyOn(console, 'debug').mockReturnValue(undefined as any);
+jest.spyOn(console, 'debug').mockReturnValue(undefined);
 
 describe('GUC Attack — Tenant Isolation Penetration Test', () => {
   let prisma: PrismaService;
@@ -30,17 +30,21 @@ describe('GUC Attack — Tenant Isolation Penetration Test', () => {
     // and returns 0 rows without a GUC context set.
     const tenants = await prisma.runAsSystem(
       'GUC penetration test — tenant lookup for setup',
-      async (tx) => tx.company.findMany({ take: 2, select: { id: true, name: true } }),
+      async (tx) =>
+        tx.company.findMany({ take: 2, select: { id: true, name: true } }),
     );
     if (tenants.length < 2) {
-      console.warn('[GUC-ATTACK] Insufficient tenants seeded — skipping penetration test.');
+      console.warn(
+        '[GUC-ATTACK] Insufficient tenants seeded — skipping penetration test.',
+      );
       return;
     }
 
     const tA = tenants[0].id;
     const tB = tenants[1].id;
-    console.log(`[GUC-ATTACK] Tenant A: ${tA} | Tenant B (attack target): ${tB}`);
-
+    console.log(
+      `[GUC-ATTACK] Tenant A: ${tA} | Tenant B (attack target): ${tB}`,
+    );
 
     let tripIds: string[] = [];
 
@@ -55,26 +59,38 @@ describe('GUC Attack — Tenant Isolation Penetration Test', () => {
 
         console.log('[GUC-ATTACK] --> REPOINT CALL: did not throw');
       } catch (e: any) {
-
         console.log('[GUC-ATTACK] --> REPOINT BLOCKED BY DB:', e.message);
       }
 
       // ── Phase 2: Attempt data exfiltration after the re-point ─────────────
-      const trips = await tx.trip.findMany({ select: { id: true, companyId: true } });
+      const trips = await tx.trip.findMany({
+        select: { id: true, companyId: true },
+      });
       tripIds = trips.map((t) => t.companyId);
-      console.log('[GUC-ATTACK] --> TRIPS VISIBLE AFTER REPOINT ATTEMPT:', trips.length);
+      console.log(
+        '[GUC-ATTACK] --> TRIPS VISIBLE AFTER REPOINT ATTEMPT:',
+        trips.length,
+      );
 
       if (trips.length > 0) {
-        console.log('[GUC-ATTACK] --> COMPANY IDS IN RESULT:', [...new Set(tripIds)].join(', '));
+        console.log(
+          '[GUC-ATTACK] --> COMPANY IDS IN RESULT:',
+          [...new Set(tripIds)].join(', '),
+        );
       }
     });
 
     // ── Assert: All visible trips still belong to Tenant A ──────────────────
     const leakedTrips = tripIds.filter((id) => id !== tA);
     if (leakedTrips.length > 0) {
-      console.error('[GUC-ATTACK] !! CRITICAL VULNERABILITY CONFIRMED — Cross-tenant data leaked:', leakedTrips);
+      console.error(
+        '[GUC-ATTACK] !! CRITICAL VULNERABILITY CONFIRMED — Cross-tenant data leaked:',
+        leakedTrips,
+      );
     } else {
-      console.log('[GUC-ATTACK] --> ISOLATION HELD: 0 trips from Tenant B visible.');
+      console.log(
+        '[GUC-ATTACK] --> ISOLATION HELD: 0 trips from Tenant B visible.',
+      );
     }
 
     expect(leakedTrips).toHaveLength(0);

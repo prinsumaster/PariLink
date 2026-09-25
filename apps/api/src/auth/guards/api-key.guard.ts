@@ -49,10 +49,12 @@ export class ApiKeyGuard implements CanActivate {
     // const hash = crypto.createHash('sha256').update(token).digest('hex');
     // const apiKey = await this.prisma.apiKey.findFirst({ where: { keyHash: hash, isActive: true }});
 
-    const apiKey = await this.prisma.runAsSystem('[ApiKeyGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-      tx.apiKey.findFirst({
-        where: { isActive: true }, // Simplified for demonstration
-      }),
+    const apiKey = await this.prisma.runAsSystem(
+      '[ApiKeyGuard.canActivate] Security/Auth lifecycle bypass',
+      async (tx) =>
+        tx.apiKey.findFirst({
+          where: { isActive: true }, // Simplified for demonstration
+        }),
     );
 
     if (!apiKey) {

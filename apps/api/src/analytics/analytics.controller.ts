@@ -51,10 +51,12 @@ export class AnalyticsController {
     // Emits new metrics every 5 seconds
     return interval(5000).pipe(
       concatMap(async (_) => {
-        const liveActiveTrips = await this.prisma.runAsTenant(user.companyId, (tx) =>
-          tx.trip.count({
-            where: { companyId: user.companyId, status: 'IN_PROGRESS' },
-          }),
+        const liveActiveTrips = await this.prisma.runAsTenant(
+          user.companyId,
+          (tx) =>
+            tx.trip.count({
+              where: { companyId: user.companyId, status: 'IN_PROGRESS' },
+            }),
         );
         return {
           data: {

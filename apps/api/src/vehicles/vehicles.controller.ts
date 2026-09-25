@@ -9,7 +9,7 @@ import {
   Param,
   Delete,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
@@ -53,10 +53,7 @@ export class VehiclesController {
   @Get(':id/mileage')
   @RequirePermissions('fleet:read')
   @ApiOperation({ summary: 'Get km/L trend for a vehicle' })
-  getMileageTrend(
-    @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-  ) {
+  getMileageTrend(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.vehiclesService.getMileageTrend(user.companyId, id);
   }
 
@@ -80,14 +77,21 @@ export class VehiclesController {
 
   @Get(':id/tco')
   @RequirePermissions('fleet:read')
-  @ApiOperation({ summary: 'Get Total Cost of Ownership (TCO) breakdown for a vehicle' })
+  @ApiOperation({
+    summary: 'Get Total Cost of Ownership (TCO) breakdown for a vehicle',
+  })
   getVehicleTCO(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
     @Query('from') fromDate?: string,
     @Query('to') toDate?: string,
   ) {
-    return this.vehiclesService.getVehicleTCO(user.companyId, id, fromDate, toDate);
+    return this.vehiclesService.getVehicleTCO(
+      user.companyId,
+      id,
+      fromDate,
+      toDate,
+    );
   }
 
   @Delete(':id')

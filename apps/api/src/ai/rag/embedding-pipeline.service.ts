@@ -45,10 +45,12 @@ export class EmbeddingPipelineService {
     this.logger.log(`Indexing document: ${title}`);
 
     // 1. Create Document Record
-    const doc = await this.prisma.runAsSystem('[EmbeddingPipelineService.indexDocument] Internal service operation bypass', async (tx) =>
-      tx.knowledgeDocument.create({
-        data: { title, content, sourceType, metadata },
-      }),
+    const doc = await this.prisma.runAsSystem(
+      '[EmbeddingPipelineService.indexDocument] Internal service operation bypass',
+      async (tx) =>
+        tx.knowledgeDocument.create({
+          data: { title, content, sourceType, metadata },
+        }),
     );
 
     // 2. Chunking (Naive text splitter for MVP)
@@ -61,15 +63,17 @@ export class EmbeddingPipelineService {
     // 3. Generate Embeddings & Store Chunks
     for (const chunkText of chunks) {
       const vector = await this.getEmbedding(chunkText);
-      await this.prisma.runAsSystem('[EmbeddingPipelineService.indexDocument] Internal service operation bypass', async (tx) =>
-        tx.knowledgeChunk.create({
-          data: {
-            documentId: doc.id,
-            content: chunkText,
-            embedding: vector,
-            metadata: {},
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[EmbeddingPipelineService.indexDocument] Internal service operation bypass',
+        async (tx) =>
+          tx.knowledgeChunk.create({
+            data: {
+              documentId: doc.id,
+              content: chunkText,
+              embedding: vector,
+              metadata: {},
+            },
+          }),
       );
     }
 

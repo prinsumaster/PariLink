@@ -21,7 +21,9 @@ describe('BillingService', () => {
   };
 
   const mockPrisma = {
-    runAsSystem: jest.fn().mockImplementation(async (_reason, cb) => cb(mockPrisma)),
+    runAsSystem: jest
+      .fn()
+      .mockImplementation(async (_reason, cb) => cb(mockPrisma)),
     runAsTenant: jest.fn((_companyId: string, cb: (tx: any) => any) =>
       cb(mockTx),
     ),
@@ -59,7 +61,10 @@ describe('BillingService', () => {
       ).rejects.toThrow(NotFoundException);
       expect(mockTx.load.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ id: 'load-999', companyId: 'company-1' }),
+          where: expect.objectContaining({
+            id: 'load-999',
+            companyId: 'company-1',
+          }),
         }),
       );
     });
@@ -202,12 +207,18 @@ describe('BillingService', () => {
       // ── Strict tenant-isolation assertions ──────────────────────────────
       expect(mockTx.invoice.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', id: 'invoice-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            id: 'invoice-1',
+          }),
         }),
       );
       expect(mockTx.invoice.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: expect.objectContaining({ companyId: 'company-1', id: 'invoice-1' }),
+          where: expect.objectContaining({
+            companyId: 'company-1',
+            id: 'invoice-1',
+          }),
         }),
       );
     });

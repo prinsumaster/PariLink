@@ -24,6 +24,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
       new ValidationPipe({ transform: true, whitelist: true }),
     );
@@ -73,7 +74,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
     });
 
     const loginRes = await request(app.getHttpServer())
-      .post('/auth/login')
+      .post('/api/v1/auth/login')
       .send({
         email: testEmail,
         password: 'password123',
@@ -89,7 +90,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('1. Create circular depot geofence', async () => {
     const res = await request(app.getHttpServer())
-      .post('/tracking/enterprise/geofences')
+      .post('/api/v1/tracking/enterprise/geofences')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Midwest Hub Depot',
@@ -105,7 +106,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('2. List geofences', async () => {
     const res = await request(app.getHttpServer())
-      .get('/tracking/enterprise/geofences')
+      .get('/api/v1/tracking/enterprise/geofences')
       .set('Authorization', `Bearer ${accessToken}`);
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
@@ -114,7 +115,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('3. Create speeding and engine temperature alert rules', async () => {
     const res = await request(app.getHttpServer())
-      .post('/tracking/enterprise/alert-rules')
+      .post('/api/v1/tracking/enterprise/alert-rules')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'High Speed Rule',
@@ -130,7 +131,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('4. Ingest real-time CAN-bus telemetry and trigger speed alert', async () => {
     const res = await request(app.getHttpServer())
-      .post('/tracking/enterprise/telemetry')
+      .post('/api/v1/tracking/enterprise/telemetry')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         vehicleId,
@@ -148,7 +149,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('5. Evaluate vehicle GPS position inside geofence (ENTER transition)', async () => {
     const res = await request(app.getHttpServer())
-      .post('/tracking/enterprise/geofences/evaluate')
+      .post('/api/v1/tracking/enterprise/geofences/evaluate')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         vehicleId,
@@ -162,7 +163,9 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('6. View geofence transition history', async () => {
     const res = await request(app.getHttpServer())
-      .get(`/tracking/enterprise/geofence-events?geofenceId=${geofenceId}`)
+      .get(
+        `/api/v1/tracking/enterprise/geofence-events?geofenceId=${geofenceId}`,
+      )
       .set('Authorization', `Bearer ${accessToken}`);
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
@@ -171,7 +174,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('7. Acknowledge and resolve triggered alert', async () => {
     const res = await request(app.getHttpServer())
-      .put(`/tracking/enterprise/alerts/${alertId}/status`)
+      .put(`/api/v1/tracking/enterprise/alerts/${alertId}/status`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         status: 'ACKNOWLEDGED',
@@ -183,7 +186,7 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('8. Get fleet health and safety analytics', async () => {
     const res = await request(app.getHttpServer())
-      .get('/tracking/enterprise/analytics')
+      .get('/api/v1/tracking/enterprise/analytics')
       .set('Authorization', `Bearer ${accessToken}`);
     expect(res.status).toBe(200);
     expect(res.body.summary.vehicleCount).toBeGreaterThanOrEqual(1);
@@ -192,12 +195,12 @@ describe('Enterprise Telematics & Geofence Intelligence Platform (e2e)', () => {
 
   it('9. Delete alert rule and geofence', async () => {
     const delRule = await request(app.getHttpServer())
-      .delete(`/tracking/enterprise/alert-rules/${ruleId}`)
+      .delete(`/api/v1/tracking/enterprise/alert-rules/${ruleId}`)
       .set('Authorization', `Bearer ${accessToken}`);
     expect(delRule.status).toBe(200);
 
     const delFence = await request(app.getHttpServer())
-      .delete(`/tracking/enterprise/geofences/${geofenceId}`)
+      .delete(`/api/v1/tracking/enterprise/geofences/${geofenceId}`)
       .set('Authorization', `Bearer ${accessToken}`);
     expect(delFence.status).toBe(200);
   });

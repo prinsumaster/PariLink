@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import {
-  MetricsPlatformService
-} from './metrics-platform.service';
+import { MetricsPlatformService } from './metrics-platform.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';

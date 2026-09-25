@@ -140,7 +140,11 @@ export class AiController {
     @GetUser() user: AuthenticatedUser,
     @Body() body: CreateSessionDto,
   ) {
-    return this.copilotChat.createSession(user.companyId, user.userId, body.title);
+    return this.copilotChat.createSession(
+      user.companyId,
+      user.userId,
+      body.title,
+    );
   }
 
   @Get('copilot/sessions/:sessionId/messages')
@@ -396,7 +400,12 @@ export class AiController {
     @GetUser() user: AuthenticatedUser,
     @Body() body: SetWorkspaceMemoryDto,
   ) {
-    await this.memory.setMemory('WORKSPACE', user.companyId, body.key, body.value);
+    await this.memory.setMemory(
+      'WORKSPACE',
+      user.companyId,
+      body.key,
+      body.value,
+    );
     return { success: true };
   }
 

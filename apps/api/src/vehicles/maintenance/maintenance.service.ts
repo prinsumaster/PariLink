@@ -271,18 +271,18 @@ export class MaintenanceService {
       const jobCards = await tx.jobCard.findMany({
         where: { companyId, vehicleId },
         include: { parts: true, workshop: true, mechanic: true },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
 
       const maintenanceJobs = await tx.maintenanceJob.findMany({
         where: { companyId, vehicleId },
         include: { parts: true, vendor: true },
-        orderBy: { openedAt: 'desc' }
+        orderBy: { openedAt: 'desc' },
       });
 
       const tyreLogs = await tx.tyreLog.findMany({
         where: { companyId, vehicleId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       });
 
       const timeline = [];
@@ -299,8 +299,8 @@ export class MaintenanceService {
             workshop: jc.workshop?.name,
             mechanic: jc.mechanic?.name,
             workDone: jc.workDone,
-            parts: jc.parts.map(p => `${p.partName} (x${p.quantity})`)
-          }
+            parts: jc.parts.map((p) => `${p.partName} (x${p.quantity})`),
+          },
         });
       }
 
@@ -311,12 +311,14 @@ export class MaintenanceService {
           date: mj.closedAt || mj.openedAt,
           status: mj.status,
           title: `Maintenance: ${mj.type}`,
-          cost: mj.labourCost + mj.parts.reduce((sum: number, p: any) => sum + p.amount, 0),
+          cost:
+            mj.labourCost +
+            mj.parts.reduce((sum: number, p: any) => sum + p.amount, 0),
           details: {
             vendor: mj.vendor?.name,
             odometer: mj.odometer,
-            parts: mj.parts.map((p: any) => `${p.name} (x${p.qty})`)
-          }
+            parts: mj.parts.map((p: any) => `${p.name} (x${p.qty})`),
+          },
         });
       }
 
@@ -332,8 +334,8 @@ export class MaintenanceService {
             position: tl.newPosition || tl.oldPosition,
             reason: tl.reason,
             odometer: tl.odometer,
-            treadDepthMm: tl.treadDepthMm
-          }
+            treadDepthMm: tl.treadDepthMm,
+          },
         });
       }
 

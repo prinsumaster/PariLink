@@ -9,7 +9,7 @@ export class AnomalyDetectionService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _aiProvider: MockAIProvider,
   ) {}
 
@@ -29,17 +29,19 @@ export class AnomalyDetectionService {
         `Anomaly Detected in Event: ${eventPayload.payload.data?.eventType}`,
       );
 
-      await this.prisma.runAsSystem('[AnomalyDetectionService.handleDomainEvent] Internal service operation bypass', async (tx) =>
-        tx.aiAnomaly.create({
-          data: {
-            companyId: eventPayload.tenantId,
-            category: 'Event Anomaly',
-            severity: 'MEDIUM',
-            description: `An unusual pattern was detected in event ${eventPayload.payload.data?.eventType}`,
-            evidence: eventPayload.payload,
-            status: 'UNRESOLVED',
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[AnomalyDetectionService.handleDomainEvent] Internal service operation bypass',
+        async (tx) =>
+          tx.aiAnomaly.create({
+            data: {
+              companyId: eventPayload.tenantId,
+              category: 'Event Anomaly',
+              severity: 'MEDIUM',
+              description: `An unusual pattern was detected in event ${eventPayload.payload.data?.eventType}`,
+              evidence: eventPayload.payload,
+              status: 'UNRESOLVED',
+            },
+          }),
       );
     }
   }

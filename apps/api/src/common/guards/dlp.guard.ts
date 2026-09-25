@@ -25,34 +25,38 @@ export class DlpGuard implements CanActivate {
     const fiveMinutesAgo = new Date();
     fiveMinutesAgo.setMinutes(fiveMinutesAgo.getMinutes() - 5);
 
-    const recentExports = await this.prisma.runAsSystem('[DlpGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-      tx.auditLog.count({
-        where: {
-          companyId: user.companyId,
-          userId: user.id,
-          action: 'EXPORT',
-          createdAt: {
-            gte: fiveMinutesAgo,
+    const recentExports = await this.prisma.runAsSystem(
+      '[DlpGuard.canActivate] Security/Auth lifecycle bypass',
+      async (tx) =>
+        tx.auditLog.count({
+          where: {
+            companyId: user.companyId,
+            userId: user.id,
+            action: 'EXPORT',
+            createdAt: {
+              gte: fiveMinutesAgo,
+            },
           },
-        },
-      }),
+        }),
     );
 
     if (recentExports > 3) {
       // Log DLP alert
-      await this.prisma.runAsSystem('[DlpGuard.canActivate] Security/Auth lifecycle bypass', async (tx) =>
-        this.auditService.logEvent(
-          {
-            companyId: user.companyId,
-            userId: user.id,
-            action: 'DLP_ALERT',
-            entity: 'DataExport',
-            entityId: 'Multiple',
-            details: { reason: 'Mass export detected (>3 in 5m)' },
-          },
-          null,
-          tx,
-        ),
+      await this.prisma.runAsSystem(
+        '[DlpGuard.canActivate] Security/Auth lifecycle bypass',
+        async (tx) =>
+          this.auditService.logEvent(
+            {
+              companyId: user.companyId,
+              userId: user.id,
+              action: 'DLP_ALERT',
+              entity: 'DataExport',
+              entityId: 'Multiple',
+              details: { reason: 'Mass export detected (>3 in 5m)' },
+            },
+            null,
+            tx,
+          ),
       );
 
       throw new HttpException(

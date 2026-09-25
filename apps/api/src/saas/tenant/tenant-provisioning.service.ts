@@ -54,8 +54,19 @@ export class TenantProvisioningService {
       const workshopRoles = [
         { name: 'Workshop Gate', permissions: ['workshop:gate'] },
         { name: 'Workshop Mechanic', permissions: ['workshop:mechanic'] },
-        { name: 'Workshop Supervisor', permissions: ['workshop:supervisor', 'workshop:gate'] },
-        { name: 'Workshop Owner', permissions: ['workshop:owner', 'workshop:supervisor', 'workshop:mechanic', 'workshop:gate'] }
+        {
+          name: 'Workshop Supervisor',
+          permissions: ['workshop:supervisor', 'workshop:gate'],
+        },
+        {
+          name: 'Workshop Owner',
+          permissions: [
+            'workshop:owner',
+            'workshop:supervisor',
+            'workshop:mechanic',
+            'workshop:gate',
+          ],
+        },
       ];
 
       for (const role of workshopRoles) {

@@ -25,14 +25,16 @@ export class WarehouseAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const items = await this.prisma.runAsSystem('[WarehouseAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-            tx.inventoryItem.findMany({
-              where: {
-                warehouseId: parsed.warehouseId,
-                ...(parsed.sku ? { sku: parsed.sku } : {}),
-              },
-              take: 10,
-            }),
+          const items = await this.prisma.runAsSystem(
+            '[WarehouseAgent.unknownMethod] Autonomous AI Agent bypass',
+            async (tx) =>
+              tx.inventoryItem.findMany({
+                where: {
+                  warehouseId: parsed.warehouseId,
+                  ...(parsed.sku ? { sku: parsed.sku } : {}),
+                },
+                take: 10,
+              }),
           );
           return JSON.stringify(
             items.map((i) => ({

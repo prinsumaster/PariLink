@@ -6,7 +6,8 @@ import { IsString, IsNotEmpty, IsIn } from 'class-validator';
 export class ProcessScanDto {
   @IsString() @IsNotEmpty() code!: string;
   @IsString() @IsNotEmpty() locationId!: string;
-  @IsString() @IsIn(['RECEIVE', 'PUTAWAY', 'PICK']) operation!: 'RECEIVE' | 'PUTAWAY' | 'PICK';
+  @IsString() @IsIn(['RECEIVE', 'PUTAWAY', 'PICK']) operation!:
+    'RECEIVE' | 'PUTAWAY' | 'PICK';
 }
 
 @ApiTags('WMS')

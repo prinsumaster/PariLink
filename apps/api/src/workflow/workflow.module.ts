@@ -11,11 +11,21 @@ import { ApprovalEngineService } from './engine/approval.service';
   imports: [
     BullModule.registerQueue(
       { name: 'background_jobs' },
-      { name: 'workflow_execution' }
+      { name: 'workflow_execution' },
     ),
   ],
   controllers: [WorkflowController],
-  providers: [...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : []), WorkflowService, ConditionEngineService, EngineWorkflowService, ApprovalEngineService],
-  exports: [...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : []), WorkflowService, ConditionEngineService],
+  providers: [
+    ...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : []),
+    WorkflowService,
+    ConditionEngineService,
+    EngineWorkflowService,
+    ApprovalEngineService,
+  ],
+  exports: [
+    ...(process.env.RUN_WORKERS === 'true' ? [WorkflowExecutorService] : []),
+    WorkflowService,
+    ConditionEngineService,
+  ],
 })
 export class WorkflowModule {}

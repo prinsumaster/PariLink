@@ -15,7 +15,10 @@ import { PermissionsGuard } from '../../../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../../../auth/decorators/permissions.decorator';
 
 import { BankSyncService } from '../../services/bank-sync/bank-sync.service';
-import { CreateBankStatementDto, UpdateBankStatementDto } from '../../dto/bank-statement.dto';
+import {
+  CreateBankStatementDto,
+  UpdateBankStatementDto,
+} from '../../dto/bank-statement.dto';
 
 @Controller('finance/bank-statements')
 @UseGuards(JwtAuthGuard, PermissionsGuard)

@@ -10,10 +10,10 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
   let prisma: PrismaService;
   let adminToken: string;
   let noPermToken: string;
-  let companyId: string = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
+  const companyId: string = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
   let intrastateCustomerId: string;
   let interstateCustomerId: string;
-  
+
   let trip1Id: string; // intrastate, completed
   let trip2Id: string; // interstate, completed
   let trip3Id: string; // intrastate, planned (for rejection)
@@ -30,7 +30,9 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
 
@@ -41,117 +43,337 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
 
     // Login for user without billing:write permissions
     // I will use driver@parilink.com or similar if exists, but we can just create one
-    let noPermUser = await prisma.runAsSystem('e2e-setup', (tx) => tx.user.findFirst({ where: { email: 'noperm_billing@parilink.com' } }));
+    let noPermUser = await prisma.runAsSystem('e2e-setup', (tx) =>
+      tx.user.findFirst({ where: { email: 'noperm_billing@parilink.com' } }),
+    );
     if (!noPermUser) {
       const bcrypt = require('bcrypt');
       const hash = await bcrypt.hash('password123', 10);
-      noPermUser = await prisma.runAsSystem('e2e-setup', (tx) => tx.user.create({
-        data: {
-          id: require('crypto').randomUUID(),
-          email: 'noperm_billing@parilink.com',
-          password: hash,
-          firstName: 'No',
-          lastName: 'Perm',
-          companyId,
-          status: 'ACTIVE',
-        }
-      }));
+      noPermUser = await prisma.runAsSystem('e2e-setup', (tx) =>
+        tx.user.create({
+          data: {
+            id: require('crypto').randomUUID(),
+            email: 'noperm_billing@parilink.com',
+            password: hash,
+            firstName: 'No',
+            lastName: 'Perm',
+            companyId,
+            status: 'ACTIVE',
+          },
+        }),
+      );
     }
 
     const noPermLogin = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
       .send({ email: 'noperm_billing@parilink.com', password: 'password123' });
-    noPermToken = noPermLogin.body?.access_token || noPermLogin.body?.accessToken;
+    noPermToken =
+      noPermLogin.body?.access_token || noPermLogin.body?.accessToken;
 
     await prisma.runAsTenant(companyId, async (tx) => {
       // 1. Setup Company State for GST math
       await tx.company.update({
         where: { id: companyId },
-        data: { state: 'Maharashtra' }
+        data: { state: 'Maharashtra' },
       });
 
       // 2. Setup Intrastate Customer (Maharashtra -> CGST+SGST)
-      const c1 = await tx.customer.create({ 
-        data: { id: 'cust-intra-' + Date.now(), companyId, name: 'Local Cust', state: 'Maharashtra' } 
+      const c1 = await tx.customer.create({
+        data: {
+          id: 'cust-intra-' + Date.now(),
+          companyId,
+          name: 'Local Cust',
+          state: 'Maharashtra',
+        },
       });
       intrastateCustomerId = c1.id;
 
       // 3. Setup Interstate Customer (Gujarat -> IGST)
-      const c2 = await tx.customer.create({ 
-        data: { id: 'cust-inter-' + Date.now(), companyId, name: 'Remote Cust', state: 'Gujarat' } 
+      const c2 = await tx.customer.create({
+        data: {
+          id: 'cust-inter-' + Date.now(),
+          companyId,
+          name: 'Remote Cust',
+          state: 'Gujarat',
+        },
       });
       interstateCustomerId = c2.id;
 
       // 4. Create Trips with linked Lorry Receipts
-      const dummyDriver = await tx.driver.create({ data: { id: 'd-' + Date.now(), companyId, firstName: 'A', lastName: 'B', phone: '123' + Date.now(), status: 'ACTIVE', licenseNumber: 'DL-' + Date.now(), licenseExpiry: new Date() } });
-      const dummyVehicle = await tx.vehicle.create({ data: { id: 'v-' + Date.now(), companyId, licensePlate: 'RN-' + Date.now(), type: 'TRUCK', status: 'ACTIVE' } });
+      const dummyDriver = await tx.driver.create({
+        data: {
+          id: 'd-' + Date.now(),
+          companyId,
+          firstName: 'A',
+          lastName: 'B',
+          phone: '123' + Date.now(),
+          status: 'ACTIVE',
+          licenseNumber: 'DL-' + Date.now(),
+          licenseExpiry: new Date(),
+        },
+      });
+      const dummyVehicle = await tx.vehicle.create({
+        data: {
+          id: 'v-' + Date.now(),
+          companyId,
+          licensePlate: 'RN-' + Date.now(),
+          type: 'TRUCK',
+          status: 'ACTIVE',
+        },
+      });
 
       // Trip 1 (Intrastate) - Rate: 500, Qty (Net Weight): 10,000kg (10 tons) -> Amount = 500 * 10 = 5000
       const t1 = await tx.trip.create({
-        data: { 
-          id: 't1-' + Date.now(), companyId, tripNumber: 'T1-' + Date.now(), status: 'COMPLETED', rate: 500, 
-          loads: { create: [{ customerId: intrastateCustomerId, referenceNumber: 'L1', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Maharashtra', pickupDate: new Date(), deliveryDate: new Date(), rate: 500, companyId }] },
+        data: {
+          id: 't1-' + Date.now(),
+          companyId,
+          tripNumber: 'T1-' + Date.now(),
+          status: 'COMPLETED',
+          rate: 500,
+          loads: {
+            create: [
+              {
+                customerId: intrastateCustomerId,
+                referenceNumber: 'L1',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Maharashtra',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 500,
+                companyId,
+              },
+            ],
+          },
           lorryReceipt: {
-            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-1-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 15000, tareWeight: 5000, netWeight: 10000, status: 'DRAFT' }
-          }
-        }
+            create: {
+              companyId,
+              driverId: dummyDriver.id,
+              vehicleId: dummyVehicle.id,
+              lrNumber: 'LR-1-' + Date.now(),
+              consignorName: 'Con A',
+              consigneeName: 'Con B',
+              product: 'Steel',
+              grossWeight: 15000,
+              tareWeight: 5000,
+              netWeight: 10000,
+              status: 'DRAFT',
+            },
+          },
+        },
       });
       trip1Id = t1.id;
 
       // Trip 2 (Interstate) - Rate: 800, Qty (Net Weight): 20,000kg (20 tons) -> Amount = 800 * 20 = 16000
       const t2 = await tx.trip.create({
-        data: { 
-          id: 't2-' + Date.now(), companyId, tripNumber: 'T2-' + Date.now(), status: 'COMPLETED', rate: 800, 
-          loads: { create: [{ customerId: interstateCustomerId, referenceNumber: 'L2', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Gujarat', pickupDate: new Date(), deliveryDate: new Date(), rate: 800, companyId }] },
+        data: {
+          id: 't2-' + Date.now(),
+          companyId,
+          tripNumber: 'T2-' + Date.now(),
+          status: 'COMPLETED',
+          rate: 800,
+          loads: {
+            create: [
+              {
+                customerId: interstateCustomerId,
+                referenceNumber: 'L2',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Gujarat',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 800,
+                companyId,
+              },
+            ],
+          },
           lorryReceipt: {
-            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-2-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 25000, tareWeight: 5000, netWeight: 20000, status: 'DRAFT' }
-          }
-        }
+            create: {
+              companyId,
+              driverId: dummyDriver.id,
+              vehicleId: dummyVehicle.id,
+              lrNumber: 'LR-2-' + Date.now(),
+              consignorName: 'Con A',
+              consigneeName: 'Con B',
+              product: 'Steel',
+              grossWeight: 25000,
+              tareWeight: 5000,
+              netWeight: 20000,
+              status: 'DRAFT',
+            },
+          },
+        },
       });
       trip2Id = t2.id;
 
       // Trip 3 (Planned - should reject)
       const t3 = await tx.trip.create({
-        data: { 
-          id: 't3-' + Date.now(), companyId, tripNumber: 'T3-' + Date.now(), status: 'PLANNED', rate: 1000, 
-          loads: { create: [{ customerId: intrastateCustomerId, referenceNumber: 'L3', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Maharashtra', pickupDate: new Date(), deliveryDate: new Date(), rate: 1000, companyId }] }
-        }
+        data: {
+          id: 't3-' + Date.now(),
+          companyId,
+          tripNumber: 'T3-' + Date.now(),
+          status: 'PLANNED',
+          rate: 1000,
+          loads: {
+            create: [
+              {
+                customerId: intrastateCustomerId,
+                referenceNumber: 'L3',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Maharashtra',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 1000,
+                companyId,
+              },
+            ],
+          },
+        },
       });
       trip3Id = t3.id;
 
       // Trip 4 (For duplicate invoicing test)
       const t4 = await tx.trip.create({
-        data: { 
-          id: 't4-' + Date.now(), companyId, tripNumber: 'T4-' + Date.now(), status: 'COMPLETED', rate: 600, 
-          loads: { create: [{ customerId: intrastateCustomerId, referenceNumber: 'L4', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Maharashtra', pickupDate: new Date(), deliveryDate: new Date(), rate: 600, companyId }] },
+        data: {
+          id: 't4-' + Date.now(),
+          companyId,
+          tripNumber: 'T4-' + Date.now(),
+          status: 'COMPLETED',
+          rate: 600,
+          loads: {
+            create: [
+              {
+                customerId: intrastateCustomerId,
+                referenceNumber: 'L4',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Maharashtra',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 600,
+                companyId,
+              },
+            ],
+          },
           lorryReceipt: {
-            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-4-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 15000, tareWeight: 5000, netWeight: 10000, status: 'DRAFT' }
-          }
-        }
+            create: {
+              companyId,
+              driverId: dummyDriver.id,
+              vehicleId: dummyVehicle.id,
+              lrNumber: 'LR-4-' + Date.now(),
+              consignorName: 'Con A',
+              consigneeName: 'Con B',
+              product: 'Steel',
+              grossWeight: 15000,
+              tareWeight: 5000,
+              netWeight: 10000,
+              status: 'DRAFT',
+            },
+          },
+        },
       });
       trip4Id = t4.id;
 
       // Trip 5 (For different customer rejection)
       const t5 = await tx.trip.create({
-        data: { 
-          id: 't5-' + Date.now(), companyId, tripNumber: 'T5-' + Date.now(), status: 'COMPLETED', rate: 700, 
-          loads: { create: [{ customerId: interstateCustomerId, referenceNumber: 'L5', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Gujarat', pickupDate: new Date(), deliveryDate: new Date(), rate: 700, companyId }] },
+        data: {
+          id: 't5-' + Date.now(),
+          companyId,
+          tripNumber: 'T5-' + Date.now(),
+          status: 'COMPLETED',
+          rate: 700,
+          loads: {
+            create: [
+              {
+                customerId: interstateCustomerId,
+                referenceNumber: 'L5',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Gujarat',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 700,
+                companyId,
+              },
+            ],
+          },
           lorryReceipt: {
-            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-5-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 15000, tareWeight: 5000, netWeight: 10000, status: 'DRAFT' }
-          }
-        }
+            create: {
+              companyId,
+              driverId: dummyDriver.id,
+              vehicleId: dummyVehicle.id,
+              lrNumber: 'LR-5-' + Date.now(),
+              consignorName: 'Con A',
+              consigneeName: 'Con B',
+              product: 'Steel',
+              grossWeight: 15000,
+              tareWeight: 5000,
+              netWeight: 10000,
+              status: 'DRAFT',
+            },
+          },
+        },
       });
       trip5Id = t5.id;
 
       // Trip 6 (For Workshop Costs Integration)
       const t6 = await tx.trip.create({
-        data: { 
-          id: 't6-' + Date.now(), companyId, tripNumber: 'T6-' + Date.now(), status: 'COMPLETED', rate: 900, 
-          loads: { create: [{ customerId: intrastateCustomerId, referenceNumber: 'L6', originAddress: 'A', originCity: 'A', originState: 'Maharashtra', destinationAddress: 'B', destinationCity: 'B', destinationState: 'Maharashtra', pickupDate: new Date(), deliveryDate: new Date(), rate: 900, companyId }] },
+        data: {
+          id: 't6-' + Date.now(),
+          companyId,
+          tripNumber: 'T6-' + Date.now(),
+          status: 'COMPLETED',
+          rate: 900,
+          loads: {
+            create: [
+              {
+                customerId: intrastateCustomerId,
+                referenceNumber: 'L6',
+                originAddress: 'A',
+                originCity: 'A',
+                originState: 'Maharashtra',
+                destinationAddress: 'B',
+                destinationCity: 'B',
+                destinationState: 'Maharashtra',
+                pickupDate: new Date(),
+                deliveryDate: new Date(),
+                rate: 900,
+                companyId,
+              },
+            ],
+          },
           lorryReceipt: {
-            create: { companyId, driverId: dummyDriver.id, vehicleId: dummyVehicle.id, lrNumber: 'LR-6-' + Date.now(), consignorName: 'Con A', consigneeName: 'Con B', product: 'Steel', grossWeight: 15000, tareWeight: 5000, netWeight: 10000, status: 'DRAFT' }
-          }
-        }
+            create: {
+              companyId,
+              driverId: dummyDriver.id,
+              vehicleId: dummyVehicle.id,
+              lrNumber: 'LR-6-' + Date.now(),
+              consignorName: 'Con A',
+              consigneeName: 'Con B',
+              product: 'Steel',
+              grossWeight: 15000,
+              tareWeight: 5000,
+              netWeight: 10000,
+              status: 'DRAFT',
+            },
+          },
+        },
       });
       trip6Id = t6.id;
     });
@@ -176,7 +398,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip1Id]
+          tripIds: [trip1Id],
         });
 
       expect(res.status).toBe(201);
@@ -186,7 +408,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
       expect(res.body.igst).toBe(0);
       expect(res.body.tax).toBe(900);
       expect(res.body.grandTotal).toBe(5900);
-      
+
       expect(res.body.lineItems[0].unloadedQty).toBe(10); // 10 tons
       expect(res.body.lineItems[0].rate).toBe(500);
       expect(res.body.lineItems[0].amount).toBe(5000);
@@ -205,7 +427,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: interstateCustomerId,
-          tripIds: [trip2Id]
+          tripIds: [trip2Id],
         });
 
       expect(res.status).toBe(201);
@@ -225,7 +447,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip5Id] // trip5 belongs to interstateCustomer
+          tripIds: [trip5Id], // trip5 belongs to interstateCustomer
         });
 
       expect(res.status).toBe(400);
@@ -238,7 +460,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip3Id] // trip3 is PLANNED
+          tripIds: [trip3Id], // trip3 is PLANNED
         });
 
       expect(res.status).toBe(400);
@@ -252,7 +474,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip4Id] 
+          tripIds: [trip4Id],
         });
       expect(successRes.status).toBe(201);
       generatedInvoiceId = successRes.body.id;
@@ -263,7 +485,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip4Id] 
+          tripIds: [trip4Id],
         });
 
       expect(failRes.status).toBe(400);
@@ -310,7 +532,7 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
     let jobCardId: string;
     let originalSubtotal: number;
     let originalGrandTotal: number;
-    
+
     it('should create a job card and generate a draft invoice', async () => {
       // 1. Generate a new draft invoice from trip6Id (which hasn't been invoiced yet)
       const res = await request(app.getHttpServer())
@@ -318,14 +540,14 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           customerId: intrastateCustomerId,
-          tripIds: [trip6Id] 
+          tripIds: [trip6Id],
         });
 
       expect(res.status).toBe(201);
       draftInvoiceId = res.body.id;
       originalSubtotal = res.body.subtotal;
       originalGrandTotal = res.body.grandTotal;
-      
+
       // 2. Create a mock job card with a part directly in DB using runAsTenant to bypass RLS
       await prisma.runAsTenant(companyId, async (tx) => {
         const vehicle = await tx.vehicle.create({
@@ -333,17 +555,17 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
             companyId,
             type: 'TRUCK',
             status: 'ACTIVE',
-            licensePlate: 'WK-' + Date.now()
-          }
+            licensePlate: 'WK-' + Date.now(),
+          },
         });
         const workshop = await tx.workshop.create({
           data: {
             companyId,
             name: 'Main Workshop',
-            type: 'INTERNAL'
-          }
+            type: 'INTERNAL',
+          },
         });
-        
+
         const jc = await tx.jobCard.create({
           data: {
             companyId,
@@ -352,12 +574,10 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
             issueReported: 'Brake Pad Replacement',
             status: 'COMPLETED',
             parts: {
-              create: [
-                { partName: 'Brake Pad', quantity: 2, unitCost: 1500 }
-              ]
+              create: [{ partName: 'Brake Pad', quantity: 2, unitCost: 1500 }],
             },
-            totalCost: 5000 // 3000 parts, 2000 labor
-          }
+            totalCost: 5000, // 3000 parts, 2000 labor
+          },
         });
         jobCardId = jc.id;
       });
@@ -371,15 +591,18 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
 
       expect(res.status).toBe(201);
       expect(res.body.subtotal).toBe(originalSubtotal + 5000);
-      
+
       // Since it's intrastate, CGST and SGST should each be 9% of the new subtotal
       const expectedTax = (originalSubtotal + 5000) * 0.18;
       expect(res.body.tax).toBeCloseTo(expectedTax, 2);
-      expect(res.body.grandTotal).toBeCloseTo(originalSubtotal + 5000 + expectedTax, 2);
-      
+      expect(res.body.grandTotal).toBeCloseTo(
+        originalSubtotal + 5000 + expectedTax,
+        2,
+      );
+
       // Check line items
       const lineItems = res.body.lineItems;
-      const workshopItem = lineItems.find(li => li.sourceType === 'WORKSHOP');
+      const workshopItem = lineItems.find((li) => li.sourceType === 'WORKSHOP');
       expect(workshopItem).toBeDefined();
       expect(workshopItem.amount).toBe(5000);
       expect(workshopItem.description).toContain('Labor: 2000');
@@ -408,21 +631,27 @@ describe('Billing & Invoicing (e2e) - Tax Invoice Format', () => {
       const tmpPath = `/tmp/test-invoice-${Date.now()}.pdf`;
       const scriptPath = `/tmp/pdf-extract-${Date.now()}.js`;
       fs.writeFileSync(tmpPath, res.body);
-      fs.writeFileSync(scriptPath, [
-        "const { PDFParse } = require('pdf-parse');",
-        "async function run() {",
-        `  const parser = new PDFParse({ url: 'file://${tmpPath}', verbosity: 0 });`,
-        "  const result = await parser.getText();",
-        "  process.stdout.write(result.text || '');",
-        "}",
-        "run().catch(e => { process.stderr.write(e.message); process.exit(1); });",
-      ].join('\n'));
+      fs.writeFileSync(
+        scriptPath,
+        [
+          "const { PDFParse } = require('pdf-parse');",
+          'async function run() {',
+          `  const parser = new PDFParse({ url: 'file://${tmpPath}', verbosity: 0 });`,
+          '  const result = await parser.getText();',
+          "  process.stdout.write(result.text || '');",
+          '}',
+          'run().catch(e => { process.stderr.write(e.message); process.exit(1); });',
+        ].join('\n'),
+      );
 
       let extractedText = '';
       try {
         extractedText = execSync(`node ${scriptPath}`, {
           // NODE_PATH lets /tmp script find pdf-parse in the monorepo root node_modules
-          env: { ...process.env, NODE_PATH: '/Users/vishalvirda/Desktop/PariLink/node_modules' },
+          env: {
+            ...process.env,
+            NODE_PATH: '/Users/vishalvirda/Desktop/PariLink/node_modules',
+          },
           timeout: 15000,
           encoding: 'utf8',
         });

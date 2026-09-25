@@ -25,22 +25,24 @@ export class MarketplaceAgent extends BaseAgent {
       func: async (input: string) => {
         const parsed = JSON.parse(input);
         try {
-          const apps = await this.prisma.runAsSystem('[MarketplaceAgent.unknownMethod] Autonomous AI Agent bypass', async (tx) =>
-            tx.marketplaceApp.findMany({
-              where: {
-                OR: [
-                  { name: { contains: parsed.query, mode: 'insensitive' } },
-                  {
-                    description: {
-                      contains: parsed.query,
-                      mode: 'insensitive',
+          const apps = await this.prisma.runAsSystem(
+            '[MarketplaceAgent.unknownMethod] Autonomous AI Agent bypass',
+            async (tx) =>
+              tx.marketplaceApp.findMany({
+                where: {
+                  OR: [
+                    { name: { contains: parsed.query, mode: 'insensitive' } },
+                    {
+                      description: {
+                        contains: parsed.query,
+                        mode: 'insensitive',
+                      },
                     },
-                  },
-                ],
-                status: 'ACTIVE',
-              },
-              take: 5,
-            }),
+                  ],
+                  status: 'ACTIVE',
+                },
+                take: 5,
+              }),
           );
           if (apps.length === 0)
             return `No marketplace apps found matching "${parsed.query}".`;

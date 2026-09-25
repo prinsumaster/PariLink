@@ -13,7 +13,10 @@ import {
 } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CreateRateCardDto } from './dto/create-rate-card.dto';
-import { GenerateInvoiceDto, GenerateInvoiceFromTripsDto } from './dto/generate-invoice.dto';
+import {
+  GenerateInvoiceDto,
+  GenerateInvoiceFromTripsDto,
+} from './dto/generate-invoice.dto';
 import { AddWorkshopCostsDto } from './dto/add-workshop-costs.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
@@ -64,7 +67,11 @@ export class BillingController {
     @GetUser() user: AuthenticatedUser,
     @Body() dto: GenerateInvoiceFromTripsDto,
   ) {
-    return this.billingService.generateInvoiceFromTrips(user.companyId, dto, user.id);
+    return this.billingService.generateInvoiceFromTrips(
+      user.companyId,
+      dto,
+      user.id,
+    );
   }
 
   @Get('invoices/overdue')
@@ -92,11 +99,17 @@ export class BillingController {
   @RequirePermissions('billing:write')
   @ApiOperation({ summary: 'Update invoice status (SENT, PAID, CANCELLED)' })
   updateInvoiceStatus(
-    @GetUser() user: AuthenticatedUser, 
+    @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() body: { status: string; paymentRef?: string }
+    @Body() body: { status: string; paymentRef?: string },
   ) {
-    return this.billingService.updateInvoiceStatus(user.companyId, id, body.status, user.id, body.paymentRef);
+    return this.billingService.updateInvoiceStatus(
+      user.companyId,
+      id,
+      body.status,
+      user.id,
+      body.paymentRef,
+    );
   }
 
   @Patch('invoices/:id/approve')
@@ -112,7 +125,7 @@ export class BillingController {
   addWorkshopCosts(
     @GetUser() user: AuthenticatedUser,
     @Param('id') id: string,
-    @Body() dto: AddWorkshopCostsDto
+    @Body() dto: AddWorkshopCostsDto,
   ) {
     return this.billingService.addWorkshopCosts(user.companyId, id, dto);
   }
@@ -125,7 +138,10 @@ export class BillingController {
     @Param('id') id: string,
     @Res() res: any, // using any to avoid express type issues if not imported
   ) {
-    const stream = await this.billingService.generateInvoicePdf(user.companyId, id);
+    const stream = await this.billingService.generateInvoicePdf(
+      user.companyId,
+      id,
+    );
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="invoice-${id}.pdf"`,

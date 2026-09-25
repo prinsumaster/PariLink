@@ -1,6 +1,4 @@
-import {
-  Injectable
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -65,7 +63,10 @@ export class LedgerService {
 
       const revAgg = await tx.journalLine.aggregate({
         _sum: { debit: true, credit: true },
-        where: { account: { type: { in: ['REVENUE', 'INCOME'] } }, entry: whereClause },
+        where: {
+          account: { type: { in: ['REVENUE', 'INCOME'] } },
+          entry: whereClause,
+        },
       });
 
       const expAgg = await tx.journalLine.aggregate({

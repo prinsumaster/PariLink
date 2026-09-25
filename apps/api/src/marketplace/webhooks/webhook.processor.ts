@@ -7,7 +7,7 @@ import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util
 import { PrismaService } from '../../prisma/prisma.service';
 import { URL } from 'url';
 
-  // @ts-ignore: reserved for future use
+// @ts-ignore: reserved for future use
 function _validateWebhookUrl(targetUrl: string) {
   const parsed = new URL(targetUrl);
   const blockedHosts = [

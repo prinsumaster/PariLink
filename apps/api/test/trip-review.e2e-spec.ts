@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 describe('Trip Review Workflow API', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  
+
   let adminToken: string;
   let dispatcherToken: string;
   let fleetToken: string;
@@ -35,10 +35,12 @@ describe('Trip Review Workflow API', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     prisma = app.get(PrismaService);
     await app.init();
-    
+
     companyId = '8960d9e2-c40c-4e65-8f8d-babd7c0967f3';
 
     // Login as existing admin
@@ -50,13 +52,21 @@ describe('Trip Review Workflow API', () => {
     // Seed roles and users
     await prisma.runAsSystem('E2E Setup', async (tx) => {
       const hash = await bcrypt.hash('password123', 10);
-      const createRoleUser = async (name: string, email: string, resource: string, action: string) => {
+      const createRoleUser = async (
+        name: string,
+        email: string,
+        resource: string,
+        action: string,
+      ) => {
         const role = await tx.role.create({
           data: {
             companyId,
             name,
-            permissions: [{ resource, action }, { resource: 'trips', action: 'update' }]
-          }
+            permissions: [
+              { resource, action },
+              { resource: 'trips', action: 'update' },
+            ],
+          },
         });
         const user = await tx.user.create({
           data: {
@@ -66,8 +76,8 @@ describe('Trip Review Workflow API', () => {
             lastName: 'Test',
             password: hash,
             roleId: role.id,
-            status: 'ACTIVE'
-          }
+            status: 'ACTIVE',
+          },
         });
         return user;
       };
@@ -80,16 +90,31 @@ describe('Trip Review Workflow API', () => {
       customerEmail = `customer_${now}@parilink.com`;
       noPermEmail = `noperm_${now}@parilink.com`;
 
-      await createRoleUser(`Dispatcher_${now}`, dispatcherEmail, 'dispatch', 'manage');
+      await createRoleUser(
+        `Dispatcher_${now}`,
+        dispatcherEmail,
+        'dispatch',
+        'manage',
+      );
       await createRoleUser(`FleetManager_${now}`, fleetEmail, 'fleet', 'write');
-      await createRoleUser(`Mechanic_${now}`, mechanicEmail, 'workshop', 'mechanic');
+      await createRoleUser(
+        `Mechanic_${now}`,
+        mechanicEmail,
+        'workshop',
+        'mechanic',
+      );
       await createRoleUser(`Gate_${now}`, gateEmail, 'workshop', 'gate');
       await createRoleUser(`Customer_${now}`, customerEmail, 'admin', 'manage');
       await createRoleUser(`NoPerm_${now}`, noPermEmail, 'dummy', 'read');
 
       // Create driver and trip
       const driver = await tx.driver.create({
-        data: { companyId, firstName: 'John', lastName: 'Doe', licenseNumber: 'L-' + Date.now() }
+        data: {
+          companyId,
+          firstName: 'John',
+          lastName: 'Doe',
+          licenseNumber: 'L-' + Date.now(),
+        },
       });
       driverId = driver.id;
 
@@ -100,16 +125,20 @@ describe('Trip Review Workflow API', () => {
           driverId,
           status: 'COMPLETED',
           actualDistance: 500,
-          fuelExpenses: 100 // 500/100 = 5 km/L -> 100% score (5.0 points)
-        }
+          fuelExpenses: 100, // 500/100 = 5 km/L -> 100% score (5.0 points)
+        },
       });
       tripId = trip.id;
     });
 
     const login = async (email: string) => {
-      const res = await request(app.getHttpServer()).post('/api/v1/auth/login').send({ email, password: 'password123' });
+      const res = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({ email, password: 'password123' });
       if (res.status !== 200 && res.status !== 201) {
-        throw new Error(`Login failed for ${email}: ${res.status} ${JSON.stringify(res.body)}`);
+        throw new Error(
+          `Login failed for ${email}: ${res.status} ${JSON.stringify(res.body)}`,
+        );
       }
       return res.body.access_token;
     };
@@ -121,14 +150,39 @@ describe('Trip Review Workflow API', () => {
     customerToken = await login(customerEmail);
     noPermToken = await login(noPermEmail);
 
-    console.log('Tokens:', { dispatcherToken, fleetToken, mechanicToken, gateToken, customerToken, noPermToken });
+    console.log('Tokens:', {
+      dispatcherToken,
+      fleetToken,
+      mechanicToken,
+      gateToken,
+      customerToken,
+      noPermToken,
+    });
   });
 
   afterAll(async () => {
     // Cleanup seeded data
     await prisma.runAsSystem('E2E Teardown', async (tx) => {
-      await tx.user.deleteMany({ where: { email: { contains: '@parilink.com' }, NOT: { email: 'admin@parilink.com' } } });
-      await tx.role.deleteMany({ where: { name: { in: ['Dispatcher', 'FleetManager', 'Mechanic', 'Gate', 'Customer', 'NoPerm'] } } });
+      await tx.user.deleteMany({
+        where: {
+          email: { contains: '@parilink.com' },
+          NOT: { email: 'admin@parilink.com' },
+        },
+      });
+      await tx.role.deleteMany({
+        where: {
+          name: {
+            in: [
+              'Dispatcher',
+              'FleetManager',
+              'Mechanic',
+              'Gate',
+              'Customer',
+              'NoPerm',
+            ],
+          },
+        },
+      });
       await tx.tripReview.deleteMany({ where: { tripId } });
       await tx.driverScore.deleteMany({ where: { tripId } });
       await tx.trip.delete({ where: { id: tripId } });
@@ -157,7 +211,11 @@ describe('Trip Review Workflow API', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/trips/${tripId}/reviews`)
       .set('Authorization', `Bearer ${dispatcherToken}`)
-      .send({ reviewerRole: 'DISPATCHER', rating: 5, comment: 'Great communication' })
+      .send({
+        reviewerRole: 'DISPATCHER',
+        rating: 5,
+        comment: 'Great communication',
+      })
       .expect(201);
   });
 
@@ -165,19 +223,39 @@ describe('Trip Review Workflow API', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/trips/${tripId}/reviews`)
       .set('Authorization', `Bearer ${dispatcherToken}`)
-      .send({ reviewerRole: 'DISPATCHER', rating: 3, comment: 'Another review' })
+      .send({
+        reviewerRole: 'DISPATCHER',
+        rating: 3,
+        comment: 'Another review',
+      })
       .expect(409);
   });
 
   it('should compute and update driver score upon 5th review', async () => {
     // Submit remaining 4 reviews
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${fleetToken}`).send({ reviewerRole: 'FLEET_MANAGER', rating: 4 }).expect(201);
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${mechanicToken}`).send({ reviewerRole: 'WORKSHOP_MECHANIC', rating: 5 }).expect(201);
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${gateToken}`).send({ reviewerRole: 'GATE_SECURITY', rating: 5 }).expect(201);
-    await request(app.getHttpServer()).post(`/api/v1/trips/${tripId}/reviews`).set('Authorization', `Bearer ${customerToken}`).send({ reviewerRole: 'CUSTOMER_CONTACT', rating: 4 }).expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${fleetToken}`)
+      .send({ reviewerRole: 'FLEET_MANAGER', rating: 4 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${mechanicToken}`)
+      .send({ reviewerRole: 'WORKSHOP_MECHANIC', rating: 5 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${gateToken}`)
+      .send({ reviewerRole: 'GATE_SECURITY', rating: 5 })
+      .expect(201);
+    await request(app.getHttpServer())
+      .post(`/api/v1/trips/${tripId}/reviews`)
+      .set('Authorization', `Bearer ${customerToken}`)
+      .send({ reviewerRole: 'CUSTOMER_CONTACT', rating: 4 })
+      .expect(201);
 
     // Wait slightly for event emitter or immediate DB writes
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise((r) => setTimeout(r, 200));
 
     // Assert driver score
     const res = await request(app.getHttpServer())
@@ -198,7 +276,9 @@ describe('Trip Review Workflow API', () => {
     expect(scoreData.mileageAvg).toBe(5);
 
     // Check overallScore on Driver
-    const driver = await prisma.runAsSystem('E2E Test', async (tx) => tx.driver.findUnique({ where: { id: driverId } }));
+    const driver = await prisma.runAsSystem('E2E Test', async (tx) =>
+      tx.driver.findUnique({ where: { id: driverId } }),
+    );
     expect(driver?.overallScore).toBeCloseTo(4.72, 2);
   });
 });

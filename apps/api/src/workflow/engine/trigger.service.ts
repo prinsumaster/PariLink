@@ -26,13 +26,15 @@ export class TriggerEngineService {
     const companyId = eventPayload.companyId;
 
     // Fetch ALL published workflows for the company
-    const activeWorkflows = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.workflowDefinition.findMany({
-        where: {
-          companyId,
-          status: 'PUBLISHED',
-        },
-      }),
+    const activeWorkflows = await this.prisma.runAsTenant(
+      companyId,
+      async (tx) =>
+        tx.workflowDefinition.findMany({
+          where: {
+            companyId,
+            status: 'PUBLISHED',
+          },
+        }),
     );
 
     for (const wf of activeWorkflows) {

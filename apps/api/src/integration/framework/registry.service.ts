@@ -21,22 +21,31 @@ export class ConnectorRegistryService implements OnModuleInit {
     this.connectors.set(connector.providerName, connector);
 
     // Upsert into DB to keep the Marketplace catalogue updated (Fire and forget to not block startup)
-    this.prisma.runAsSystem('[ConnectorRegistryService.registerConnector] Internal service operation bypass', async (tx) =>
-      tx.integrationConnector.upsert({
-        where: { provider: connector.providerName },
-        update: {
-          version: connector.version,
-          authType: connector.authType,
-          status: 'ACTIVE',
-        },
-        create: {
-          provider: connector.providerName,
-          version: connector.version,
-          authType: connector.authType,
-          status: 'ACTIVE',
-        },
-      }),
-    ).catch(err => this.logger.error(`Failed to register connector ${connector.providerName}`, err));
+    this.prisma
+      .runAsSystem(
+        '[ConnectorRegistryService.registerConnector] Internal service operation bypass',
+        async (tx) =>
+          tx.integrationConnector.upsert({
+            where: { provider: connector.providerName },
+            update: {
+              version: connector.version,
+              authType: connector.authType,
+              status: 'ACTIVE',
+            },
+            create: {
+              provider: connector.providerName,
+              version: connector.version,
+              authType: connector.authType,
+              status: 'ACTIVE',
+            },
+          }),
+      )
+      .catch((err) =>
+        this.logger.error(
+          `Failed to register connector ${connector.providerName}`,
+          err,
+        ),
+      );
 
     this.logger.log(
       `Registered Connector: ${connector.providerName} v${connector.version}`,
@@ -54,10 +63,12 @@ export class ConnectorRegistryService implements OnModuleInit {
    * Lists all available connectors from the Registry
    */
   async listAvailableConnectors() {
-    return this.prisma.runAsSystem('[ConnectorRegistryService.listAvailableConnectors] Internal service operation bypass', async (tx) =>
-      tx.integrationConnector.findMany({
-        where: { status: 'ACTIVE' },
-      }),
+    return this.prisma.runAsSystem(
+      '[ConnectorRegistryService.listAvailableConnectors] Internal service operation bypass',
+      async (tx) =>
+        tx.integrationConnector.findMany({
+          where: { status: 'ACTIVE' },
+        }),
     );
   }
 }

@@ -13,9 +13,7 @@ export class IntegrationAuthService {
   ); // 32 bytes
   private readonly ALGORITHM = 'aes-256-gcm';
 
-  constructor(
-    private readonly envelopeEncryption: EnvelopeEncryptionService
-  ) {}
+  constructor(private readonly envelopeEncryption: EnvelopeEncryptionService) {}
 
   /**
    * Encrypts sensitive credentials before storing in the database
@@ -37,7 +35,9 @@ export class IntegrationAuthService {
     try {
       // Check if this is a modern envelope-encrypted payload
       if (encryptedPayloadString.startsWith('enc:')) {
-        const decryptedString = this.envelopeEncryption.decryptField(encryptedPayloadString);
+        const decryptedString = this.envelopeEncryption.decryptField(
+          encryptedPayloadString,
+        );
         return JSON.parse(decryptedString);
       }
 

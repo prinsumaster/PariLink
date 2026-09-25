@@ -36,17 +36,19 @@ export class BackupRecoveryService {
     const retentionDays = input.retentionDays || 30;
     const expiresAt = new Date(Date.now() + retentionDays * 86400000);
 
-    const job = await this.prisma.runAsSystem('[BackupRecoveryService.startBackupJob] Internal service operation bypass', async (tx) =>
-      tx.backupJob.create({
-        data: {
-          companyId: input.companyId,
-          backupType: input.backupType,
-          status: 'IN_PROGRESS',
-          retentionDays,
-          expiresAt,
-          startedAt: new Date(),
-        },
-      }),
+    const job = await this.prisma.runAsSystem(
+      '[BackupRecoveryService.startBackupJob] Internal service operation bypass',
+      async (tx) =>
+        tx.backupJob.create({
+          data: {
+            companyId: input.companyId,
+            backupType: input.backupType,
+            status: 'IN_PROGRESS',
+            retentionDays,
+            expiresAt,
+            startedAt: new Date(),
+          },
+        }),
     );
 
     if (input.actorId) {
@@ -250,13 +252,16 @@ export class BackupRecoveryService {
 
   async purgeExpiredBackups(): Promise<{ purgedCount: number }> {
     const now = new Date();
-    const expired = await this.prisma.runAsSystem('[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass', async (tx) =>
-      tx.backupJob.findMany({ where: { expiresAt: { lt: now } } }),
+    const expired = await this.prisma.runAsSystem(
+      '[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass',
+      async (tx) =>
+        tx.backupJob.findMany({ where: { expiresAt: { lt: now } } }),
     );
     const ids = expired.map((e) => e.id);
     if (ids.length > 0) {
-      await this.prisma.runAsSystem('[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass', async (tx) =>
-        tx.backupJob.deleteMany({ where: { id: { in: ids } } }),
+      await this.prisma.runAsSystem(
+        '[BackupRecoveryService.purgeExpiredBackups] Internal service operation bypass',
+        async (tx) => tx.backupJob.deleteMany({ where: { id: { in: ids } } }),
       );
       this.logger.log(
         `[Backup Retention] Purged ${ids.length} expired backup archives.`,

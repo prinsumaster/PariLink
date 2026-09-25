@@ -64,9 +64,7 @@ export class TenantGuard implements CanActivate {
           `jwtTenant=${jwtCompanyId} routeTenant=${routeCompanyId} ` +
           `path=${request.url} method=${request.method}`,
       );
-      throw new ForbiddenException(
-        'Access to this tenant is not permitted.',
-      );
+      throw new ForbiddenException('Access to this tenant is not permitted.');
     }
 
     return true;

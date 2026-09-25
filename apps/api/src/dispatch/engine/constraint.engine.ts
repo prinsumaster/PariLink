@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 export interface ConstraintContext {
   load: {
@@ -35,7 +35,6 @@ export interface ConstraintResult {
 
 @Injectable()
 export class ConstraintEngine {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   evaluate(ctx: ConstraintContext, config?: any): ConstraintResult {
     const violations: ConstraintResult['violations'] = [];
 

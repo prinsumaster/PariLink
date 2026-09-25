@@ -54,6 +54,10 @@ export class TyreController {
     @Param('id') vehicleId: string,
     @Query('currentKm') currentKm?: string,
   ) {
-    return this.tyreService.getVehicleTyres(user.companyId, vehicleId, currentKm ? Number(currentKm) : 0);
+    return this.tyreService.getVehicleTyres(
+      user.companyId,
+      vehicleId,
+      currentKm ? Number(currentKm) : 0,
+    );
   }
 }

@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  BackupRecoveryService
-} from './backup-recovery.service';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { BackupRecoveryService } from './backup-recovery.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
@@ -16,7 +7,13 @@ import { GetUser } from '../../auth/decorators/get-user.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 
-import { IsString, IsOptional, IsNumber, IsEnum, IsISO8601 } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsISO8601,
+} from 'class-validator';
 
 export enum BackupType {
   DATABASE = 'DATABASE',

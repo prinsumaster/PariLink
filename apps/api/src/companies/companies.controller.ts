@@ -80,7 +80,9 @@ export class CompaniesController {
 
     // AV2: Extreme risk operation. Require platform-admin.
     if (!user.roles?.includes('SUPER_ADMIN')) {
-      throw new ForbiddenException('Company deletion requires platform-admin privileges (SUPER_ADMIN).');
+      throw new ForbiddenException(
+        'Company deletion requires platform-admin privileges (SUPER_ADMIN).',
+      );
     }
 
     return this.companiesService.remove(id, user.id);

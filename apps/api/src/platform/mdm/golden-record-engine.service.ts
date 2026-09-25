@@ -18,7 +18,6 @@ export interface SurvivorshipRule {
 
 @Injectable()
 export class GoldenRecordEngineService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: EventService,

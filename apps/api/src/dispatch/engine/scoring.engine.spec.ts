@@ -1,7 +1,4 @@
-import {
-  ScoringEngine,
-  CandidateInput,
-} from './scoring.engine';
+import { ScoringEngine, CandidateInput } from './scoring.engine';
 
 describe('ScoringEngine', () => {
   let engine: ScoringEngine;

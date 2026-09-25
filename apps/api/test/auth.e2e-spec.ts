@@ -29,37 +29,47 @@ describe('Authentication Flow (e2e)', () => {
     prisma = app.get(PrismaService);
 
     // Setup test data — must use runAsSystem so RLS bypass is set (parilink_test role is non-superuser)
-    company = await prisma.runAsSystem('Test setup: create company', async (tx) => {
-      return tx.company.create({
-        data: { name: 'Test Corp' },
-      });
-    });
+    company = await prisma.runAsSystem(
+      'Test setup: create company',
+      async (tx) => {
+        return tx.company.create({
+          data: { name: 'Test Corp' },
+        });
+      },
+    );
 
     const hashedPassword = await bcrypt.hash(testPassword, 10);
-    testUser = await prisma.runAsSystem('Test setup: create user', async (tx) => {
-      return tx.user.create({
-        data: {
-          email: `testuser-${Date.now()}@example.com`,
-          firstName: 'Test',
-          lastName: 'User',
-          password: hashedPassword,
-          companyId: company.id,
-          status: 'ACTIVE',
-        },
-      });
-    });
+    testUser = await prisma.runAsSystem(
+      'Test setup: create user',
+      async (tx) => {
+        return tx.user.create({
+          data: {
+            email: `testuser-${Date.now()}@example.com`,
+            firstName: 'Test',
+            lastName: 'User',
+            password: hashedPassword,
+            companyId: company.id,
+            status: 'ACTIVE',
+          },
+        });
+      },
+    );
   });
 
   afterAll(async () => {
     if (testUser) {
-      await prisma.runAsSystem('Test cleanup: delete user', (tx) =>
-        tx.user.delete({ where: { id: testUser.id } })
-      ).catch(() => {});
+      await prisma
+        .runAsSystem('Test cleanup: delete user', (tx) =>
+          tx.user.delete({ where: { id: testUser.id } }),
+        )
+        .catch(() => {});
     }
     if (company) {
-      await prisma.runAsSystem('Test cleanup: delete company', (tx) =>
-        tx.company.delete({ where: { id: company.id } })
-      ).catch(() => {});
+      await prisma
+        .runAsSystem('Test cleanup: delete company', (tx) =>
+          tx.company.delete({ where: { id: company.id } }),
+        )
+        .catch(() => {});
     }
     // Clean up Redis handles safely via close hook
     if (app) {
@@ -169,10 +179,12 @@ describe('Authentication Flow (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(201);
 
-      const dbTokens = await prisma.runAsSystem('Test: find refresh tokens', (tx) =>
-        tx.refreshToken.findMany({
-          where: { userId: testUser.id },
-        })
+      const dbTokens = await prisma.runAsSystem(
+        'Test: find refresh tokens',
+        (tx) =>
+          tx.refreshToken.findMany({
+            where: { userId: testUser.id },
+          }),
       );
       expect(dbTokens.length).toBe(0);
     });
@@ -181,18 +193,21 @@ describe('Authentication Flow (e2e)', () => {
   describe('Passwordless User Hardening', () => {
     it('should reject login for passwordless user with empty password', async () => {
       // Create a passwordless user directly in DB (simulating an empty password hash for PostgreSQL since it is NOT NULL)
-      const ghostUser = await prisma.runAsSystem('Test setup: create ghost user', async (tx) => {
-        return tx.user.create({
-          data: {
-            email: `ghost-${Date.now()}@example.com`,
-            firstName: 'Ghost',
-            lastName: 'User',
-            password: '', // Empty password to simulate broken state
-            companyId: company.id,
-            status: 'ACTIVE',
-          },
-        });
-      });
+      const ghostUser = await prisma.runAsSystem(
+        'Test setup: create ghost user',
+        async (tx) => {
+          return tx.user.create({
+            data: {
+              email: `ghost-${Date.now()}@example.com`,
+              firstName: 'Ghost',
+              lastName: 'User',
+              password: '', // Empty password to simulate broken state
+              companyId: company.id,
+              status: 'ACTIVE',
+            },
+          });
+        },
+      );
 
       // a) password: "" (intercepted by ValidationPipe if DTO is active, but we expect 400 or 401 depending on validation)
       // Since we just fixed ValidationPipe, it returns 400.
@@ -214,25 +229,28 @@ describe('Authentication Flow (e2e)', () => {
         .expect(400);
 
       await prisma.runAsSystem('Test cleanup: delete ghost user', (tx) =>
-        tx.user.delete({ where: { id: ghostUser.id } })
+        tx.user.delete({ where: { id: ghostUser.id } }),
       );
     });
   });
 
   describe('Brute Force Lockout', () => {
     it('should soft lock after 5 failed attempts', async () => {
-      const bruteUser = await prisma.runAsSystem('Test setup: create brute user', async (tx) => {
-        return tx.user.create({
-          data: {
-            email: `brute-${Date.now()}@example.com`,
-            firstName: 'Brute',
-            lastName: 'Force',
-            password: await bcrypt.hash('validpass', 10),
-            companyId: company.id,
-            status: 'ACTIVE',
-          },
-        });
-      });
+      const bruteUser = await prisma.runAsSystem(
+        'Test setup: create brute user',
+        async (tx) => {
+          return tx.user.create({
+            data: {
+              email: `brute-${Date.now()}@example.com`,
+              firstName: 'Brute',
+              lastName: 'Force',
+              password: await bcrypt.hash('validpass', 10),
+              companyId: company.id,
+              status: 'ACTIVE',
+            },
+          });
+        },
+      );
 
       for (let i = 0; i < 5; i++) {
         await request(app.getHttpServer())
@@ -249,7 +267,7 @@ describe('Authentication Flow (e2e)', () => {
       expect(response.body.message).toContain('Account temporarily locked');
 
       await prisma.runAsSystem('Test cleanup: delete brute user', (tx) =>
-        tx.user.delete({ where: { id: bruteUser.id } })
+        tx.user.delete({ where: { id: bruteUser.id } }),
       );
     });
   });

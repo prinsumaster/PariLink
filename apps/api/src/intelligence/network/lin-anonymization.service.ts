@@ -1,9 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
-import type {
-  PlatformEvent,
-} from '../../platform/events/event.service';
+import type { PlatformEvent } from '../../platform/events/event.service';
 
 @Injectable()
 export class LinAnonymizationService {
@@ -67,19 +65,23 @@ export class LinAnonymizationService {
 
   private async archiveEvent(eventType: string, anonymizedPayload: any) {
     try {
-      await this.prisma.runAsSystem('[LinAnonymizationService.archiveEvent] Internal service operation bypass', async (tx) =>
-        tx.linEventArchive.create({
-          data: {
-            eventType,
-            anonymizedPayload,
-          },
-        }),
+      await this.prisma.runAsSystem(
+        '[LinAnonymizationService.archiveEvent] Internal service operation bypass',
+        async (tx) =>
+          tx.linEventArchive.create({
+            data: {
+              eventType,
+              anonymizedPayload,
+            },
+          }),
       );
       this.logger.debug(
         `[LIN] Successfully archived anonymized event: ${eventType}`,
       );
     } catch (error) {
-      this.logger.error(`[LIN] Failed to archive event: ${(error as Error).message}`);
+      this.logger.error(
+        `[LIN] Failed to archive event: ${(error as Error).message}`,
+      );
     }
   }
 

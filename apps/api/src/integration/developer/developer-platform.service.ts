@@ -14,7 +14,6 @@ import { validateSsrfSafeUrl } from '../../platform/security/ssrf-protector.util
 
 @Injectable()
 export class DeveloperPlatformService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
@@ -102,10 +101,12 @@ export class DeveloperPlatformService {
   }
 
   async listApiVersions() {
-    return this.prisma.runAsSystem('[DeveloperPlatformService.listApiVersions] Internal service operation bypass', async (tx) =>
-      tx.apiVersion.findMany({
-        orderBy: { releaseDate: 'desc' },
-      }),
+    return this.prisma.runAsSystem(
+      '[DeveloperPlatformService.listApiVersions] Internal service operation bypass',
+      async (tx) =>
+        tx.apiVersion.findMany({
+          orderBy: { releaseDate: 'desc' },
+        }),
     );
   }
 

@@ -33,108 +33,162 @@ async function setupTenant(
   driver2Id: string;
   driver3Id: string;
 }> {
-  const company = await prisma.runAsSystem('e2e-setup', tx =>
+  const company = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.company.create({ data: { name: `FuelVariance-E2E-${tag}` } }),
   );
   const cid = company.id;
 
-  const role = await prisma.runAsSystem('e2e-setup', tx =>
-    tx.role.create({ data: { companyId: cid, name: 'OPS', permissions: ['reports:read'] } }),
+  const role = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.role.create({
+      data: { companyId: cid, name: 'OPS', permissions: ['reports:read'] },
+    }),
   );
-  const user = await prisma.runAsSystem('e2e-setup', tx =>
+  const user = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
-        companyId: cid, roleId: role.id,
+        companyId: cid,
+        roleId: role.id,
         email: `fuel-e2e-${tag}-${Date.now()}@example.com`,
-        password: 'x', firstName: 'Test', lastName: 'User',
+        password: 'x',
+        firstName: 'Test',
+        lastName: 'User',
       },
     }),
   );
 
   const token = jwt.sign(
-    { sub: user.id, email: user.email, companyId: cid, permissions: ['reports:read'] },
+    {
+      sub: user.id,
+      email: user.email,
+      companyId: cid,
+      permissions: ['reports:read'],
+    },
     { secret: config.get('JWT_SECRET') },
   );
 
-  const v1 = await prisma.runAsSystem('e2e-setup', tx =>
-    tx.vehicle.create({ data: { companyId: cid, licensePlate: `V1-${tag}`, type: 'TRUCK' } }),
+  const v1 = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.vehicle.create({
+      data: { companyId: cid, licensePlate: `V1-${tag}`, type: 'TRUCK' },
+    }),
   );
-  const v2 = await prisma.runAsSystem('e2e-setup', tx =>
-    tx.vehicle.create({ data: { companyId: cid, licensePlate: `V2-${tag}`, type: 'TRUCK' } }),
+  const v2 = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.vehicle.create({
+      data: { companyId: cid, licensePlate: `V2-${tag}`, type: 'TRUCK' },
+    }),
   );
 
-  const v3 = await prisma.runAsSystem('e2e-setup', tx =>
-    tx.vehicle.create({ data: { companyId: cid, licensePlate: `V3-${tag}`, type: 'TRUCK' } }),
+  const v3 = await prisma.runAsSystem('e2e-setup', (tx) =>
+    tx.vehicle.create({
+      data: { companyId: cid, licensePlate: `V3-${tag}`, type: 'TRUCK' },
+    }),
   );
 
-  const dUserA = await prisma.runAsSystem('e2e-setup', tx =>
+  const dUserA = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
-        companyId: cid, roleId: role.id,
+        companyId: cid,
+        roleId: role.id,
         email: `da-${tag}-${Date.now()}@example.com`,
-        password: 'x', firstName: 'Amit', lastName: 'Shah',
+        password: 'x',
+        firstName: 'Amit',
+        lastName: 'Shah',
       },
     }),
   );
-  const dUserB = await prisma.runAsSystem('e2e-setup', tx =>
+  const dUserB = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
-        companyId: cid, roleId: role.id,
+        companyId: cid,
+        roleId: role.id,
         email: `db-${tag}-${Date.now()}@example.com`,
-        password: 'x', firstName: 'Ravi', lastName: 'Kumar',
+        password: 'x',
+        firstName: 'Ravi',
+        lastName: 'Kumar',
       },
     }),
   );
-  const dUserC = await prisma.runAsSystem('e2e-setup', tx =>
+  const dUserC = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.user.create({
       data: {
-        companyId: cid, roleId: role.id,
+        companyId: cid,
+        roleId: role.id,
         email: `dc-${tag}-${Date.now()}@example.com`,
-        password: 'x', firstName: 'Suresh', lastName: 'Patel',
+        password: 'x',
+        firstName: 'Suresh',
+        lastName: 'Patel',
       },
     }),
   );
 
-  const d1 = await prisma.runAsSystem('e2e-setup', tx =>
+  const d1 = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.driver.create({
       data: {
-        companyId: cid, userId: dUserA.id,
-        firstName: 'Amit', lastName: 'Shah',
-        phone: `900${tag.slice(0,7)}1`, status: 'ACTIVE', licenseNumber: `LA-${tag}`,
+        companyId: cid,
+        userId: dUserA.id,
+        firstName: 'Amit',
+        lastName: 'Shah',
+        phone: `900${tag.slice(0, 7)}1`,
+        status: 'ACTIVE',
+        licenseNumber: `LA-${tag}`,
       },
     }),
   );
-  const d2 = await prisma.runAsSystem('e2e-setup', tx =>
+  const d2 = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.driver.create({
       data: {
-        companyId: cid, userId: dUserB.id,
-        firstName: 'Ravi', lastName: 'Kumar',
-        phone: `900${tag.slice(0,7)}2`, status: 'ACTIVE', licenseNumber: `LB-${tag}`,
+        companyId: cid,
+        userId: dUserB.id,
+        firstName: 'Ravi',
+        lastName: 'Kumar',
+        phone: `900${tag.slice(0, 7)}2`,
+        status: 'ACTIVE',
+        licenseNumber: `LB-${tag}`,
       },
     }),
   );
-  const d3 = await prisma.runAsSystem('e2e-setup', tx =>
+  const d3 = await prisma.runAsSystem('e2e-setup', (tx) =>
     tx.driver.create({
       data: {
-        companyId: cid, userId: dUserC.id,
-        firstName: 'Suresh', lastName: 'Patel',
-        phone: `900${tag.slice(0,7)}3`, status: 'ACTIVE', licenseNumber: `LC-${tag}`,
+        companyId: cid,
+        userId: dUserC.id,
+        firstName: 'Suresh',
+        lastName: 'Patel',
+        phone: `900${tag.slice(0, 7)}3`,
+        status: 'ACTIVE',
+        licenseNumber: `LC-${tag}`,
       },
     }),
   );
 
-  return { companyId: cid, token, vehicleId: v1.id, vehicle2Id: v2.id, vehicle3Id: v3.id, driverId: d1.id, driver2Id: d2.id, driver3Id: d3.id };
+  return {
+    companyId: cid,
+    token,
+    vehicleId: v1.id,
+    vehicle2Id: v2.id,
+    vehicle3Id: v3.id,
+    driverId: d1.id,
+    driver2Id: d2.id,
+    driver3Id: d3.id,
+  };
 }
 
 async function seedTrip(
-  prisma: PrismaService, cid: string, vehicleId: string, driverId: string, distance = 1000,
+  prisma: PrismaService,
+  cid: string,
+  vehicleId: string,
+  driverId: string,
+  distance = 1000,
 ) {
-  return prisma.runAsSystem('e2e-setup', async tx => {
+  return prisma.runAsSystem('e2e-setup', async (tx) => {
     const t = await tx.trip.create({
       data: {
-        companyId: cid, vehicleId, driverId,
+        companyId: cid,
+        vehicleId,
+        driverId,
         tripNumber: `T-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        status: 'COMPLETED', estimatedDistance: distance, actualDistance: distance,
+        status: 'COMPLETED',
+        estimatedDistance: distance,
+        actualDistance: distance,
       },
     });
     return t.id;
@@ -143,16 +197,29 @@ async function seedTrip(
 
 async function seedFuel(
   prisma: PrismaService,
-  cid: string, tripId: string, vehicleId: string, driverId: string,
-  litres: number, expectedLitres: number, originCity: string, destinationCity: string,
+  cid: string,
+  tripId: string,
+  vehicleId: string,
+  driverId: string,
+  litres: number,
+  expectedLitres: number,
+  originCity: string,
+  destinationCity: string,
 ) {
   const variancePct = ((litres - expectedLitres) / expectedLitres) * 100;
-  return prisma.runAsSystem('e2e-setup', tx =>
+  return prisma.runAsSystem('e2e-setup', (tx) =>
     tx.fuelEntry.create({
       data: {
-        companyId: cid, tripId, vehicleId, driverId,
-        litres, amount: litres * 85, expectedLitres, variancePct,
-        originCity, destinationCity,
+        companyId: cid,
+        tripId,
+        vehicleId,
+        driverId,
+        litres,
+        amount: litres * 85,
+        expectedLitres,
+        variancePct,
+        originCity,
+        destinationCity,
       },
     }),
   );
@@ -176,7 +243,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
 
     prisma = app.get(PrismaService);
@@ -190,33 +259,51 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
 
   afterAll(async () => {
     // Cascade delete via FuelEntry -> Trip -> Driver/Vehicle, then Company
-    for (const cid of [tenantA?.companyId, tenantB?.companyId].filter(Boolean)) {
+    for (const cid of [tenantA?.companyId, tenantB?.companyId].filter(
+      Boolean,
+    )) {
       try {
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "FuelEntry" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "FuelEntry" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "TripExpense" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "TripExpense" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "Trip" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "Trip" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "Driver" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "Driver" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "Vehicle" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "Vehicle" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "User" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "User" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
-          tx.$executeRawUnsafe(`DELETE FROM "Role" WHERE "companyId" = '${cid}'`),
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
+          tx.$executeRawUnsafe(
+            `DELETE FROM "Role" WHERE "companyId" = '${cid}'`,
+          ),
         );
-        await prisma.runAsSystem('e2e-cleanup', tx =>
+        await prisma.runAsSystem('e2e-cleanup', (tx) =>
           tx.company.delete({ where: { id: cid } }),
         );
-      } catch (_) { /* best-effort */ }
+      } catch (_) {
+        /* best-effort */
+      }
     }
     await app.close();
   });
@@ -229,8 +316,28 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const tB = await seedTrip(prisma, cid, vehicleId, driver2Id, 1000);
 
     // Driver A: -20% (normal); Driver B: +32% (DRIVER)
-    await seedFuel(prisma, cid, tA, vehicleId, driverId, 200, 250, 'Mumbai', 'Nagpur');
-    await seedFuel(prisma, cid, tB, vehicleId, driver2Id, 330, 250, 'Mumbai', 'Nagpur');
+    await seedFuel(
+      prisma,
+      cid,
+      tA,
+      vehicleId,
+      driverId,
+      200,
+      250,
+      'Mumbai',
+      'Nagpur',
+    );
+    await seedFuel(
+      prisma,
+      cid,
+      tB,
+      vehicleId,
+      driver2Id,
+      330,
+      250,
+      'Mumbai',
+      'Nagpur',
+    );
 
     const res = await request(app.getHttpServer())
       .get('/api/v1/intelligence/fuel/root-cause')
@@ -243,7 +350,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     expect(driverCases[0].comparisonGroupSize).toBeGreaterThanOrEqual(2);
     expect(driverCases[0].confidence).toBe('HIGH');
 
-    console.log(`\n✅ DRIVER: ${driverCases[0].driverName} variance=${driverCases[0].variancePct}%`);
+    console.log(
+      `\n✅ DRIVER: ${driverCases[0].driverName} variance=${driverCases[0].variancePct}%`,
+    );
     console.log(`   ${driverCases[0].explanation}`);
   });
 
@@ -255,8 +364,28 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const tD = await seedTrip(prisma, cid, vehicle2Id, driverId, 500);
 
     // Vehicle 1: +68%; Vehicle 2: +4%
-    await seedFuel(prisma, cid, tC, vehicleId, driverId, 210, 125, 'Mumbai', 'Pune');
-    await seedFuel(prisma, cid, tD, vehicle2Id, driverId, 130, 125, 'Mumbai', 'Pune');
+    await seedFuel(
+      prisma,
+      cid,
+      tC,
+      vehicleId,
+      driverId,
+      210,
+      125,
+      'Mumbai',
+      'Pune',
+    );
+    await seedFuel(
+      prisma,
+      cid,
+      tD,
+      vehicle2Id,
+      driverId,
+      130,
+      125,
+      'Mumbai',
+      'Pune',
+    );
 
     const res = await request(app.getHttpServer())
       .get('/api/v1/intelligence/fuel/root-cause')
@@ -267,7 +396,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const mechCases = res.body.filter((r: any) => r.rootCause === 'MECHANICAL');
     expect(mechCases.length).toBeGreaterThanOrEqual(1);
 
-    console.log(`\n✅ MECHANICAL: ${mechCases[0].licensePlate} variance=${mechCases[0].variancePct}%`);
+    console.log(
+      `\n✅ MECHANICAL: ${mechCases[0].licensePlate} variance=${mechCases[0].variancePct}%`,
+    );
     console.log(`   ${mechCases[0].explanation}`);
   });
 
@@ -279,8 +410,28 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const tF = await seedTrip(prisma, cid, vehicle3Id, driver3Id, 1000);
 
     // Surat: +4%; Nagpur: +52%
-    await seedFuel(prisma, cid, tE, vehicle3Id, driver3Id, 78, 75, 'Mumbai', 'Surat');
-    await seedFuel(prisma, cid, tF, vehicle3Id, driver3Id, 380, 250, 'Mumbai', 'Nagpur');
+    await seedFuel(
+      prisma,
+      cid,
+      tE,
+      vehicle3Id,
+      driver3Id,
+      78,
+      75,
+      'Mumbai',
+      'Surat',
+    );
+    await seedFuel(
+      prisma,
+      cid,
+      tF,
+      vehicle3Id,
+      driver3Id,
+      380,
+      250,
+      'Mumbai',
+      'Nagpur',
+    );
 
     const res = await request(app.getHttpServer())
       .get('/api/v1/intelligence/fuel/root-cause')
@@ -291,7 +442,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const routeCases = res.body.filter((r: any) => r.rootCause === 'ROUTE');
     expect(routeCases.length).toBeGreaterThanOrEqual(1);
 
-    console.log(`\n✅ ROUTE: ${routeCases[0].routeKey} variance=${routeCases[0].variancePct}%`);
+    console.log(
+      `\n✅ ROUTE: ${routeCases[0].routeKey} variance=${routeCases[0].variancePct}%`,
+    );
     console.log(`   ${routeCases[0].explanation}`);
   });
 
@@ -301,7 +454,17 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
 
     // Tenant B has NO other fuel entries — single entry must → INSUFFICIENT_DATA
     const tSolo = await seedTrip(prisma, cid, vehicleId, driverId, 500);
-    await seedFuel(prisma, cid, tSolo, vehicleId, driverId, 130, 125, 'Chennai', 'Bangalore');
+    await seedFuel(
+      prisma,
+      cid,
+      tSolo,
+      vehicleId,
+      driverId,
+      130,
+      125,
+      'Chennai',
+      'Bangalore',
+    );
 
     const res = await request(app.getHttpServer())
       .get('/api/v1/intelligence/fuel/root-cause')
@@ -311,7 +474,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThanOrEqual(1);
 
-    const insufficientCases = res.body.filter((r: any) => r.rootCause === 'INSUFFICIENT_DATA');
+    const insufficientCases = res.body.filter(
+      (r: any) => r.rootCause === 'INSUFFICIENT_DATA',
+    );
     expect(insufficientCases.length).toBeGreaterThanOrEqual(1);
     expect(insufficientCases[0].comparisonGroupSize).toBe(1);
 
@@ -327,8 +492,28 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     const tH = await seedTrip(prisma, cid, vehicleId, driverId, 200);
 
     // Baseline: +2% (Normal), Another trip: -5% (Normal) -> Both <15%, and group size >= 2
-    await seedFuel(prisma, cid, tG, vehicleId, driverId, 51, 50, 'Delhi', 'Agra');
-    await seedFuel(prisma, cid, tH, vehicleId, driverId, 47, 50, 'Delhi', 'Agra');
+    await seedFuel(
+      prisma,
+      cid,
+      tG,
+      vehicleId,
+      driverId,
+      51,
+      50,
+      'Delhi',
+      'Agra',
+    );
+    await seedFuel(
+      prisma,
+      cid,
+      tH,
+      vehicleId,
+      driverId,
+      47,
+      50,
+      'Delhi',
+      'Agra',
+    );
 
     const res = await request(app.getHttpServer())
       .get('/api/v1/intelligence/fuel/root-cause')
@@ -338,7 +523,9 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
     expect(Array.isArray(res.body)).toBe(true);
 
     // Find the Delhi:Agra entries
-    const normalCases = res.body.filter((r: any) => r.routeKey === 'Delhi:Agra');
+    const normalCases = res.body.filter(
+      (r: any) => r.routeKey === 'Delhi:Agra',
+    );
     expect(normalCases.length).toBe(2);
 
     for (const c of normalCases) {
@@ -358,9 +545,13 @@ describe('Fuel Variance Root-Cause (E2E)', () => {
       .expect(200);
 
     expect(Array.isArray(res.body)).toBe(true);
-    const leaked = res.body.find((r: any) => r.routeKey === 'Chennai:Bangalore');
+    const leaked = res.body.find(
+      (r: any) => r.routeKey === 'Chennai:Bangalore',
+    );
     expect(leaked).toBeUndefined();
 
-    console.log(`\n✅ Cross-tenant: Tenant A sees ${res.body.length} entries; Chennai:Bangalore NOT present`);
+    console.log(
+      `\n✅ Cross-tenant: Tenant A sees ${res.body.length} entries; Chennai:Bangalore NOT present`,
+    );
   });
 });

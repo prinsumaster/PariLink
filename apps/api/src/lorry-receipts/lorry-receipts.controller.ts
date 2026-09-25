@@ -1,13 +1,6 @@
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { LorryReceiptsService } from './lorry-receipts.service';
 import { ShareLorryReceiptDto } from './dto/share-lorry-receipt.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -56,7 +49,10 @@ export class LorryReceiptsController {
     @Param('id') id: string,
     @Res() res: any,
   ) {
-    const stream = await this.lorryReceiptsService.generatePdf(user.companyId, id);
+    const stream = await this.lorryReceiptsService.generatePdf(
+      user.companyId,
+      id,
+    );
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="lr-${id}.pdf"`,

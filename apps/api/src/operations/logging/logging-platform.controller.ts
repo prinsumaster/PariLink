@@ -137,10 +137,7 @@ export class LoggingPlatformController {
     summary:
       'Ingest a structured log entry with automatic sensitive data redaction',
   })
-  async log(
-    @GetUser() user: { companyId: string },
-    @Body() body: LogEntryDto,
-  ) {
+  async log(@GetUser() user: { companyId: string }, @Body() body: LogEntryDto) {
     return this.loggingService.log({ ...body, companyId: user.companyId });
   }
 

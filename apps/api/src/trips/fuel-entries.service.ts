@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateFuelEntryDto } from './dto/create-fuel-entry.dto';
 
@@ -22,7 +26,9 @@ export class FuelEntriesService {
 
       if (!trip) throw new NotFoundException('Trip not found');
       if (!trip.vehicleId || !trip.driverId) {
-        throw new BadRequestException('Trip must have a vehicle and driver assigned to add fuel');
+        throw new BadRequestException(
+          'Trip must have a vehicle and driver assigned to add fuel',
+        );
       }
 
       // Route key: copied from first Load at write-time. Null if no Load attached.
@@ -35,7 +41,8 @@ export class FuelEntriesService {
       const distance = trip.actualDistance || trip.estimatedDistance || 1000;
       const expectedLitres = distance / expectedMileage;
 
-      const variancePct = ((dto.litres - expectedLitres) / expectedLitres) * 100;
+      const variancePct =
+        ((dto.litres - expectedLitres) / expectedLitres) * 100;
 
       const fuelEntry = await tx.fuelEntry.create({
         data: {
@@ -78,7 +85,9 @@ export class FuelEntriesService {
 
   async getFuelByTrip(companyId: string, tripId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const trip = await tx.trip.findUnique({ where: { id: tripId, companyId } });
+      const trip = await tx.trip.findUnique({
+        where: { id: tripId, companyId },
+      });
       if (!trip) throw new NotFoundException('Trip not found');
 
       const entries = await tx.fuelEntry.findMany({
@@ -88,12 +97,20 @@ export class FuelEntriesService {
 
       const totalLitres = entries.reduce((sum, e) => sum + e.litres, 0);
       const totalAmount = entries.reduce((sum, e) => sum + e.amount, 0);
-      const totalExpected = entries.reduce((sum, e) => sum + (e.expectedLitres || 0), 0);
+      const totalExpected = entries.reduce(
+        (sum, e) => sum + (e.expectedLitres || 0),
+        0,
+      );
 
       const overallVariancePct =
-        totalExpected > 0 ? ((totalLitres - totalExpected) / totalExpected) * 100 : null;
+        totalExpected > 0
+          ? ((totalLitres - totalExpected) / totalExpected) * 100
+          : null;
 
-      return { entries, totals: { totalLitres, totalAmount, overallVariancePct } };
+      return {
+        entries,
+        totals: { totalLitres, totalAmount, overallVariancePct },
+      };
     });
   }
 }

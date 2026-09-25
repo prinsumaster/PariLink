@@ -159,7 +159,9 @@ import { FuelModule } from './fuel/fuel.module';
     }),
     ThrottlerModule.forRootAsync({
       imports: [RedisManagerModule],
-      inject: [require('./common/redis/redis-manager.service').RedisManagerService],
+      inject: [
+        require('./common/redis/redis-manager.service').RedisManagerService,
+      ],
       useFactory: (redisManager: any) => ({
         storage: new ThrottlerStorageRedisService(redisManager.getClient()),
         throttlers: [

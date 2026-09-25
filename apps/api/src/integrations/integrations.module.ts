@@ -25,7 +25,9 @@ import { BullModule } from '@nestjs/bullmq';
     CryptoService,
     IntegrationAuthService,
     ConnectorFactoryService,
-    ...(process.env.RUN_WORKERS === 'true' ? [...(process.env.RUN_WORKERS === 'true' ? [SyncEngineProcessor] : [])] : []),
+    ...(process.env.RUN_WORKERS === 'true'
+      ? [...(process.env.RUN_WORKERS === 'true' ? [SyncEngineProcessor] : [])]
+      : []),
     RazorpayService,
     ResendService,
     TwilioService,

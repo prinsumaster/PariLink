@@ -26,7 +26,9 @@ export class DigitalWorkerRegistry {
   getWorker(name: string): IDigitalWorker {
     const worker = this.workers.get(name);
     if (!worker) {
-      throw new NotFoundException(`Digital Worker '${name}' not found in registry.`);
+      throw new NotFoundException(
+        `Digital Worker '${name}' not found in registry.`,
+      );
     }
     return worker;
   }

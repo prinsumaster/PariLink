@@ -95,7 +95,9 @@ export class EnterpriseRagService {
     } = options;
 
     if (!companyId) {
-      throw new Error('Tenant isolation failure: companyId is required for RAG context retrieval.');
+      throw new Error(
+        'Tenant isolation failure: companyId is required for RAG context retrieval.',
+      );
     }
 
     this.logger.log(
@@ -106,7 +108,7 @@ export class EnterpriseRagService {
 
     // Tenant-isolated fetch
     const whereClause: any = {
-      document: { companyId }
+      document: { companyId },
     };
     if (permissionTags.length > 0) {
       // Only return chunks whose document does NOT have restricted tags
@@ -189,7 +191,11 @@ export class EnterpriseRagService {
   /**
    * Legacy compatibility shim — returns just the context string
    */
-  async retrieveContextLegacy(query: string, companyId: string, limit = 3): Promise<string> {
+  async retrieveContextLegacy(
+    query: string,
+    companyId: string,
+    limit = 3,
+  ): Promise<string> {
     const result = await this.retrieveContext(query, { companyId, limit });
     return result.context;
   }

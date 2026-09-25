@@ -1,7 +1,4 @@
-import {
-  IsString,
-  IsNotEmpty
-} from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class EnvironmentVariables {
   @IsString()
@@ -18,8 +15,6 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-
-
   @IsString()
   @IsNotEmpty()
   COOKIE_SECRET!: string;

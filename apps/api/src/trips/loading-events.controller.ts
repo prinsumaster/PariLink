@@ -30,6 +30,11 @@ export class LoadingEventsController {
     @Param('id') id: string,
     @Body() createDto: CreateLoadingEventDto,
   ) {
-    return this.loadingEventsService.addEvent(user.companyId, id, createDto, user);
+    return this.loadingEventsService.addEvent(
+      user.companyId,
+      id,
+      createDto,
+      user,
+    );
   }
 }

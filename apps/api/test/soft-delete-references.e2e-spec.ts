@@ -26,7 +26,7 @@ describe('Soft Delete Reference Protection (e2e)', () => {
       .post('/auth/login')
       .send({ email: 'admin@parilink.com', password: 'password123' })
       .expect(200);
-      
+
     adminToken = loginRes.body.access_token;
 
     // We can infer _companyId by looking at our own profile
@@ -46,10 +46,10 @@ describe('Soft Delete Reference Protection (e2e)', () => {
         email: `proof-${Date.now()}@customer.com`,
         name: 'Proof Customer',
         paymentTerms: 'NET_30',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
       .expect(201);
-      
+
     const custId = custRes.body.id;
 
     // 2. Soft-delete the customer
@@ -63,7 +63,7 @@ describe('Soft Delete Reference Protection (e2e)', () => {
       .get(`/customers/${custId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(200);
-      
+
     expect(getRes.body.deleted).toBe(true);
     expect(getRes.body.name).toBe('Proof Customer');
   });
@@ -90,14 +90,14 @@ describe('Soft Delete Reference Protection (e2e)', () => {
         lastName: 'Driver',
         email: `free-${Date.now()}@driver.com`,
         licenseNumber: `FD-${Date.now()}`,
-        status: 'AVAILABLE'
+        status: 'AVAILABLE',
       });
-      
+
     if (driverRes.status !== 201) {
       console.error('Driver creation failed:', driverRes.body);
     }
     expect(driverRes.status).toBe(201);
-      
+
     const unusedDriverId = driverRes.body.id;
 
     // 2. Delete it (should succeed)
@@ -117,14 +117,14 @@ describe('Soft Delete Reference Protection (e2e)', () => {
         lastName: 'Driver',
         email: `busy-${Date.now()}@driver.com`,
         licenseNumber: `BD-${Date.now()}`,
-        status: 'AVAILABLE'
+        status: 'AVAILABLE',
       });
-      
+
     if (driverRes.status !== 201) {
       console.error('Driver busy creation failed:', driverRes.body);
     }
     expect(driverRes.status).toBe(201);
-      
+
     driverId = driverRes.body.id;
 
     // 2. Create Trip for Driver
@@ -143,8 +143,10 @@ describe('Soft Delete Reference Protection (e2e)', () => {
       .delete(`/drivers/${driverId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .expect(400);
-      
-    expect(res.body.message).toContain('Cannot terminate a driver who is currently dispatched on a trip.');
+
+    expect(res.body.message).toContain(
+      'Cannot terminate a driver who is currently dispatched on a trip.',
+    );
   });
 
   it('AV1: Should allow deleting a customer with NO references', async () => {
@@ -156,10 +158,10 @@ describe('Soft Delete Reference Protection (e2e)', () => {
         email: `free-cust-${Date.now()}@customer.com`,
         name: 'Free Customer',
         paymentTerms: 'NET_30',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
       .expect(201);
-      
+
     const unusedCustId = custRes.body.id;
 
     // 2. Delete it (should succeed)

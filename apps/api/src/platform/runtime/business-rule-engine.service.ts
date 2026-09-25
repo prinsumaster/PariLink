@@ -15,7 +15,7 @@ export class BusinessRuleEngineService {
 
   constructor(
     private readonly prisma: PrismaService,
-  // @ts-ignore: DI dependency reserved for future use
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _cache: CacheManagerService,
   ) {}
 
@@ -41,10 +41,12 @@ export class BusinessRuleEngineService {
         ctx.payload.vehicleId &&
         ctx.payload.weight
       ) {
-        const vehicle = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
-          tx.vehicle.findFirst({
-            where: { id: ctx.payload.vehicleId },
-          }),
+        const vehicle = await this.prisma.runAsSystem(
+          '[BusinessRuleEngineService.evaluateRules] Internal service operation bypass',
+          async (tx) =>
+            tx.vehicle.findFirst({
+              where: { id: ctx.payload.vehicleId },
+            }),
         );
         if (
           vehicle &&
@@ -61,13 +63,15 @@ export class BusinessRuleEngineService {
       // 2. Working Hours (HOS Compliance)
       if (rule.type === 'WORKING_HOURS' && ctx.payload.driverId) {
         // Mock check against recent trips
-        const recentTrips = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
-          tx.trip.count({
-            where: {
-              driverId: ctx.payload.driverId,
-              startDate: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
-            },
-          }),
+        const recentTrips = await this.prisma.runAsSystem(
+          '[BusinessRuleEngineService.evaluateRules] Internal service operation bypass',
+          async (tx) =>
+            tx.trip.count({
+              where: {
+                driverId: ctx.payload.driverId,
+                startDate: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+              },
+            }),
         );
         if (recentTrips > 2) {
           if (rule.strict)
@@ -83,10 +87,12 @@ export class BusinessRuleEngineService {
         ctx.payload.isHazmat &&
         ctx.payload.vehicleId
       ) {
-        const vehicle = await this.prisma.runAsSystem('[BusinessRuleEngineService.evaluateRules] Internal service operation bypass', async (tx) =>
-          tx.vehicle.findFirst({
-            where: { id: ctx.payload.vehicleId },
-          }),
+        const vehicle = await this.prisma.runAsSystem(
+          '[BusinessRuleEngineService.evaluateRules] Internal service operation bypass',
+          async (tx) =>
+            tx.vehicle.findFirst({
+              where: { id: ctx.payload.vehicleId },
+            }),
         );
         // Assume vehicle type defines hazmat readiness (mock validation)
         if (vehicle && vehicle.type !== 'HAZMAT_TRUCK') {

@@ -1,21 +1,22 @@
 import * as path from 'path';
 import * as fs from 'fs';
 
-const WEB_SRC = path.resolve('/Users/vishalvirda/Desktop/PariLink/apps/web/src');
+const WEB_SRC = path.resolve(
+  '/Users/vishalvirda/Desktop/PariLink/apps/web/src',
+);
 
 describe('Security: no raw localStorage auth reads in components', () => {
-
   // Patterns that are BANNED in component code (.tsx / .ts)
   const BANNED_PATTERNS = [
     // Literal string access for tokens and roles
     /(?:localStorage|sessionStorage)\.getItem\(['"`](?:token|access_token|auth_token|jwt|role)['"`]\)/,
     // Dynamic access (non-literal first argument) which could be hiding a token key
-    /(?:localStorage|sessionStorage)\.getItem\((?!['"`])/
+    /(?:localStorage|sessionStorage)\.getItem\((?!['"`])/,
   ];
 
   // Files that are ALLOWED to touch localStorage (Zustand store internals, mobile-auth util, etc.)
   const ALLOWLIST = [
-    'store/auth.ts',           // Zustand customStorage — intentional, cookie-coupled
+    'store/auth.ts', // Zustand customStorage — intentional, cookie-coupled
     'lib/security/mobile-auth.ts', // Explicit secure wrapper — not raw auth
     'lib/command-registry.ts', // Stores recent UI commands (non-auth dynamic key)
   ];
@@ -26,7 +27,7 @@ describe('Security: no raw localStorage auth reads in components', () => {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         result.push(...collectFiles(full, exts));
-      } else if (exts.some(e => entry.name.endsWith(e))) {
+      } else if (exts.some((e) => entry.name.endsWith(e))) {
         result.push(full);
       }
     }
@@ -37,17 +38,24 @@ describe('Security: no raw localStorage auth reads in components', () => {
 
   for (const file of allFiles) {
     const rel = path.relative(WEB_SRC, file);
-    const isAllowlisted = ALLOWLIST.some(a => rel.replace(/\\/g, '/').includes(a));
+    const isAllowlisted = ALLOWLIST.some((a) =>
+      rel.replace(/\\/g, '/').includes(a),
+    );
     if (isAllowlisted) continue;
 
     it(`${rel} — no banned localStorage auth pattern`, () => {
       const src = fs.readFileSync(file, 'utf8');
 
       // Skip comment lines (lines starting with // or * after trimming)
-      const codeLines = src.split('\n').filter(line => {
-        const t = line.trimStart();
-        return !t.startsWith('//') && !t.startsWith('*') && !t.startsWith('/*');
-      }).join('\n');
+      const codeLines = src
+        .split('\n')
+        .filter((line) => {
+          const t = line.trimStart();
+          return (
+            !t.startsWith('//') && !t.startsWith('*') && !t.startsWith('/*')
+          );
+        })
+        .join('\n');
 
       for (const pattern of BANNED_PATTERNS) {
         const match = codeLines.match(pattern);
@@ -55,8 +63,8 @@ describe('Security: no raw localStorage auth reads in components', () => {
         if (match) {
           fail(
             `SECURITY VIOLATION in ${rel}:\n` +
-            `  Found banned localStorage auth read: "${match[0]}"\n` +
-            `  Use useAuthStore() or the api singleton (api.ts) instead.`
+              `  Found banned localStorage auth read: "${match[0]}"\n` +
+              `  Use useAuthStore() or the api singleton (api.ts) instead.`,
           );
         }
       }

@@ -29,7 +29,7 @@ export interface PricingResult {
 export class PricingEngine {
   private readonly logger = new Logger(PricingEngine.name);
 
-    // @ts-ignore: DI dependency reserved for future use
+  // @ts-ignore: DI dependency reserved for future use
   constructor(private readonly _prisma: PrismaService) {}
 
   /**

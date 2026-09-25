@@ -116,7 +116,10 @@ export class HealthService {
     const start = Date.now();
     try {
       await Promise.race([
-        this.prisma.runAsSystem('[HealthService.checkDatabase] Internal service operation bypass', async (tx) => tx.$queryRaw`SELECT 1`),
+        this.prisma.runAsSystem(
+          '[HealthService.checkDatabase] Internal service operation bypass',
+          async (tx) => tx.$queryRaw`SELECT 1`,
+        ),
         this.timeout(READINESS_TIMEOUT_MS, 'Database timeout'),
       ]);
       return { status: 'UP', responseTimeMs: Date.now() - start };

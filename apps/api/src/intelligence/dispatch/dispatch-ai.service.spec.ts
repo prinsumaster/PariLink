@@ -11,7 +11,7 @@ jest.mock('@google/genai', () => {
       ARRAY: 'array',
       OBJECT: 'object',
       STRING: 'string',
-      INTEGER: 'integer'
+      INTEGER: 'integer',
     },
     GoogleGenAI: jest.fn().mockImplementation(() => ({
       models: {
@@ -25,12 +25,12 @@ jest.mock('@google/genai', () => {
               driverId: 'drv-1',
               driverName: 'John Doe',
               confidenceScore: 98,
-              reasoning: 'AI matched based on location.'
-            }
-          ])
-        })
-      }
-    }))
+              reasoning: 'AI matched based on location.',
+            },
+          ]),
+        }),
+      },
+    })),
   };
 });
 
@@ -110,9 +110,17 @@ describe('DispatchAiService', () => {
     it('should query trips, vehicles, and drivers with strict companyId assertion and parse AI output', async () => {
       const companyId = 'test-company-id';
 
-      jest.spyOn(prisma.trip, 'findMany').mockResolvedValue([{ id: 'trip-1', tripNumber: 'T-1' }] as any);
-      jest.spyOn(prisma.vehicle, 'findMany').mockResolvedValue([{ id: 'veh-1', licensePlate: 'ABC-123' }] as any);
-      jest.spyOn(prisma.driver, 'findMany').mockResolvedValue([{ id: 'drv-1', firstName: 'John', lastName: 'Doe' }] as any);
+      jest
+        .spyOn(prisma.trip, 'findMany')
+        .mockResolvedValue([{ id: 'trip-1', tripNumber: 'T-1' }] as any);
+      jest
+        .spyOn(prisma.vehicle, 'findMany')
+        .mockResolvedValue([{ id: 'veh-1', licensePlate: 'ABC-123' }] as any);
+      jest
+        .spyOn(prisma.driver, 'findMany')
+        .mockResolvedValue([
+          { id: 'drv-1', firstName: 'John', lastName: 'Doe' },
+        ] as any);
 
       const assignments = await service.getOptimalAssignments(companyId);
 
@@ -120,9 +128,9 @@ describe('DispatchAiService', () => {
         expect.objectContaining({
           where: expect.objectContaining({
             companyId,
-            status: 'PENDING'
-          })
-        })
+            status: 'PENDING',
+          }),
+        }),
       );
 
       // It should call the mocked AI SDK and return the parsed JSON
@@ -135,18 +143,18 @@ describe('DispatchAiService', () => {
         driverId: 'drv-1',
         driverName: 'John Doe',
         confidenceScore: 98,
-        reasoning: 'AI matched based on location.'
+        reasoning: 'AI matched based on location.',
       });
-      
+
       // Also verify it passed the prompt to the AI model
       expect(service['ai'].models.generateContent).toHaveBeenCalledWith(
         expect.objectContaining({
           model: 'gemini-2.5-flash',
           contents: expect.stringContaining('T-1'),
           config: expect.objectContaining({
-            responseMimeType: 'application/json'
-          })
-        })
+            responseMimeType: 'application/json',
+          }),
+        }),
       );
     });
   });

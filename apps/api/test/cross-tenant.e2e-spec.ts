@@ -19,7 +19,9 @@ describe('Cross-Tenant Entity Isolation (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     app.enableShutdownHooks();
     await app.init();
 
@@ -44,12 +46,22 @@ describe('Cross-Tenant Entity Isolation (e2e)', () => {
       await tx.role.upsert({
         where: { id: 'ct-role-a' },
         update: {},
-        create: { id: 'ct-role-a', name: 'Admin', permissions: ['*'], companyId: 'tenant-a' },
+        create: {
+          id: 'ct-role-a',
+          name: 'Admin',
+          permissions: ['*'],
+          companyId: 'tenant-a',
+        },
       });
       await tx.role.upsert({
         where: { id: 'ct-role-b' },
         update: {},
-        create: { id: 'ct-role-b', name: 'Admin', permissions: ['*'], companyId: 'tenant-b' },
+        create: {
+          id: 'ct-role-b',
+          name: 'Admin',
+          permissions: ['*'],
+          companyId: 'tenant-b',
+        },
       });
     });
 

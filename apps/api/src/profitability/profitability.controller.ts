@@ -23,9 +23,7 @@ export class ProfitabilityController {
 
   @Post('cron/aggregate-vehicles')
   @RequirePermissions('finance:write')
-  async aggregateVehicles(
-    @GetUser() user: AuthenticatedUser,
-  ) {
+  async aggregateVehicles(@GetUser() user: AuthenticatedUser) {
     return this.profitabilityService.aggregateVehicles(user.companyId);
   }
 
@@ -53,10 +51,7 @@ export class ProfitabilityController {
 
   @Get('trips/:id')
   @RequirePermissions('finance:read')
-  async tripPnl(
-    @GetUser() user: AuthenticatedUser,
-    @Param('id') id: string,
-  ) {
+  async tripPnl(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.profitabilityService.tripPnl(user.companyId, id);
   }
 

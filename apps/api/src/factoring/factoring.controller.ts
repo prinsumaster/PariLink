@@ -1,12 +1,6 @@
 import type { AuthenticatedUser } from '../auth/decorators/get-user.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { FactoringService } from './factoring.service';
 import { SubmitFactoringDto } from './dto/submit-factoring.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

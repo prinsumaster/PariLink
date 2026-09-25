@@ -36,23 +36,25 @@ export class FilePlatformService {
 
     // Here we can hook in ClamAV virus scanning, Image optimization (sharp), etc.
 
-    const document = await this.prisma.runAsSystem('[FilePlatformService.processUpload] Internal service operation bypass', async (tx) =>
-      tx.document.create({
-        data: {
-          companyId: upload.companyId,
-          uploadedById: upload.userId,
-          fileUrl: upload.file.path, // Abstraction ready for S3
-          fileName: upload.file.originalname,
-          mimeType: upload.file.mimetype,
-          sizeBytes: upload.file.size,
-          type: upload.category || 'GENERAL',
-          loadId: upload.referenceId, // If it maps to a load
-          metadata: {
-            ...upload.metadata,
-            checksum,
+    const document = await this.prisma.runAsSystem(
+      '[FilePlatformService.processUpload] Internal service operation bypass',
+      async (tx) =>
+        tx.document.create({
+          data: {
+            companyId: upload.companyId,
+            uploadedById: upload.userId,
+            fileUrl: upload.file.path, // Abstraction ready for S3
+            fileName: upload.file.originalname,
+            mimeType: upload.file.mimetype,
+            sizeBytes: upload.file.size,
+            type: upload.category || 'GENERAL',
+            loadId: upload.referenceId, // If it maps to a load
+            metadata: {
+              ...upload.metadata,
+              checksum,
+            },
           },
-        },
-      }),
+        }),
     );
 
     this.eventService.publish('DocumentUploaded', {

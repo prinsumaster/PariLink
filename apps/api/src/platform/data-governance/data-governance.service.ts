@@ -1,4 +1,4 @@
-import { Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 // ---------------------------------------------------------------------------
 // Data Governance Service
@@ -129,7 +129,6 @@ export const RETENTION_POLICIES: Record<string, number> = {
 
 @Injectable()
 export class DataGovernanceService {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private readonly fieldRegistry = new Map<string, FieldClassification>(
     SENSITIVE_FIELD_REGISTRY.map((f) => [f.field, f]),
   );

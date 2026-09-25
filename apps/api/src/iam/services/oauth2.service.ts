@@ -77,11 +77,13 @@ export class OAuth2Service {
   ) {
     const secretHash = this.hashSecret(clientSecret);
 
-    const client = await this.prisma.runAsSystem('[OAuth2Service.issueClientCredentialsToken] Internal service operation bypass', async (tx) =>
-      tx.oAuthClient.findFirst({
-        where: { clientId, clientSecret: secretHash, isActive: true },
-        include: { company: true },
-      }),
+    const client = await this.prisma.runAsSystem(
+      '[OAuth2Service.issueClientCredentialsToken] Internal service operation bypass',
+      async (tx) =>
+        tx.oAuthClient.findFirst({
+          where: { clientId, clientSecret: secretHash, isActive: true },
+          include: { company: true },
+        }),
     );
 
     if (!client) {
@@ -103,15 +105,17 @@ export class OAuth2Service {
     const expiresAt = new Date();
     expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn);
 
-    await this.prisma.runAsSystem('[OAuth2Service.issueClientCredentialsToken] Internal service operation bypass', async (tx) =>
-      tx.oAuthToken.create({
-        data: {
-          clientId: client.id,
-          tokenHash,
-          scopes: grantedScopes,
-          expiresAt,
-        },
-      }),
+    await this.prisma.runAsSystem(
+      '[OAuth2Service.issueClientCredentialsToken] Internal service operation bypass',
+      async (tx) =>
+        tx.oAuthToken.create({
+          data: {
+            clientId: client.id,
+            tokenHash,
+            scopes: grantedScopes,
+            expiresAt,
+          },
+        }),
     );
 
     await this.audit.logEvent({
@@ -133,11 +137,13 @@ export class OAuth2Service {
 
   async validateToken(token: string) {
     const tokenHash = this.hashSecret(token);
-    const oauthToken = await this.prisma.runAsSystem('[OAuth2Service.validateToken] Internal service operation bypass', async (tx) =>
-      tx.oAuthToken.findUnique({
-        where: { tokenHash },
-        include: { client: { include: { company: true } } },
-      }),
+    const oauthToken = await this.prisma.runAsSystem(
+      '[OAuth2Service.validateToken] Internal service operation bypass',
+      async (tx) =>
+        tx.oAuthToken.findUnique({
+          where: { tokenHash },
+          include: { client: { include: { company: true } } },
+        }),
     );
 
     if (
@@ -158,22 +164,26 @@ export class OAuth2Service {
   async revokeToken(token: string) {
     const tokenHash = this.hashSecret(token);
 
-    const oauthToken = await this.prisma.runAsSystem('[OAuth2Service.revokeToken] Internal service operation bypass', async (tx) =>
-      tx.oAuthToken.findUnique({
-        where: { tokenHash },
-        include: { client: true },
-      }),
+    const oauthToken = await this.prisma.runAsSystem(
+      '[OAuth2Service.revokeToken] Internal service operation bypass',
+      async (tx) =>
+        tx.oAuthToken.findUnique({
+          where: { tokenHash },
+          include: { client: true },
+        }),
     );
 
     if (!oauthToken) {
       throw new NotFoundException('Token not found');
     }
 
-    await this.prisma.runAsSystem('[OAuth2Service.revokeToken] Internal service operation bypass', async (tx) =>
-      tx.oAuthToken.update({
-        where: { id: oauthToken.id },
-        data: { revokedAt: new Date() },
-      }),
+    await this.prisma.runAsSystem(
+      '[OAuth2Service.revokeToken] Internal service operation bypass',
+      async (tx) =>
+        tx.oAuthToken.update({
+          where: { id: oauthToken.id },
+          data: { revokedAt: new Date() },
+        }),
     );
 
     await this.audit.logEvent({

@@ -10,7 +10,7 @@ export class DriverScoringService {
 
   @OnEvent('Alert.Triggered')
   async handleAlert(event: any) {
-  // @ts-ignore: reserved for future use
+    // @ts-ignore: reserved for future use
     const { _tenantId, payload } = event;
     const { alertId, ruleType } = payload;
 
