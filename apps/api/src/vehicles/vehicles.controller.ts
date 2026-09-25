@@ -78,6 +78,18 @@ export class VehiclesController {
     return this.vehiclesService.update(user.companyId, id, updateVehicleDto);
   }
 
+  @Get(':id/tco')
+  @RequirePermissions('fleet:read')
+  @ApiOperation({ summary: 'Get Total Cost of Ownership (TCO) breakdown for a vehicle' })
+  getVehicleTCO(
+    @GetUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Query('from') fromDate?: string,
+    @Query('to') toDate?: string,
+  ) {
+    return this.vehiclesService.getVehicleTCO(user.companyId, id, fromDate, toDate);
+  }
+
   @Delete(':id')
   @RequirePermissions('vehicles:delete')
   @ApiOperation({ summary: 'Soft delete a vehicle' })

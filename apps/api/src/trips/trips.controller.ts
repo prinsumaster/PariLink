@@ -126,7 +126,7 @@ export class TripsController {
     @Param('id') id: string,
     @Body() body: CreateTripReviewDto
   ) {
-    return this.tripsService.submitReview(user.companyId, id, user.id, user.roleId, body);
+    return this.tripsService.submitReview(user.companyId, id, user.id, body);
   }
 
   @Get(':id/reviews')

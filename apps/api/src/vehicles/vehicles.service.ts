@@ -6,10 +6,14 @@ import {
 } from '../platform/api/utils/pagination.util';
 import {
   Injectable,
+  Inject,
   NotFoundException,
   ConflictException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
@@ -21,12 +25,15 @@ import { EventStoreService } from '../platform/digital-twin/event-store.service'
 
 @Injectable()
 export class VehiclesService {
+  private readonly logger = new Logger(VehiclesService.name);
+
   constructor(
     private readonly auditService: AuditService,
     private prisma: PrismaService,
     private workflow: WorkflowService,
     private eventEmitter: EventEmitter2,
     private readonly eventStore: EventStoreService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(companyId: string, createVehicleDto: CreateVehicleDto) {
@@ -371,5 +378,98 @@ export class VehiclesService {
     this.eventEmitter.emit('vehicle.deleted', deletedVehicle);
 
     return deletedVehicle;
+  }
+  async getVehicleTCO(companyId: string, vehicleId: string, fromDate?: string, toDate?: string) {
+    const cacheKey = `tco:${companyId}:${vehicleId}:${fromDate || 'all'}:${toDate || 'all'}`;
+    const startTime = performance.now();
+    
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      const endTime = performance.now();
+      console.log(`[CACHE HIT] getVehicleTCO (${endTime - startTime}ms) for ${cacheKey}`);
+      return cached;
+    }
+
+    return this.prisma.runAsTenant(companyId, async (tx) => {
+      // 1. Validate vehicle exists
+      const vehicle = await tx.vehicle.findFirst({ where: { id: vehicleId, companyId } });
+      if (!vehicle) throw new NotFoundException('Vehicle not found');
+
+      // Date range filters
+      const dateFilter: any = {};
+
+      if (fromDate) dateFilter.gte = new Date(fromDate);
+      if (toDate) dateFilter.lte = new Date(toDate);
+
+      const fuelWhere: any = { vehicleId, companyId, status: 'FILLED' };
+      const jobCardWhere: any = { vehicleId, companyId, status: { not: 'CANCELLED' } };
+      const insuranceWhere: any = { vehicleId, companyId };
+
+      const fuelWhereRange = Object.keys(dateFilter).length > 0 ? { ...fuelWhere, filledAt: dateFilter } : fuelWhere;
+      const jobCardWhereRange = Object.keys(dateFilter).length > 0 ? { ...jobCardWhere, openedAt: dateFilter } : jobCardWhere;
+      const insuranceWhereRange = Object.keys(dateFilter).length > 0 ? { ...insuranceWhere, issueDate: dateFilter } : insuranceWhere;
+
+      // Fuel costs
+      const fuelTotalObj = await tx.fuelEntry.aggregate({
+        _sum: { amount: true },
+        where: fuelWhereRange,
+      });
+      const fuelTotalLifetimeObj = await tx.fuelEntry.aggregate({
+        _sum: { amount: true },
+        where: fuelWhere,
+      });
+
+      // Workshop (Maintenance) costs
+      const workshopTotalObj = await tx.jobCard.aggregate({
+        _sum: { totalCost: true },
+        where: jobCardWhereRange,
+      });
+      const workshopTotalLifetimeObj = await tx.jobCard.aggregate({
+        _sum: { totalCost: true },
+        where: jobCardWhere,
+      });
+
+      // Insurance costs
+      const insuranceTotalObj = await tx.insuranceLog.aggregate({
+        _sum: { premiumAmount: true },
+        where: insuranceWhereRange,
+      });
+      const insuranceTotalLifetimeObj = await tx.insuranceLog.aggregate({
+        _sum: { premiumAmount: true },
+        where: insuranceWhere,
+      });
+
+      const fuel = fuelTotalObj._sum.amount || 0;
+      const workshop = workshopTotalObj._sum.totalCost || 0;
+      const insurance = insuranceTotalObj._sum.premiumAmount || 0;
+
+      const fuelLifetime = fuelTotalLifetimeObj._sum.amount || 0;
+      const workshopLifetime = workshopTotalLifetimeObj._sum.totalCost || 0;
+      const insuranceLifetime = insuranceTotalLifetimeObj._sum.premiumAmount || 0;
+
+      const rangeTotal = fuel + workshop + insurance;
+      const lifetimeTotal = fuelLifetime + workshopLifetime + insuranceLifetime;
+
+      const result = {
+        vehicleId,
+        dateRange: {
+          from: fromDate || null,
+          to: toDate || null,
+        },
+        breakdown: {
+          fuel,
+          workshop,
+          insurance,
+        },
+        total: rangeTotal,
+        lifetimeTotal,
+      };
+
+      await this.cacheManager.set(cacheKey, result, 300000); // 5 mins cache
+      const endTime = performance.now();
+      console.log(`[CACHE MISS] getVehicleTCO computed in ${endTime - startTime}ms for ${cacheKey}`);
+
+      return result;
+    });
   }
 }

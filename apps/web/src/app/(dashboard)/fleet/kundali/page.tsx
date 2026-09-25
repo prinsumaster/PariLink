@@ -133,6 +133,16 @@ function VehicleKundaliContent() {
   const [vehicleIdInput, setVehicleIdInput] = useState(defaultId);
   const [vehicleId, setVehicleId] = useState<string | null>(defaultId || null);
 
+  const { data: tcoData, isLoading: tcoLoading } = useQuery({
+    queryKey: ['vehicleTCO', vehicleId],
+    queryFn: async () => {
+      const res = await api.get(`/vehicles/${vehicleId}/tco`);
+      return res.data;
+    },
+    enabled: !!vehicleId,
+    retry: false,
+  });
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['kundali', vehicleId],
     queryFn: () => fetchKundali(vehicleId!),
@@ -208,6 +218,42 @@ function VehicleKundaliContent() {
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-400 mt-1">{errorMessage}</p>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {tcoData && (
+        <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-lg border-slate-700">
+          <CardHeader className="pb-2 border-b border-slate-700/50">
+            <CardTitle className="text-lg font-bold flex items-center justify-between">
+              <span>Total Cost of Ownership (TCO)</span>
+              <span className="text-2xl text-emerald-400">
+                ₹{Number(tcoData.total).toLocaleString('en-IN')}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Fuel Spend</span>
+                <span className="text-lg font-bold text-white">₹{Number(tcoData.breakdown.fuel).toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Workshop</span>
+                <span className="text-lg font-bold text-white">₹{Number(tcoData.breakdown.workshop).toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs text-slate-400 font-medium tracking-wide uppercase">Insurance</span>
+                <span className="text-lg font-bold text-white">₹{Number(tcoData.breakdown.insurance).toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 pt-3 mt-3 border-t border-slate-700/50">
+              <span className="text-xs text-slate-400 uppercase tracking-wide">Lifetime Total:</span>
+              <span className="text-sm font-semibold text-slate-200">
+                ₹{Number(tcoData.lifetimeTotal).toLocaleString('en-IN')}
+              </span>
             </div>
           </CardContent>
         </Card>

@@ -35,6 +35,29 @@ services:
       retries: 5
       start_period: 30s
 
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: always
+    ports:
+      - "6432:5432"
+    environment:
+      - DB_USER=parilink
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - POOL_MODE=transaction
+      - MAX_CLIENT_CONN=1000
+      - DEFAULT_POOL_SIZE=20
+      - ADMIN_USERS=parilink
+      - AUTH_TYPE=scram-sha-256
+      - AUTH_USER=parilink
+      - AUTH_QUERY=SELECT usename, passwd FROM pg_shadow WHERE usename=$1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - parilink_net
+
   redis:
     image: redis:7-alpine
     restart: always
@@ -85,10 +108,10 @@ services:
       - GIT_SHA=${GIT_SHA:-unknown}
       - NODE_ENV=production
       - RUN_MIGRATIONS=false
-      - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@postgres:5432/parilink_db?schema=public
-      - APP_DATABASE_URL=postgresql://parilink_app:apppassword@postgres:5432/parilink_db?schema=public
-      - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD}
-      - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD}@postgres:5432/parilink_db?schema=public
+      - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
+      - APP_DATABASE_URL=postgresql://parilink_app:apppassword@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
+      - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD:-CHANGE_ME_IN_PRODUCTION}
+      - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD:-CHANGE_ME_IN_PRODUCTION}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
       - REDIS_URL=redis://redis:6379
       - S3_ENDPOINT=http://minio:9000
       - S3_ACCESS_KEY=admin

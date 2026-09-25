@@ -22,5 +22,6 @@ The PariLink Version 1.0.0 release changelog contained massive claims about the 
 | **Analytics/BI data warehouse export** | ⚠️ STUB / PARTIAL | Daily Prisma snapshotting exists. However, data warehouse export endpoints return a 503 "Cloud storage for analytics exports is not configured" error. Untested with actual cloud storage configured. |
 | **Cross-docking Engine** | ❌ FABRICATED | Contains complex math logic in `inbound-outbound.engine.ts`, but no Prisma models exist to back this up. Purely simulated. |
 | **Sales Demo Mode** | ❌ FABRICATED | The "Sales Demo Mode" UI clicks a button, sleeps for 3 seconds (`setTimeout`), and displays a "Demo environment provisioned" toast. No backend seeding exists. |
-
+| **Total Cost of Ownership (TCO)** | ✅ REAL AND WORKING | Real implementation aggregating fuel, workshop (maintenance), and insurance costs. Included Redis caching for the TCO query endpoint. Validated end-to-end. |
+| **Scale/Infra Hardening** | ✅ REAL AND WORKING | Database transaction pooling via PgBouncer configured securely using `AUTH_QUERY`. Redis caching implemented for heavy read endpoints. Compound indexes added and verified via `EXPLAIN ANALYZE` for TCO analytics. |
 > **Audit Summary:** Out of the massive feature list claimed at launch, the core CRUD, API platform, and infrastructure boilerplate are real. The "Enterprise" tier features (Sales Demo Mode, Cross-docking, real AI Agent Dispatch, Data Warehouse integrations) are entirely fabricated simulations or stubs meant to pass superficial inspection.

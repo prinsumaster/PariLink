@@ -1,0 +1,3 @@
+"parilink" "CHANGE_ME_IN_PRODUCTION"
+"parilink_app" "apppassword"
+"parilink_sys" "CHANGE_ME_IN_PRODUCTION"

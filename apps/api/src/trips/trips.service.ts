@@ -733,7 +733,7 @@ export class TripsService {
     });
   }
 
-  async submitReview(companyId: string, tripId: string, reviewerId: string, roleId: string, dto: CreateTripReviewDto) {
+  async submitReview(companyId: string, tripId: string, reviewerId: string, dto: CreateTripReviewDto) {
     // 1. Role-based RBAC Enforcements
     let requiredPermission = 'trips:update';
     if (dto.reviewerRole === ReviewRole.DISPATCHER) requiredPermission = 'dispatch:manage';

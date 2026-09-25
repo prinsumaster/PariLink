@@ -4381,6 +4381,7 @@ model InsuranceLog {
   company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId, vehicleId])
+  @@index([companyId, vehicleId, issueDate])
 }
 
 // ----------------------------------------------------------------------
@@ -4809,6 +4810,7 @@ model FuelEntry {
   @@index([companyId, tripId])
   @@index([companyId, vehicleId])
   @@index([companyId, fuelCardId])
+  @@index([companyId, vehicleId, filledAt])
 }
 
 model LoadingEvent {
