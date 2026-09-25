@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, screen } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { LorryReceiptsScreen } from '../LorryReceiptsScreen';
 import { DriverAPI } from '../../../services/api/client';
 import { useAppSelector } from '../../../store';
