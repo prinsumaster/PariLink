@@ -20,7 +20,7 @@ services:
     environment:
       POSTGRES_USER: parilink
       POSTGRES_DB: parilink_db
-      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/initdb:/docker-entrypoint-initdb.d
@@ -42,7 +42,7 @@ services:
       - "6432:5432"
     environment:
       - DB_USER=parilink
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_HOST=postgres
       - DB_PORT=5432
       - POOL_MODE=transaction
@@ -79,7 +79,7 @@ services:
     restart: always
     environment:
       MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY:-CHANGE_ME_IN_PRODUCTION}"
+      MINIO_ROOT_PASSWORD: "${MINIO_SECRET_KEY}"
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
@@ -106,10 +106,10 @@ services:
       - GIT_SHA=${GIT_SHA:-unknown}
       - NODE_ENV=production
       - RUN_MIGRATIONS=false
-      - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD:-CHANGE_ME_IN_PRODUCTION}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
+      - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
       - APP_DATABASE_URL=postgresql://parilink_app:apppassword@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
-      - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD:-CHANGE_ME_IN_PRODUCTION}
-      - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD:-CHANGE_ME_IN_PRODUCTION}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
+      - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD}
+      - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
       - REDIS_URL=redis://redis:6379
       - S3_ENDPOINT=http://minio:9000
       - S3_ACCESS_KEY=admin

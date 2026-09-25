@@ -825,24 +825,26 @@ export class TripsService {
           'Reviews can only be submitted after the trip is COMPLETED.',
         );
 
-      const existing = await tx.tripReview.findFirst({
-        where: { tripId: tripId, reviewerRole: dto.reviewerRole },
-      });
-      if (existing)
-        throw new ConflictException(
-          `Review for role ${dto.reviewerRole} already exists`,
-        );
-
-      const review = await tx.tripReview.create({
-        data: {
-          companyId,
-          tripId: tripId,
-          reviewerId,
-          reviewerRole: dto.reviewerRole,
-          rating: dto.rating,
-          comment: dto.comment,
-        },
-      });
+      let review;
+      try {
+        review = await tx.tripReview.create({
+          data: {
+            companyId,
+            tripId: tripId,
+            reviewerId,
+            reviewerRole: dto.reviewerRole,
+            rating: dto.rating,
+            comment: dto.comment,
+          },
+        });
+      } catch (error: any) {
+        if (error.code === 'P2002') {
+          throw new ConflictException(
+            `Review for role ${dto.reviewerRole} already exists`,
+          );
+        }
+        throw error;
+      }
 
       const allReviews = await tx.tripReview.findMany({
         where: { tripId: tripId },
@@ -907,13 +909,12 @@ export class TripsService {
           },
         });
 
-        // Update the driver's overall running average score
-        const driverScores = await tx.driverScore.findMany({
+        // Update the driver's overall running average score using aggregate
+        const agg = await tx.driverScore.aggregate({
           where: { driverId: trip.driverId },
+          _avg: { total: true },
         });
-        const runningTotal =
-          driverScores.reduce((sum, ds) => sum + ds.total, 0) /
-          driverScores.length;
+        const runningTotal = agg._avg.total || total;
 
         await tx.driver.update({
           where: { id: trip.driverId },

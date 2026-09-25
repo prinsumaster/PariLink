@@ -12,8 +12,9 @@ export class DriverIntelligenceService {
     this.logger.log(`Fetching AI health score for driver: ${driverId}`);
 
     let score = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.driverScore.findUnique({
+      tx.driverScore.findFirst({
         where: { driverId, companyId },
+        orderBy: { createdAt: 'desc' },
       }),
     );
 
@@ -24,10 +25,10 @@ export class DriverIntelligenceService {
           data: {
             companyId,
             driverId,
-            safetyScore: 100,
-            efficiencyScore: 100,
-            onTimePercent: 100,
-            healthScore: 100,
+            tripId: 'system-init',
+            total: 100,
+            ratedBy: 'SYSTEM_INIT',
+            ratedAt: new Date(),
           },
         }),
       );

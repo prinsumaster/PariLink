@@ -441,35 +441,38 @@ export class VehiclesService {
           ? { ...insuranceWhere, issueDate: dateFilter }
           : insuranceWhere;
 
-      // Fuel costs
-      const fuelTotalObj = await tx.fuelEntry.aggregate({
-        _sum: { amount: true },
-        where: fuelWhereRange,
-      });
-      const fuelTotalLifetimeObj = await tx.fuelEntry.aggregate({
-        _sum: { amount: true },
-        where: fuelWhere,
-      });
+      // Fetch all costs concurrently
+      const [fuelTotalObj, workshopTotalObj, insuranceTotalObj] = await Promise.all([
+        tx.fuelEntry.aggregate({
+          _sum: { amount: true },
+          where: fuelWhereRange,
+        }),
+        tx.jobCard.aggregate({
+          _sum: { totalCost: true },
+          where: jobCardWhereRange,
+        }),
+        tx.insuranceLog.aggregate({
+          _sum: { premiumAmount: true },
+          where: insuranceWhereRange,
+        })
+      ]);
 
-      // Workshop (Maintenance) costs
-      const workshopTotalObj = await tx.jobCard.aggregate({
-        _sum: { totalCost: true },
-        where: jobCardWhereRange,
-      });
-      const workshopTotalLifetimeObj = await tx.jobCard.aggregate({
-        _sum: { totalCost: true },
-        where: jobCardWhere,
-      });
-
-      // Insurance costs
-      const insuranceTotalObj = await tx.insuranceLog.aggregate({
-        _sum: { premiumAmount: true },
-        where: insuranceWhereRange,
-      });
-      const insuranceTotalLifetimeObj = await tx.insuranceLog.aggregate({
-        _sum: { premiumAmount: true },
-        where: insuranceWhere,
-      });
+      const hasDateFilter = Object.keys(dateFilter).length > 0;
+      
+      const [fuelTotalLifetimeObj, workshopTotalLifetimeObj, insuranceTotalLifetimeObj] = hasDateFilter ? await Promise.all([
+        tx.fuelEntry.aggregate({
+          _sum: { amount: true },
+          where: fuelWhere,
+        }),
+        tx.jobCard.aggregate({
+          _sum: { totalCost: true },
+          where: jobCardWhere,
+        }),
+        tx.insuranceLog.aggregate({
+          _sum: { premiumAmount: true },
+          where: insuranceWhere,
+        })
+      ]) : [fuelTotalObj, workshopTotalObj, insuranceTotalObj];
 
       const fuel = fuelTotalObj._sum.amount || 0;
       const workshop = workshopTotalObj._sum.totalCost || 0;
