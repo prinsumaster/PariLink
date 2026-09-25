@@ -10,7 +10,6 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
-  Logger,
 } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
@@ -25,7 +24,7 @@ import { EventStoreService } from '../platform/digital-twin/event-store.service'
 
 @Injectable()
 export class VehiclesService {
-  private readonly logger = new Logger(VehiclesService.name);
+
 
   constructor(
     private readonly auditService: AuditService,
