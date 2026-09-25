@@ -28,7 +28,7 @@ export class EnterpriseRagService {
   private get embeddings(): OpenAIEmbeddings {
     if (!this._embeddings) {
       this._embeddings = new OpenAIEmbeddings({
-        apiKey: process.env.OPENAI_API_KEY || 'dummy-key-to-allow-boot',
+        apiKey: process.env.OPENAI_API_KEY || (process.env.NODE_ENV === 'production' ? undefined : 'dummy-key-to-allow-boot'),
         modelName: 'text-embedding-3-small',
       });
     }

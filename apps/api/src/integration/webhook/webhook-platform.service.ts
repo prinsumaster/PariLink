@@ -102,10 +102,13 @@ export class WebhookPlatformService {
 
       try {
         const payloadStr = JSON.stringify(delivery.payload);
-        const secret =
-          process.env.WEBHOOK_SECRET || 'REMOVED_PLACEHOLDER_WHSEC';
+        const secret = process.env.WEBHOOK_SECRET;
+        if (!secret && process.env.NODE_ENV === 'production') {
+          throw new Error('FATAL: WEBHOOK_SECRET is required in production');
+        }
+        const safeSecret = secret || 'REMOVED_PLACEHOLDER_WHSEC';
         const signature = crypto
-          .createHmac('sha256', secret)
+          .createHmac('sha256', safeSecret)
           .update(payloadStr)
           .digest('hex');
 

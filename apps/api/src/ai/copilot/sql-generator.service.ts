@@ -30,7 +30,7 @@ export class SqlGeneratorService {
     this.model = new ChatOpenAI({
       modelName: 'gpt-4-turbo-preview',
       temperature: 0,
-      openAIApiKey: process.env.OPENAI_API_KEY || 'dummy-key-to-allow-boot',
+      openAIApiKey: process.env.OPENAI_API_KEY || (process.env.NODE_ENV === 'production' ? undefined : 'dummy-key-to-allow-boot'),
     });
   }
 

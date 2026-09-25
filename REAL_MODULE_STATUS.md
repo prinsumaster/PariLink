@@ -50,3 +50,28 @@ This confirms that the IAM Zero-Trust updates and Role-Based Access Control logi
 ### Verification Update (Session Continuation)
 - **Lorry Receipts UI Screenshot:** The synthetic AI-generated mockup was permanently deleted. Real emulator capture is physically impossible in this headless environment without a configured Android SDK/AVD.
 - **Lorry Receipts Test:** `LorryReceiptsScreen.test.tsx` is currently blocked by a monorepo React version conflict (React 19 hoisted by `web` vs React 18 required by React Native's `react-test-renderer`). The test fails at the renderer initialization phase with `TypeError: Cannot read properties of undefined (reading 'ReactCurrentOwner')`.
+
+## Production Readiness
+### Secrets & Configuration Audit
+- **Findings:** A full audit revealed multiple dangerous hardcoded fallbacks across the codebase. `ENCRYPTION_KEY`, `WEBHOOK_SECRET`, `NEXTAUTH_SECRET`, and CRM integration keys defaulted to insecure stubs, and `infra/initdb/userlist.txt` contained hardcoded plaintext passwords.
+- **Fixes Applied:** Refactored the core security variables in the `api` and `web` repositories to strictly evaluate `NODE_ENV === 'production'`. If these critical keys are missing in production, the application now intentionally crashes with `throw new Error('FATAL: ...')` rather than silently booting in an insecure state. Missing API keys for stub features (like AI/LLMs) now gracefully downgrade to `undefined` in production to prevent crashes while keeping dev mocks.
+- **Documentation:** Created a comprehensive, scrubbed `.env.production.example` detailing all required variables to run the app.
+
+### Container & Build Readiness
+- Both `api` and `web` Dockerfiles represent proper multi-stage production builds.
+- The `api` image cleanly omits dev dependencies, copies pre-generated Prisma clients, and drops root privileges to run as `nestjs`.
+- The `web` image correctly utilizes Next.js standalone output to drastically trim image size and drops root privileges.
+- Healthcheck endpoints (`/api/v1/health/readiness` and `/api/health`) function correctly without requiring dev environment variables.
+
+### Deployment Strategy
+- **Target:** **DigitalOcean App Platform** is the recommended target for a team this size. It provides a PaaS experience while offering Managed PostgreSQL (which crucially *includes* built-in PgBouncer connection pooling) and Managed Redis (required for BullMQ/WebSockets).
+- **Plan:**
+  1. Provision DO Managed PostgreSQL and Managed Redis clusters.
+  2. Map the 3 services (`api`, `web`, and a `worker` running the background queue) via the DO App spec.
+  3. Load the `.env.production.example` schema into DO App-level secrets.
+- **Zero-Downtime Migration Blockers:** Because `npx prisma migrate deploy` locks tables, a pre-deploy job must be configured in the deployment pipeline connecting directly to the raw DB url (`APP_DATABASE_URL`), bypassing the PgBouncer pooler (`DATABASE_URL`).
+
+### Disaster Recovery & Backups (CRITICAL GAP)
+- **Status:** ⚠️ **CRITICAL GAP.** The current Docker Compose setup mounts Postgres to a raw local volume (`postgres_data`) with **zero automated backups, replication, or point-in-time recovery (PITR) configured**.
+- **Assessment:** Deploying this as-is to a VM (like an EC2 or Droplet) guarantees catastrophic data loss for multi-tenant clients in the event of disk corruption or ransomware. This is a hard blocker for a live deployment.
+- **Resolution:** Moving to DO Managed PostgreSQL (or AWS RDS) as proposed natively solves this by providing automated daily backups (7-day retention) and WAL-based Point-in-Time Recovery out of the box. Secondary logical backups (pg_dump to S3) should be implemented for compliance.

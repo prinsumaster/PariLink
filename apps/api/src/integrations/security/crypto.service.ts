@@ -11,10 +11,13 @@ export class CryptoService {
   private readonly encryptionKey: Buffer;
 
   constructor() {
-    const keyString =
-      process.env.ENCRYPTION_KEY || 'default_integration_secret_key_32'; // Must be exactly 32 bytes for aes-256
+    const keyString = process.env.ENCRYPTION_KEY;
+    if (!keyString && process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL: ENCRYPTION_KEY is required in production');
+    }
+    const safeKeyString = keyString || 'default_integration_secret_key_32';
     // Pad or truncate to 32 bytes
-    this.encryptionKey = crypto.scryptSync(keyString, 'salt', 32);
+    this.encryptionKey = crypto.scryptSync(safeKeyString, 'salt', 32);
   }
 
   encrypt(text: string): { iv: string; content: string; authTag: string } {

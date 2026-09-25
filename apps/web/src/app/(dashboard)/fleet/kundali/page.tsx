@@ -133,7 +133,7 @@ function VehicleKundaliContent() {
   const [vehicleIdInput, setVehicleIdInput] = useState(defaultId);
   const [vehicleId, setVehicleId] = useState<string | null>(defaultId || null);
 
-  const { data: tcoData, isLoading: tcoLoading } = useQuery({
+  const { data: tcoData } = useQuery({
     queryKey: ['vehicleTCO', vehicleId],
     queryFn: async () => {
       const res = await api.get(`/vehicles/${vehicleId}/tco`);

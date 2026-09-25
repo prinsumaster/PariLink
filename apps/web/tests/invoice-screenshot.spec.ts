@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test('Invoice screens', async ({ page }) => {
   // Go to invoice detail

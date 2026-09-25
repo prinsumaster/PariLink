@@ -112,7 +112,12 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
     error: '/login',
   },
-  secret: process.env.NEXTAUTH_SECRET || "default_development_secret_do_not_use_in_prod",
+  secret: (() => {
+    if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_SECRET) {
+      throw new Error('FATAL: NEXTAUTH_SECRET is required in production');
+    }
+    return process.env.NEXTAUTH_SECRET || "default_development_secret_do_not_use_in_prod";
+  })(),
 };
 
 const handler = NextAuth(authOptions);

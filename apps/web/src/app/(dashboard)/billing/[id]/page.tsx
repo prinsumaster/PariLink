@@ -211,20 +211,20 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                     <span className="text-muted-foreground">Taxable Value (Subtotal)</span>
                     <span className="font-medium text-slate-900 dark:text-white">{money(invoice.subtotal)}</span>
                   </div>
-                  {invoice.taxType === 'IGST' ? (
+                  {(invoice as any).taxType === 'IGST' ? (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">IGST (5%)</span>
-                      <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal)}</span>
+                      <span className="font-medium text-slate-900 dark:text-white">{money((invoice as any).taxTotal || 0)}</span>
                     </div>
                   ) : (
                     <>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">CGST (2.5%)</span>
-                        <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal / 2)}</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{money(((invoice as any).taxTotal || 0) / 2)}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">SGST (2.5%)</span>
-                        <span className="font-medium text-slate-900 dark:text-white">{money(invoice.taxTotal / 2)}</span>
+                        <span className="font-medium text-slate-900 dark:text-white">{money(((invoice as any).taxTotal || 0) / 2)}</span>
                       </div>
                     </>
                   )}
@@ -233,10 +233,10 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                     <span className="font-bold text-slate-900 dark:text-white">Grand Total</span>
                     <span className="font-bold text-blue-600 dark:text-blue-400">{money(invoice.grandTotal || invoice.amount)}</span>
                   </div>
-                  {invoice.amountInWords && (
+                  {(invoice as any).amountInWords && (
                     <div className="pt-2">
                       <p className="text-xs text-muted-foreground uppercase font-medium">Amount in Words</p>
-                      <p className="text-sm font-semibold capitalize mt-1 text-slate-800 dark:text-slate-200">{invoice.amountInWords}</p>
+                      <p className="text-sm font-semibold capitalize mt-1 text-slate-800 dark:text-slate-200">{(invoice as any).amountInWords}</p>
                     </div>
                   )}
                 </div>

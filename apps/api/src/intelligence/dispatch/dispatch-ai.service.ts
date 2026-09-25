@@ -14,7 +14,7 @@ export class DispatchAiService {
     @InjectQueue('ai-inference') private readonly aiQueue: Queue,
   ) {
     this.ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || 'mock-key',
+      apiKey: process.env.GEMINI_API_KEY || (process.env.NODE_ENV === 'production' ? undefined : 'mock-key'),
     });
   }
 
