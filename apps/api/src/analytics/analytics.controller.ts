@@ -1,4 +1,7 @@
 import { CreateAnalyticsDto } from '../dto/analytics.dto';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Parser } from 'json2csv';
 import {
   ServiceUnavailableException,
   Controller,
@@ -12,6 +15,7 @@ import {
 } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 import { interval, map, concatMap } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 import { MetricsEngineService } from './engine/metrics-engine.service';
 import { ForecastEngineService } from './engine/forecast-engine.service';
 import { KpiEngineService } from './engine/kpi-engine.service';
@@ -33,6 +37,7 @@ export class AnalyticsController {
     private readonly forecast: ForecastEngineService,
     private readonly kpiEngine: KpiEngineService,
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Get('metrics/command-center')
@@ -137,21 +142,65 @@ export class AnalyticsController {
   @Post('reports/export')
   @RequirePermissions('analytics:read')
   @ApiOperation({ summary: 'Generate a report export' })
-  exportReport(
-    @GetUser() _user: AuthenticatedUser,
+  async exportReport(
+    @GetUser() user: AuthenticatedUser,
     @Body() _data: { reportType: string; format: 'PDF' | 'EXCEL' | 'CSV' },
   ) {
-    if (!process.env.AWS_S3_BUCKET && !process.env.GCP_STORAGE_BUCKET) {
+    if (!process.env.MINIO_ENDPOINT && !process.env.S3_ENDPOINT) {
       throw new ServiceUnavailableException(
         'Cloud storage for analytics exports is not configured.',
       );
     }
-    // In production, trigger an async worker to generate the file and upload to bucket
-    return {
-      status: 'PROCESSING',
-      message:
-        'Report generation started. You will receive a notification when it is ready.',
-    };
+
+    const endpoint = process.env.S3_ENDPOINT || `http://${process.env.MINIO_ENDPOINT}:9000`;
+    const accessKeyId = this.configService.get('S3_ACCESS_KEY') || this.configService.get('MINIO_ACCESS_KEY') || process.env.MINIO_ACCESS_KEY;
+    const secretAccessKey = this.configService.get('S3_SECRET_KEY') || this.configService.get('MINIO_SECRET_KEY') || process.env.MINIO_SECRET_KEY;
+
+    try {
+      const s3Client = new S3Client({
+        region: 'us-east-1',
+        endpoint: endpoint,
+        credentials: {
+          accessKeyId: accessKeyId as string,
+          secretAccessKey: secretAccessKey as string,
+        },
+        forcePathStyle: true,
+      });
+
+      const snapshots = await this.prisma.runAsTenant(user.companyId, async (tx) =>
+        tx.analyticsSnapshot.findMany({
+          where: { companyId: user.companyId },
+          orderBy: { periodStart: 'desc' },
+          take: 100,
+        }),
+      );
+
+      const parser = new Parser({ fields: ['metricKey', 'metricValue', 'periodStart', 'periodEnd', 'resolution'] });
+      const csv = parser.parse(snapshots);
+
+      const bucketName = 'analytics-exports';
+      const key = `${user.companyId}/export-${Date.now()}.csv`;
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          Body: csv,
+          ContentType: 'text/csv',
+        }),
+      );
+
+      const command = new GetObjectCommand({ Bucket: bucketName, Key: key });
+      const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+      return {
+        status: 'COMPLETED',
+        message: 'Report generation completed.',
+        downloadUrl: url,
+      };
+    } catch (error) {
+      throw new ServiceUnavailableException('Failed to export report to cloud storage: ' + (error as Error).message);
+    }
   }
 
   @Post('kpi')

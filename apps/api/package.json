@@ -27,6 +27,8 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1141.0",
+    "@aws-sdk/s3-request-presigner": "^3.1141.0",
     "@google/genai": "^2.22.0",
     "@langchain/anthropic": "0.1.20",
     "@langchain/core": "0.1.63",
