@@ -63,7 +63,7 @@ services:
     restart: always
     ports:
       - "6379:6379"
-    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD}
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "2gb", "--maxmemory-policy", "allkeys-lru", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_data:/data
     networks:
@@ -109,10 +109,10 @@ services:
       - NODE_ENV=production
       - RUN_MIGRATIONS=false
       - DATABASE_URL=postgresql://parilink:${POSTGRES_PASSWORD}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
-      - APP_DATABASE_URL=postgresql://parilink_app:SarlNwKCJPvb74NcNSA2X7lq8QnzQdcIbi6dn51h94s@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
+      - APP_DATABASE_URL=postgresql://parilink_app:NewAppPass0123456789abcdefABCDEFxyz987654@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
       - PARILINK_SYS_PASSWORD=${PARILINK_SYS_PASSWORD}
       - SYSTEM_DATABASE_URL=postgresql://parilink_sys:${PARILINK_SYS_PASSWORD}@pgbouncer:5432/parilink_db?schema=public&pgbouncer=true
-      - REDIS_URL=redis://:z5Fy5Y7OSaZy2iKEc1wqX8GmnH2mvIBzaKQjgH3J3o@redis:6379
+      - REDIS_URL=redis://:NewRedisPass0123456789abcdefABCDEFxyz987@redis:6379
       - S3_ENDPOINT=http://minio:9000
       - S3_ACCESS_KEY=admin
       - S3_SECRET_KEY=${MINIO_SECRET_KEY}
