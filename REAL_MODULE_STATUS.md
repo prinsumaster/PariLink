@@ -100,6 +100,7 @@ GET /api/v1/health/liveness
 
 | Issue | Severity | Notes |
 | :--- | :--- | :--- |
+| Git Identity: `Prince Hethvadiya` | INFORMATIONAL | Confirmed this is the real, globally configured git identity on this machine, not a leftover fake history artifact. |
 | Cross-dock `matchScore: 0.98` placeholder | LOW | Flagged; not blocking |
 | Redis `allkeys-lru` eviction policy warning | LOW | BullMQ wants `noeviction`; no data loss risk in current load but should be set in production |
 | Sales Demo Mode | INFORMATIONAL | Deliberately not implemented |
