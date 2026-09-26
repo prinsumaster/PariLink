@@ -60,12 +60,12 @@ Ran all test suites.
   - `TS6133: BaseMessage` unused import (model-router.service.ts)
   - `TS6133: routeIntent` dead function (copilot-chat.service.ts — superseded by orchestrator)
   - `TS6138: _copilot` unused DI dep (copilot-chat.service.ts)
-- **web:** `parilink-web:audit` — (build in progress)
+- **web:** `parilink-web:audit` — **FAILED** during `npm ci` (network ECONNRESET after 35 mins)
 
 > [!NOTE]
 > Final image sizes:
 > - `parilink-api:audit` -> **964MB**
-> - `parilink-web:audit` -> (pending)
+> - `parilink-web:audit` -> **(Build Failed)**
 
 ### Health Endpoints (Running Container)
 ```
