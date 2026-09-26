@@ -58,6 +58,8 @@ model Company {
   apiCredentials             ApiCredential[]
   vendors                    Vendor[]
   parts                      Part[]
+  crossDockAssignments       CrossDockAssignment[]
+  pickWaves                  PickWave[]
   vendorBills                VendorBill[]
   lorryReceipts              LorryReceipt[]
   lrSequences                LrSequence[]
@@ -1819,6 +1821,7 @@ model YardDock {
   warehouse      Warehouse         @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   appointments   DockAppointment[]
   outboundOrders OutboundOrder[]
+  crossDockAssignments CrossDockAssignment[]
 
   @@index([warehouseId, status])
 }
@@ -1880,6 +1883,37 @@ model MaterialEquipment {
   company         Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@index([companyId, warehouseId, status])
+}
+
+model CrossDockAssignment {
+  id                  String   @id @default(uuid())
+  companyId           String
+  asnId               String   // Advance Shipping Notice ID (Inbound)
+  outboundOrderId     String   // Target Outbound Order ID
+  matchScore          Float    // Confidence score of the match
+  status              String   @default("PENDING") // PENDING, IN_TRANSIT_TO_DOCK, LOADED, CANCELLED
+  dockId              String?  // The dock where cross-docking occurs
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  company             Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  dock                YardDock? @relation(fields: [dockId], references: [id])
+  
+  @@index([companyId, status])
+  @@index([asnId])
+}
+
+model PickWave {
+  id               String   @id @default(uuid())
+  companyId        String
+  waveNumber       String
+  orderIds         String[] // List of OutboundOrder IDs
+  status           String   @default("PLANNED") // PLANNED, ALLOCATED, PICKING, COMPLETED
+  estimatedTimeSec Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  company          Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@index([companyId, status])
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -2570,7 +2604,6 @@ model MasterRecord {
   drivers    Driver[]
   vehicles   Vehicle[]
   warehouses Warehouse[]
-
   @@index([companyId, entityType])
   @@index([companyId, deletedAt])
 }

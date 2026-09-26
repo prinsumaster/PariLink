@@ -3,6 +3,7 @@ import { EventStoreService } from '../../platform/digital-twin/event-store.servi
 import { LifecycleEngineService } from '../../platform/lifecycle/lifecycle-engine.service';
 import { ResourceOrchestratorService } from '../../platform/runtime/resource-orchestrator.service';
 import { PredictionEngineService } from '../../ai/prediction/prediction.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class InboundOutboundEngine {
@@ -15,6 +16,7 @@ export class InboundOutboundEngine {
     private readonly resourceOrchestrator: ResourceOrchestratorService,
     // @ts-ignore: DI dependency reserved for future use
     private readonly _aiPrediction: PredictionEngineService,
+    private readonly prisma: PrismaService,
   ) {}
 
   /**
@@ -28,17 +30,33 @@ export class InboundOutboundEngine {
   ) {
     this.logger.log(`Processing ASN ${asnId}`);
 
-    // Cross-Dock Evaluation (AI Integration)
-    // In production, we'd call AI to check if inbound stock matches pending outbound orders exactly
     let isCrossDock = false;
+    let crossDockAssignmentId: string | undefined;
+
     if (payload.priority === 'URGENT') {
       isCrossDock = true; // Simulated ML trigger
+      const targetOutboundOrder = payload.targetOutboundOrder || 'ORD-1002';
+      
+      const assignment = await this.prisma.runAsTenant(companyId, async (tx) => {
+        return tx.crossDockAssignment.create({
+          data: {
+            companyId,
+            asnId,
+            outboundOrderId: targetOutboundOrder,
+            matchScore: 0.98,
+            status: 'PENDING',
+            dockId: payload.dockId,
+          }
+        });
+      });
+      crossDockAssignmentId = assignment.id;
+
       await this.eventStore.append({
         tenantId: companyId,
         streamId: asnId,
         streamType: 'ASN',
         eventType: 'CrossDockTriggered',
-        payload: { matchScore: 0.98, targetOutboundOrder: 'ORD-1002' },
+        payload: { matchScore: 0.98, targetOutboundOrder, crossDockAssignmentId },
         userId,
       });
     }
@@ -63,7 +81,7 @@ export class InboundOutboundEngine {
       userId,
     });
 
-    return { status: 'RECEIVED', isCrossDock };
+    return { status: 'RECEIVED', isCrossDock, crossDockAssignmentId };
   }
 
   /**
@@ -76,25 +94,36 @@ export class InboundOutboundEngine {
   ) {
     this.logger.log(`Generating Pick Wave for ${orderIds.length} orders`);
 
-    // Call AI for Optimal Picking Route & Cluster optimization
-    // Mocked response for scale
-    const waveId = `WAVE-${Date.now()}`;
+    const waveNumber = `WAVE-${Date.now()}`;
+    const estimatedTimeSec = 1200;
+
+    const wave = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.pickWave.create({
+        data: {
+          companyId,
+          waveNumber,
+          orderIds,
+          status: 'PLANNED',
+          estimatedTimeSec,
+        }
+      });
+    });
 
     // Assuming lifecycle engine transitions orders to ALLOCATED / IN_PROGRESS
     for (const orderId of orderIds) {
       // Mock Transition
-      this.logger.log(`Routing ${orderId} to Wave ${waveId}`);
+      this.logger.log(`Routing ${orderId} to Wave ${waveNumber}`);
     }
 
     await this.eventStore.append({
       tenantId: companyId,
-      streamId: waveId,
+      streamId: wave.id,
       streamType: 'WAVE',
       eventType: 'WavePlanned',
-      payload: { orderIds, estimatedTimeSec: 1200 },
+      payload: { orderIds, estimatedTimeSec },
       userId,
     });
 
-    return { waveId, status: 'PLANNED' };
+    return { waveId: wave.id, waveNumber, status: wave.status };
   }
 }

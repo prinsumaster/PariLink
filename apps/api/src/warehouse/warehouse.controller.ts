@@ -23,6 +23,7 @@ import { InboundService } from './engine/inbound.service';
 import { OutboundService } from './engine/outbound.service';
 import { DockSchedulerService } from './engine/dock-scheduler.service';
 import { InventoryOptimizerService } from './engine/inventory-optimizer.service';
+import { InboundOutboundEngine } from './engine/inbound-outbound.engine';
 
 export class CreateWarehouseDto {
   @IsString() @IsNotEmpty() name!: string;
@@ -129,6 +130,7 @@ export class WarehouseController {
     private readonly outbound: OutboundService,
     private readonly dockScheduler: DockSchedulerService,
     private readonly optimizer: InventoryOptimizerService,
+    private readonly engine: InboundOutboundEngine,
   ) {}
 
   @Get()
@@ -246,5 +248,23 @@ export class WarehouseController {
   @RequirePermissions('warehouse:read')
   runAbcAnalysis(@GetUser() user: AuthenticatedUser, @Param('id') id: string) {
     return this.optimizer.runAbcAnalysis(user.companyId, id);
+  }
+
+  @Post('cross-dock/process-asn')
+  @RequirePermissions('warehouse:write')
+  processAsn(
+    @GetUser() user: AuthenticatedUser,
+    @Body() data: any,
+  ) {
+    return this.engine.processAsn(user.companyId, data.asnId, data, user.userId);
+  }
+
+  @Post('cross-dock/generate-pick-wave')
+  @RequirePermissions('warehouse:write')
+  generatePickWave(
+    @GetUser() user: AuthenticatedUser,
+    @Body() data: any,
+  ) {
+    return this.engine.generatePickWave(user.companyId, data.orderIds, user.userId);
   }
 }
