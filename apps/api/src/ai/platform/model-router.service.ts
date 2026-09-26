@@ -14,25 +14,7 @@ import {
 } from '@langchain/core/language_models/chat_models';
 import { BaseMessage } from '@langchain/core/messages';
 
-class MockChatModel extends SimpleChatModel {
-  constructor() {
-    super({});
-  }
-
-  _llmType() {
-    return 'mock-chat-model';
-  }
-
-  async _call(messages: BaseMessage[]): Promise<string> {
-    const text = messages
-      .map((m) =>
-        typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
-      )
-      .join(' ');
-    if (text.includes('ping')) return 'pong';
-    return `[Mock AI Response] Simulated response for testing without API keys. You said: "${text.substring(0, 50)}..."`;
-  }
-}
+// Removed MockChatModel
 
 // Provider enum matching Prisma schema
 export type AiProvider =
@@ -41,8 +23,7 @@ export type AiProvider =
   | 'GEMINI'
   | 'OLLAMA'
   | 'AZURE_OPENAI'
-  | 'BEDROCK'
-  | 'MOCK';
+  | 'BEDROCK';
 
 interface ModelEntry {
   model: BaseChatModel;
@@ -210,16 +191,8 @@ export class ModelRouterService implements OnModuleInit {
 
     if (this.activeModels.length === 0) {
       this.logger.warn(
-        'No active AI models found in DB or environment. Injecting Mock Chat Model fallback.',
+        'No active AI models found in DB or environment. AI platform is unconfigured.',
       );
-      this.activeModels.push({
-        model: new MockChatModel() as any,
-        provider: 'MOCK',
-        modelName: 'mock-chat-model',
-        priority: -1,
-        costPerInputToken: 0,
-        costPerOutputToken: 0,
-      });
     }
 
     this.logger.log(`Active AI models: ${this.activeModels.length}`);

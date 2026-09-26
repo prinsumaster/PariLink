@@ -404,12 +404,10 @@ async function buildDailyBullets(
 export class AiCopilotChatService {
   constructor(
     private prisma: PrismaService,
+    private readonly _copilot: CopilotService,
+    private readonly orchestrator: AgentOrchestratorService,
     // @ts-ignore: DI dependency reserved for future use
-    private _copilot: CopilotService,
-    // @ts-ignore: DI dependency reserved for future use
-    private _orchestrator: AgentOrchestratorService,
-    // @ts-ignore: DI dependency reserved for future use
-    private _rag: EnterpriseRagService,
+    private readonly _rag: EnterpriseRagService,
   ) {}
 
   async getSessions(companyId: string, userId: string) {
@@ -470,8 +468,14 @@ export class AiCopilotChatService {
       );
     }
 
-    // Route via deterministic intent router — always correct, no LLM needed
-    const aiContent = await routeIntent(this.prisma, companyId, userMessage);
+    // Delegate to the real orchestrator instead of mock intent routing
+    const { response: aiContent } = await this.orchestrator.routeIntent(
+      companyId,
+      userMessage,
+      'COPILOT',
+      sessionId,
+      _userId,
+    );
 
     // Save AI response
     const aiMessage = await this.prisma.runAsTenant(companyId, async (tx) =>
@@ -524,11 +528,13 @@ export class AiCopilotChatService {
             );
           }
 
-          // Route intent deterministically
-          const aiContent = await routeIntent(
-            this.prisma,
+          // Route intent via orchestrator
+          const { response: aiContent } = await this.orchestrator.routeIntent(
             companyId,
             userMessage,
+            'COPILOT',
+            sessionId,
+            _userId,
           );
 
           // Stream word-by-word for UX
