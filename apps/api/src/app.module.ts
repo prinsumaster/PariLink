@@ -80,6 +80,7 @@ import { MarketplaceCoreModule } from './marketplace/core/marketplace-core.modul
 import { MarketplaceWebhooksModule } from './marketplace/webhooks/marketplace-webhooks.module';
 import { IamModule } from './iam/iam.module';
 import { TenantModule } from './saas/tenant/tenant.module';
+import { DemoModule } from './saas/demo/demo.module';
 import { SaasBillingModule } from './saas/billing/saas-billing.module';
 import { TelemetryModule } from './telemetry/telemetry.module';
 import { FleetModule } from './fleet/fleet.module';
@@ -318,6 +319,7 @@ import { FuelModule } from './fuel/fuel.module';
     MaintenanceModule,
     PortalsModule,
     TenantModule,
+    DemoModule,
     SaasBillingModule,
     TelemetryModule,
     FleetModule,

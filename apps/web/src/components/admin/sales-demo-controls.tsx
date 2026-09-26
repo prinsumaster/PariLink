@@ -5,20 +5,29 @@ import { Button } from '@/components/ui/button';
 import { Play, RotateCcw, Share2, Trash2, Database, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { api } from '@/services/api';
 
 export function SalesDemoControls() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeSize, setActiveSize] = useState<'STARTER' | 'ENTERPRISE'>('ENTERPRISE');
+  const [activeDemoTenant, setActiveDemoTenant] = useState<string | null>(null);
 
   const handleStartDemo = async () => {
     setIsGenerating(true);
     toast.loading('Provisioning PariLink Demo Logistics Pvt Ltd...', { id: 'demo-toast' });
     
-    // Simulate API call to seed database
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    
-    toast.success('Demo environment provisioned successfully!', { id: 'demo-toast' });
-    setIsGenerating(false);
+    try {
+      const response = await api.post('/saas/demo/seed', { size: activeSize });
+      if (response.data.success) {
+        setActiveDemoTenant(response.data.companyId);
+        toast.success(`Demo environment provisioned successfully! Tenant ID: ${response.data.companyId}`, { id: 'demo-toast' });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to provision demo environment.', { id: 'demo-toast' });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleReset = () => {
@@ -30,8 +39,20 @@ export function SalesDemoControls() {
     toast.success('Demo sharing link copied to clipboard.');
   };
 
-  const handleDelete = () => {
-    toast.success('Demo environment destroyed.');
+  const handleDelete = async () => {
+    if (!activeDemoTenant) {
+      toast.error('No active demo tenant to destroy.');
+      return;
+    }
+    toast.loading('Destroying demo environment...', { id: 'demo-destroy' });
+    try {
+      await api.delete(`/saas/demo/${activeDemoTenant}`);
+      setActiveDemoTenant(null);
+      toast.success('Demo environment destroyed.', { id: 'demo-destroy' });
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to destroy demo environment.', { id: 'demo-destroy' });
+    }
   };
 
   return (
