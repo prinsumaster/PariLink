@@ -60,10 +60,12 @@ Ran all test suites.
   - `TS6133: BaseMessage` unused import (model-router.service.ts)
   - `TS6133: routeIntent` dead function (copilot-chat.service.ts — superseded by orchestrator)
   - `TS6138: _copilot` unused DI dep (copilot-chat.service.ts)
-- **web:** See below.
+- **web:** `parilink-web:audit` — (build in progress)
 
 > [!NOTE]
-> Image sizes to be filled after current build completes.
+> Final image sizes:
+> - `parilink-api:audit` -> **964MB**
+> - `parilink-web:audit` -> (pending)
 
 ### Health Endpoints (Running Container)
 ```
@@ -89,7 +91,7 @@ GET /api/v1/health/liveness
   [backup-postgres] RESTORE_OK: 256 tables verified in restored database.
   ```
 - MinIO object stat confirmed: `9.1 MiB`, `Content-Type: application/gzip`, ETag verified
-- **Not yet automated** (no cron, no scheduled run) — recommended: add to crontab or docker-compose with a `backup` service on schedule
+- **Note on Automation:** Local cron scheduling is intentionally deferred. As outlined in the Deployment Strategy, the migration path is to a Managed PostgreSQL offering (e.g., DigitalOcean), which natively handles daily backups and Point-In-Time Recovery (PITR). This script serves as an emergency stopgap and validation tool until then.
 - The k8s CronJob at `k8s/cronjobs/postgres-backup.yaml` covers Kubernetes-deployed environments but is not active for the docker-compose setup
 
 ---
@@ -102,5 +104,5 @@ GET /api/v1/health/liveness
 | Redis `allkeys-lru` eviction policy warning | LOW | BullMQ wants `noeviction`; no data loss risk in current load but should be set in production |
 | Sales Demo Mode | INFORMATIONAL | Deliberately not implemented |
 | Lorry Receipts mobile UI not wired | LOW | Backend done; frontend integration pending |
-| Backup not yet cron-scheduled | MEDIUM | Manual script exists and verified; needs scheduling |
+| Backup not yet cron-scheduled | INFORMATIONAL | Deferred locally; Managed Postgres will provide native backups |
 | k8s/secret.yaml placeholders not filled | BLOCKED | Cannot fill without real K8s deployment target |
