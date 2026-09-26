@@ -8,11 +8,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { ChatOpenAI, AzureChatOpenAI } from '@langchain/openai';
 import { ChatAnthropic } from '@langchain/anthropic';
-import {
-  BaseChatModel,
-  SimpleChatModel,
-} from '@langchain/core/language_models/chat_models';
-import { BaseMessage } from '@langchain/core/messages';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 
 // Removed MockChatModel
 

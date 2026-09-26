@@ -19,6 +19,7 @@ interface Intent {
   handler: IntentFn;
 }
 
+// @ts-ignore: Intent routing data preserved for future re-integration with orchestrator
 const INTENTS: Intent[] = [
   {
     keywords: [
@@ -307,6 +308,7 @@ const INTENTS: Intent[] = [
   },
 ];
 
+// @ts-ignore: Fallback response preserved for future re-integration with intent router
 const FALLBACK_RESPONSE = `I'm **PariLink AI Copilot**, your operations intelligence assistant. Ask me about:
 
 • 🚛 **Active trips** — "How many trips are running?"
@@ -318,23 +320,7 @@ const FALLBACK_RESPONSE = `I'm **PariLink AI Copilot**, your operations intellig
 • 📊 **Lane P&L** — "Which lane is losing money?"
 • 💵 **Outstanding** — "Who has pending payments?"`;
 
-async function routeIntent(
-  prisma: PrismaService,
-  companyId: string,
-  message: string,
-): Promise<string> {
-  const lower = message.toLowerCase();
-  for (const intent of INTENTS) {
-    if (intent.keywords.some((kw) => lower.includes(kw))) {
-      try {
-        return await intent.handler(prisma, companyId);
-      } catch (e) {
-        return `I hit an error fetching that data. Please try again. (${String(e).slice(0, 80)})`;
-      }
-    }
-  }
-  return FALLBACK_RESPONSE;
-}
+// routeIntent standalone function removed — routing is now handled by AgentOrchestratorService
 
 // ─── Daily brief helper ───────────────────────────────────────────────────────
 async function buildDailyBullets(
@@ -404,6 +390,7 @@ async function buildDailyBullets(
 export class AiCopilotChatService {
   constructor(
     private prisma: PrismaService,
+    // @ts-ignore: DI dependency reserved for future use
     private readonly _copilot: CopilotService,
     private readonly orchestrator: AgentOrchestratorService,
     // @ts-ignore: DI dependency reserved for future use
