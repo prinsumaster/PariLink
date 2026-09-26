@@ -47,6 +47,9 @@ describe('Security Audit (e2e)', () => {
 
   afterAll(async () => {
     await prisma.runAsSystem('Security Teardown', async (tx) => {
+      // Delete in FK dependency order: child rows first, then company
+      await tx.user.deleteMany({ where: { companyId } });
+      await tx.role.deleteMany({ where: { companyId } });
       await tx.company.delete({ where: { id: companyId } });
     });
     await app.close();
