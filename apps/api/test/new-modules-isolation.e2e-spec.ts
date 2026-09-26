@@ -102,7 +102,7 @@ describe('New Modules Audit', () => {
     });
     
     it('Route/Toll: Toll estimate does not expose other tenant data (no cross-tenant impact)', async () => {
-       const res = await request(app.getHttpServer()).get(`/routes/toll-estimate?origin=Mumbai&destination=Pune`).set('Authorization', `Bearer ${tokenB}`);
+       const res = await request(app.getHttpServer()).get(`/routes/toll-estimate?originCity=Mumbai&destinationCity=Pune`).set('Authorization', `Bearer ${tokenB}`);
        // Should just work and return 200, but doesn't expose Tenant A data. We'll just verify it works.
        expect(res.status).toBe(200);
     });

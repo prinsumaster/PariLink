@@ -40,7 +40,12 @@ export class ApiAnalyticsInterceptor implements NestInterceptor {
         const statusCode = error ? error.status || 500 : res.statusCode;
         const user = req.user;
 
-        await this.prisma.runAsTenant(req.user.companyId, async (tx) =>
+        // If no user context (e.g. auth failed), log without tenant context or use a system context
+        if (!user || !user.companyId) {
+          return;
+        }
+
+        await this.prisma.runAsTenant(user.companyId, async (tx) =>
           tx.apiAnalyticsLog.create({
             data: {
               companyId: user?.companyId,

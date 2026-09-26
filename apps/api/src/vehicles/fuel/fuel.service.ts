@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
@@ -13,6 +13,15 @@ export class FuelService {
 
   async createFuelCard(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) {
+        const v = await tx.vehicle.findFirst({ where: { id: data.vehicleId, companyId } });
+        if (!v) throw new NotFoundException(`Vehicle not found in tenant`);
+      }
+      if (data.driverId) {
+        const d = await tx.driver.findFirst({ where: { id: data.driverId, companyId } });
+        if (!d) throw new NotFoundException(`Driver not found in tenant`);
+      }
+
       const card = await tx.fuelCard.create({
         data: {
           companyId,
@@ -106,6 +115,15 @@ export class FuelService {
 
   async logFuelTransaction(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) {
+        const v = await tx.vehicle.findFirst({ where: { id: data.vehicleId, companyId } });
+        if (!v) throw new NotFoundException(`Vehicle not found in tenant`);
+      }
+      if (data.driverId) {
+        const d = await tx.driver.findFirst({ where: { id: data.driverId, companyId } });
+        if (!d) throw new NotFoundException(`Driver not found in tenant`);
+      }
+
       // Basic anomaly check: > 100 gallons or cost > 500
       let anomalyDetected = false;
       if (data.gallons > 100 || data.totalCost > 500) {

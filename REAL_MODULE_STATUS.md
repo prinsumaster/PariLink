@@ -114,3 +114,26 @@ GET /api/v1/health/liveness
 | Backup not yet cron-scheduled | INFORMATIONAL | Deferred locally; Managed Postgres will provide native backups |
 | k8s/secret.yaml placeholders not filled | BLOCKED | Cannot fill without real K8s deployment target |
 | Sales Demo Provisioning Spam | LOW | The `/saas/demo/seed` endpoint requires `admin:manage`, but lacks rate-limiting. A compromised admin token could spam tenant creation. |
+
+---
+
+## 2026-09-26 Audit: Tenant Isolation Vulnerability in Fuel Module
+
+### Finding: Unenforced Foreign Key Isolation
+A severe tenant-isolation vulnerability was discovered during cross-tenant regression testing. The `FuelService` `logFuelTransaction` and `createFuelCard` methods used `runAsTenant` to enforce Row-Level Security (RLS) on the inserted `FuelTransaction` / `FuelCard` records. However, they failed to verify that the provided `vehicleId` and `driverId` actually belonged to the authenticated tenant.
+
+As a result, a malicious user in Tenant B could create valid fuel transactions for a vehicle owned by Tenant A.
+
+**Before:**
+- `POST /vehicles/fuel/transactions` by Tenant B for Tenant A's `vehicleId` returned `201 Created`.
+
+**After Fix:**
+- Added `findFirst` checks scoped to the current `companyId` for both `vehicleId` and `driverId`.
+- The same request now correctly returns `404 - Vehicle not found in tenant`.
+
+### Audit of Other Modules
+Similar isolation checks were audited across the other new modules:
+- **Cross-Docking (`InboundOutboundEngine`):** Found a similar gap where `asnId` was not verified against the tenant before creating a `CrossDockAssignment`. Added explicit `inboundReceipt` tenant scoping.
+- **Route/Toll:** Passed. Toll estimation inputs do not leak or modify tenant-specific entity data.
+- **TCO:** Passed. Automatically blocked by RLS/query scoping (`GET /vehicles/:id/tco`).
+- **Analytics:** Passed. Dashboard access is cleanly scoped to the tenant.

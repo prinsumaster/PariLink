@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 import { LifecycleEngineService } from '../../platform/lifecycle/lifecycle-engine.service';
 import { ResourceOrchestratorService } from '../../platform/runtime/resource-orchestrator.service';
@@ -29,6 +29,13 @@ export class InboundOutboundEngine {
     userId: string,
   ) {
     this.logger.log(`Processing ASN ${asnId}`);
+
+    const asn = await this.prisma.runAsTenant(companyId, async (tx) => {
+      return tx.inboundReceipt.findFirst({ where: { id: asnId, companyId } });
+    });
+    if (!asn) {
+      throw new NotFoundException(`ASN ${asnId} not found in tenant`);
+    }
 
     let isCrossDock = false;
     let crossDockAssignmentId: string | undefined;
@@ -93,6 +100,15 @@ export class InboundOutboundEngine {
     userId: string,
   ) {
     this.logger.log(`Generating Pick Wave for ${orderIds.length} orders`);
+
+    await this.prisma.runAsTenant(companyId, async (tx) => {
+      const orders = await tx.outboundOrder.findMany({
+        where: { id: { in: orderIds }, companyId }
+      });
+      if (orders.length !== orderIds.length) {
+        throw new NotFoundException(`One or more orders not found in tenant`);
+      }
+    });
 
     const waveNumber = `WAVE-${Date.now()}`;
     const estimatedTimeSec = 1200;
