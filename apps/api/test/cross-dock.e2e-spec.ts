@@ -98,10 +98,11 @@ describe('Cross-Docking Engine (e2e)', () => {
       })
     );
 
+    const uniqueSuffix = Date.now().toString();
     const payload = {
-      asnId: 'ASN-1234',
+      asnId: 'ASN-' + uniqueSuffix,
       priority: 'URGENT',
-      targetOutboundOrder: 'ORD-9999',
+      targetOutboundOrder: 'ORD-' + uniqueSuffix,
       dockId: dock.id,
     };
 
@@ -123,8 +124,8 @@ describe('Cross-Docking Engine (e2e)', () => {
     
     expect(assignment).toBeDefined();
     expect(assignment?.companyId).toBe(tenant.company.id);
-    expect(assignment?.asnId).toBe('ASN-1234');
-    expect(assignment?.outboundOrderId).toBe('ORD-9999');
+    expect(assignment?.asnId).toBe(payload.asnId);
+    expect(assignment?.outboundOrderId).toBe(payload.targetOutboundOrder);
     expect(assignment?.matchScore).toBe(0.98);
     expect(assignment?.status).toBe('PENDING');
   });
