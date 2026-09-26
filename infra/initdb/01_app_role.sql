@@ -1,3 +1,6 @@
+-- NOTE: On first init, run with -v APP_DATABASE_PASSWORD=<from env>
+-- The app password is rotated dynamically in production via ALTER ROLE.
+
 -- =============================================================================
 -- PariLink: Least-Privilege Application Role
 -- =============================================================================
@@ -24,7 +27,7 @@ BEGIN
       NOCREATEDB
       NOCREATEROLE
       NOINHERIT
-      PASSWORD 'apppassword';
+      PASSWORD :'APP_DATABASE_PASSWORD';
     RAISE NOTICE 'parilink_app role created.';
   ELSE
     RAISE NOTICE 'parilink_app role already exists — skipping creation.';

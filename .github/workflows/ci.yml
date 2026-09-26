@@ -18,7 +18,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: parilink
-          POSTGRES_PASSWORD: devpassword
+          POSTGRES_PASSWORD: ci_pg_pass_987
           POSTGRES_DB: parilink_db
         ports:
           - 5432:5432
@@ -31,11 +31,11 @@ jobs:
     env:
       # ── Database URLs ──────────────────────────────────────────────────────
       # parilink      : DDL / migrate owner — used by prisma migrate deploy
-      DATABASE_URL: postgresql://parilink:devpassword@localhost:5432/parilink_db?schema=public
+      DATABASE_URL: postgresql://parilink:ci_pg_pass_987@localhost:5432/parilink_db?schema=public
       # parilink_app  : RLS-enforced runtime role used by the NestJS API
-      APP_DATABASE_URL: postgresql://parilink_app:apppassword@localhost:5432/parilink_db?schema=public
+      APP_DATABASE_URL: postgresql://parilink_app:ci_app_pass_987@localhost:5432/parilink_db?schema=public
       # parilink_sys  : BYPASSRLS superuser — used by runAsSystem(), verify-revenue.ts, GUC test
-      SYSTEM_DATABASE_URL: postgresql://parilink_sys:testpw123@localhost:5432/parilink_db?schema=public
+      SYSTEM_DATABASE_URL: postgresql://parilink_sys:ci_sys_pass_987@localhost:5432/parilink_db?schema=public
       # ── Auth / JWT ─────────────────────────────────────────────────────────
       JWT_SECRET: ci-jwt-secret-not-for-production
       JWT_REFRESH_SECRET: ci-refresh-secret-not-for-production
@@ -69,12 +69,12 @@ jobs:
       # deploy, because migrations reference them in GRANT statements.
       - name: Initialize Database Roles (RLS Setup)
         env:
-          PGPASSWORD: devpassword
+          PGPASSWORD: ci_pg_pass_987
         run: |
           echo "Executing initdb SQL scripts against CI Postgres container..."
           for f in $(ls infra/initdb/*.sql | sort); do
             echo "--> Executing $f"
-            psql -h localhost -U parilink -d parilink_db -f "$f"
+            psql -h localhost -U parilink -d parilink_db -v APP_DATABASE_PASSWORD=ci_app_pass_987 -v PARILINK_SYS_PASSWORD=ci_sys_pass_987 -f "$f"
           done
           echo "Database roles initialised successfully."
 
@@ -92,10 +92,10 @@ jobs:
       # ensure new tables are covered. This is idempotent.
       - name: Refresh Table Grants
         env:
-          PGPASSWORD: devpassword
+          PGPASSWORD: ci_pg_pass_987
         run: |
           for f in $(ls infra/initdb/*.sql | sort); do
-            psql -h localhost -U parilink -d parilink_db -f "$f"
+            psql -h localhost -U parilink -d parilink_db -v APP_DATABASE_PASSWORD=ci_app_pass_987 -v PARILINK_SYS_PASSWORD=ci_sys_pass_987 -f "$f"
           done
 
       # ── 7. Lint ────────────────────────────────────────────────────────────

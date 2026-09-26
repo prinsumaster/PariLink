@@ -1,3 +1,6 @@
+-- NOTE: On first init, run with -v PARILINK_SYS_PASSWORD=<from env>
+-- The sys password is rotated dynamically in production via ALTER ROLE.
+
 -- =============================================================================
 -- PariLink: System Role (BYPASSRLS) for runAsSystem() Operations
 -- =============================================================================
@@ -21,11 +24,11 @@ BEGIN
       LOGIN
       SUPERUSER
       BYPASSRLS
-      PASSWORD 'testpw123';
+      PASSWORD :'PARILINK_SYS_PASSWORD';
     RAISE NOTICE 'parilink_sys role created.';
   ELSE
     -- Ensure the password is up to date in CI environments
-    ALTER ROLE parilink_sys PASSWORD 'testpw123';
+    ALTER ROLE parilink_sys PASSWORD :'PARILINK_SYS_PASSWORD';
     RAISE NOTICE 'parilink_sys role already exists — password refreshed.';
   END IF;
 END

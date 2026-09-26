@@ -24,7 +24,7 @@ describe('Workshop Kundali RLS (e2e)', () => {
     const { PrismaService } = require('../src/prisma/prisma.service');
     const prisma = app.get(PrismaService);
     const bcrypt = require('bcrypt');
-    const hash = await bcrypt.hash('devpassword', 10);
+    const hash = await bcrypt.hash('test_password_123', 10);
 
     // 1. Setup Tenant A
     const companyA = await prisma.runAsSystem('e2e-setup', (tx) =>
@@ -51,7 +51,7 @@ describe('Workshop Kundali RLS (e2e)', () => {
 
     const loginA = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: userA.email, password: 'devpassword' });
+      .send({ email: userA.email, password: 'test_password_123' });
     tokenA = loginA.body?.access_token;
     if (!tokenA) {
       throw new Error(
@@ -84,7 +84,7 @@ describe('Workshop Kundali RLS (e2e)', () => {
 
     const loginB = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
-      .send({ email: userB.email, password: 'devpassword' });
+      .send({ email: userB.email, password: 'test_password_123' });
     tokenB = loginB.body?.access_token;
     if (!tokenB) {
       throw new Error(
