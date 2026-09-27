@@ -102,7 +102,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-api
 
       - name: Build and push Docker image (API)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/api/Dockerfile
