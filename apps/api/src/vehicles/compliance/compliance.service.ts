@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
 import { AuditService } from '../../platform/audit/audit.service';
+import { assertTenantOwned } from '../../common/utils/tenant-assert';
 
 @Injectable()
 export class ComplianceService {
@@ -14,6 +15,7 @@ export class ComplianceService {
 
   async logHosViolation(companyId: string, data: any, userId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.driverId) await assertTenantOwned(tx, 'driver', data.driverId, companyId);
       const violation = await tx.hosViolation.create({
         data: {
           companyId,
@@ -70,6 +72,8 @@ export class ComplianceService {
 
   async submitDvir(companyId: string, data: any, userId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
+      if (data.driverId) await assertTenantOwned(tx, 'driver', data.driverId, companyId);
       const dvir = await tx.dvirLog.create({
         data: {
           companyId,
