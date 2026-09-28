@@ -13,6 +13,7 @@ describe('Repo-wide Isolation', () => {
   let jwtService: JwtService;
 
   let tokenB: string;
+  let tokenAReadOnly: string;
   let tenantA: string;
 
   let vehicleA: string;
@@ -77,6 +78,21 @@ describe('Repo-wide Isolation', () => {
     trailerA = compA.trailer.id;
     jobCardA = compA.jobCard.id;
     alertA = compA.alert.id;
+
+    // Create a read-only user in Tenant A for BAC testing
+    const readOnlyUserA = await prisma.runAsSystem('setup', async (tx) => {
+      const r = await tx.role.create({ data: { companyId: compA.company.id, name: 'ReadOnly', permissions: ['read'] } });
+      const u = await tx.user.create({ data: { companyId: compA.company.id, roleId: r.id, email: `readonly_a_${ts}@test.com`, password: pwhash, firstName: 'Read', lastName: 'Only', status: 'ACTIVE' } });
+      return { user: u, role: r };
+    });
+
+    tokenAReadOnly = jwtService.sign({
+      sub: readOnlyUserA.user.id,
+      email: readOnlyUserA.user.email,
+      companyId: compA.company.id,
+      roleId: readOnlyUserA.role.id,
+      permissions: readOnlyUserA.role.permissions,
+    });
 
     // Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -232,4 +248,20 @@ describe('Repo-wide Isolation', () => {
     expect(res.status).toBe(404);
   });
 
+  describe('Broken Access Control (BAC)', () => {
+    it('CRM: Read-Only user should NOT be able to create a CRM lead', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/crm/leads')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`)
+        .send({ title: 'Test Lead', status: 'NEW' });
+      expect(res.status).toBe(403);
+    });
+
+    it('CRM: Read-Only user should NOT be able to delete a CRM lead', async () => {
+      const res = await request(app.getHttpServer())
+        .delete('/crm/leads/some-fake-id')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`);
+      expect(res.status).toBe(403);
+    });
+  });
 });

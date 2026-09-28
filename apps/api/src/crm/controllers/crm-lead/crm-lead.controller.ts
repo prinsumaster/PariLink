@@ -12,6 +12,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../../../auth/guards/permissions.guard';
+import { RequirePermissions } from '../../../auth/decorators/permissions.decorator';
 import { CrmLeadService } from '../../services/crm-lead/crm-lead.service';
 import { IsString, IsNotEmpty, IsOptional, IsObject } from 'class-validator';
 
@@ -30,11 +32,12 @@ export class UpdateLeadDto {
 }
 
 @Controller('crm/leads')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class CrmLeadController {
   constructor(private readonly service: CrmLeadService) {}
 
   @Post()
+  @RequirePermissions('crm:write')
   create(@Req() req: any, @Body() data: CreateLeadDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
@@ -50,6 +53,7 @@ export class CrmLeadController {
   }
 
   @Patch(':id')
+  @RequirePermissions('crm:write')
   update(
     @Req() req: any,
     @Param('id') id: string,
@@ -59,6 +63,7 @@ export class CrmLeadController {
   }
 
   @Delete(':id')
+  @RequirePermissions('crm:write')
   remove(@Req() req: any, @Param('id') id: string) {
     return this.service.remove(req.user.companyId, id, req.user.id);
   }
