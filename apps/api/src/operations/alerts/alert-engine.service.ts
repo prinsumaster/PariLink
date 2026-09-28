@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -203,12 +203,14 @@ export class AlertEngineService {
     alertId: string,
     userId?: string,
   ): Promise<unknown> {
-    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alert.update({
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) => {
+      const alert = await tx.alert.findFirst({ where: { id: alertId, companyId } });
+      if (!alert) throw new NotFoundException('Alert not found');
+      return tx.alert.update({
         where: { id: alertId },
         data: { status: 'ACKNOWLEDGED' },
-      }),
-    );
+      });
+    });
     if (userId) {
       await this.auditService.logEvent({
         action: 'ALERT_ACKNOWLEDGED',
@@ -227,12 +229,14 @@ export class AlertEngineService {
     alertId: string,
     userId?: string,
   ): Promise<unknown> {
-    const updated = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.alert.update({
+    const updated = await this.prisma.runAsTenant(companyId, async (tx) => {
+      const alert = await tx.alert.findFirst({ where: { id: alertId, companyId } });
+      if (!alert) throw new NotFoundException('Alert not found');
+      return tx.alert.update({
         where: { id: alertId },
         data: { status: 'RESOLVED', resolvedAt: new Date() },
-      }),
-    );
+      });
+    });
     if (userId) {
       await this.auditService.logEvent({
         action: 'ALERT_RESOLVED',

@@ -26,6 +26,7 @@ describe('Repo-wide Isolation', () => {
   let bankAccountA: string;
   let trailerA: string;
   let jobCardA: string;
+  let alertA: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -57,8 +58,10 @@ describe('Repo-wide Isolation', () => {
       const inc = await tx.incident.create({ data: { companyId: c.id, title: 'Test Incident', description: 'Test', severity: 'SEV1', status: 'INVESTIGATING', affectedServices: [] } });
       const trlr = await tx.vehicle.create({ data: { companyId: c.id, licensePlate: 'TRLR-123', make: 'TrailerMake', model: 'TrailerModel', year: 2024, type: 'TRAILER', status: 'IN_SERVICE' } });
       const jc = await tx.jobCard.create({ data: { companyId: c.id, workshopId: wkshp.id, vehicleId: veh.id, status: 'OPEN', issueReported: 'Test issue' } });
+      const rule = await tx.alertRule.create({ data: { companyId: c.id, name: 'Test Rule', severity: 'HIGH', threshold: 1, condition: 'GREATER', isActive: true, type: 'CUSTOM' } });
+      const alert = await tx.alert.create({ data: { companyId: c.id, ruleId: rule.id, severity: 'HIGH', message: 'Test Alert', status: 'NEW' } });
 
-      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, workshop: wkshp, invoice: inv, load, bankAccount: bankAcct, incident: inc, trailer: trlr, jobCard: jc };
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, workshop: wkshp, invoice: inv, load, bankAccount: bankAcct, incident: inc, trailer: trlr, jobCard: jc, alert };
     });
 
     tenantA = compA.company.id;
@@ -73,6 +76,7 @@ describe('Repo-wide Isolation', () => {
     incidentA = compA.incident.id;
     trailerA = compA.trailer.id;
     jobCardA = compA.jobCard.id;
+    alertA = compA.alert.id;
 
     // Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -217,6 +221,13 @@ describe('Repo-wide Isolation', () => {
   it('Workshop (IDOR): Tenant B should NOT be able to read Tenant A jobCard by ID', async () => {
     const res = await request(app.getHttpServer())
       .get(`/workshop/job-cards/${jobCardA}`)
+      .set('Authorization', `Bearer ${tokenB}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('Operations/Alerts (IDOR): Tenant B should NOT be able to acknowledge Tenant A alert by ID', async () => {
+    const res = await request(app.getHttpServer())
+      .post(`/operations/alerts/${alertA}/ack`)
       .set('Authorization', `Bearer ${tokenB}`);
     expect(res.status).toBe(404);
   });
