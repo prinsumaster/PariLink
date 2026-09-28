@@ -22,7 +22,7 @@ export class PermitController {
 
   @Post()
   create(@GetUser() user: AuthenticatedUser, @Body() data: CreatePermitDto) {
-    return this.service.create(user.companyId, user.id, data);
+    return this.service.create(user.companyId, user.id, data.payload);
   }
 
   @Get()
@@ -41,7 +41,7 @@ export class PermitController {
     @Param('id') id: string,
     @Body() data: CreatePermitDto,
   ) {
-    return this.service.update(user.companyId, id, user.id, data);
+    return this.service.update(user.companyId, id, user.id, data.payload);
   }
 
   @Delete(':id')

@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { AuditService } from '../../../../platform/audit/audit.service';
 import { EventStoreService } from '../../../../platform/digital-twin/event-store.service';
+import { assertTenantOwned } from '../../../../common/utils/tenant-assert';
 
 @Injectable()
 export class PermitComplianceService {
@@ -14,6 +15,10 @@ export class PermitComplianceService {
 
   async create(companyId: string, userId: string, data: any) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) {
+        await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
+      }
+
       const permit = await tx.vehiclePermit.create({
         data: { ...data, companyId },
       });

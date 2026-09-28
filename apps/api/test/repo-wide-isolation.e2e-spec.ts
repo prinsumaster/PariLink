@@ -192,4 +192,12 @@ describe('Repo-wide Isolation', () => {
     expect(res.status).toBe(404);
   });
 
+  it('Vehicles/Permits: Tenant B should NOT be able to create permit for Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/vehicles/permits')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ payload: { vehicleId: vehicleA, permitType: 'STATE', permitNumber: 'ST-1234', issuedDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 86400000).toISOString() } });
+    expect(res.status).toBe(404);
+  });
+
 });
