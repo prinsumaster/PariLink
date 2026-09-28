@@ -157,4 +157,12 @@ describe('Repo-wide Isolation', () => {
     expect(res.status).toBe(404);
   });
 
+  it('Finance/DriverWallet: Tenant B should NOT be able to submit expense for Tenant A driver', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/finance/wallet/expenses')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ driverId: driverA, type: 'FUEL', amount: 50, date: new Date(), notes: 'Test' });
+    expect(res.status).toBe(404);
+  });
+
 });

@@ -4,6 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 
 @Injectable()
 export class DriverWalletService {
@@ -34,6 +35,10 @@ export class DriverWalletService {
 
   async submitExpense(companyId: string, data: any, driverId: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      await assertTenantOwned(tx, 'driver', driverId, companyId);
+      if (data.tripId) {
+        await assertTenantOwned(tx, 'trip', data.tripId, companyId);
+      }
       return tx.expense.create({
         data: {
           companyId,
