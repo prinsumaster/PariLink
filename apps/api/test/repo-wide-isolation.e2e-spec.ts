@@ -165,4 +165,12 @@ describe('Repo-wide Isolation', () => {
     expect(res.status).toBe(404);
   });
 
+  it('Fuel: Tenant B should NOT be able to create fuel card for Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/fuel-cards')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ cardNumber: '1111222233334444', provider: 'FLEETCOR', vehicleId: vehicleA, dailyLimit: 500 });
+    expect(res.status).toBe(404);
+  });
+
 });

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as crypto from 'crypto';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 
 @Injectable()
 export class FuelService {
@@ -20,6 +21,13 @@ export class FuelService {
         .createHash('sha256')
         .update(dto.cardNumber)
         .digest('hex');
+
+      if (dto.vehicleId) {
+        await assertTenantOwned(tx, 'vehicle', dto.vehicleId, companyId);
+      }
+      if (dto.driverId) {
+        await assertTenantOwned(tx, 'driver', dto.driverId, companyId);
+      }
 
       return tx.fuelCard.create({
         data: {
@@ -98,6 +106,11 @@ export class FuelService {
         });
         if (!trip) throw new NotFoundException('Trip not found');
       }
+
+      if (dto.vehicleId) await assertTenantOwned(tx, 'vehicle', dto.vehicleId, companyId);
+      if (dto.driverId) await assertTenantOwned(tx, 'driver', dto.driverId, companyId);
+      if (dto.fuelCardId) await assertTenantOwned(tx, 'fuelCard', dto.fuelCardId, companyId);
+      if (dto.billingCustomerId) await assertTenantOwned(tx, 'customer', dto.billingCustomerId, companyId);
 
       return tx.fuelEntry.create({
         data: {
