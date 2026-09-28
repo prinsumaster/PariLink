@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 
 @Injectable()
 export class JobsService {
@@ -11,6 +12,10 @@ export class JobsService {
 
   async createJob(companyId: string, vehicleId: string, data: any) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      await assertTenantOwned(tx, 'vehicle', vehicleId, companyId);
+      if (data.vendorId) {
+        await assertTenantOwned(tx, 'vendor', data.vendorId, companyId);
+      }
       const job = await tx.maintenanceJob.create({
         data: {
           companyId,
