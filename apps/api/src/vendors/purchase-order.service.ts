@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 
 @Injectable()
 export class PurchaseOrderService {
@@ -8,6 +9,9 @@ export class PurchaseOrderService {
 
   async createPurchaseOrder(companyId: string, data: any) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vendorId) {
+        await assertTenantOwned(tx, 'vendor', data.vendorId, companyId);
+      }
       let totalAmount = 0;
       if (data.items && Array.isArray(data.items)) {
         totalAmount = data.items.reduce(
