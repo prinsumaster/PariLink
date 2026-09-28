@@ -270,5 +270,12 @@ describe('Repo-wide Isolation', () => {
         .send({ name: 'Hacked Dashboard' });
       expect(res.status).toBe(403);
     });
+    it('Communications: Read-Only user should NOT be able to create an announcement', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/announcements')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`)
+        .send({ title: 'Hacked Announcement', content: 'You are hacked' });
+      expect(res.status).toBe(403);
+    });
   });
 });

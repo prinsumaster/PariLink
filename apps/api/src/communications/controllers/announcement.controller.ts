@@ -4,11 +4,13 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { GetUser } from '../../auth/decorators/get-user.decorator';
 import type { AuthenticatedUser } from '../../auth/decorators/get-user.decorator';
+import { PermissionsGuard } from '../../auth/guards/permissions.guard';
+import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @ApiTags('announcements')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('announcements')
 export class AnnouncementController {
   constructor(private prisma: PrismaService) {}
@@ -29,6 +31,7 @@ export class AnnouncementController {
   }
 
   @Post()
+  @RequirePermissions('communications:manage', 'admin:manage')
   @ApiOperation({ summary: 'Create a new announcement' })
   async createAnnouncement(
     @GetUser() user: AuthenticatedUser,
