@@ -11,9 +11,10 @@ Thank you for your interest in contributing to PariLink! As an enterprise produc
 ## Pull Request Process
 
 1. **Strict Types**: Your PR will be rejected if it introduces `any` types or `ts-ignore` flags without explicit architectural exemption.
-2. **Testing**: You must include Jest unit/integration tests for your changes. Run `npm run test` before submitting.
-3. **Linting**: Ensure 100% compliance with `npm run lint` and Prettier formatting.
-4. **Code Review**: At least two Staff Engineers must approve your PR. Security mechanisms (Authentication, Authorization, File Uploads) require an additional sign-off from the Security Team.
+2. **Tenant Isolation**: When adding or updating endpoints that write foreign keys, you must validate them against the tenant boundary using `assertTenantOwned`. **Run `scripts/check-tenant-isolation.sh`** locally to verify no unprotected foreign keys exist before pushing.
+3. **Testing**: You must include Jest unit/integration tests for your changes. Run `npm run test` before submitting.
+4. **Linting**: Ensure 100% compliance with `npm run lint` and Prettier formatting.
+5. **Code Review**: At least two Staff Engineers must approve your PR. Security mechanisms (Authentication, Authorization, File Uploads) require an additional sign-off from the Security Team.
 
 ## License
 
