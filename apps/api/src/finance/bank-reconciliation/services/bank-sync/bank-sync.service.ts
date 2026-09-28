@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { assertTenantOwned } from '../../../../common/utils/tenant-assert';
 
 @Injectable()
 export class BankSyncService {
@@ -8,6 +9,9 @@ export class BankSyncService {
 
   async create(companyId: string, _userId: string, data: any) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.accountId) {
+        await assertTenantOwned(tx, 'bankAccount', data.accountId, companyId);
+      }
       return tx.bankStatement.create({
         data: { ...data, companyId },
       });

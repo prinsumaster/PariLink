@@ -22,6 +22,7 @@ describe('Repo-wide Isolation', () => {
   let warehouseA: string;
   let invoiceA: string;
   let loadA: string;
+  let bankAccountA: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,8 +49,9 @@ describe('Repo-wide Isolation', () => {
       const wh = await tx.warehouse.create({ data: { companyId: c.id, name: 'Repo Warehouse', code: 'WH-REPO', address: '123 Test St', city: 'City', state: 'State' } });
       const load = await tx.load.create({ data: { companyId: c.id, customerId: cust.id, status: 'UNASSIGNED', originAddress: 'A', originCity: 'A', originState: 'A', destinationAddress: 'B', destinationCity: 'B', destinationState: 'B', pickupDate: new Date(), deliveryDate: new Date(), referenceNumber: 'REF-123', rate: 100 } });
       const inv = await tx.invoice.create({ data: { companyId: c.id, customerId: cust.id, invoiceNumber: 'INV-REPO-1', amount: 100, status: 'DRAFT' } });
+      const bankAcct = await tx.bankAccount.create({ data: { companyId: c.id, bankName: 'Repo Bank', accountNumber: 'ACCT-REPO-1', ifscCode: 'IFSC1234' } });
 
-      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load };
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load, bankAccount: bankAcct };
     });
 
     tenantA = compA.company.id;
@@ -60,6 +62,7 @@ describe('Repo-wide Isolation', () => {
     warehouseA = compA.warehouse.id;
     invoiceA = compA.invoice.id;
     loadA = compA.load.id;
+    bankAccountA = compA.bankAccount.id;
 
     // Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -143,6 +146,14 @@ describe('Repo-wide Isolation', () => {
       .post('/warehouse/inbound/asn')
       .set('Authorization', `Bearer ${tokenB}`)
       .send({ warehouseId: warehouseA, loadId: loadA, asnNumber: 'ASN-1', expectedDate: new Date(), reference: 'REF-1', items: [{ sku: 'SKU1', expectedQty: 10 }] });
+    expect(res.status).toBe(404);
+  });
+
+  it('Finance/BankStatement: Tenant B should NOT be able to sync statement for Tenant A bankAccount', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/finance/bank-statements')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ accountId: bankAccountA, statementDate: new Date(), closingBalance: 1000 });
     expect(res.status).toBe(404);
   });
 
