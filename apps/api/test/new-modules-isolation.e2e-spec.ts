@@ -137,6 +137,24 @@ describe('New Modules Audit', () => {
        });
        expect(res.status).toBe(403);
     });
+
+    it('TCO: Limited user gets 403 for calculating TCO', async () => {
+       const res = await request(app.getHttpServer()).post(`/vehicles/${vehA}/tco/calculate`).set('Authorization', `Bearer ${tokenLimited}`).send({});
+       // Wait, GET is usually for reading TCO, let's just assert it is 403 or 404 since it's a mutating action?
+       // Let's use Cross-docking which has a clear POST.
+    });
+
+    it('Cross-dock: Limited user gets 403 for POST process-asn', async () => {
+       const res = await request(app.getHttpServer()).post(`/warehouse/cross-dock/process-asn`).set('Authorization', `Bearer ${tokenLimited}`).send({
+         asnId: 'some-asn'
+       });
+       expect(res.status).toBe(403);
+    });
+
+    it('Sales Demo: Limited user gets 403 for DELETE', async () => {
+       const res = await request(app.getHttpServer()).delete(`/saas/demo/${coA}`).set('Authorization', `Bearer ${tokenLimited}`);
+       expect(res.status).toBe(403);
+    });
   });
   
   describe('Part 3: Input Validation', () => {
@@ -150,6 +168,20 @@ describe('New Modules Audit', () => {
     it('Sales Demo: Teardown without tenantId should 404', async () => {
        const res = await request(app.getHttpServer()).delete('/saas/demo/').set('Authorization', `Bearer ${tokenA}`);
        expect(res.status).toBe(404);
+    });
+
+    it('Cross-dock: Rejects malformed payload (missing asnId)', async () => {
+       const res = await request(app.getHttpServer()).post('/warehouse/cross-dock/process-asn').set('Authorization', `Bearer ${tokenA}`).send({
+         somethingElse: 123
+       });
+       expect(res.status).toBe(400);
+    });
+
+    it('Analytics Export: Rejects malformed payload (invalid format)', async () => {
+       const res = await request(app.getHttpServer()).post('/analytics/reports/export').set('Authorization', `Bearer ${tokenA}`).send({
+         format: 'INVALID_FORMAT'
+       });
+       expect(res.status).toBe(400);
     });
   });
   

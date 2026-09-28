@@ -12,6 +12,7 @@ import {
   Body,
   Sse,
   MessageEvent,
+  BadRequestException,
 } from '@nestjs/common';
 import type { Observable } from 'rxjs';
 import { interval, map, concatMap } from 'rxjs';
@@ -146,6 +147,9 @@ export class AnalyticsController {
     @GetUser() user: AuthenticatedUser,
     @Body() _data: { reportType: string; format: 'PDF' | 'EXCEL' | 'CSV' },
   ) {
+    if (!['PDF', 'EXCEL', 'CSV'].includes(_data.format)) {
+      throw new BadRequestException('Invalid format');
+    }
     if (!process.env.MINIO_ENDPOINT && !process.env.S3_ENDPOINT) {
       throw new ServiceUnavailableException(
         'Cloud storage for analytics exports is not configured.',

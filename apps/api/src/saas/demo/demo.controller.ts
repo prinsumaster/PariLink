@@ -1,13 +1,14 @@
 import { Controller, Post, Delete, Param, UseGuards } from '@nestjs/common';
 import { DemoService } from './demo.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('Demo SaaS')
 @ApiBearerAuth()
 @Controller('saas/demo')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class DemoController {
   constructor(private readonly demoService: DemoService) {}
 

@@ -25,6 +25,10 @@ import { DockSchedulerService } from './engine/dock-scheduler.service';
 import { InventoryOptimizerService } from './engine/inventory-optimizer.service';
 import { InboundOutboundEngine } from './engine/inbound-outbound.engine';
 
+export class ProcessAsnDto {
+  @IsString() @IsNotEmpty() asnId!: string;
+}
+
 export class CreateWarehouseDto {
   @IsString() @IsNotEmpty() name!: string;
   @IsString() @IsNotEmpty() code!: string;
@@ -254,7 +258,7 @@ export class WarehouseController {
   @RequirePermissions('warehouse:write')
   processAsn(
     @GetUser() user: AuthenticatedUser,
-    @Body() data: any,
+    @Body() data: ProcessAsnDto,
   ) {
     return this.engine.processAsn(user.companyId, data.asnId, data, user.userId);
   }
