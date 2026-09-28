@@ -263,5 +263,12 @@ describe('Repo-wide Isolation', () => {
         .set('Authorization', `Bearer ${tokenAReadOnly}`);
       expect(res.status).toBe(403);
     });
+    it('Dashboard: Read-Only user should NOT be able to create a dashboard', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/dashboard-builder')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`)
+        .send({ name: 'Hacked Dashboard' });
+      expect(res.status).toBe(403);
+    });
   });
 });
