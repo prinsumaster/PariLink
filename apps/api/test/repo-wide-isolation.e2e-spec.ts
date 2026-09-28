@@ -24,6 +24,8 @@ describe('Repo-wide Isolation', () => {
   let incidentA: string;
   let loadA: string;
   let bankAccountA: string;
+  let trailerA: string;
+  let jobCardA: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -48,12 +50,15 @@ describe('Repo-wide Isolation', () => {
       const vnd = await tx.vendor.create({ data: { companyId: c.id, name: 'Repo Vendor', type: 'MAINTENANCE' } });
       const cust = await tx.customer.create({ data: { companyId: c.id, name: 'Repo Customer' } });
       const wh = await tx.warehouse.create({ data: { companyId: c.id, name: 'Repo Warehouse', code: 'WH-REPO', address: '123 Test St', city: 'City', state: 'State' } });
+      const wkshp = await tx.workshop.create({ data: { companyId: c.id, name: 'Repo Workshop', location: '123 Workshop St', type: 'INTERNAL' } });
       const load = await tx.load.create({ data: { companyId: c.id, customerId: cust.id, status: 'UNASSIGNED', originAddress: 'A', originCity: 'A', originState: 'A', destinationAddress: 'B', destinationCity: 'B', destinationState: 'B', pickupDate: new Date(), deliveryDate: new Date(), referenceNumber: 'REF-123', rate: 100 } });
       const inv = await tx.invoice.create({ data: { companyId: c.id, customerId: cust.id, invoiceNumber: 'INV-REPO-1', amount: 100, status: 'DRAFT' } });
       const bankAcct = await tx.bankAccount.create({ data: { companyId: c.id, bankName: 'Repo Bank', accountNumber: 'ACCT-REPO-1', ifscCode: 'IFSC1234' } });
       const inc = await tx.incident.create({ data: { companyId: c.id, title: 'Test Incident', description: 'Test', severity: 'SEV1', status: 'INVESTIGATING', affectedServices: [] } });
+      const trlr = await tx.vehicle.create({ data: { companyId: c.id, licensePlate: 'TRLR-123', make: 'TrailerMake', model: 'TrailerModel', year: 2024, type: 'TRAILER', status: 'IN_SERVICE' } });
+      const jc = await tx.jobCard.create({ data: { companyId: c.id, workshopId: wkshp.id, vehicleId: veh.id, status: 'OPEN', issueReported: 'Test issue' } });
 
-      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load, bankAccount: bankAcct, incident: inc };
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, workshop: wkshp, invoice: inv, load, bankAccount: bankAcct, incident: inc, trailer: trlr, jobCard: jc };
     });
 
     tenantA = compA.company.id;
@@ -66,6 +71,8 @@ describe('Repo-wide Isolation', () => {
     loadA = compA.load.id;
     bankAccountA = compA.bankAccount.id;
     incidentA = compA.incident.id;
+    trailerA = compA.trailer.id;
+    jobCardA = compA.jobCard.id;
 
     // Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -197,6 +204,20 @@ describe('Repo-wide Isolation', () => {
       .post('/vehicles/permits')
       .set('Authorization', `Bearer ${tokenB}`)
       .send({ payload: { vehicleId: vehicleA, permitType: 'STATE', permitNumber: 'ST-1234', issuedDate: new Date().toISOString(), expiryDate: new Date(Date.now() + 86400000).toISOString() } });
+    expect(res.status).toBe(404);
+  });
+
+  it('Trailers (IDOR): Tenant B should NOT be able to read Tenant A trailer by ID', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/trailers/${trailerA}`)
+      .set('Authorization', `Bearer ${tokenB}`);
+    expect(res.status).toBe(404);
+  });
+
+  it('Workshop (IDOR): Tenant B should NOT be able to read Tenant A jobCard by ID', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/workshop/job-cards/${jobCardA}`)
+      .set('Authorization', `Bearer ${tokenB}`);
     expect(res.status).toBe(404);
   });
 

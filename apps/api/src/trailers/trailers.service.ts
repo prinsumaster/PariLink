@@ -63,7 +63,7 @@ export class TrailersService {
   async findOne(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const trailer = await tx.vehicle.findFirst({
-        where: { id, type: 'TRAILER' },
+        where: { id, type: 'TRAILER', companyId },
       });
 
       if (!trailer) {
@@ -80,7 +80,7 @@ export class TrailersService {
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingTrailer = await tx.vehicle.findFirst({
-        where: { id, type: 'TRAILER' },
+        where: { id, type: 'TRAILER', companyId },
       });
 
       if (!existingTrailer) throw new NotFoundException();
@@ -95,7 +95,7 @@ export class TrailersService {
   async remove(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const existingTrailer = await tx.vehicle.findFirst({
-        where: { id, type: 'TRAILER' },
+        where: { id, type: 'TRAILER', companyId },
       });
 
       if (!existingTrailer) throw new NotFoundException();

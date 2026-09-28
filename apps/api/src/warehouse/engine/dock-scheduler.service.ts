@@ -66,12 +66,16 @@ export class DockSchedulerService {
     appointmentId: string,
     userId: string,
   ) {
-    const appt = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.dockAppointment.update({
+    const appt = await this.prisma.runAsTenant(companyId, async (tx) => {
+      const existing = await tx.dockAppointment.findFirst({
+        where: { id: appointmentId, dock: { companyId } },
+      });
+      if (!existing) throw new BadRequestException('Appointment not found in tenant');
+      return tx.dockAppointment.update({
         where: { id: appointmentId },
         data: { status: 'AT_DOCK', actualStart: new Date() },
-      }),
-    );
+      });
+    });
 
     await this.eventStore.append({
       tenantId: companyId,
@@ -90,12 +94,16 @@ export class DockSchedulerService {
     appointmentId: string,
     userId: string,
   ) {
-    const appt = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.dockAppointment.update({
+    const appt = await this.prisma.runAsTenant(companyId, async (tx) => {
+      const existing = await tx.dockAppointment.findFirst({
+        where: { id: appointmentId, dock: { companyId } },
+      });
+      if (!existing) throw new BadRequestException('Appointment not found in tenant');
+      return tx.dockAppointment.update({
         where: { id: appointmentId },
         data: { status: 'COMPLETED', actualEnd: new Date() },
-      }),
-    );
+      });
+    });
 
     await this.eventStore.append({
       tenantId: companyId,

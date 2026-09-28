@@ -346,7 +346,7 @@ export class WorkshopService {
   async getJobCard(companyId: string, id: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       const jobCard = await tx.jobCard.findUnique({
-        where: { id },
+        where: { id, companyId },
       });
       if (!jobCard) {
         throw new NotFoundException(`JobCard with ID ${id} not found`);
