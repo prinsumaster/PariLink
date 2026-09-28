@@ -11,7 +11,7 @@ The following core systems have been thoroughly audited, regression-tested (799 
 
 - **Core Engine:** Full CRM, Fleet Registry, Workshop/Maintenance, Real-time Dispatch/Trips, and Billing/Invoicing modules are fully operational with PostgreSQL persistence and real data modeling.
 - **Background & Event Systems:** BullMQ/Redis async workers are live. The webhooks engine includes SSRF protection, HMAC signatures, and automated retries.
-- **Security & Authorization:** Role-Based Access Control (RBAC), Row-Level Security (RLS) protections, and cryptographically secure API Key management are real and verified.
+- **Security & Authorization:** Role-Based Access Control (RBAC), Row-Level Security (RLS) protections, and cryptographically secure API Key management are real and verified. Deep cross-tenant data isolation and DTO-level input validation explicitly tested across all core and new modules.
 - **Disaster Recovery:** A real `pg_dump` backup chain to MinIO has been built and successfully test-restored (verifying 256 tables).
 - **Scale Infrastructure:** The system successfully handled 119,911 requests/hour in load testing, backed by PgBouncer (AUTH_QUERY config) and proper compound database indexing.
 - **Docker/Production Builds:** Both `api` and `web` containers build successfully from the monorepo root, with zero leaked credentials in the source code or Docker compose files.
@@ -22,7 +22,6 @@ The following core systems have been thoroughly audited, regression-tested (799 
 - **Lorry Receipts (LR/Bilty) Mobile UI:** The backend engine is completely finished and tested, but the mobile app interface is not yet wired up to these endpoints.
 - **Local Backup Scheduling:** The backup script exists and works, but local cron scheduling has been intentionally deferred (see Open Decisions below).
 - **Redis Eviction Policy:** Currently defaults to `allkeys-lru`. BullMQ strongly prefers `noeviction`. This is a low risk for current volume but needs updating in the final production environment configuration.
-- **Sales Demo Provisioning Spam:** The `/saas/demo/seed` endpoint lacks rate-limiting, meaning a compromised admin token could spam tenant creation.
 
 ## 3. Open Decisions for Sharad
 
