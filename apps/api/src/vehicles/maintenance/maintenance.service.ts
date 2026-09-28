@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
+import { assertTenantOwned } from '../../common/utils/tenant-assert';
 
 @Injectable()
 export class MaintenanceService {
@@ -13,6 +14,9 @@ export class MaintenanceService {
 
   async createWorkshop(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vendorId) {
+        await assertTenantOwned(tx, 'vendor', data.vendorId, companyId);
+      }
       const workshop = await tx.workshop.create({
         data: {
           companyId,
@@ -59,6 +63,9 @@ export class MaintenanceService {
 
   async createMechanic(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.workshopId) {
+        await assertTenantOwned(tx, 'workshop', data.workshopId, companyId);
+      }
       const mechanic = await tx.mechanic.create({
         data: {
           companyId,
@@ -106,6 +113,10 @@ export class MaintenanceService {
 
   async createJobCard(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
+      if (data.workshopId) await assertTenantOwned(tx, 'workshop', data.workshopId, companyId);
+      if (data.mechanicId) await assertTenantOwned(tx, 'mechanic', data.mechanicId, companyId);
+
       const jobCard = await tx.jobCard.create({
         data: {
           companyId,
@@ -221,6 +232,7 @@ export class MaintenanceService {
 
   async createSchedule(companyId: string, data: any, userId?: string) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vehicleId) await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
       const schedule = await tx.maintenanceSchedule.create({
         data: {
           companyId,
