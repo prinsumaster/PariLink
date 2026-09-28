@@ -169,5 +169,20 @@ All backend modules have been updated to use `assertTenantOwned` to strictly val
     - `portals/claims` (Claim creation referencing arbitrary customerId and loadId)
     - `vehicles/permits` (Permit creation targeting unscoped vehicleId)
 - All true positives have been systematically patched using `assertTenantOwned` and validated with matching E2E rejection tests in `repo-wide-isolation.e2e-spec.ts`.
-- **Final Security State:** The repository is comprehensively audited. All core logic handles cross-tenant relations securely, isolating `companyId` contexts correctly.
 
+### Phase 5: BOLA/IDOR Read/Delete Vulnerability Audit (Completed 2026-09-28)
+- Ran the `find-vulns-idor-v6.js` scanner across all `.service.ts` files globally to identify any `read` (GET) and `delete` operations that fetched or removed records by ID without properly scoping to `companyId`.
+- **Findings & Fixes:**
+  - **Identified IDORs:** Found and verified several endpoints fetching by ID without tenant scoping:
+    - `workshop/workshop.service.ts`: `getJobCard` fetched a JobCard simply by ID, allowing cross-tenant read.
+    - `warehouse/engine/dock-scheduler.service.ts`: `markAppointmentArrived` and `completeAppointment` updated an appointment by ID without checking the dock's company owner.
+    - `trailers/trailers.service.ts`: `findOne`, `update`, and `remove` methods queried `where: { id, type: 'TRAILER' }` without checking `companyId`, leaking cross-tenant data.
+  - **False Positives Examined:**
+    - `portals/driver/trips/driver-trips.service.ts`: Safe because queries are scoped explicitly to `driverId` (resolved securely from the JWT).
+    - `trips/fuel-entries.service.ts`: Safe because it fetched `trip` with `companyId` securely before updating.
+    - `vehicles/compliance/compliance.service.ts`: Safe because it invokes `assertTenantOwned` up front.
+    - `workflow/engine/execution.service.ts`: Safe because it invokes `findUnique({ where: { id: executionId, companyId } })` up front.
+- **Fixes Applied:**
+  - Added explicit `{ companyId }` scoping to `findUnique`/`findFirst` queries and verified related updates were wrapped correctly in tenant boundary logic.
+  - Added full end-to-end isolation tests for `Trailers` and `Workshop` IDOR vectors inside `repo-wide-isolation.e2e-spec.ts` (verified with `404 Not Found`).
+- **Final Security State:** The repository is comprehensively audited. All core logic handles cross-tenant relations securely, isolating `companyId` contexts correctly for both writes (FK injections) and reads/deletes (BOLA/IDOR).
