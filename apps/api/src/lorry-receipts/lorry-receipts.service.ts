@@ -15,6 +15,11 @@ export class LorryReceiptsService {
         throw new NotFoundException(`Lorry Receipt with ID ${id} not found`);
       }
 
+      if (dto.driverId) {
+        const driver = await tx.driver.findFirst({ where: { id: dto.driverId, companyId } });
+        if (!driver) throw new NotFoundException('Driver not found in tenant');
+      }
+
       return tx.lorryReceipt.update({
         where: { id },
         data: {

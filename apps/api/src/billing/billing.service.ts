@@ -32,6 +32,11 @@ export class BillingService {
     userId?: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (dto.customerId) {
+        const customer = await tx.customer.findFirst({ where: { id: dto.customerId, companyId } });
+        if (!customer) throw new NotFoundException('Customer not found in tenant');
+      }
+
       const rateCard = await tx.rateCard.create({
         data: {
           companyId,

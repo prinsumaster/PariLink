@@ -37,6 +37,13 @@ export class WorkshopService {
         },
       });
 
+      const vehicle = await tx.vehicle.findFirst({ where: { id: data.vehicleId, companyId } });
+      if (!vehicle) throw new NotFoundException('Vehicle not found in tenant');
+      if (data.workshopId) {
+        const workshop = await tx.workshop.findFirst({ where: { id: data.workshopId, companyId } });
+        if (!workshop) throw new NotFoundException('Workshop not found in tenant');
+      }
+      
       const jobCard = await tx.jobCard.create({
         data: {
           ...data,
@@ -371,6 +378,10 @@ export class WorkshopService {
 
   async createPart(companyId: string, data: CreatePartDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.vendorId) {
+        const vendor = await tx.vendor.findFirst({ where: { id: data.vendorId, companyId } });
+        if (!vendor) throw new NotFoundException('Vendor not found in tenant');
+      }
       return tx.part.create({ data: { ...data, companyId } });
     });
   }
@@ -395,15 +406,29 @@ export class WorkshopService {
 
   async createTyreLog(companyId: string, data: CreateTyreLogDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      const vehicle = await tx.vehicle.findFirst({ where: { id: data.vehicleId, companyId } });
+      if (!vehicle) throw new NotFoundException('Vehicle not found in tenant');
       return tx.tyreLog.create({ data: { ...data, companyId } });
     });
   }
 
   async createJobPart(companyId: string, data: CreateJobPartDto) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      if (data.jobCardId) {
+         const jc = await tx.jobCard.findFirst({ where: { id: data.jobCardId, companyId } });
+         if (!jc) throw new NotFoundException('JobCard not found in tenant');
+      }
+      if (data.maintenanceJobId) {
+         const mj = await tx.maintenanceJob.findFirst({ where: { id: data.maintenanceJobId, companyId } });
+         if (!mj) throw new NotFoundException('MaintenanceJob not found in tenant');
+      }
+      if (data.vendorId) {
+         const vendor = await tx.vendor.findFirst({ where: { id: data.vendorId, companyId } });
+         if (!vendor) throw new NotFoundException('Vendor not found in tenant');
+      }
       if (data.partId) {
-        const part = await tx.part.findUnique({ where: { id: data.partId } });
-        if (!part) throw new NotFoundException('Part not found');
+        const part = await tx.part.findFirst({ where: { id: data.partId, companyId } });
+        if (!part) throw new NotFoundException('Part not found in tenant');
         const qtyUsed = data.qty || 1;
         if (part.quantity < qtyUsed) {
           throw new BadRequestException(
