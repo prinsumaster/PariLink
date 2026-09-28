@@ -123,3 +123,6 @@ GET /api/v1/health/liveness
 - **Already safe (no changes needed):**
   - **Trips, Dispatch, Vehicles:** Read and confirmed safe. All foreign keys (`vehicleId`, `driverId`) correctly scoped through explicit tenant verification queries before usage.
   - **Lorry Receipts:** LR creation does not expose an unscoped `vehicleId` because it securely pulls `vehicleId` and `driverId` straight from the previously tenant-scoped `Trip` record.
+
+### Cross-Tenant Foreign Key Audit
+All backend modules have been updated to use `assertTenantOwned` to strictly validate foreign keys before performing write operations. The fix has been applied repo-wide and a `scripts/check-tenant-isolation.sh` script is now available to catch regressions. Stale md files archived.
