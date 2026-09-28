@@ -184,4 +184,12 @@ describe('Repo-wide Isolation', () => {
     expect(res.status).toBe(404);
   });
 
+  it('Portals/Claims: Tenant B should NOT be able to create claim for Tenant A customer/load', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/portals/customer/claims')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ customerId: customerA, loadId: loadA, amount: 500, reason: 'Damaged goods' });
+    expect(res.status).toBe(404);
+  });
+
 });

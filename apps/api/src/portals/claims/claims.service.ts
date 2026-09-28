@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { assertTenantOwned } from '../../common/utils/tenant-assert';
 
 @Injectable()
 export class ClaimsService {
@@ -17,6 +18,11 @@ export class ClaimsService {
     );
 
     return this.prisma.runAsTenant(companyId, async (tx) => {
+      await assertTenantOwned(tx, 'customer', customerId, companyId);
+      if (data.loadId) {
+        await assertTenantOwned(tx, 'load', data.loadId, companyId);
+      }
+
       return tx.claim.create({
         data: {
           companyId,
