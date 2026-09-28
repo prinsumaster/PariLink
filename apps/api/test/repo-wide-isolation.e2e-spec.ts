@@ -284,5 +284,12 @@ describe('Repo-wide Isolation', () => {
         .send({ driverId: 'fake', date: new Date(), status: 'PRESENT' });
       expect(res.status).toBe(403);
     });
+    it('Vehicles/Permit: Read-Only user should NOT be able to create a permit', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/vehicles/permits')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`)
+        .send({ payload: { type: 'NATIONAL', vehicleId: 'fake' } });
+      expect(res.status).toBe(403);
+    });
   });
 });
