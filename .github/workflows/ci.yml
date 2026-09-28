@@ -98,10 +98,14 @@ jobs:
             psql -h localhost -U parilink -d parilink_db -v APP_DATABASE_PASSWORD=ci_app_pass_987 -v PARILINK_SYS_PASSWORD=ci_sys_pass_987 -f "$f"
           done
 
-      # ── 7. Lint ────────────────────────────────────────────────────────────
       - name: Lint (API)
         working-directory: ./apps/api
         run: npm run lint --if-present
+
+      # ── 7b. Security Audit (Tenant Isolation) ──────────────────────────────
+      - name: Verify Tenant Isolation Security Guard
+        working-directory: ./
+        run: ./scripts/check-tenant-isolation.sh
 
       # ── 8. Unit & Service Tests ────────────────────────────────────────────
       # Runs all *.spec.ts tests including:
