@@ -105,7 +105,9 @@ jobs:
       # ── 7b. Security Audit (Tenant Isolation) ──────────────────────────────
       - name: Verify Tenant Isolation Security Guard
         working-directory: ./
-        run: ./scripts/check-tenant-isolation.sh
+        run: |
+          ./scripts/check-tenant-isolation.sh
+          node scripts/find-vulns-idor-v6.js
 
       # ── 8. Unit & Service Tests ────────────────────────────────────────────
       # Runs all *.spec.ts tests including:
