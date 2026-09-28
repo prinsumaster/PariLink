@@ -149,8 +149,19 @@ All backend modules have been updated to use `assertTenantOwned` to strictly val
 ### Phase 4: Final Vulnerability Audit (Completed)
 - Ran the `find-vulns-advanced.js` scanner across all `.service.ts` files globally to identify any potential cross-tenant foreign key injections, catching 17 total hits across the entire codebase.
 - **Hit Breakdown (17 total):**
-  - **12 False Positives:** Internal system telemetry, top-level creation without FKs (Warehouse), or explicit cross-tenant internal bus events (EventBus/Tracing) where foreign keys do not pose an isolation risk. Hand-audited and left untouched.
-  - **5 True Positives (Fixed):**
+  - **11 False Positives:** Hand-audited and left untouched because cross-tenant FK injection is impossible for the following specific reasons:
+    - `fleet/lifecycle/vehicle-lifecycle.service.ts` (`onboardVehicle`): Only takes raw vehicle properties and `companyId`, no cross-tenant foreign keys are accepted or associated.
+    - `gst/services/gst-engine/gst-engine.service.ts` (`create`): The `GstTaxRule` schema only has a `companyId` foreign key and accepts no references to other entities.
+    - `integration/sync/sync.service.ts` (`scheduleSync`): Explicitly fetches `conn` and strictly validates `conn.companyId !== companyId` against the requested `connectionId` before proceeding.
+    - `mobile/mobile.service.ts` (`recordLocation`): The `dto.tripId` is explicitly verified in `findFirst` to belong to `driver.id`, and `driver.id` is securely tied to the authenticated `userId` context.
+    - `operations/alerts/alert-engine.service.ts` (`createEscalationPolicy`): Only accepts primitive configuration fields (`name`, `severity`, `steps` as JSON), no external foreign keys are taken.
+    - `finance/payroll/services/payroll-engine/payroll-engine.service.ts` (`create`): Base entity creation without FKs.
+    - `integration/events/enterprise-event-bus.service.ts` (`publishEvent`): Internal cross-tenant system bus where payload shapes are controlled internally.
+    - `operations/alerts/alert-engine.service.ts` (`createMaintenanceWindow`): Internal cron schedule bypass using `runAsSystem`.
+    - `operations/tracing/distributed-tracing.service.ts` (`recordSpan`): APM system ingestion deliberately bypassing tenants for global tracing.
+    - `tracking/services/telematics-ingestion.service.ts` (`ingestTelemetry`): IoT ingestion securely verifies GPS mappings via internal IoT identifiers, not untrusted tenant data.
+    - `warehouse/engine/warehouse-master.service.ts` (`createWarehouse`): Top-level entity, creates its own root record without taking FKs.
+  - **6 True Positives (Fixed):**
     - `finance/bank-reconciliation` (BankStatement creation missing scoped bankAccountId check)
     - `finance/driver-wallet.service.ts` (Driver/Trip ID validation in expense submission)
     - `fuel/fuel.service.ts` (Fuel card creation tied to unscoped vehicle/driver)
