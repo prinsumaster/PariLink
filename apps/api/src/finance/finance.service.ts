@@ -10,6 +10,7 @@ import {
   CreateVendorBillDto,
   CreatePaymentDto,
 } from './dto/finance.dto';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 import { AuditService } from '../platform/audit/audit.service';
 import { EventStoreService } from '../platform/digital-twin/event-store.service';
 
@@ -85,14 +86,10 @@ export class FinanceService {
     return this.prisma.runAsTenant(companyId, async (tx) => {
       // Validate driver and trip
       if (dto.driverId) {
-        const driver = await tx.driver.findFirst({
-          where: { id: dto.driverId },
-        });
-        if (!driver) throw new NotFoundException('Driver not found');
+        await assertTenantOwned(tx, 'driver', dto.driverId, companyId);
       }
       if (dto.tripId) {
-        const trip = await tx.trip.findFirst({ where: { id: dto.tripId } });
-        if (!trip) throw new NotFoundException('Trip not found');
+        await assertTenantOwned(tx, 'trip', dto.tripId, companyId);
       }
 
       const expense = await tx.expense.create({
@@ -140,8 +137,7 @@ export class FinanceService {
     userId?: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const driver = await tx.driver.findFirst({ where: { id: dto.driverId } });
-      if (!driver) throw new NotFoundException('Driver not found');
+      await assertTenantOwned(tx, 'driver', dto.driverId, companyId);
 
       const netPayable =
         dto.amount - (dto.advances || 0) - (dto.deductions || 0);
@@ -194,8 +190,7 @@ export class FinanceService {
     userId?: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const vendor = await tx.vendor.findFirst({ where: { id: dto.vendorId } });
-      if (!vendor) throw new NotFoundException('Vendor not found');
+      await assertTenantOwned(tx, 'vendor', dto.vendorId, companyId);
 
       const bill = await tx.vendorBill.create({
         data: {
@@ -241,10 +236,7 @@ export class FinanceService {
     userId?: string,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      const invoice = await tx.invoice.findFirst({
-        where: { id: dto.invoiceId },
-      });
-      if (!invoice) throw new NotFoundException('Invoice not found');
+      const invoice = await assertTenantOwned(tx, 'invoice', dto.invoiceId, companyId);
       if (invoice.status === 'DRAFT' || invoice.status === 'VOIDED') {
         throw new BadRequestException('Cannot pay a DRAFT or VOIDED invoice');
       }
