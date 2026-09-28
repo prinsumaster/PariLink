@@ -277,5 +277,12 @@ describe('Repo-wide Isolation', () => {
         .send({ title: 'Hacked Announcement', content: 'You are hacked' });
       expect(res.status).toBe(403);
     });
+    it('Drivers/Attendance: Read-Only user should NOT be able to create an attendance record', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/drivers/attendance')
+        .set('Authorization', `Bearer ${tokenAReadOnly}`)
+        .send({ driverId: 'fake', date: new Date(), status: 'PRESENT' });
+      expect(res.status).toBe(403);
+    });
   });
 });

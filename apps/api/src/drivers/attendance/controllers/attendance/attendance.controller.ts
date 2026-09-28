@@ -13,14 +13,17 @@ import {
   Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../../../../auth/guards/permissions.guard';
+import { RequirePermissions } from '../../../../auth/decorators/permissions.decorator';
 import { AttendanceTrackingService } from '../../services/attendance-tracking/attendance-tracking.service';
 
 @Controller('drivers/attendance')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 export class AttendanceController {
   constructor(private readonly service: AttendanceTrackingService) {}
 
   @Post()
+  @RequirePermissions('drivers:update')
   create(@Req() req: any, @Body() data: CreateAttendanceDto) {
     return this.service.create(req.user.companyId, req.user.id, data);
   }
@@ -36,6 +39,7 @@ export class AttendanceController {
   }
 
   @Patch(':id')
+  @RequirePermissions('drivers:update')
   update(
     @Req() req: any,
     @Param('id') id: string,
@@ -45,6 +49,7 @@ export class AttendanceController {
   }
 
   @Delete(':id')
+  @RequirePermissions('drivers:update')
   remove(@Req() req: any, @Param('id') id: string) {
     return this.service.remove(req.user.companyId, id, req.user.id);
   }
