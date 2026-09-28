@@ -21,6 +21,7 @@ describe('Repo-wide Isolation', () => {
   let customerA: string;
   let warehouseA: string;
   let invoiceA: string;
+  let incidentA: string;
   let loadA: string;
   let bankAccountA: string;
 
@@ -50,8 +51,9 @@ describe('Repo-wide Isolation', () => {
       const load = await tx.load.create({ data: { companyId: c.id, customerId: cust.id, status: 'UNASSIGNED', originAddress: 'A', originCity: 'A', originState: 'A', destinationAddress: 'B', destinationCity: 'B', destinationState: 'B', pickupDate: new Date(), deliveryDate: new Date(), referenceNumber: 'REF-123', rate: 100 } });
       const inv = await tx.invoice.create({ data: { companyId: c.id, customerId: cust.id, invoiceNumber: 'INV-REPO-1', amount: 100, status: 'DRAFT' } });
       const bankAcct = await tx.bankAccount.create({ data: { companyId: c.id, bankName: 'Repo Bank', accountNumber: 'ACCT-REPO-1', ifscCode: 'IFSC1234' } });
+      const inc = await tx.incident.create({ data: { companyId: c.id, title: 'Test Incident', description: 'Test', severity: 'SEV1', status: 'INVESTIGATING', affectedServices: [] } });
 
-      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load, bankAccount: bankAcct };
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load, bankAccount: bankAcct, incident: inc };
     });
 
     tenantA = compA.company.id;
@@ -63,6 +65,7 @@ describe('Repo-wide Isolation', () => {
     invoiceA = compA.invoice.id;
     loadA = compA.load.id;
     bankAccountA = compA.bankAccount.id;
+    incidentA = compA.incident.id;
 
     // Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -170,6 +173,14 @@ describe('Repo-wide Isolation', () => {
       .post('/fuel-cards')
       .set('Authorization', `Bearer ${tokenB}`)
       .send({ cardNumber: '1111222233334444', provider: 'FLEETCOR', vehicleId: vehicleA, dailyLimit: 500 });
+    expect(res.status).toBe(404);
+  });
+
+  it('Operations/Incidents: Tenant B should NOT be able to add timeline event to Tenant A incident', async () => {
+    const res = await request(app.getHttpServer())
+      .post(`/operations/incidents/${incidentA}/timeline`)
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ eventType: 'NOTE', description: 'Hacked timeline event' });
     expect(res.status).toBe(404);
   });
 

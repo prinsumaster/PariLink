@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../platform/audit/audit.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { assertTenantOwned } from '../../common/utils/tenant-assert';
 
 export interface CreateIncidentInput {
   companyId: string;
@@ -166,6 +167,10 @@ export class IncidentManagementService {
     metadata?: Record<string, unknown>;
     actorId?: string;
   }): Promise<unknown> {
+    await this.prisma.runAsTenant(data.companyId, async (tx) => {
+      await assertTenantOwned(tx, 'incident', data.incidentId, data.companyId);
+    });
+
     return this.prisma.runAsSystem(
       '[IncidentManagementService.addTimelineEvent] Internal service operation bypass',
       async (tx) =>
