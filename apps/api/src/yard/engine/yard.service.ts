@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { EventStoreService } from '../../platform/digital-twin/event-store.service';
+import { assertTenantOwned } from '../../common/utils/tenant-assert';
 
 @Injectable()
 export class YardService {
@@ -23,8 +24,12 @@ export class YardService {
     },
     userId: string,
   ) {
-    const log = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.yardGateLog.create({
+    const log = await this.prisma.runAsTenant(companyId, async (tx) => {
+      await assertTenantOwned(tx, 'warehouse', warehouseId, companyId);
+      if (data.vehicleId) await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
+      if (data.driverId) await assertTenantOwned(tx, 'driver', data.driverId, companyId);
+
+      return tx.yardGateLog.create({
         data: {
           companyId,
           warehouseId,
@@ -34,8 +39,8 @@ export class YardService {
           trailerId: data.trailerId,
           driverId: data.driverId,
         },
-      }),
-    );
+      });
+    });
 
     await this.eventStore.append({
       tenantId: companyId,
@@ -63,8 +68,12 @@ export class YardService {
     },
     userId: string,
   ) {
-    const log = await this.prisma.runAsTenant(companyId, async (tx) =>
-      tx.yardGateLog.create({
+    const log = await this.prisma.runAsTenant(companyId, async (tx) => {
+      await assertTenantOwned(tx, 'warehouse', warehouseId, companyId);
+      if (data.vehicleId) await assertTenantOwned(tx, 'vehicle', data.vehicleId, companyId);
+      if (data.driverId) await assertTenantOwned(tx, 'driver', data.driverId, companyId);
+
+      return tx.yardGateLog.create({
         data: {
           companyId,
           warehouseId,
@@ -74,8 +83,8 @@ export class YardService {
           trailerId: data.trailerId,
           driverId: data.driverId,
         },
-      }),
-    );
+      });
+    });
 
     await this.eventStore.append({
       tenantId: companyId,
