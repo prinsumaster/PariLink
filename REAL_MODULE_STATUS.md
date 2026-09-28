@@ -126,3 +126,18 @@ GET /api/v1/health/liveness
 
 ### Cross-Tenant Foreign Key Audit
 All backend modules have been updated to use `assertTenantOwned` to strictly validate foreign keys before performing write operations. The fix has been applied repo-wide and a `scripts/check-tenant-isolation.sh` script is now available to catch regressions. Stale md files archived.
+
+### Phase 3/4: Verification & E2E Coverage (Completed)
+- Successfully implemented and executed `apps/api/test/repo-wide-isolation.e2e-spec.ts`.
+- Validated tenant isolation across 8 distinct modules:
+  - Yard Gate Entry
+  - Finance Payments
+  - Vehicles Compliance DVIR
+  - Vehicles Maintenance Schedules
+  - Vendor Purchase Orders
+  - Factoring Submission
+  - Fastag Wallet Account Creation
+  - Warehouse Inbound ASN
+- **Result:** All endpoints correctly rejected cross-tenant data with `404 Not Found`, confirming `assertTenantOwned` intercepts unauthorized foreign key references before database commits.
+- **Proof:** E2E Test execution is fully GREEN.
+

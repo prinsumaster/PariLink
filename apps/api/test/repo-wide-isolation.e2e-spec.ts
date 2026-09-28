@@ -1,0 +1,149 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as requestModule from 'supertest';
+const request = requestModule.default || requestModule;
+import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
+
+describe('Repo-wide Isolation', () => {
+  jest.setTimeout(60000);
+  let app: INestApplication;
+  let prisma: PrismaService;
+  let jwtService: JwtService;
+
+  let tokenB: string;
+  let tenantA: string;
+
+  let vehicleA: string;
+  let driverA: string;
+  let vendorA: string;
+  let customerA: string;
+  let warehouseA: string;
+  let invoiceA: string;
+  let loadA: string;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+    await app.init();
+
+    prisma = app.get(PrismaService);
+    jwtService = app.get(JwtService);
+    const ts = Date.now();
+    const pwhash = require('bcrypt').hashSync('password123', 10);
+    const perms = ['*'];
+
+    // Setup Tenant A and entities
+    const compA = await prisma.runAsSystem('setup', async (tx) => {
+      const c = await tx.company.create({ data: { name: `Repo Tenant A ${ts}`, status: 'ACTIVE' } });
+      const veh = await tx.vehicle.create({ data: { companyId: c.id, licensePlate: 'REPO-123', make: 'Volvo', model: 'V', year: 2024, type: 'TRUCK', status: 'IN_SERVICE' } });
+      const drv = await tx.driver.create({ data: { companyId: c.id, firstName: 'A', lastName: 'B', licenseNumber: 'DL-REPO' } });
+      const vnd = await tx.vendor.create({ data: { companyId: c.id, name: 'Repo Vendor', type: 'MAINTENANCE' } });
+      const cust = await tx.customer.create({ data: { companyId: c.id, name: 'Repo Customer' } });
+      const wh = await tx.warehouse.create({ data: { companyId: c.id, name: 'Repo Warehouse', code: 'WH-REPO', address: '123 Test St', city: 'City', state: 'State' } });
+      const load = await tx.load.create({ data: { companyId: c.id, customerId: cust.id, status: 'UNASSIGNED', originAddress: 'A', originCity: 'A', originState: 'A', destinationAddress: 'B', destinationCity: 'B', destinationState: 'B', pickupDate: new Date(), deliveryDate: new Date(), referenceNumber: 'REF-123', rate: 100 } });
+      const inv = await tx.invoice.create({ data: { companyId: c.id, customerId: cust.id, invoiceNumber: 'INV-REPO-1', amount: 100, status: 'DRAFT' } });
+
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, customer: cust, warehouse: wh, invoice: inv, load };
+    });
+
+    tenantA = compA.company.id;
+    vehicleA = compA.vehicle.id;
+    driverA = compA.driver.id;
+    vendorA = compA.vendor.id;
+    customerA = compA.customer.id;
+    warehouseA = compA.warehouse.id;
+    invoiceA = compA.invoice.id;
+    loadA = compA.load.id;
+
+    // Setup Tenant B
+    const compB = await prisma.runAsSystem('setup', async (tx) => {
+      const c = await tx.company.create({ data: { name: `Repo Tenant B ${ts}`, status: 'ACTIVE' } });
+      const r = await tx.role.create({ data: { companyId: c.id, name: 'Admin', permissions: perms } });
+      const u = await tx.user.create({ data: { companyId: c.id, roleId: r.id, email: `admin_b_${ts}@test.com`, password: pwhash, firstName: 'B', lastName: 'B', status: 'ACTIVE' } });
+      return { company: c, user: u, role: r };
+    });
+
+    tokenB = jwtService.sign({
+      sub: compB.user.id,
+      email: compB.user.email,
+      companyId: compB.company.id,
+      roleId: compB.role.id,
+      permissions: compB.role.permissions,
+    });
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('Yard: Tenant B should NOT be able to log gate entry with Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/yard/gate/entry')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ warehouseId: warehouseA, vehicleId: vehicleA, purpose: 'DELIVERY' });
+    expect(res.status).toBe(404);
+  });
+
+  it('Finance: Tenant B should NOT be able to pay Tenant A invoice', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/finance/payments')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ invoiceId: invoiceA, amount: 100, method: 'CASH', paymentDate: new Date() });
+    expect(res.status).toBe(404);
+  });
+
+  it('Vehicles/Compliance: Tenant B should NOT be able to submit DVIR for Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/vehicles/compliance/dvir')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ vehicleId: vehicleA, driverId: driverA, type: 'PRE_TRIP', status: 'SAFE' });
+    expect(res.status).toBe(404);
+  });
+  
+  it('Vehicles/Maintenance: Tenant B should NOT be able to create schedule for Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/vehicles/maintenance/schedules')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ vehicleId: vehicleA, taskName: 'Oil Change', intervalDays: 30, intervalKm: 5000 });
+    expect(res.status).toBe(404);
+  });
+  
+  it('Vendor: Tenant B should NOT be able to create PO for Tenant A vendor', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/vendors/purchase-orders')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ vendorId: vendorA, poNumber: 'PO-1', date: new Date(), items: [] });
+    expect(res.status).toBe(404);
+  });
+
+  it('Factoring: Tenant B should NOT be able to submit Tenant A customer/load for factoring', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/factoring/submit')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ customerId: customerA, loadId: loadA, invoiceNumber: 'INV-F-1', amount: 500, bolFileUrl: 'url', bolFileName: 'name' });
+    expect(res.status).toBe(404);
+  });
+
+  it('Fastag Wallet: Tenant B should NOT be able to create toll account for Tenant A vehicle', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/fastag/accounts')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ accountNumber: 'F-123', vehicleId: vehicleA, provider: 'NHAI' });
+    expect(res.status).toBe(404);
+  });
+
+  it('Warehouse/Inbound: Tenant B should NOT be able to create ASN for Tenant A warehouse/load', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/warehouse/inbound/asn')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ warehouseId: warehouseA, loadId: loadA, asnNumber: 'ASN-1', expectedDate: new Date(), reference: 'REF-1', items: [{ sku: 'SKU1', expectedQty: 10 }] });
+    expect(res.status).toBe(404);
+  });
+
+});

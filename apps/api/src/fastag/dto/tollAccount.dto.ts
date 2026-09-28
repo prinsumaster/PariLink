@@ -3,6 +3,9 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateTollAccountDto {
   @IsOptional() @IsString() id?: string;
   @IsOptional() @IsString() status?: string;
+  @IsOptional() @IsString() provider?: string;
+  @IsOptional() @IsString() vehicleId?: string;
+  @IsOptional() @IsString() accountNumber?: string;
 }
 
 export class UpdateTollAccountDto {
