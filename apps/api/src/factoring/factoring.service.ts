@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmitFactoringDto } from './dto/submit-factoring.dto';
+import { assertTenantOwned } from '../common/utils/tenant-assert';
 
 @Injectable()
 export class FactoringService {
@@ -16,11 +17,11 @@ export class FactoringService {
     dto: SubmitFactoringDto,
   ) {
     return this.prisma.runAsTenant(companyId, async (tx) => {
-      // Verify customer exists
-      const customer = await tx.customer.findFirst({
-        where: { id: dto.customerId },
-      });
-      if (!customer) throw new BadRequestException('Customer not found');
+      // Verify customer and load exist in this tenant
+      await assertTenantOwned(tx, 'customer', dto.customerId, companyId);
+      if (dto.loadId) {
+        await assertTenantOwned(tx, 'load', dto.loadId, companyId);
+      }
 
       // Create Invoice with Factoring status
       const invoice = await tx.invoice.create({
