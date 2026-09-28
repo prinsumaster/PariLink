@@ -22,6 +22,7 @@ describe('Core Modules Tenant Isolation (e2e)', () => {
   let lrA: string;
   let customerA: string;
   let tripA: string;
+  let loadA: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -52,8 +53,9 @@ describe('Core Modules Tenant Isolation (e2e)', () => {
       const trip = await tx.trip.create({ data: { companyId: c.id, tripNumber: 'TRP-A', vehicleId: veh.id, driverId: drv.id, status: 'COMPLETED' } });
       const lr = await tx.lorryReceipt.create({ data: { companyId: c.id, tripId: trip.id, vehicleId: veh.id, driverId: drv.id, lrNumber: 'LR-A', consignorName: 'C1', consigneeName: 'C2', product: 'Steel', grossWeight: 1000, tareWeight: 100, netWeight: 900 } });
       const cust = await tx.customer.create({ data: { companyId: c.id, name: 'Customer A' } });
+      const load = await tx.load.create({ data: { companyId: c.id, customerId: cust.id, loadNumber: 'LD-A', status: 'UNASSIGNED', origin: 'A', destination: 'B', pickupDate: new Date(), deliveryDate: new Date() } });
 
-      return { company: c, vehicle: veh, driver: drv, vendor: vnd, jobCard: jc, lorryReceipt: lr, customer: cust, trip };
+      return { company: c, vehicle: veh, driver: drv, vendor: vnd, jobCard: jc, lorryReceipt: lr, customer: cust, trip, load };
     });
 
     tenantA = compA.id;
@@ -64,6 +66,7 @@ describe('Core Modules Tenant Isolation (e2e)', () => {
     lrA = lorryReceipt.id;
     customerA = customer.id;
     tripA = trip.id;
+    loadA = load.id;
 
     // 2. Setup Tenant B
     const compB = await prisma.runAsSystem('setup', async (tx) => {
@@ -107,6 +110,7 @@ describe('Core Modules Tenant Isolation (e2e)', () => {
       await tx.lorryReceipt.deleteMany({ where: { companyId: { in: tenants } } });
       await tx.tripDesk.deleteMany({ where: { trip: { companyId: { in: tenants } } } });
       await tx.trip.deleteMany({ where: { companyId: { in: tenants } } });
+      await tx.load.deleteMany({ where: { companyId: { in: tenants } } });
       await tx.customer.deleteMany({ where: { companyId: { in: tenants } } });
       await tx.vehicle.deleteMany({ where: { companyId: { in: tenants } } });
       await tx.driver.deleteMany({ where: { companyId: { in: tenants } } });
@@ -183,6 +187,14 @@ describe('Core Modules Tenant Isolation (e2e)', () => {
       .set('Authorization', `Bearer ${tokenB}`)
       .send({ customerId: customerA, tripIds: [tripA] });
     expect(res.status).toBe(400); // Because "Company or Customer not found" or trip not found. Safe.
+  });
+
+  it('Dispatch: Tenant B should NOT be able to move Tenant A load on board', async () => {
+    const res = await request(app.getHttpServer())
+      .put('/dispatch/board/move')
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ loadId: loadA, newStatus: 'IN_TRANSIT', boardPosition: 2 });
+    expect(res.status).toBe(400); // The service currently throws BadRequestException('Load not found') if not found in tenant. Safe.
   });
 
 });
